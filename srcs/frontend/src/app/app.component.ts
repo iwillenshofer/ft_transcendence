@@ -9,11 +9,6 @@ import { AuthService } from './auth/auth.service';
 export class AppComponent {
   title = 'frontend';
 
-  constructor (private authservice: AuthService) {
+  constructor () { }
 
-  }
-  login() {
-	  console.log('login');
-	  this.authservice.initLoginFlowInPopup();
-  }
 }

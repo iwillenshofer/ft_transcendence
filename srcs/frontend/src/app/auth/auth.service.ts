@@ -6,37 +6,78 @@ import { HttpClient } from '@angular/common/http'
 })
 export class AuthService {
 
-  constructor(
-  ) { }
+  	constructor() { }
 
-  private popup: Window | null = null;
-
-  initLoginFlowInPopup() {
-	return new Promise((resolve, reject) => {
+	private loggedIn: boolean = true;
+  	private popup: Window | null = null;
+  	private promise: Promise<unknown> | null = null;
+	private timer: number | undefined = undefined;
+	
+	initLogin() {
 		this.popup = this.createPopupWindow();
-        let checkForPopupClosedTimer: any;
-        const checkForPopupClosed = () => {
-			if (!this.popup || this.popup.closed) {
-			  console.log('popup_closed');
-			  resolve(1);
+		const asyncFunction = (resolve: any, reject: any) => {
+			const isPopupClosed = () => {
+				console.log('waiting');
+				if (!this.popup || this.popup.closed)
+				{
+					//here we checked if we are logged in
+					if (this.loggedIn)
+						resolve('Popup is closed and user is logged in.');
+					else
+						reject('Popup is closed and user is not logged in.');
+				}
+			};
+			if (!this.popup) {
+				reject('Something weird happened with the popup');
+			} else {
+				this.timer = window.setInterval(isPopupClosed, 1000);
 			}
-		  };
-		  if (!this.popup) {
-			  console.log('popup_blocked');
-			  resolve(1);
-		  } else {
-			  checkForPopupClosedTimer = window.setInterval(checkForPopupClosed, 1000);
-		  }
+		}
+		this.promise = new Promise(asyncFunction)
+		.then(
+			(val) => this.popupSuccess(val),
+			(err) => this.popupError(err)
+			)
+		.catch(	
+			(err) => this.popupError(err)
+		)
+	};
 
-		console.log("hello");
-	})
-  }
- 
+	/*
+	** Something went right! :D
+	** User is logged in and ready to navigate.
+	*/
+	popupSuccess(val: string | unknown) {
+		this.cleanUp();
+		console.log('ok' + val)
+	};
 
-  	createPopupWindow(): &Window | null
+	/*
+	** Something went wrong: Either the popup was closed before completing
+	** or there was a popup blocker...
+	** we will just clean things up
+	*/
+	popupError(val: string | unknown) {
+		this.cleanUp();
+		console.log('therewasanerror: ' + val)
+	};
+
+	cleanUp() {
+		this.popup?.close();
+		this.popup = null;
+		if (this.timer)
+			clearInterval(this.timer);
+		this.timer = undefined;
+	};
+
+	/*
+	** we create a popup window and listen to its
+	** message and storage events to determine if user is logged in.
+	*/
+	createPopupWindow(): &Window | null
 	{
 		let win: &Window | null
-		const url: string = '/login';
+		const url: string = 'http://www.google.com/';
 		const h: number = 500;
 		const w: number = 330;
 		const title = 'windowtitle';
@@ -47,125 +88,16 @@ export class AuthService {
 		const childX = parentWidth / 2 + parentX - (h / 2);
 		const childY = parentHeight / 2 + parentY - (h / 2);
 		win = window.open(url, title, `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=${w}, height=${h}, top=${childY}, left=${childX}`);
-		win?.addEventListener('message', this.closedPopup.bind(this), false);
-		win?.addEventListener('unload', this.closedPopup.bind(this), false);
+		win?.addEventListener('message', this.eventHandler.bind(this), false);
+		win?.addEventListener('storage', this.eventHandler.bind(this), false);
 		return (win);
 	}
 
-	closedPopup(evt:any): void {
+	/*
+	** this event handler will check if the user is logged in
+	*/
+	eventHandler(evt:any): void {
 		console.log(evt);
+		console.log("Is the user logged in? We don't know yet... we need to code it!");
 	}
-
-
-  public initLoginFlowInPopupXXX() {
-    let windowRef: Window | any = null
-    return new Promise((resolve, reject) => {
-        /**
-         * Error handling section
-         */
-        const checkForPopupClosedInterval = 500;
-
-        let windowRef: any = null;
-        // If we got no window reference we open a window
-        // else we are using the window already opened
-        if (!windowRef) {
-          windowRef == window.open('http://google.com', 'loginwindow', `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=100, height=100, top=0, left=0`);
-        } else if (windowRef && !windowRef.closed) {
-          windowRef = windowRef;
-          windowRef.location.href = 'http://google.com';
-        }
-
-        let checkForPopupClosedTimer: any;
-
-        const tryLogin = (hash: string) => {
-          this.tryLogin('hello').then(
-            () => {
-              cleanup();
-              resolve(true);
-            },
-            (err) => {
-              cleanup();
-              reject(err);
-            }
-          );
-        };
-
-        const checkForPopupClosed = () => {
-          if (!windowRef || windowRef.closed) {
-            cleanup();
-			console.log('popup_closed');
-            reject(3);
-          }
-        };
-        if (!windowRef) {
-			console.log('popup_blocked');
-          reject(2);
-        } else {
-          checkForPopupClosedTimer = window.setInterval(
-            checkForPopupClosed,
-            checkForPopupClosedInterval
-          );
-        }
-
-        const cleanup = () => {
-          window.clearInterval(checkForPopupClosedTimer);
-          window.removeEventListener('storage', storageListener);
-          window.removeEventListener('message', listener);
-          if (windowRef !== null) {
-            windowRef.close();
-          }
-          windowRef = null;
-        };
-
-        const listener = (e: MessageEvent) => {
-          const message = this.processMessageEventMessage(e);
-
-          if (message && message !== null) {
-            window.removeEventListener('storage', storageListener);
-            tryLogin(message);
-          } else {
-            console.log('false event firing');
-          }
-        };
-
-        const storageListener = (event: StorageEvent) => {
-          if (event.key === 'auth_hash') {
-            window.removeEventListener('message', listener);
-            tryLogin('message');
-          }
-        };
-
-        window.addEventListener('message', listener);
-        window.addEventListener('storage', storageListener);
-      });
-  }
-
-	public tryLogin(v: any): Promise<boolean> {
-		return Promise.reject(0);
-	  }
-	protected processMessageEventMessage(e: MessageEvent): string {
-		let expectedPrefix = '#';
-
-		if (!e || !e.data || typeof e.data !== 'string') {
-			return "";
-		}
-
-		const prefixedMessage: string = e.data;
-
-		if (!prefixedMessage.startsWith(expectedPrefix)) {
-			return "";
-		}
-		return '#' + prefixedMessage.substr(expectedPrefix.length);
-	}
-	
-  }
-
-
-
-
-
-
-
-
-
-
+}
