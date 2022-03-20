@@ -21,8 +21,8 @@ export class LoginpageComponent implements OnInit {
 	ngOnInit(): void {
 	}
 
-	displayPopup()
+	initLogin()
 	{
-		this.authservice.initLogin();
+		this.authservice.initLoginPopup();
 	}
 }

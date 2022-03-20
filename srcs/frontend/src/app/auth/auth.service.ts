@@ -1,27 +1,111 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
+import { CookieService } from 'ngx-cookie-service'
+import { Router } from '@angular/router'
+import { Observable, BehaviorSubject } from 'rxjs';
+import { User } from './user.model';
 
 @Injectable({
   providedIn: 'root'
 })
+
+/*
+** Observables and BehaviourSubject are used to let any
+** module subscribed to these components know if there is 
+** any change to it.
+*/
+
 export class AuthService {
 
-  	constructor() { }
+  	constructor(
+		private cookieService: CookieService,
+		private router: Router,
+		private http: HttpClient
+	)
+	{
+		this.userSubject = new BehaviorSubject<User | null>(this.getUserFromLocalStorage());
+		this.user = this.userSubject.asObservable();
+	}
 
-	private loggedIn: boolean = true;
-  	private popup: Window | null = null;
-  	private promise: Promise<unknown> | null = null;
+	public userSubject: BehaviorSubject<User | null>;
+	public user: Observable<User | null>;
+	
+
+	/*
+	** popup variables
+	*/
+	private popup: Window | null = null;
 	private timer: number | undefined = undefined;
 	
 	initLogin() {
+		const url: string = '/auth/login';
+		window.location.href = url;
+	};
+
+	serverLogout()
+	{
+		return (this.http.get('http://localhost:3000/auth/logout', { withCredentials: true }));
+	}
+
+	refreshToken()
+	{
+		return  (this.http.get('http://localhost:3000/auth/refreshtoken', { withCredentials: true }));
+	}
+
+	logout(): void {
+		this.serverLogout().subscribe({
+			next: () => {
+				this.userSubject.next(null);
+				localStorage.removeItem('user');
+				this.router.navigate(['/']);
+			}
+		});
+	}
+
+	/*
+	**
+	*/
+
+	getUserFromLocalStorage(): User | null {
+		let user: string | null = localStorage.getItem('user');
+		if (user)		
+		{
+			let result: User = JSON.parse(user);
+			return (result);
+		}
+		return (null);
+	}
+
+	tryLogin(): boolean {
+		let result: User | null = this.getUserFromLocalStorage();
+		this.userSubject.next(result);
+		if (result)
+			return (true);
+		return (false);
+	}
+	
+	/*
+	** Popup login
+	*/
+	cleanUp() {
+		this.popup?.close();
+		this.popup = null;
+		if (this.timer)
+			clearInterval(this.timer);
+		this.timer = undefined;
+		localStorage.removeItem('popup');
+	};
+	
+	initLoginPopup() {
+		this.cleanUp();
 		this.popup = this.createPopupWindow();
+		this.popup?.localStorage.setItem('popup', 'true');
 		const asyncFunction = (resolve: any, reject: any) => {
 			const isPopupClosed = () => {
 				console.log('waiting');
 				if (!this.popup || this.popup.closed)
 				{
-					//here we checked if we are logged in
-					if (this.loggedIn)
+					if (this.tryLogin())
 						resolve('Popup is closed and user is logged in.');
 					else
 						reject('Popup is closed and user is not logged in.');
@@ -33,7 +117,7 @@ export class AuthService {
 				this.timer = window.setInterval(isPopupClosed, 1000);
 			}
 		}
-		this.promise = new Promise(asyncFunction)
+		let promise = new Promise(asyncFunction)
 		.then(
 			(val) => this.popupSuccess(val),
 			(err) => this.popupError(err)
@@ -47,9 +131,11 @@ export class AuthService {
 	** Something went right! :D
 	** User is logged in and ready to navigate.
 	*/
+
 	popupSuccess(val: string | unknown) {
 		this.cleanUp();
 		console.log('ok' + val)
+		this.router.navigate(['login/callback']);
 	};
 
 	/*
@@ -62,22 +148,24 @@ export class AuthService {
 		console.log('therewasanerror: ' + val)
 	};
 
+	/*
 	cleanUp() {
 		this.popup?.close();
 		this.popup = null;
 		if (this.timer)
 			clearInterval(this.timer);
 		this.timer = undefined;
-	};
+	};*/
 
 	/*
 	** we create a popup window and listen to its
 	** message and storage events to determine if user is logged in.
 	*/
+	
 	createPopupWindow(): &Window | null
 	{
 		let win: &Window | null
-		const url: string = 'http://www.google.com/';
+		const url: string = '/auth/login';
 		const h: number = 500;
 		const w: number = 330;
 		const title = 'windowtitle';
@@ -88,16 +176,6 @@ export class AuthService {
 		const childX = parentWidth / 2 + parentX - (h / 2);
 		const childY = parentHeight / 2 + parentY - (h / 2);
 		win = window.open(url, title, `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=${w}, height=${h}, top=${childY}, left=${childX}`);
-		win?.addEventListener('message', this.eventHandler.bind(this), false);
-		win?.addEventListener('storage', this.eventHandler.bind(this), false);
 		return (win);
-	}
-
-	/*
-	** this event handler will check if the user is logged in
-	*/
-	eventHandler(evt:any): void {
-		console.log(evt);
-		console.log("Is the user logged in? We don't know yet... we need to code it!");
 	}
 }

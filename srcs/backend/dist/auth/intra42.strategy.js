@@ -26,24 +26,27 @@ let Intra42Strategy = class Intra42Strategy extends (0, passport_1.PassportStrat
             scope: ['public'],
         });
     }
-    async validate(accessToken) {
+    async validate(accessToken, refreshToken) {
         console.log(accessToken);
+        console.log(refreshToken);
         let httpservice = new axios_1.HttpService;
         let header = { Authorization: `Bearer ${accessToken}` };
-        console.log(header);
         try {
-            const req = httpservice.get(process.env.BASE_URL + "/v2/me", {
-                headers: { Authorization: `Bearer ${accessToken}` },
-            });
+            const req = httpservice.get(process.env.BASE_URL + "/v2/me", { headers: header });
             console.log(req);
             const data = await (0, rxjs_1.lastValueFrom)(req);
             console.log(data);
-            return (data);
+            if (data.data['id']) {
+                return {
+                    id: data.data['id'],
+                    login: data.data['login'],
+                    isTwoFactor: true
+                };
+            }
+            throw new common_1.UnauthorizedException();
         }
         catch (error) {
-            console.log("FUCK");
-            console.log(error);
-            return (error);
+            throw new common_1.UnauthorizedException();
         }
     }
 };

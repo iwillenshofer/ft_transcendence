@@ -10,13 +10,24 @@ exports.AuthModule = void 0;
 const common_1 = require("@nestjs/common");
 const auth_controller_1 = require("./auth.controller");
 const auth_service_1 = require("./auth.service");
-const intra42_strategy_1 = require("./intra42.strategy");
+const jwt_1 = require("@nestjs/jwt");
+const users_module_1 = require("../users/users.module");
+const intra42_strategy_1 = require("./intra42/intra42.strategy");
+const jwt_strategy_1 = require("./jwt/jwt.strategy");
+const jwtrefresh_strategy_1 = require("./jwt/jwtrefresh.strategy");
 let AuthModule = class AuthModule {
 };
 AuthModule = __decorate([
     (0, common_1.Module)({
+        imports: [
+            users_module_1.UsersModule,
+            jwt_1.JwtModule.register({
+                secret: process.env.JWT_SECRET,
+                signOptions: { expiresIn: '60s' },
+            })
+        ],
         controllers: [auth_controller_1.AuthController],
-        providers: [auth_service_1.AuthService, intra42_strategy_1.Intra42Strategy]
+        providers: [auth_service_1.AuthService, intra42_strategy_1.Intra42Strategy, jwt_strategy_1.JwtStrategy, jwtrefresh_strategy_1.JwtRefreshStrategy]
     })
 ], AuthModule);
 exports.AuthModule = AuthModule;

@@ -20,8 +20,8 @@ services:
         container_name: backend
         expose: 
             - "3000"
-#        ports:            #this exposes the 3000 port to the host. maybe we should change to
-#            - "3000:3000" # expose 3000, which would expose it only docker-compose own network
+        ports:            #this exposes the 3000 port to the host. maybe we should change to
+            - "3000:3000" # expose 3000, which would expose it only docker-compose own network
         depends_on:
             - db
         restart: always
