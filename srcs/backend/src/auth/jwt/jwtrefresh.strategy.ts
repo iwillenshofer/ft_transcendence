@@ -20,7 +20,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
 		) {
 		super({
 			ignoreExpiration: true,
-			passReqToCallback:true,
+			passReqToCallback: true,
 			secretOrKey: process.env.JWT_SECRET,
 			jwtFromRequest: ExtractJwt.fromExtractors([(req: Request) => {
 				const data = req?.cookies['auth'];

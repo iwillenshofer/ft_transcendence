@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { JwtGuard } from './jwt/jwt.guard';
 import { JwtRefreshGuard } from './jwt/jwtrefresh.guard';
 import { Intra42Guard } from './intra42/intra42.guard'
+import { TfaGuard } from './tfa/tfa.guard';
 import { UsersService } from 'src/users/users.service';
 
 @Controller("auth")
@@ -96,7 +97,7 @@ export class AuthController {
 	/*
 	** sample of endpoint
 	*/
-	@UseGuards(JwtGuard)
+	@UseGuards(TfaGuard)
 	@Get('data')
 	async getdata(@Request() req) {
 		return JSON.stringify({msg:"success"});
@@ -114,7 +115,7 @@ export class AuthController {
 		return await this.authService.generateQrCode(req.user.userId, res);
 	}
 
-	@UseGuards(JwtGuard)
+	@UseGuards(TfaGuard)
 	@Post('tfa_disable')
 	async activate_tfa(@Request() req) {
 		console.log('tfa qrcode' + JSON.stringify(req.user	));

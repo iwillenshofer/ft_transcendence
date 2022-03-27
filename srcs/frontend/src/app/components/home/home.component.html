@@ -1,6 +1,7 @@
 <p>home works!</p>
 <hr/>
 {{ 'hello' | json }}
+{{ data | json }}
 
 <app-button name="Logout" (btnClick)="logOut()"></app-button>
 <app-button *ngIf="!tfa_enabled" name="Enable TFA" (btnClick)="enableTfa()"></app-button>

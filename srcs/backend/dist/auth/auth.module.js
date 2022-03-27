@@ -15,6 +15,7 @@ const users_module_1 = require("../users/users.module");
 const intra42_strategy_1 = require("./intra42/intra42.strategy");
 const jwt_strategy_1 = require("./jwt/jwt.strategy");
 const jwtrefresh_strategy_1 = require("./jwt/jwtrefresh.strategy");
+const tfa_strategy_1 = require("./tfa/tfa.strategy");
 let AuthModule = class AuthModule {
 };
 AuthModule = __decorate([
@@ -27,7 +28,7 @@ AuthModule = __decorate([
             })
         ],
         controllers: [auth_controller_1.AuthController],
-        providers: [auth_service_1.AuthService, intra42_strategy_1.Intra42Strategy, jwt_strategy_1.JwtStrategy, jwtrefresh_strategy_1.JwtRefreshStrategy]
+        providers: [auth_service_1.AuthService, intra42_strategy_1.Intra42Strategy, jwt_strategy_1.JwtStrategy, jwtrefresh_strategy_1.JwtRefreshStrategy, tfa_strategy_1.TfaStrategy]
     })
 ], AuthModule);
 exports.AuthModule = AuthModule;

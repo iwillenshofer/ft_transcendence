@@ -13,7 +13,7 @@ export class HomeComponent implements OnInit {
 
 	currentUser: User | null = null;
   tfa_enabled: boolean | undefined = false;
-
+  data: any = null;
 	constructor(
     private authService: AuthService ,
     private http: HttpClient,
@@ -22,6 +22,9 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
 	  this.tfa_enabled = this.authService.userSubject.value?.tfa_enabled;
+    this.http.get('/backend/auth/data',{ withCredentials: true }).subscribe((result) => {
+      this.data = result;
+    });
   }
 
   enableTfa()

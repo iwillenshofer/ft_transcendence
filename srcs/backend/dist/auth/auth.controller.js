@@ -18,6 +18,7 @@ const auth_service_1 = require("./auth.service");
 const jwt_guard_1 = require("./jwt/jwt.guard");
 const jwtrefresh_guard_1 = require("./jwt/jwtrefresh.guard");
 const intra42_guard_1 = require("./intra42/intra42.guard");
+const tfa_guard_1 = require("./tfa/tfa.guard");
 const users_service_1 = require("../users/users.service");
 let AuthController = class AuthController {
     constructor(authService, userService) {
@@ -138,7 +139,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "refreshToken", null);
 __decorate([
-    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
+    (0, common_1.UseGuards)(tfa_guard_1.TfaGuard),
     (0, common_1.Get)('data'),
     __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
@@ -156,7 +157,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "get_qrcode", null);
 __decorate([
-    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
+    (0, common_1.UseGuards)(tfa_guard_1.TfaGuard),
     (0, common_1.Post)('tfa_disable'),
     __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),

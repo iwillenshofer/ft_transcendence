@@ -6,6 +6,7 @@ import { UsersModule } from 'src/users/users.module';
 import { Intra42Strategy } from './intra42/intra42.strategy';
 import { JwtStrategy } from './jwt/jwt.strategy';
 import { JwtRefreshStrategy } from './jwt/jwtrefresh.strategy';
+import { TfaStrategy } from './tfa/tfa.strategy';
 
 @Module({
 	imports: [
@@ -16,7 +17,7 @@ import { JwtRefreshStrategy } from './jwt/jwtrefresh.strategy';
 		})
 	],
 	controllers: [AuthController],
-	providers: [AuthService, Intra42Strategy, JwtStrategy, JwtRefreshStrategy]
+	providers: [AuthService, Intra42Strategy, JwtStrategy, JwtRefreshStrategy, TfaStrategy]
 })
 
 export class AuthModule {}

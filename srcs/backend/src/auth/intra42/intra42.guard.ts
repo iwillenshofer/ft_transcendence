@@ -1,6 +1,5 @@
-import { CanActivate, ExecutionContext, Injectable, HttpException } from '@nestjs/common';
+import { Injectable, HttpException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Observable } from 'rxjs';
 
 @Injectable()
 export class Intra42Guard extends AuthGuard('intra42') {
