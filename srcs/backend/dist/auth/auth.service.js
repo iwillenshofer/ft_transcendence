@@ -13,6 +13,8 @@ exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const users_service_1 = require("../users/users.service");
+const otplib_1 = require("otplib");
+const qrcode_1 = require("qrcode");
 let AuthService = class AuthService {
     constructor(jwtService, userService) {
         this.jwtService = jwtService;
@@ -31,11 +33,49 @@ let AuthService = class AuthService {
     }
     async getAccessToken(user) {
         const payload = { username: user.nickname, sub: user.id };
-        return (this.jwtService.sign(payload, { secret: process.env.JWT_SECRET, expiresIn: 10 }));
+        return (this.jwtService.sign(payload, { secret: process.env.JWT_SECRET, expiresIn: 100 }));
     }
     async getRefreshToken(user) {
         const payload = { username: user.nickname, sub: user.id };
-        return (this.jwtService.sign(payload, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: 100 }));
+        return (this.jwtService.sign(payload, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: 1000 }));
+    }
+    async disableTwoFactor(user_id) {
+        const user_info = await this.userService.getUser(user_id);
+        await this.userService.enable2FASecret(user_id, false);
+        return true;
+    }
+    async disableTwoFactor2(user_id, code) {
+        const user_info = await this.userService.getUser(user_id);
+        if (otplib_1.authenticator.verify({ token: code, secret: user_info.tfa_code })) {
+            if (user_info.tfa_enabled) {
+                await this.userService.enable2FASecret(user_id, false);
+                await this.userService.set2FASecret(user_id, '');
+            }
+            return true;
+        }
+        return false;
+    }
+    async verifyTwoFactor(user_id, code) {
+        const user_info = await this.userService.getUser(user_id);
+        console.log("tfa user" + JSON.stringify(user_id));
+        console.log("code: " + JSON.stringify(code) + ", tfa:" + user_info.tfa_code);
+        if (otplib_1.authenticator.verify({ token: code, secret: user_info.tfa_code })) {
+            if (!user_info.tfa_enabled)
+                await this.userService.enable2FASecret(user_id);
+            return true;
+        }
+        return false;
+    }
+    async generateQrCode(user_id, stream) {
+        console.log("qrcode user " + user_id);
+        let user_info = await this.userService.getUser(user_id);
+        if (!user_info.tfa_code) {
+            const secret = otplib_1.authenticator.generateSecret();
+            await this.userService.set2FASecret(user_id, secret);
+            user_info.tfa_code = secret;
+        }
+        const otp_url = otplib_1.authenticator.keyuri(String(user_id), 'ft_transcendence', user_info.tfa_code);
+        return (0, qrcode_1.toFileStream)(stream, otp_url);
     }
 };
 AuthService = __decorate([

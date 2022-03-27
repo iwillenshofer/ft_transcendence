@@ -9,6 +9,9 @@ export class User {
 	nickname: string;
 	fullname: string;
 	refreshtoken: string;
+	tfa_enabled: boolean;
+	tfa_code: string;
+	tfa_fulfilled?: boolean
 }
 
 @Injectable()
@@ -18,13 +21,17 @@ export class UsersService {
 			id: 1,
 			nickname: 'john',
 			fullname: '',
-			refreshtoken: ''
+			refreshtoken: '',
+			tfa_enabled: false,
+			tfa_code: '',
 		},
 		{
 			id: 2,
 			nickname: 'john2',
 			fullname: '',
-			refreshtoken: ''
+			refreshtoken: '',
+			tfa_enabled: false,
+			tfa_code: '',
 		}
 	]
 
@@ -37,7 +44,9 @@ export class UsersService {
 			id: intra_id,
 			nickname: login,
 			fullname: displayname,
-			refreshtoken: ''
+			tfa_enabled: false,
+			refreshtoken: '',
+			tfa_code: '',
 		}
 		this.users.push(user);
 		return this.users.find(user => user.id == intra_id)
@@ -45,9 +54,26 @@ export class UsersService {
 
 	async updateRefreshToken(id: number, token: string): Promise<void> {
 		let user = this.users.findIndex(user => user.id == id);
-		console.log('finding id:' + id)
-		console.log(user);
-
 		this.users[user].refreshtoken = token;
+	}
+
+	async enable2FASecret(id: number, enable: boolean = true): Promise<void> {
+		let user = this.users.findIndex(user => user.id == id);
+		this.users[user].tfa_enabled = enable;
+	}
+
+	async set2FASecret(id: number, secret: string): Promise<void> {
+		let user = this.users.findIndex(user => user.id == id);
+		this.users[user].tfa_code = secret;
+	}
+
+	async disable2FASecret(id: number, secret: string): Promise<void> {
+		let user = this.users.findIndex(user => user.id == id);
+		this.users[user].tfa_enabled = false;
+	}
+
+	async getTfaEnabled(id: number): Promise<boolean> {
+		let user = await this.getUser(id);
+		return (user.tfa_enabled);
 	}
 }

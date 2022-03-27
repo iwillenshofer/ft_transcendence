@@ -12,4 +12,7 @@ export declare class AuthController {
     }>;
     refreshToken(res: any, req: any): Promise<void>;
     getdata(req: any): Promise<string>;
+    get_qrcode(res: Response, req: any): Promise<any>;
+    activate_tfa(req: any): Promise<boolean>;
+    verify_tfa(body: any, req: any, res: any): Promise<any>;
 }

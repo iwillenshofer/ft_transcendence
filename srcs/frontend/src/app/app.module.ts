@@ -10,6 +10,9 @@ import { AuthModule } from './auth/auth.module';
 import { HomeComponent } from './components/home/home.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './auth/auth.interceptor';
+import { TwofactorComponent } from './components/login/twofactor/twofactor.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { AuthguardService } from './auth/guards/authguard.service';
 
 
 @NgModule({
@@ -19,17 +22,22 @@ import { AuthInterceptor } from './auth/auth.interceptor';
     LoginCallbackComponent,
     ButtonComponent,
     HomeComponent,
+    TwofactorComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-	AuthModule.forRoot()
+    ReactiveFormsModule,
+	  AuthModule.forRoot()
   ],
-  providers: [{
-	  provide: HTTP_INTERCEPTORS,
-	  useClass: AuthInterceptor,
-	  multi: true,
-  }],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+    },
+    AuthguardService,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -11,11 +11,7 @@ import { AuthService } from 'src/app/auth/auth.service';
 
 
 export class LoginpageComponent implements OnInit {
-	
-	private title: string = 'auth';
-	private intervalId: any = null;
-	private popup: Window | null = null;
-	
+		
 	constructor(private authservice: AuthService) { }
 	
 	ngOnInit(): void {
@@ -23,6 +19,6 @@ export class LoginpageComponent implements OnInit {
 
 	initLogin()
 	{
-		this.authservice.initLoginPopup();
+		this.authservice.initLogin();
 	}
 }

@@ -26,7 +26,7 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         });
     }
     async validate(payload) {
-        if (!payload)
+        if (!payload || !payload.sub)
             throw new common_1.UnauthorizedException;
         console.log(payload.username);
         return { userId: payload.sub, username: payload.username };

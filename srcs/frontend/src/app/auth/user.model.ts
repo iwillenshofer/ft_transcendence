@@ -2,11 +2,15 @@ export class User {
 	id: number;
 	nickname: string;
 	fullname: string;
+	tfa_enabled: boolean;
+	tfa_fulfilled: boolean;
 
-	constructor(id: number, nickname: string, fullname: string) {
+	constructor(id: number, nickname: string, fullname: string, tfa_enabled: boolean = false, tfa_fulfilled: boolean = false) {
 		this.id = id;
 		this.nickname = nickname;
 		this.fullname = fullname;
+		this.tfa_enabled = tfa_enabled;
+		this.tfa_fulfilled = tfa_fulfilled;
 	}
 }
 

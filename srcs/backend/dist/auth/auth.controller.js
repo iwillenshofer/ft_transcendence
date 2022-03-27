@@ -33,20 +33,25 @@ let AuthController = class AuthController {
             console.log('user:' + JSON.stringify(req.user));
             const token = await this.authService.getAccessToken(req.user);
             const refreshtoken = await this.authService.getRefreshToken(req.user);
-            const auth_cookie = { token: token, refreshtoken: refreshtoken };
+            const tfa_fulfilled = !(await this.userService.getTfaEnabled(req.user.id));
+            const auth_cookie = { token: token, refreshtoken: refreshtoken, tfa_fulfilled: tfa_fulfilled };
             res.cookie('auth', auth_cookie, { httpOnly: true });
             console.log("User Json: " + JSON.stringify(req.user));
-            this.userService.updateRefreshToken(req.user.id, refreshtoken);
+            await this.userService.updateRefreshToken(req.user.id, refreshtoken);
             res.status(200).redirect('/login/callback');
         }
         else
             res.sendStatus(401);
     }
     async profile(req) {
+        var _a, _b;
         console.log(JSON.stringify(req.user));
         console.log('user-list: ' + JSON.stringify(this.userService.users));
         console.log("finding id: " + req.user.userId);
+        console.log("profile-cookie" + JSON.stringify((_a = req.cookies['auth']) === null || _a === void 0 ? void 0 : _a.tfa_fulfilled));
         let user = await this.userService.getUser(req.user.userId);
+        const tfa_fulfilled = (!(user.tfa_enabled) || ((_b = req.cookies['auth']) === null || _b === void 0 ? void 0 : _b.tfa_fulfilled));
+        user.tfa_fulfilled = tfa_fulfilled;
         console.log("user: " + JSON.stringify(user));
         return (JSON.stringify(user));
     }
@@ -55,16 +60,40 @@ let AuthController = class AuthController {
         return { msg: "success" };
     }
     async refreshToken(res, req) {
+        var _a;
         console.log("User Json: " + JSON.stringify(req.user));
         const token = await this.authService.getAccessToken(req.user);
         const refreshtoken = await this.authService.getRefreshToken(req.user);
-        const auth_cookie = { token: token, refreshtoken: refreshtoken };
+        const tfa_fulfilled = (_a = req.cookies['auth']) === null || _a === void 0 ? void 0 : _a.tfa_fulfilled;
+        const auth_cookie = { token: token, refreshtoken: refreshtoken, tfa_fulfilled: tfa_fulfilled };
         await this.userService.updateRefreshToken(req.user.userId, refreshtoken);
         res.clearCookie('auth', { httpOnly: true });
         res.cookie('auth', auth_cookie, { httpOnly: true }).send();
     }
     async getdata(req) {
         return JSON.stringify({ msg: "success" });
+    }
+    async get_qrcode(res, req) {
+        console.log('tfa qrcode' + JSON.stringify(req.user));
+        return await this.authService.generateQrCode(req.user.userId, res);
+    }
+    async activate_tfa(req) {
+        console.log('tfa qrcode' + JSON.stringify(req.user));
+        return await this.authService.disableTwoFactor(req.user.userId);
+    }
+    async verify_tfa(body, req, res) {
+        var _a, _b;
+        console.log('tfa verify' + JSON.stringify(req.user));
+        console.log('tfa code' + JSON.stringify(body.code));
+        const verified = await this.authService.verifyTwoFactor(req.user.userId, body.code);
+        console.log("verified " + verified);
+        if (verified) {
+            const auth_cookie = { token: (_a = req.cookies['auth']) === null || _a === void 0 ? void 0 : _a.token, refreshtoken: (_b = req.cookies['auth']) === null || _b === void 0 ? void 0 : _b.refreshtoken, tfa_fulfilled: true };
+            res.clearCookie('auth', { httpOnly: true });
+            res.cookie('auth', auth_cookie, { httpOnly: true });
+        }
+        res.send(JSON.stringify({ msg: verified }));
+        return;
     }
 };
 __decorate([
@@ -116,6 +145,34 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "getdata", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
+    (0, common_1.Get)('tfa_qrcode'),
+    (0, common_1.Header)('content-type', 'image/png'),
+    __param(0, (0, common_1.Res)()),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "get_qrcode", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
+    (0, common_1.Post)('tfa_disable'),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "activate_tfa", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
+    (0, common_1.Post)('tfa_verify'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
+    __param(2, (0, common_1.Response)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "verify_tfa", null);
 AuthController = __decorate([
     (0, common_1.Controller)("auth"),
     __metadata("design:paramtypes", [auth_service_1.AuthService,
