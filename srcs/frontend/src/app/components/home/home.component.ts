@@ -27,6 +27,12 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  async getData() {
+    this.http.get('/backend/auth/data',{ withCredentials: true }).subscribe((result) => {
+      this.data = result;
+    });
+  }
+
   enableTfa()
   {
     this.router.navigate(['/enable2fa']);

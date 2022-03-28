@@ -3,6 +3,7 @@
 {{ 'hello' | json }}
 {{ data | json }}
 
+<app-button name="getData" (btnClick)="getData()"></app-button>
 <app-button name="Logout" (btnClick)="logOut()"></app-button>
 <app-button *ngIf="!tfa_enabled" name="Enable TFA" (btnClick)="enableTfa()"></app-button>
 <app-button *ngIf="tfa_enabled" name="Disable TFA" (btnClick)="disableTfa()"></app-button>

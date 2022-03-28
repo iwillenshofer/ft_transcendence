@@ -29,12 +29,12 @@ export class AuthService {
 
 	async getAccessToken(user: any) {
 		const payload = { username: user.nickname, sub: user.id };
-		return (this.jwtService.sign(payload, {secret: process.env.JWT_SECRET, expiresIn: 100 }));
+		return (this.jwtService.sign(payload, {secret: process.env.JWT_SECRET, expiresIn: 60 * 15 }));
 	}
 
 	async getRefreshToken(user: any) {
 		const payload = { username: user.nickname, sub: user.id };
-		return (this.jwtService.sign(payload, {secret: process.env.JWT_REFRESH_SECRET, expiresIn: 1000 }));
+		return (this.jwtService.sign(payload, {secret: process.env.JWT_REFRESH_SECRET, expiresIn: 60 * 60 * 24 * 7 }));
 	}
 
 	/*

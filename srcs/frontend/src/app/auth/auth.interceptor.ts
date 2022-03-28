@@ -29,6 +29,7 @@ export class AuthInterceptor implements HttpInterceptor {
 	}
 
 	private handleError(req: HttpRequest<any>, next: HttpHandler, originalError: any) {
+		console.log('handling 401 error');
 		return this.authService.refreshToken().pipe(
 			switchMap((data) => {
 				console.log(data);

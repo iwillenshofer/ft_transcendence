@@ -60,9 +60,9 @@ export class AuthController {
 	async profile(@Request() req){
 		console.log(JSON.stringify(req.user));
 		console.log('user-list: ' + JSON.stringify(this.userService.users));
-		console.log("finding id: " + req.user.userId)
+		console.log("finding id: " + req.user.id)
 		console.log("profile-cookie" + JSON.stringify(req.cookies['auth']?.tfa_fulfilled));
-		let user = await this.userService.getUser(req.user.userId);
+		let user = await this.userService.getUser(req.user.id);
 		const tfa_fulfilled = (!(user.tfa_enabled) || req.cookies['auth']?.tfa_fulfilled);
 		user.tfa_fulfilled = tfa_fulfilled;
 		console.log("user: " + JSON.stringify(user));
@@ -86,12 +86,11 @@ export class AuthController {
 	async refreshToken(@Response() res, @Request() req) {
 		console.log("User Json: " + JSON.stringify(req.user));
 		const token = await this.authService.getAccessToken(req.user);
-		const refreshtoken = await this.authService.getRefreshToken(req.user);
+		const refreshtoken = req.cookies['auth']?.refreshtoken;
 		const tfa_fulfilled: boolean = req.cookies['auth']?.tfa_fulfilled;
 		const auth_cookie = {token: token, refreshtoken: refreshtoken, tfa_fulfilled: tfa_fulfilled};
-		await this.userService.updateRefreshToken(req.user.userId, refreshtoken);
 		res.clearCookie('auth', {httpOnly: true});
-		res.cookie('auth', auth_cookie, { httpOnly: true }).send();
+		res.cookie('auth', auth_cookie, { httpOnly: true }).send(JSON.stringify({msg:"success"}));
 	}
 
 	/*
@@ -112,14 +111,14 @@ export class AuthController {
 	@Header('content-type', 'image/png')
 	async get_qrcode(@Res() res: Response, @Request() req) {
 		console.log('tfa qrcode' + JSON.stringify(req.user	));
-		return await this.authService.generateQrCode(req.user.userId, res);
+		return await this.authService.generateQrCode(req.user.id, res);
 	}
 
 	@UseGuards(TfaGuard)
 	@Post('tfa_disable')
 	async activate_tfa(@Request() req) {
 		console.log('tfa qrcode' + JSON.stringify(req.user	));
-		return await this.authService.disableTwoFactor(req.user.userId);
+		return await this.authService.disableTwoFactor(req.user.id);
 	}
 
 	@UseGuards(JwtGuard)
@@ -127,7 +126,7 @@ export class AuthController {
 	async verify_tfa(@Body() body: any, @Request() req, @Response() res): Promise<any> {
 		console.log('tfa verify' + JSON.stringify(req.user));
 		console.log('tfa code' + JSON.stringify(body.code));
-		const verified: boolean = await this.authService.verifyTwoFactor(req.user.userId, body.code);
+		const verified: boolean = await this.authService.verifyTwoFactor(req.user.id, body.code);
 		console.log("verified " + verified);
 		if (verified)
 		{

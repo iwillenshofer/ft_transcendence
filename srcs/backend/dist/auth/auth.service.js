@@ -33,11 +33,11 @@ let AuthService = class AuthService {
     }
     async getAccessToken(user) {
         const payload = { username: user.nickname, sub: user.id };
-        return (this.jwtService.sign(payload, { secret: process.env.JWT_SECRET, expiresIn: 100 }));
+        return (this.jwtService.sign(payload, { secret: process.env.JWT_SECRET, expiresIn: 60 * 15 }));
     }
     async getRefreshToken(user) {
         const payload = { username: user.nickname, sub: user.id };
-        return (this.jwtService.sign(payload, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: 1000 }));
+        return (this.jwtService.sign(payload, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: 60 * 60 * 24 * 7 }));
     }
     async disableTwoFactor(user_id) {
         const user_info = await this.userService.getUser(user_id);

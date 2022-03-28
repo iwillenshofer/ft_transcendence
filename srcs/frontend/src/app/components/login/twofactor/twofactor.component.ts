@@ -29,8 +29,10 @@ export class TwofactorComponent {
   
   qrCode: BehaviorSubject<SafeUrl | null>;
   codeControl = new FormControl();
+
   ngOnInit(): void {
-		this.getCode();
+    if (this.router.url == '/enable2fa')
+		  this.getCode();
 	  }
 
 	async submitCode() {

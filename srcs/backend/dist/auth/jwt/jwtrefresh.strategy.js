@@ -48,7 +48,7 @@ let JwtRefreshStrategy = class JwtRefreshStrategy extends (0, passport_1.Passpor
         console.log(user);
         if (!user || user.id != payload.sub || user.refreshtoken != data.refreshtoken)
             throw new common_1.UnauthorizedException;
-        return { userId: payload.sub, username: payload.username };
+        return { id: payload.sub, nickname: payload.username };
     }
 };
 JwtRefreshStrategy = __decorate([

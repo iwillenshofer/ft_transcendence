@@ -8,8 +8,8 @@ export declare class JwtRefreshStrategy extends JwtRefreshStrategy_base {
     private jwtService;
     constructor(userService: UsersService, jwtService: JwtService);
     validate(req: Request, payload: any): Promise<{
-        userId: any;
-        username: any;
+        id: any;
+        nickname: any;
     }>;
 }
 export {};
