@@ -25,18 +25,16 @@ let AuthService = class AuthService {
         if (!data || !(data === null || data === void 0 ? void 0 : data.id) || !(data === null || data === void 0 ? void 0 : data.login) || !(data === null || data === void 0 ? void 0 : data.displayname))
             return (null);
         user = await this.userService.getUser(data.id);
-        if (user) {
-            return (user);
-        }
-        else
-            return (await this.userService.createUser(data.id, data.login, data.displayname));
+        if (!user)
+            user = await this.userService.createUser(data.id, data.login, data.displayname);
+        return (user);
     }
     async getAccessToken(user) {
-        const payload = { username: user.nickname, sub: user.id };
+        const payload = { username: user.username, id: user.id };
         return (this.jwtService.sign(payload, { secret: process.env.JWT_SECRET, expiresIn: 60 * 15 }));
     }
     async getRefreshToken(user) {
-        const payload = { username: user.nickname, sub: user.id };
+        const payload = { username: user.username, id: user.id };
         return (this.jwtService.sign(payload, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: 60 * 60 * 24 * 7 }));
     }
     async disableTwoFactor(user_id) {

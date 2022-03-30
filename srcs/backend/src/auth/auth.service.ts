@@ -18,22 +18,18 @@ export class AuthService {
 		if (!data || !(data?.id) || !(data?.login) || !(data?.displayname))
 			return (null);
 		user = await this.userService.getUser(data.id);
-		if (user)
-		{
-			
-			return (user);
-		}
-		else
-			return (await this.userService.createUser(data.id, data.login, data.displayname));
+		if (!user)
+			user =  await this.userService.createUser(data.id, data.login, data.displayname);
+		return (user);
 	}
 
 	async getAccessToken(user: any) {
-		const payload = { username: user.nickname, sub: user.id };
+		const payload = { username: user.username, id: user.id };
 		return (this.jwtService.sign(payload, {secret: process.env.JWT_SECRET, expiresIn: 60 * 15 }));
 	}
 
 	async getRefreshToken(user: any) {
-		const payload = { username: user.nickname, sub: user.id };
+		const payload = { username: user.username, id: user.id };
 		return (this.jwtService.sign(payload, {secret: process.env.JWT_REFRESH_SECRET, expiresIn: 60 * 60 * 24 * 7 }));
 	}
 

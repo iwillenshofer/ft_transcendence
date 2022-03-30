@@ -16,7 +16,7 @@ let UsersService = class UsersService {
         this.users = [
             {
                 id: 1,
-                nickname: 'john',
+                username: 'john',
                 fullname: '',
                 refreshtoken: '',
                 tfa_enabled: false,
@@ -24,7 +24,7 @@ let UsersService = class UsersService {
             },
             {
                 id: 2,
-                nickname: 'john2',
+                username: 'john2',
                 fullname: '',
                 refreshtoken: '',
                 tfa_enabled: false,
@@ -38,7 +38,7 @@ let UsersService = class UsersService {
     async createUser(intra_id, login, displayname) {
         const user = {
             id: intra_id,
-            nickname: login,
+            username: login,
             fullname: displayname,
             tfa_enabled: false,
             refreshtoken: '',

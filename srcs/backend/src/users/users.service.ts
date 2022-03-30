@@ -6,7 +6,7 @@ import { Injectable } from '@nestjs/common';
 
 export class User {	
 	id: number;
-	nickname: string;
+	username: string;
 	fullname: string;
 	refreshtoken: string;
 	tfa_enabled: boolean;
@@ -19,7 +19,7 @@ export class UsersService {
 	public users: User[] = [
 		{
 			id: 1,
-			nickname: 'john',
+			username: 'john',
 			fullname: '',
 			refreshtoken: '',
 			tfa_enabled: false,
@@ -27,7 +27,7 @@ export class UsersService {
 		},
 		{
 			id: 2,
-			nickname: 'john2',
+			username: 'john2',
 			fullname: '',
 			refreshtoken: '',
 			tfa_enabled: false,
@@ -42,7 +42,7 @@ export class UsersService {
 	async createUser(intra_id: number, login: string, displayname: string): Promise<User |  undefined> {
 		const user: User = {
 			id: intra_id,
-			nickname: login,
+			username: login,
 			fullname: displayname,
 			tfa_enabled: false,
 			refreshtoken: '',

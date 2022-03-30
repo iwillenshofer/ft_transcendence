@@ -23,7 +23,6 @@ let TfaStrategy = class TfaStrategy extends (0, passport_1.PassportStrategy)(pas
             secretOrKey: process.env.JWT_SECRET,
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromExtractors([(req) => {
                     const data = req === null || req === void 0 ? void 0 : req.cookies['auth'];
-                    console.log('receivedcookie: ' + (data === null || data === void 0 ? void 0 : data.token));
                     return (data === null || data === void 0 ? void 0 : data.token);
                 }]),
         });
@@ -32,13 +31,9 @@ let TfaStrategy = class TfaStrategy extends (0, passport_1.PassportStrategy)(pas
     }
     async validate(req, payload) {
         var _a;
-        console.log('we are failing validation');
-        console.log('cookie: ' + JSON.stringify(req === null || req === void 0 ? void 0 : req.cookies['auth']));
-        console.log('payload: ' + JSON.stringify(payload));
-        if (!payload || !payload.sub || (!((_a = req === null || req === void 0 ? void 0 : req.cookies['auth']) === null || _a === void 0 ? void 0 : _a.tfa_fulfilled)))
+        if (!payload || !payload.id || !((_a = req === null || req === void 0 ? void 0 : req.cookies['auth']) === null || _a === void 0 ? void 0 : _a.tfa_fulfilled))
             throw new common_1.UnauthorizedException;
-        console.log(payload.username);
-        return { id: payload.sub, nickname: payload.username };
+        return { id: payload.id, username: payload.username };
     }
 };
 TfaStrategy = __decorate([

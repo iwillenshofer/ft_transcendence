@@ -1,6 +1,6 @@
 export declare class User {
     id: number;
-    nickname: string;
+    username: string;
     fullname: string;
     refreshtoken: string;
     tfa_enabled: boolean;

@@ -44,11 +44,11 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
 		} catch(err) {
 			throw new UnauthorizedException;
 		}
-		user = await this.userService.getUser(payload.sub);
+		user = await this.userService.getUser(payload.id);
 		console.log(user);
-		if (!user || user.id != payload.sub || user.refreshtoken != data.refreshtoken)
+		if (!user || user.id != payload.id || user.refreshtoken != data.refreshtoken)
 			throw new UnauthorizedException;
-		return {id: payload.sub, nickname: payload.username};
+		return {id: payload.id, username: payload.username};
 	}
 }
 
