@@ -8,64 +8,63 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = exports.User = void 0;
 const common_1 = require("@nestjs/common");
-class User {
-}
-exports.User = User;
+const users_entity_1 = require("./users.entity");
+Object.defineProperty(exports, "User", { enumerable: true, get: function () { return users_entity_1.User; } });
+const app_datasource_1 = require("../app.datasource");
+const users_dto_1 = require("./users.dto");
 let UsersService = class UsersService {
-    constructor() {
-        this.users = [
-            {
-                id: 1,
-                username: 'john',
-                fullname: '',
-                refreshtoken: '',
-                tfa_enabled: false,
-                tfa_code: '',
-            },
-            {
-                id: 2,
-                username: 'john2',
-                fullname: '',
-                refreshtoken: '',
-                tfa_enabled: false,
-                tfa_code: '',
-            }
-        ];
-    }
     async getUser(intra_id) {
-        return this.users.find(user => user.id == intra_id);
+        console.log('we are here');
+        const results = await app_datasource_1.dataSource.getRepository(users_entity_1.User).findOneBy({
+            id: intra_id,
+        }).then((ret) => {
+            if (!ret)
+                return (null);
+            return (users_dto_1.UserDTO.fromEntity(ret));
+        });
+        return (results);
     }
     async createUser(intra_id, login, displayname) {
-        const user = {
+        const user = await app_datasource_1.dataSource.getRepository(users_entity_1.User).create({
             id: intra_id,
             username: login,
-            fullname: displayname,
-            tfa_enabled: false,
-            refreshtoken: '',
-            tfa_code: '',
-        };
-        this.users.push(user);
-        return this.users.find(user => user.id == intra_id);
+            fullname: displayname
+        });
+        const results = await app_datasource_1.dataSource.getRepository(users_entity_1.User).save(user)
+            .then((ret) => users_dto_1.UserDTO.fromEntity(ret));
+        return results;
     }
     async updateRefreshToken(id, token) {
-        let user = this.users.findIndex(user => user.id == id);
-        this.users[user].refreshtoken = token;
+        let user = await app_datasource_1.dataSource.getRepository(users_entity_1.User).findOneBy({ id: id });
+        user.refreshtoken = token;
+        const results = await app_datasource_1.dataSource.getRepository(users_entity_1.User).save(user);
+        return;
     }
     async enable2FASecret(id, enable = true) {
-        let user = this.users.findIndex(user => user.id == id);
-        this.users[user].tfa_enabled = enable;
+        let user = await app_datasource_1.dataSource.getRepository(users_entity_1.User).findOneBy({ id: id });
+        user.tfa_enabled = enable;
+        const results = await app_datasource_1.dataSource.getRepository(users_entity_1.User).save(user);
+        return;
     }
     async set2FASecret(id, secret) {
-        let user = this.users.findIndex(user => user.id == id);
-        this.users[user].tfa_code = secret;
+        let user = await app_datasource_1.dataSource.getRepository(users_entity_1.User).findOneBy({ id: id });
+        user.tfa_code = secret;
+        const results = await app_datasource_1.dataSource.getRepository(users_entity_1.User).save(user);
+        return;
     }
     async disable2FASecret(id, secret) {
-        let user = this.users.findIndex(user => user.id == id);
-        this.users[user].tfa_enabled = false;
+        let user = await app_datasource_1.dataSource.getRepository(users_entity_1.User).findOneBy({ id: id });
+        user.tfa_enabled = false;
+        const results = await app_datasource_1.dataSource.getRepository(users_entity_1.User).save(user);
+        return;
     }
     async getTfaEnabled(id) {
-        let user = await this.getUser(id);
+        let user = await app_datasource_1.dataSource.getRepository(users_entity_1.User).findOneBy({ id: id });
         return (user.tfa_enabled);
+    }
+    async getTfaCode(id) {
+        let user = await app_datasource_1.dataSource.getRepository(users_entity_1.User).findOneBy({ id: id });
+        return (user.tfa_code);
     }
 };
 UsersService = __decorate([

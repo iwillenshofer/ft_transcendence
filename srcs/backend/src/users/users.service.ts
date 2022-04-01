@@ -1,79 +1,74 @@
 import { Injectable } from '@nestjs/common';
-
+import { User } from './users.entity';
+import { dataSource } from 'src/app.datasource';
+import { UserDTO } from './users.dto';
+export { User }
 /*
 ** This is basically a the Database... We will implement TypeORM.
 */
 
-export class User {	
-	id: number;
-	username: string;
-	fullname: string;
-	refreshtoken: string;
-	tfa_enabled: boolean;
-	tfa_code: string;
-	tfa_fulfilled?: boolean
-}
 
 @Injectable()
 export class UsersService {
-	public users: User[] = [
-		{
-			id: 1,
-			username: 'john',
-			fullname: '',
-			refreshtoken: '',
-			tfa_enabled: false,
-			tfa_code: '',
-		},
-		{
-			id: 2,
-			username: 'john2',
-			fullname: '',
-			refreshtoken: '',
-			tfa_enabled: false,
-			tfa_code: '',
-		}
-	]
 
-	async getUser(intra_id: number): Promise<User |  undefined> {
-		return this.users.find(user => user.id == intra_id)
+	async getUser(intra_id: number): Promise<UserDTO | null> {
+		console.log('we are here');
+		const results = await dataSource.getRepository(User).findOneBy({
+			id: intra_id,
+		}).then((ret) => {
+			if (!ret)
+				return (null);
+			return (UserDTO.fromEntity(ret));
+		});
+		return (results);
 	}
 
-	async createUser(intra_id: number, login: string, displayname: string): Promise<User |  undefined> {
-		const user: User = {
+	async createUser(intra_id: number, login: string, displayname: string): Promise<UserDTO> {
+		const user: User = await dataSource.getRepository(User).create({
 			id: intra_id,
 			username: login,
-			fullname: displayname,
-			tfa_enabled: false,
-			refreshtoken: '',
-			tfa_code: '',
-		}
-		this.users.push(user);
-		return this.users.find(user => user.id == intra_id)
+			fullname: displayname
+		});
+		const results = await dataSource.getRepository(User).save(user)
+			.then((ret) => UserDTO.fromEntity(ret));
+		return results;
 	}
 
 	async updateRefreshToken(id: number, token: string): Promise<void> {
-		let user = this.users.findIndex(user => user.id == id);
-		this.users[user].refreshtoken = token;
+		let user = await dataSource.getRepository(User).findOneBy({ id: id });
+		user.refreshtoken = token;
+		const results = await dataSource.getRepository(User).save(user);
+		return ;
 	}
 
 	async enable2FASecret(id: number, enable: boolean = true): Promise<void> {
-		let user = this.users.findIndex(user => user.id == id);
-		this.users[user].tfa_enabled = enable;
+		let user = await dataSource.getRepository(User).findOneBy({ id: id });
+		user.tfa_enabled = enable;
+		const results = await dataSource.getRepository(User).save(user);
+		return ;
 	}
 
 	async set2FASecret(id: number, secret: string): Promise<void> {
-		let user = this.users.findIndex(user => user.id == id);
-		this.users[user].tfa_code = secret;
+		let user = await dataSource.getRepository(User).findOneBy({ id: id });
+		user.tfa_code = secret;
+		const results = await dataSource.getRepository(User).save(user);
+		return ;
 	}
 
 	async disable2FASecret(id: number, secret: string): Promise<void> {
-		let user = this.users.findIndex(user => user.id == id);
-		this.users[user].tfa_enabled = false;
+		let user = await dataSource.getRepository(User).findOneBy({ id: id });
+		user.tfa_enabled = false;
+		const results = await dataSource.getRepository(User).save(user);
+		return ;
 	}
 
 	async getTfaEnabled(id: number): Promise<boolean> {
-		let user = await this.getUser(id);
+		let user = await dataSource.getRepository(User).findOneBy({ id: id });
 		return (user.tfa_enabled);
+	}
+
+	async getTfaCode(id: number): Promise<string> {
+		let user = await dataSource.getRepository(User).findOneBy({ id: id });
+		return (user.tfa_code);
 	}
 }

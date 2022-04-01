@@ -25,6 +25,7 @@ let AuthService = class AuthService {
         if (!data || !(data === null || data === void 0 ? void 0 : data.id) || !(data === null || data === void 0 ? void 0 : data.login) || !(data === null || data === void 0 ? void 0 : data.displayname))
             return (null);
         user = await this.userService.getUser(data.id);
+        console.log(user);
         if (!user)
             user = await this.userService.createUser(data.id, data.login, data.displayname);
         return (user);
@@ -38,14 +39,13 @@ let AuthService = class AuthService {
         return (this.jwtService.sign(payload, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: 60 * 60 * 24 * 7 }));
     }
     async disableTwoFactor(user_id) {
-        const user_info = await this.userService.getUser(user_id);
         await this.userService.enable2FASecret(user_id, false);
         return true;
     }
     async disableTwoFactor2(user_id, code) {
         const user_info = await this.userService.getUser(user_id);
-        if (otplib_1.authenticator.verify({ token: code, secret: user_info.tfa_code })) {
-            if (user_info.tfa_enabled) {
+        if (otplib_1.authenticator.verify({ token: code, secret: await this.userService.getTfaCode(user_id) })) {
+            if (this.userService.getTfaEnabled(user_id)) {
                 await this.userService.enable2FASecret(user_id, false);
                 await this.userService.set2FASecret(user_id, '');
             }
@@ -56,9 +56,8 @@ let AuthService = class AuthService {
     async verifyTwoFactor(user_id, code) {
         const user_info = await this.userService.getUser(user_id);
         console.log("tfa user" + JSON.stringify(user_id));
-        console.log("code: " + JSON.stringify(code) + ", tfa:" + user_info.tfa_code);
-        if (otplib_1.authenticator.verify({ token: code, secret: user_info.tfa_code })) {
-            if (!user_info.tfa_enabled)
+        if (otplib_1.authenticator.verify({ token: code, secret: await this.userService.getTfaCode(user_id) })) {
+            if (this.userService.getTfaEnabled(user_id))
                 await this.userService.enable2FASecret(user_id);
             return true;
         }
@@ -67,12 +66,11 @@ let AuthService = class AuthService {
     async generateQrCode(user_id, stream) {
         console.log("qrcode user " + user_id);
         let user_info = await this.userService.getUser(user_id);
-        if (!user_info.tfa_code) {
+        if (this.userService.getTfaEnabled(user_id)) {
             const secret = otplib_1.authenticator.generateSecret();
             await this.userService.set2FASecret(user_id, secret);
-            user_info.tfa_code = secret;
         }
-        const otp_url = otplib_1.authenticator.keyuri(String(user_id), 'ft_transcendence', user_info.tfa_code);
+        const otp_url = otplib_1.authenticator.keyuri(String(user_id), 'ft_transcendence', await this.userService.getTfaCode(user_id));
         return (0, qrcode_1.toFileStream)(stream, otp_url);
     }
 };

@@ -47,11 +47,10 @@ let AuthController = class AuthController {
     async profile(req) {
         var _a, _b;
         console.log(JSON.stringify(req.user));
-        console.log('user-list: ' + JSON.stringify(this.userService.users));
         console.log("finding id: " + req.user.id);
         console.log("profile-cookie" + JSON.stringify((_a = req.cookies['auth']) === null || _a === void 0 ? void 0 : _a.tfa_fulfilled));
         let user = await this.userService.getUser(req.user.id);
-        const tfa_fulfilled = (!(user.tfa_enabled) || ((_b = req.cookies['auth']) === null || _b === void 0 ? void 0 : _b.tfa_fulfilled));
+        const tfa_fulfilled = (!(this.userService.getTfaEnabled(req.user.id)) || ((_b = req.cookies['auth']) === null || _b === void 0 ? void 0 : _b.tfa_fulfilled));
         user.tfa_fulfilled = tfa_fulfilled;
         console.log("user: " + JSON.stringify(user));
         return (JSON.stringify(user));

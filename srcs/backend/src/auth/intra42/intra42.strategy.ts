@@ -4,6 +4,7 @@ import { Strategy } from "passport-oauth2";
 import { HttpService } from "@nestjs/axios";
 import { lastValueFrom } from 'rxjs';
 import { AuthService } from "../auth.service";
+import { UserDTO } from "src/users/users.dto";
 
 /*
 **
@@ -28,20 +29,19 @@ export class Intra42Strategy extends PassportStrategy(Strategy, "intra42")
 	async validate(accessToken: string, refreshToken: string): Promise<any> {
 		console.log(accessToken);
 		console.log(refreshToken);
-		let user: any = null;
 		let httpservice = new HttpService;
 		let header = { Authorization: `Bearer ${ accessToken }` }
-		try {
-			const req = await httpservice.get(process.env.BASE_URL + "/v2/me", {headers: header});
-			console.log(req);
-			const data = await lastValueFrom(req);
-			console.log(data);
-			user = await this.authService.getOrCreateUser(data.data);
-			if (!user)
-				throw new UnauthorizedException();
-		} catch (error) {
+//		try {
+		const req = await httpservice.get(process.env.BASE_URL + "/v2/me", {headers: header});
+		const data = await lastValueFrom(req);
+		console.log(data);
+		const user: UserDTO | null = await this.authService.getOrCreateUser(data.data);
+		console.log(user);
+		if (!user)
 			throw new UnauthorizedException();
-		}
+//		} catch (error) {
+//			throw new UnauthorizedException();
+//		}
 		return (user);
 	}
 }
