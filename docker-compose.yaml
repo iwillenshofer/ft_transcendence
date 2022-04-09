@@ -13,8 +13,8 @@ services:
             - variables.env
         volumes:
             - "./srcs/frontend:/frontend"
-        networks:
-            - pong-net
+
+
 
     backend:
         build: ./srcs/backend
@@ -31,8 +31,8 @@ services:
             - variables.env
         volumes:
             - "./srcs/backend:/backend"
-        networks:
-            - pong-net  
+
+
     db:
         image: postgres:13.0
         container_name: postgres
@@ -45,9 +45,3 @@ services:
         env_file:
             - variables.env
         restart: always
-        networks:
-            - pong-net
-
-networks:
-    pong-net:
-        driver: bridge

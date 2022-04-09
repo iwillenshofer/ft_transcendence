@@ -2,8 +2,11 @@
 <hr/>
 {{ 'hello' | json }}
 {{ data | json }}
-
+Title: {{ title | async }}<br>
 <app-button name="getData" (btnClick)="getData()"></app-button>
+<app-button name="getMessage" (btnClick)="getMessage()"></app-button>
+<app-button name="sendMessage" (btnClick)="sendMessage()"></app-button>
+
 <app-button name="Logout" (btnClick)="logOut()"></app-button>
 <app-button *ngIf="!tfa_enabled" name="Enable TFA" (btnClick)="enableTfa()"></app-button>
 <app-button *ngIf="tfa_enabled" name="Disable TFA" (btnClick)="disableTfa()"></app-button>

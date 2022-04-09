@@ -31,15 +31,21 @@ let Intra42Strategy = class Intra42Strategy extends (0, passport_1.PassportStrat
     async validate(accessToken, refreshToken) {
         console.log(accessToken);
         console.log(refreshToken);
+        let user = null;
         let httpservice = new axios_1.HttpService;
         let header = { Authorization: `Bearer ${accessToken}` };
-        const req = await httpservice.get(process.env.BASE_URL + "/v2/me", { headers: header });
-        const data = await (0, rxjs_1.lastValueFrom)(req);
-        console.log(data);
-        const user = await this.authService.getOrCreateUser(data.data);
-        console.log(user);
-        if (!user)
+        try {
+            const req = await httpservice.get(process.env.BASE_URL + "/v2/me", { headers: header });
+            console.log(req);
+            const data = await (0, rxjs_1.lastValueFrom)(req);
+            console.log(data);
+            user = await this.authService.getOrCreateUser(data.data);
+            if (!user)
+                throw new common_1.UnauthorizedException();
+        }
+        catch (error) {
             throw new common_1.UnauthorizedException();
+        }
         return (user);
     }
 };

@@ -1,2 +1,4 @@
-export declare class AppModule {
+import { NestModule } from '@nestjs/common';
+export declare class AppModule implements NestModule {
+    configure(): void;
 }

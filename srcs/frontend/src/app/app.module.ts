@@ -13,7 +13,8 @@ import { AuthInterceptor } from './auth/auth.interceptor';
 import { TwofactorComponent } from './components/login/twofactor/twofactor.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AuthguardService } from './auth/guards/authguard.service';
-
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import { ChatModule } from './chat/chat.module';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { AuthguardService } from './auth/guards/authguard.service';
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
-	  AuthModule.forRoot()
+	  AuthModule.forRoot(),
+    ChatModule
   ],
   providers: [
     {
