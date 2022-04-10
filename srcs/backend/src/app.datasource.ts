@@ -1,6 +1,8 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { User } from './users/users.entity';
+import { AuthEntity } from './auth/models/auth.entity';
+import { RoomEntity } from './chat/models/room.entity';
+import { UserEntity } from './users/users.entity';
 
 const dbConfig: TypeOrmModuleOptions = {
   type: 'postgres',
@@ -9,7 +11,7 @@ const dbConfig: TypeOrmModuleOptions = {
   username: process.env.POSTGRES_USER || 'postgres',
   password: process.env.POSTGRES_PASSWORD || 'postgress',
   database: process.env.POSTGRES_DB || 'postgres',
-  entities: [User],
+  entities: [UserEntity, RoomEntity, AuthEntity],
   synchronize: true,
 };
 

@@ -19,6 +19,7 @@ const auth_service_1 = require("../auth.service");
 let Intra42Strategy = class Intra42Strategy extends (0, passport_1.PassportStrategy)(passport_oauth2_1.Strategy, "intra42") {
     constructor(authService) {
         super({
+            passReqToCallback: true,
             authorizationURL: process.env.BASE_URL + "/oauth/authorize",
             tokenURL: process.env.BASE_URL + "/oauth/token",
             clientID: process.env.CLIENT_ID,
@@ -28,9 +29,10 @@ let Intra42Strategy = class Intra42Strategy extends (0, passport_1.PassportStrat
         });
         this.authService = authService;
     }
-    async validate(accessToken, refreshToken) {
+    async validate(req, accessToken, refreshToken) {
         console.log(accessToken);
         console.log(refreshToken);
+        console.log(req.url);
         let user = null;
         let httpservice = new axios_1.HttpService;
         let header = { Authorization: `Bearer ${accessToken}` };

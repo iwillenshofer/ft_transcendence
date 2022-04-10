@@ -21,19 +21,16 @@ let TfaStrategy = class TfaStrategy extends (0, passport_1.PassportStrategy)(pas
             ignoreExpiration: false,
             passReqToCallback: true,
             secretOrKey: process.env.JWT_SECRET,
-            jwtFromRequest: passport_jwt_1.ExtractJwt.fromExtractors([(req) => {
-                    const data = req === null || req === void 0 ? void 0 : req.cookies['auth'];
-                    return (data === null || data === void 0 ? void 0 : data.token);
-                }]),
+            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken()
         });
         this.userService = userService;
         this.jwtService = jwtService;
     }
     async validate(req, payload) {
-        var _a;
-        if (!payload || !payload.id || !((_a = req === null || req === void 0 ? void 0 : req.cookies['auth']) === null || _a === void 0 ? void 0 : _a.tfa_fulfilled))
+        console.log("payload:" + JSON.stringify(payload));
+        if (!payload || !payload.id || !payload.tfa_fulfilled)
             throw new common_1.UnauthorizedException;
-        return { id: payload.id, username: payload.username };
+        return payload;
     }
 };
 TfaStrategy = __decorate([

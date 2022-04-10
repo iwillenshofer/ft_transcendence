@@ -21,34 +21,25 @@ let JwtRefreshStrategy = class JwtRefreshStrategy extends (0, passport_1.Passpor
             ignoreExpiration: true,
             passReqToCallback: true,
             secretOrKey: process.env.JWT_SECRET,
-            jwtFromRequest: passport_jwt_1.ExtractJwt.fromExtractors([(req) => {
-                    const data = req === null || req === void 0 ? void 0 : req.cookies['auth'];
-                    console.log('cookies: ' + (data === null || data === void 0 ? void 0 : data.token));
-                    return (data === null || data === void 0 ? void 0 : data.token);
-                }]),
+            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken()
         });
         this.userService = userService;
         this.jwtService = jwtService;
     }
     async validate(req, payload) {
-        let data = null;
-        let user = null;
-        data = req === null || req === void 0 ? void 0 : req.cookies['auth'];
-        console.log(data);
-        console.log(payload);
-        if (!payload || !(data === null || data === void 0 ? void 0 : data.refreshtoken))
+        const refreshtoken = req === null || req === void 0 ? void 0 : req.cookies['refresh_token'];
+        if (!payload || !(refreshtoken))
             throw new common_1.UnauthorizedException;
         try {
-            this.jwtService.verify(data === null || data === void 0 ? void 0 : data.refreshtoken, { secret: process.env.JWT_REFRESH_SECRET });
+            await this.jwtService.verify(refreshtoken, { secret: process.env.JWT_REFRESH_SECRET });
         }
         catch (err) {
             throw new common_1.UnauthorizedException;
         }
-        user = await this.userService.getUser(payload.id);
-        console.log(user);
-        if (!user || user.id != payload.id || user.refreshtoken != data.refreshtoken)
+        const user_refreshtoken = await this.userService.getRefreshToken(payload.id);
+        if (!user_refreshtoken || user_refreshtoken != refreshtoken)
             throw new common_1.UnauthorizedException;
-        return { id: payload.id, username: payload.username };
+        return payload;
     }
 };
 JwtRefreshStrategy = __decorate([

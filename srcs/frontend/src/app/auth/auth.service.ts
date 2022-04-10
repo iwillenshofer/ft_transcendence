@@ -58,7 +58,7 @@ export class AuthService {
 
 	refreshToken()
 	{
-		return  (this.http.get('/backend/auth/refreshtoken', { withCredentials: true }));
+		return (this.http.get<any>('/backend/auth/refreshtoken', { withCredentials: true }));
 	}
 
 	logout(): void {
@@ -66,6 +66,7 @@ export class AuthService {
 			next: () => {
 				this.userSubject.next(null);
 				localStorage.removeItem('user');
+				localStorage.removeItem('token');
 				this.router.navigate(['/login']);
 			}
 		});

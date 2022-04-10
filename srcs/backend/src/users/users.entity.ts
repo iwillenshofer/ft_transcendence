@@ -1,8 +1,9 @@
-import { BaseEntity, Entity, Unique, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { RoomEntity } from 'src/chat/models/room.entity';
+import { BaseEntity, Entity, Unique, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany } from 'typeorm';
   
 @Entity({ name: 'User' })
 @Unique(['id'])
-export class User extends BaseEntity {
+export class UserEntity extends BaseEntity {
     @PrimaryColumn({ nullable: false, type: 'integer'})
     id: number;
 
@@ -20,6 +21,9 @@ export class User extends BaseEntity {
 
     @Column({ nullable: true,  type: 'varchar', length: 200})
     tfa_code: string;
+
+		@ManyToMany(() => RoomEntity, room => room.users)
+		rooms: RoomEntity[];
 
     @CreateDateColumn()
     created_at: Date;

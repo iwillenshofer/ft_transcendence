@@ -9,49 +9,54 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.User = void 0;
+exports.UserEntity = void 0;
+const room_entity_1 = require("../chat/models/room.entity");
 const typeorm_1 = require("typeorm");
-let User = class User extends typeorm_1.BaseEntity {
+let UserEntity = class UserEntity extends typeorm_1.BaseEntity {
 };
 __decorate([
     (0, typeorm_1.PrimaryColumn)({ nullable: false, type: 'integer' }),
     __metadata("design:type", Number)
-], User.prototype, "id", void 0);
+], UserEntity.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: false, type: 'varchar', length: 200 }),
     __metadata("design:type", String)
-], User.prototype, "username", void 0);
+], UserEntity.prototype, "username", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: false, type: 'varchar', length: 200 }),
     __metadata("design:type", String)
-], User.prototype, "fullname", void 0);
+], UserEntity.prototype, "fullname", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true, type: 'varchar', length: 200 }),
     __metadata("design:type", String)
-], User.prototype, "refreshtoken", void 0);
+], UserEntity.prototype, "refreshtoken", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true, type: 'boolean', default: false }),
     __metadata("design:type", Boolean)
-], User.prototype, "tfa_enabled", void 0);
+], UserEntity.prototype, "tfa_enabled", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true, type: 'varchar', length: 200 }),
     __metadata("design:type", String)
-], User.prototype, "tfa_code", void 0);
+], UserEntity.prototype, "tfa_code", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => room_entity_1.RoomEntity, room => room.users),
+    __metadata("design:type", Array)
+], UserEntity.prototype, "rooms", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
-], User.prototype, "created_at", void 0);
+], UserEntity.prototype, "created_at", void 0);
 __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
-], User.prototype, "updated_at", void 0);
+], UserEntity.prototype, "updated_at", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: false, type: 'boolean', default: false }),
     __metadata("design:type", Boolean)
-], User.prototype, "tfa_fulfilled", void 0);
-User = __decorate([
+], UserEntity.prototype, "tfa_fulfilled", void 0);
+UserEntity = __decorate([
     (0, typeorm_1.Entity)({ name: 'User' }),
     (0, typeorm_1.Unique)(['id'])
-], User);
-exports.User = User;
+], UserEntity);
+exports.UserEntity = UserEntity;
 //# sourceMappingURL=users.entity.js.map

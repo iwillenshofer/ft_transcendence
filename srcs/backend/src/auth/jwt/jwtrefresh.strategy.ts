@@ -22,33 +22,24 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
 			ignoreExpiration: true,
 			passReqToCallback: true,
 			secretOrKey: process.env.JWT_SECRET,
-			jwtFromRequest: ExtractJwt.fromExtractors([(req: Request) => {
-				const data = req?.cookies['auth'];
-				console.log('cookies: ' + data?.token);
-				return (data?.token);
-			}]),
+			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
 		});
 	}
 
 	async validate(req: Request, payload: any) {
-		let data: any = null;
-		let user = null;
+		const refreshtoken = req?.cookies['refresh_token'];
 
-		data = req?.cookies['auth'];
-		console.log(data);
-		console.log(payload);
-		if (!payload || !(data?.refreshtoken))
+		if (!payload || !(refreshtoken))
 			throw new UnauthorizedException;
 		try {
-			this.jwtService.verify(data?.refreshtoken, {secret: process.env.JWT_REFRESH_SECRET});
+			await this.jwtService.verify(refreshtoken, {secret: process.env.JWT_REFRESH_SECRET});
 		} catch(err) {
 			throw new UnauthorizedException;
 		}
-		user = await this.userService.getUser(payload.id);
-		console.log(user);
-		if (!user || user.id != payload.id || user.refreshtoken != data.refreshtoken)
+		const user_refreshtoken = await this.userService.getRefreshToken(payload.id);
+		if (!user_refreshtoken || user_refreshtoken != refreshtoken)
 			throw new UnauthorizedException;
-		return {id: payload.id, username: payload.username};
+		return payload;
 	}
 }
 

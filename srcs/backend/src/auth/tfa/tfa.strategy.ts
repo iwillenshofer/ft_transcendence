@@ -19,16 +19,14 @@ export class TfaStrategy extends PassportStrategy(Strategy, 'tfa') {
 			ignoreExpiration: false,
 			passReqToCallback: true,
 			secretOrKey: process.env.JWT_SECRET,
-			jwtFromRequest: ExtractJwt.fromExtractors([(req: Request) => {
-				const data = req?.cookies['auth'];
-				return (data?.token);
-			}]),
+			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
 		});
 	}
 
 	async validate(req: Request, payload: any) {
-		if (!payload || !payload.id || !(req?.cookies['auth']?.tfa_fulfilled))
+		console.log("payload:" +  JSON.stringify(payload));
+		if (!payload || !payload.id || !payload.tfa_fulfilled)
 			throw new UnauthorizedException;
-		return {id: payload.id, username: payload.username};
+		return payload;
 	}
 }

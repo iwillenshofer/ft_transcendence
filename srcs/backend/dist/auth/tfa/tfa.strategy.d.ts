@@ -7,9 +7,6 @@ export declare class TfaStrategy extends TfaStrategy_base {
     private userService;
     private jwtService;
     constructor(userService: UsersService, jwtService: JwtService);
-    validate(req: Request, payload: any): Promise<{
-        id: any;
-        username: any;
-    }>;
+    validate(req: Request, payload: any): Promise<any>;
 }
 export {};

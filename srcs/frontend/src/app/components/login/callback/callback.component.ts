@@ -5,6 +5,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { User } from 'src/app/auth/user.model';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { ThisReceiver } from '@angular/compiler';
 
 @Component({
   selector: 'app-callback',
@@ -43,15 +44,36 @@ export class LoginCallbackComponent implements OnInit {
 		this.authService.initLogin();
 	}
 
-  	ngOnInit(): void {
-		console.log('profile');
-		this.getUser();
+  	ngOnInit() {
+			console.log('profile');
+			this.getToken();
 	  }
+
+	async getToken() {
+		this.activatedRoute.queryParams.subscribe(params => {
+			const code = params['code'];
+			if (!(code))
+			{
+				this.router.navigate(['/']);
+				return ;
+			}
+			this.http.get<any>('/backend/auth/token/' + code).subscribe(result => {
+				if (!(result) || !(result.token))
+				{
+					this.router.navigate(['/']);
+					return ;
+				}
+				localStorage.setItem('token', result.token);
+				this.getUser();
+			});
+		});
+	}
 
 	/*
 	** the functions below must be implemented in other services, like User service
 	*/
 	async getUser() {
+		console.log('current token: ' + localStorage.getItem('token'));
 		this.http.get<User>('/backend/auth/profile', { withCredentials: true }).subscribe(result => {
 			this.authService.userSubject.next(result);
 			localStorage.setItem('user', JSON.stringify(result));

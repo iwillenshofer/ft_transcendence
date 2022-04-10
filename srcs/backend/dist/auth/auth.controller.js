@@ -20,77 +20,66 @@ const jwtrefresh_guard_1 = require("./jwt/jwtrefresh.guard");
 const intra42_guard_1 = require("./intra42/intra42.guard");
 const tfa_guard_1 = require("./tfa/tfa.guard");
 const users_service_1 = require("../users/users.service");
+const PlatformTools_1 = require("typeorm/platform/PlatformTools");
+const users_dto_1 = require("../users/users.dto");
 let AuthController = class AuthController {
     constructor(authService, userService) {
         this.authService = authService;
         this.userService = userService;
     }
-    async login(req) {
-        console.log("login attempt", req);
+    async login(req, hash) {
     }
     async callback(res, req) {
         console.log(req.user);
         if (req.user) {
-            console.log('user:' + JSON.stringify(req.user));
-            const token = await this.authService.getAccessToken(req.user);
-            const refreshtoken = await this.authService.getRefreshToken(req.user);
-            const tfa_fulfilled = !(await this.userService.getTfaEnabled(req.user.id));
-            const auth_cookie = { token: token, refreshtoken: refreshtoken, tfa_fulfilled: tfa_fulfilled };
-            res.cookie('auth', auth_cookie, { httpOnly: true });
-            console.log("User Json: " + JSON.stringify(req.user));
-            await this.userService.updateRefreshToken(req.user.id, refreshtoken);
-            res.status(200).redirect('/login/callback');
+            const random_code = await this.authService.generateCallbackCode(req.user.id);
+            res.status(200).redirect('/login/callback?code=' + random_code);
         }
         else
             res.sendStatus(401);
     }
     async profile(req) {
-        var _a, _b;
-        console.log(JSON.stringify(req.user));
+        console.log("user-profile:" + JSON.stringify(req.user));
         console.log("finding id: " + req.user.id);
-        console.log("profile-cookie" + JSON.stringify((_a = req.cookies['auth']) === null || _a === void 0 ? void 0 : _a.tfa_fulfilled));
-        let user = await this.userService.getUser(req.user.id);
-        const tfa_fulfilled = (!(this.userService.getTfaEnabled(req.user.id)) || ((_b = req.cookies['auth']) === null || _b === void 0 ? void 0 : _b.tfa_fulfilled));
-        user.tfa_fulfilled = tfa_fulfilled;
-        console.log("user: " + JSON.stringify(user));
+        console.log("profile-cookie" + JSON.stringify(req.user.tfa_fulfilled));
+        console.log("full user:" + JSON.stringify(await this.userService.getUser(req.user.id)));
+        let user = users_dto_1.UserDTO.from(await this.userService.getUser(req.user.id));
+        console.log("user dto:" + JSON.stringify(user));
+        user.tfa_fulfilled = await (!(this.userService.getTfaEnabled(req.user.id)) || req.user.tfa_fulfilled);
+        console.log("user profile: " + JSON.stringify(user));
         return (JSON.stringify(user));
     }
+    async token(code, res) {
+        const callback_code = await this.authService.retrieveCallbackToken(code);
+        if (!(callback_code)) {
+            res.sendStatus(401);
+            return;
+        }
+        const refreshtoken = await this.authService.getRefreshToken({ username: callback_code.username, id: callback_code.id });
+        const callback_token = await this.authService.getAccessToken({ username: callback_code.username, id: callback_code.id });
+        res.cookie('refresh_token', refreshtoken, { httpOnly: true });
+        await this.userService.updateRefreshToken(callback_code.id, refreshtoken);
+        return { token: callback_token };
+    }
     async logout(res) {
-        res.clearCookie('auth', { httpOnly: true });
+        res.clearCookie('refresh_token', { httpOnly: true });
         return { msg: "success" };
     }
     async refreshToken(res, req) {
-        var _a, _b;
-        console.log("User Json: " + JSON.stringify(req.user));
-        const token = await this.authService.getAccessToken(req.user);
-        const refreshtoken = (_a = req.cookies['auth']) === null || _a === void 0 ? void 0 : _a.refreshtoken;
-        const tfa_fulfilled = (_b = req.cookies['auth']) === null || _b === void 0 ? void 0 : _b.tfa_fulfilled;
-        const auth_cookie = { token: token, refreshtoken: refreshtoken, tfa_fulfilled: tfa_fulfilled };
-        res.clearCookie('auth', { httpOnly: true });
-        res.cookie('auth', auth_cookie, { httpOnly: true }).send(JSON.stringify({ msg: "success" }));
+        const token = await this.authService.getAccessToken(req.user, req.user.tfa_fulfilled);
+        res.status(200).send({ token: token });
     }
-    async getdata(req) {
-        return JSON.stringify({ msg: "success" });
+    async getdata(res) {
+        res.status(200).send({ msg: 'success' });
     }
     async get_qrcode(res, req) {
-        console.log('tfa qrcode' + JSON.stringify(req.user));
         return await this.authService.generateQrCode(req.user.id, res);
     }
     async activate_tfa(req) {
-        console.log('tfa qrcode' + JSON.stringify(req.user));
         return await this.authService.disableTwoFactor(req.user.id);
     }
     async verify_tfa(body, req, res) {
-        var _a, _b;
-        console.log('tfa verify' + JSON.stringify(req.user));
-        console.log('tfa code' + JSON.stringify(body.code));
         const verified = await this.authService.verifyTwoFactor(req.user.id, body.code);
-        console.log("verified " + verified);
-        if (verified) {
-            const auth_cookie = { token: (_a = req.cookies['auth']) === null || _a === void 0 ? void 0 : _a.token, refreshtoken: (_b = req.cookies['auth']) === null || _b === void 0 ? void 0 : _b.refreshtoken, tfa_fulfilled: true };
-            res.clearCookie('auth', { httpOnly: true });
-            res.cookie('auth', auth_cookie, { httpOnly: true });
-        }
         res.send(JSON.stringify({ msg: verified }));
         return;
     }
@@ -99,8 +88,9 @@ __decorate([
     (0, common_1.UseGuards)(intra42_guard_1.Intra42Guard),
     (0, common_1.Get)("login"),
     __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('hash')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
@@ -121,6 +111,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "profile", null);
 __decorate([
+    (0, common_1.Get)('token/:code'),
+    __param(0, (0, common_1.Param)('code')),
+    __param(1, (0, common_1.Res)({ passthrough: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "token", null);
+__decorate([
     (0, common_1.Get)('logout'),
     __param(0, (0, common_1.Res)({ passthrough: true })),
     __metadata("design:type", Function),
@@ -139,7 +137,7 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(tfa_guard_1.TfaGuard),
     (0, common_1.Get)('data'),
-    __param(0, (0, common_1.Request)()),
+    __param(0, (0, common_1.Response)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
@@ -151,7 +149,7 @@ __decorate([
     __param(0, (0, common_1.Res)()),
     __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [PlatformTools_1.Writable, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "get_qrcode", null);
 __decorate([

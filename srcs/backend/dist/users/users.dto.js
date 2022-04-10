@@ -15,6 +15,8 @@ class UserDTO {
         user.id = dto.id;
         user.username = dto.username;
         user.fullname = dto.fullname;
+        user.tfa_fulfilled = dto.tfa_fulfilled;
+        user.tfa_enabled = dto.tfa_enabled;
         return (user);
     }
     static fromEntity(entity) {
@@ -26,7 +28,7 @@ class UserDTO {
         return (user);
     }
     toEntity() {
-        const user = new users_entity_1.User();
+        const user = new users_entity_1.UserEntity();
         user.id = this.id;
         user.username = this.username;
         user.fullname = this.fullname;

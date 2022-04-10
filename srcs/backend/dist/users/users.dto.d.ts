@@ -1,4 +1,4 @@
-import { User } from './users.entity';
+import { UserEntity } from './users.entity';
 export declare class UserDTO {
     id: number;
     username: string;
@@ -7,6 +7,6 @@ export declare class UserDTO {
     tfa_enabled?: boolean;
     constructor(id?: number, username?: string, fullname?: string);
     static from(dto: Partial<UserDTO>): UserDTO;
-    static fromEntity(entity: User): UserDTO;
-    toEntity(): User;
+    static fromEntity(entity: UserEntity): UserDTO;
+    toEntity(): UserEntity;
 }

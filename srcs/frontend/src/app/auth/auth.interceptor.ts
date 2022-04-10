@@ -13,9 +13,13 @@ export class AuthInterceptor implements HttpInterceptor {
 	) { }
 
 	intercept (req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+		const new_req = req.clone({	
+			headers: req.headers.set('authorization', 'Bearer ' + localStorage.getItem('token')),
+			withCredentials: true}
+			);
 		if (req.url.indexOf('/refreshtoken') >= 0)
-			return next.handle(req);
-		return next.handle(req).pipe<any>(
+			return next.handle(new_req);
+		return next.handle(new_req).pipe<any>(
 			catchError((error) => {
 				console.log('the error was here1');
 				if (error.status == 401) {
@@ -23,17 +27,22 @@ export class AuthInterceptor implements HttpInterceptor {
 				} else {
 					return throwError(() => error);
 				}
-
 			})
 		)
 	}
 
 	private handleError(req: HttpRequest<any>, next: HttpHandler, originalError: any) {
 		console.log('handling 401 error');
-		return this.authService.refreshToken().pipe(
-			switchMap((data) => {
-				console.log(data);
-				return next.handle(req);
+		return this.http.get<any>('/backend/auth/refreshtoken', { withCredentials: true }).pipe(
+			switchMap((data: any) => {
+				console.log(JSON.stringify(data));
+				localStorage.removeItem('token');
+				localStorage.setItem('token', data.token);
+				const new_req = req.clone({	
+					headers: req.headers.set('authorization', 'Bearer ' + data.token),
+					withCredentials: true}
+					);
+				return next.handle(new_req);
 			}),
 			catchError((error) => {
 				this.authService.logout();
@@ -41,4 +50,5 @@ export class AuthInterceptor implements HttpInterceptor {
 			})
 		)
 	}
+			
 }

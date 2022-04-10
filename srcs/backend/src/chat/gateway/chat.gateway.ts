@@ -1,26 +1,37 @@
 import { UseGuards } from '@nestjs/common';
 import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { TfaGuard } from 'src/auth/tfa/tfa.guard';
+import { Server, Socket } from 'socket.io';
+import e from 'express';
 
 @WebSocketGateway({ cors: true })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   
   @WebSocketServer()
-  server;
+  private server: Server;
 
-  @UseGuards(TfaGuard)
+  private messages: string[] = [];
+
+  //@UseGuards(TfaGuard)
   @SubscribeMessage('message')
   handleMessage(client: any, payload: any) {
     console.log('message' + JSON.stringify(payload) );
-    this.server.emit('message' + JSON.stringify(payload));
+    this.messages.push(JSON.stringify(payload));
+    this.server.emit('message', this.messages);
   }
 
+  afterInit(server: Server)
+  {
+    console.log('init');
+  }
+  
   @UseGuards(TfaGuard)
-  handleConnection(client: any, ...args: any[]) {
+  handleConnection(client: Socket, ...args: any[]) {
       console.log('on connect');
+			console.log(JSON.stringify(client.id));
   }
 
-  handleDisconnect(client: any) {      
+  handleDisconnect(client: Socket, ...args: any[]) {      
     console.log('on disconnect');
   }
 

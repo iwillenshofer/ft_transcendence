@@ -16,6 +16,7 @@ export class Intra42Strategy extends PassportStrategy(Strategy, "intra42")
 	constructor (private authService: AuthService)
 	{
 		super({
+			passReqToCallback: true,
 			authorizationURL: process.env.BASE_URL + "/oauth/authorize",
 			tokenURL		: process.env.BASE_URL + "/oauth/token",
 			clientID		: process.env.CLIENT_ID,
@@ -24,10 +25,12 @@ export class Intra42Strategy extends PassportStrategy(Strategy, "intra42")
 			scope			: ['public'],
 		})
 	}
+
 	
-	async validate(accessToken: string, refreshToken: string): Promise<any> {
+	async validate(req: Request, accessToken: string, refreshToken: string): Promise<any> {
 		console.log(accessToken);
 		console.log(refreshToken);
+		console.log(req.url);
 		let user: any = null;
 		let httpservice = new HttpService;
 		let header = { Authorization: `Bearer ${ accessToken }` }

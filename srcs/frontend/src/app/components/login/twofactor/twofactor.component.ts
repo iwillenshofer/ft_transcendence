@@ -44,7 +44,7 @@ export class TwofactorComponent {
         this.http.get<User>('/backend/auth/profile', { withCredentials: true }).subscribe(result => {
           this.authService.userSubject.next(result);
           localStorage.setItem('user', JSON.stringify(result));
-          console.log(result);
+          console.log("Activated TFA" + JSON.stringify(result));
           this.router.navigate(['/']);
           });
         }

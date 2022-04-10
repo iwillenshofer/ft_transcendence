@@ -1,4 +1,4 @@
-import { User } from './users.entity';
+import { UserEntity } from './users.entity';
 
 export class UserDTO {	
 	id: number;
@@ -20,10 +20,12 @@ export class UserDTO {
 		user.id = dto.id;
 		user.username = dto.username;
 		user.fullname = dto.fullname;
+		user.tfa_fulfilled = dto.tfa_fulfilled;
+		user.tfa_enabled = dto.tfa_enabled;
 		return (user);
 	}
 
-	public static fromEntity(entity: User) {
+	public static fromEntity(entity: UserEntity) {
 		const user = new UserDTO();
 		user.id = entity.id;
 		user.username = entity.username;
@@ -33,10 +35,10 @@ export class UserDTO {
 	}
 
 	public toEntity() {
-		const user = new User();
+		const user = new UserEntity();
 		user.id = this.id;
 		user.username = this.username;
-		user.fullname = this.fullname;		
+		user.fullname = this.fullname;	
 		return (user);
 	}
 }

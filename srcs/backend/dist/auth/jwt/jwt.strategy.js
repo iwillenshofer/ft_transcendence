@@ -18,18 +18,15 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         super({
             ignoreExpiration: false,
             secretOrKey: process.env.JWT_SECRET,
-            jwtFromRequest: passport_jwt_1.ExtractJwt.fromExtractors([(req) => {
-                    const data = req === null || req === void 0 ? void 0 : req.cookies['auth'];
-                    console.log('cookies: ' + (data === null || data === void 0 ? void 0 : data.token));
-                    return (data === null || data === void 0 ? void 0 : data.token);
-                }]),
+            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken()
         });
     }
     async validate(payload) {
+        console.log("JWT Strategy validate payload: " + payload);
         if (!payload || !payload.id)
             throw new common_1.UnauthorizedException;
         console.log(payload.username);
-        return { id: payload.id, username: payload.username };
+        return payload;
     }
 };
 JwtStrategy = __decorate([
