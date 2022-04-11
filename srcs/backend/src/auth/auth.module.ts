@@ -7,17 +7,20 @@ import { Intra42Strategy } from './intra42/intra42.strategy';
 import { JwtStrategy } from './jwt/jwt.strategy';
 import { JwtRefreshStrategy } from './jwt/jwtrefresh.strategy';
 import { TfaStrategy } from './tfa/tfa.strategy';
+import { FakeIntra42Strategy } from './intra42/fakeintra42.strategy';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
 	imports: [
 		UsersModule,
+		PassportModule,
 		JwtModule.register({
 			secret: process.env.JWT_SECRET,
 			signOptions: {expiresIn: '60s'},
 		})
 	],
 	controllers: [AuthController],
-	providers: [AuthService, Intra42Strategy, JwtStrategy, JwtRefreshStrategy, TfaStrategy]
+	providers: [AuthService, Intra42Strategy, JwtStrategy, JwtRefreshStrategy, TfaStrategy, FakeIntra42Strategy]
 })
 
 export class AuthModule {}

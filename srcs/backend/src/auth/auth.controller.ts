@@ -7,6 +7,9 @@ import { TfaGuard } from './tfa/tfa.guard';
 import { UsersService } from 'src/users/users.service';
 import { Writable } from 'typeorm/platform/PlatformTools';
 import { UserDTO } from 'src/users/users.dto';
+import { FakeIntra42Strategy } from './intra42/fakeintra42.strategy';
+import { FakeIntra42Guard } from './intra42/fakeintra42.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller("auth")
 export class AuthController {
@@ -21,17 +24,21 @@ export class AuthController {
 	** login routed, requested by the frontend (/auth/login)
 	** since the user is not logged in yet, only intra42 guard is used
 	*/
-	@UseGuards(Intra42Guard)
-	@Get("login")
-	async login(@Request() req, @Param('hash') hash)
-	{
 
+	@UseGuards(FakeIntra42Guard)
+	//@UseGuards(Intra42Guard)
+	@Get("login")
+	async login(@Request() req, @Response() res)
+	{
+		return ;
 	}
 
 	/*
 	** /auth/callback is the intra's return
 	*/
-  @UseGuards(Intra42Guard)
+
+	@UseGuards(FakeIntra42Guard)
+	//@UseGuards(Intra42Guard)
 	@Get("callback")
 	async callback(@Response() res, @Request() req)
 	{
@@ -56,14 +63,9 @@ export class AuthController {
 	@Get('profile')
 	async profile(@Request() req){
 		console.log("user-profile:" + JSON.stringify(req.user));
-		console.log("finding id: " + req.user.id)
-		console.log("profile-cookie" + JSON.stringify(req.user.tfa_fulfilled));
-		console.log("full user:" + JSON.stringify(await this.userService.getUser(req.user.id)));
 		let user: UserDTO = UserDTO.from(await this.userService.getUser(req.user.id));
+		user.tfa_fulfilled = (!(await this.userService.getTfaEnabled(req.user.id)) || req.user.tfa_fulfilled);
 		console.log("user dto:" + JSON.stringify(user));
-
-		user.tfa_fulfilled = await (!(this.userService.getTfaEnabled(req.user.id)) || req.user.tfa_fulfilled);
-		console.log("user profile: " + JSON.stringify(user));
 	  return (JSON.stringify(user));
 	}
 

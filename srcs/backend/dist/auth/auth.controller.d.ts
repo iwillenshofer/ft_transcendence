@@ -6,7 +6,7 @@ export declare class AuthController {
     private authService;
     private userService;
     constructor(authService: AuthService, userService: UsersService);
-    login(req: any, hash: any): Promise<void>;
+    login(req: any, res: any): Promise<void>;
     callback(res: any, req: any): Promise<void>;
     profile(req: any): Promise<string>;
     token(code: any, res: any): Promise<{
