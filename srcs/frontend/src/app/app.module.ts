@@ -15,6 +15,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AuthguardService } from './auth/guards/authguard.service';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { ChatModule } from './chat/chat.module';
+import { NavbarComponent } from './components/home/navbar/navbar.component';
+import { SidebarComponent } from './components/home/sidebar/sidebar.component';
 
 @NgModule({
   declarations: [
@@ -24,12 +26,14 @@ import { ChatModule } from './chat/chat.module';
     ButtonComponent,
     HomeComponent,
     TwofactorComponent,
+    NavbarComponent,
+    SidebarComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
-	  AuthModule.forRoot(),
+    AuthModule.forRoot(),
     ChatModule
   ],
   providers: [

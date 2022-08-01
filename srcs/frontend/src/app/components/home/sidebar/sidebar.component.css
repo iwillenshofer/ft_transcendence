@@ -1,0 +1,89 @@
+.sidenav {
+    height: 100%;
+    /* Full-height: remove this if you want "auto" height */
+    width: 360px;
+    /* Set the width of the sidebar */
+    position: fixed;
+    /* Fixed Sidebar (stay in place on scroll) */
+    z-index: 1;
+    /* Stay on top */
+    top: 0;
+    /* Stay at the top */
+    left: 0;
+    background-color: #303564;
+    overflow-x: hidden;
+    /* Disable horizontal scroll */
+    padding-top: 20px;
+}
+
+.sidenav a {
+    padding: 6px 8px 6px 16px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+}
+
+.stats {
+    text-align: center;
+    border-style: solid;
+    background-color: #ffffff;
+    margin: 20px;
+}
+
+.match-history {
+    text-align: center;
+    border-style: solid;
+    background-color: #ffffff;
+    margin: 20px;
+}
+
+.btn-tfa {
+    position: absolute;
+    bottom: 60px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+}
+
+.btn-logout {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+}
+
+.avatar {
+    position: relative;
+    top: 0;
+    left: 0;
+}
+
+.avatar-img {
+
+    position: relative;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    width: 260px;
+    margin: auto;
+    display: block;
+}
+
+span.edit {
+    position: absolute;
+    top: 200px;
+    left: 240px;
+}
+
+.name {
+    color: white;
+    font-size: 28px;
+    justify-content: center;
+    display: flex;
+}

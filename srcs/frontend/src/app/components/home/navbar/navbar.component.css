@@ -1,0 +1,27 @@
+.navbar {
+    background-color: #303564;
+    margin-left: 360px;
+    /* Same as the width of the sidebar */
+    min-height: 100px;
+}
+
+.nav-link {
+    margin: 15px 15px 5px 0px;
+    width: 100px;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.navbar-brand {
+    margin-left: 25px;
+}
+
+nav ul {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.navbar-ligth {
+    color: black;
+}

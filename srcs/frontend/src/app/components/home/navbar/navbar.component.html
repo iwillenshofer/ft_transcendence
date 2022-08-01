@@ -1,0 +1,30 @@
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <a class="navbar-brand" href="#">PONG!</a>
+
+
+    <button class="navbar-toggler" type="button" (click)="toggleNavbar()">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-end show" [ngClass]="{ 'show': navbarOpen }">
+        <ul class="navbar-nav">
+
+            <li class="nav-item">
+                <a class="nav-link" href="#" style="color: black; background-color: white;">Home</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" style="color: black; background-color: white;" href="#">Pong</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" style="color: black; background-color: white;" href="#">Chat</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" style="color: black; background-color: white;" href="#">Friends</a>
+            </li>
+
+        </ul>
+    </div>
+</nav>

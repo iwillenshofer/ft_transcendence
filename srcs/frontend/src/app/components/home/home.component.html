@@ -1,12 +1,16 @@
-<p>home works!</p>
-<hr/>
-{{ 'hello' | json }}
-{{ data | json }}
-Title: {{ title | async }}<br>
-<app-button name="getData" (btnClick)="getData()"></app-button>
-<app-button name="getMessage" (btnClick)="getMessage()"></app-button>
-<app-button name="sendMessage" (btnClick)="sendMessage()"></app-button>
+<app-navbar></app-navbar>
+<app-sidebar></app-sidebar>
 
-<app-button name="Logout" (btnClick)="logOut()"></app-button>
-<app-button *ngIf="!tfa_enabled" name="Enable TFA" (btnClick)="enableTfa()"></app-button>
-<app-button *ngIf="tfa_enabled" name="Disable TFA" (btnClick)="disableTfa()"></app-button>
+<div class="main">
+    {{ 'hello' | json }}
+    {{ data | json }}
+    Title: {{ title | async }}<br>
+    <app-button name="getData" (btnClick)="getData()"></app-button>
+    <app-button name="getMessage" (btnClick)="getMessage()"></app-button>
+    <app-button name="sendMessage" (btnClick)="sendMessage()"></app-button>
+    <!-- <app-button name="getUser" (btnClick)="getUser()"></app-button> -->
+
+    <app-button name="Logout" (btnClick)="logOut()"></app-button>
+    <app-button *ngIf="!tfa_enabled" name="Enable TFA" (btnClick)="enableTfa()"></app-button>
+    <app-button *ngIf="tfa_enabled" name="Disable TFA" (btnClick)="disableTfa()"></app-button>
+</div>
