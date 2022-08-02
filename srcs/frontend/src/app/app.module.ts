@@ -20,6 +20,8 @@ import { SidebarComponent } from './components/navigation/sidebar/sidebar.compon
 import { GameComponent } from './components/game/game.component';
 import { ChatComponent } from './components/chat/chat.component';
 import { FriendsComponent } from './components/friends/friends.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NavigationComponent } from './components/navigation/navigation.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +31,7 @@ import { FriendsComponent } from './components/friends/friends.component';
     ButtonComponent,
     HomeComponent,
     TwofactorComponent,
+    NavigationComponent,
     NavbarComponent,
     SidebarComponent,
     GameComponent,
@@ -40,7 +43,8 @@ import { FriendsComponent } from './components/friends/friends.component';
     AppRoutingModule,
     ReactiveFormsModule,
     AuthModule.forRoot(),
-    ChatModule
+    ChatModule,
+    FontAwesomeModule
   ],
   providers: [
     {
