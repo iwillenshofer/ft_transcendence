@@ -20,12 +20,11 @@ let Intra42Strategy = class Intra42Strategy extends (0, passport_1.PassportStrat
     constructor(authService) {
         super({
             passReqToCallback: true,
+            clientID: process.env.CLIENT_ID,
             authorizationURL: process.env.BASE_URL + "/oauth/authorize",
             tokenURL: process.env.BASE_URL + "/oauth/token",
-            clientID: process.env.CLIENT_ID,
             clientSecret: process.env.CLIENT_SECRET,
             callbackURL: "/auth/callback",
-            scope: ['public'],
         });
         this.authService = authService;
     }

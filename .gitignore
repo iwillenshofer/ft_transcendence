@@ -2,3 +2,5 @@ sandbox/volume/
 srcs/postgres/data/postgres
 srcs/frontend/.angular
 **/.*
+/srcs/*/node_modules
+/srcs/backend/dist

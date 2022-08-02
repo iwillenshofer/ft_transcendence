@@ -2,13 +2,11 @@ import { Controller, Get, Post, UseGuards, Request, Response, Req, Res, Header, 
 import { AuthService } from './auth.service';
 import { JwtGuard } from './jwt/jwt.guard';
 import { JwtRefreshGuard } from './jwt/jwtrefresh.guard';
-import { Intra42Guard } from './intra42/intra42.guard'
+import { Intra42Guard } from './intra42/intra42.guard';
 import { TfaGuard } from './tfa/tfa.guard';
 import { UsersService } from 'src/users/users.service';
 import { Writable } from 'typeorm/platform/PlatformTools';
 import { UserDTO } from 'src/users/users.dto';
-import { FakeIntra42Strategy } from './intra42/fakeintra42.strategy';
-import { FakeIntra42Guard } from './intra42/fakeintra42.guard';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller("auth")
@@ -25,7 +23,6 @@ export class AuthController {
 	** since the user is not logged in yet, only intra42 guard is used
 	*/
 
-	//@UseGuards(FakeIntra42Guard)
 	@UseGuards(Intra42Guard)
 	@Get("login")
 	async login(@Request() req, @Response() res) {
@@ -36,7 +33,6 @@ export class AuthController {
 	** /auth/callback is the intra's return
 	*/
 
-	//@UseGuards(FakeIntra42Guard)
 	@UseGuards(Intra42Guard)
 	@Get("callback")
 	async callback(@Response() res, @Request() req) {
@@ -47,13 +43,12 @@ export class AuthController {
 			** let's get the JWT Token.
 			** Will have to check for 2FA first probably here.
 			*/
-
-
 			const random_code: string = await this.authService.generateCallbackCode(req.user.id)
 			res.status(200).redirect('/login/callback?code=' + random_code);
 		}
-		else
+		else {
 			res.sendStatus(401);
+		}
 	}
 
 	@UseGuards(JwtGuard)

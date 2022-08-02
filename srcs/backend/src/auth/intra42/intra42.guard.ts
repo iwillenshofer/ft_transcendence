@@ -9,8 +9,8 @@ export class Intra42Guard extends AuthGuard('intra42') {
 
 	handleRequest(err: any, user: any, info: any, context: any, status: any) {
 		if (err || !user) {
-		 	throw new HttpException(err.message, 401);
+			throw new HttpException(err.message, 401);
 		}
 		return user;
-	  }
+	}
 }

@@ -36,8 +36,9 @@ let AuthController = class AuthController {
             const random_code = await this.authService.generateCallbackCode(req.user.id);
             res.status(200).redirect('/login/callback?code=' + random_code);
         }
-        else
+        else {
             res.sendStatus(401);
+        }
     }
     async profile(req) {
         console.log("user-profile:" + JSON.stringify(req.user));
