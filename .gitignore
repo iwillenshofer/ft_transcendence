@@ -1,6 +1,7 @@
-sandbox/volume/
-srcs/postgres/data/postgres
-srcs/frontend/.angular
 **/.*
-/srcs/*/node_modules
-/srcs/backend/dist
+sandbox/volume/
+srcs/frontend/.angular
+srcs/frontend/node_modules
+srcs/backend/node_modules
+srcs/backend/dist
+srcs/postgres/data/postgres
