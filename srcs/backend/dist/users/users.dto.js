@@ -3,18 +3,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserDTO = void 0;
 const users_entity_1 = require("./users.entity");
 class UserDTO {
-    constructor(id = 0, username = '', fullname = '') {
+    constructor(id = 0, username = '', fullname = '', avatar_url = '') {
         this.tfa_fulfilled = false;
         this.tfa_enabled = false;
         this.id = id;
         this.username = username;
         this.fullname = fullname;
+        this.avatar_url = avatar_url;
     }
     static from(dto) {
         const user = new UserDTO();
         user.id = dto.id;
         user.username = dto.username;
         user.fullname = dto.fullname;
+        user.avatar_url = dto.avatar_url;
         user.tfa_fulfilled = dto.tfa_fulfilled;
         user.tfa_enabled = dto.tfa_enabled;
         return (user);
@@ -24,6 +26,7 @@ class UserDTO {
         user.id = entity.id;
         user.username = entity.username;
         user.fullname = entity.fullname;
+        user.avatar_url = entity.avatar_url;
         user.tfa_enabled = entity.tfa_enabled;
         return (user);
     }
@@ -32,6 +35,7 @@ class UserDTO {
         user.id = this.id;
         user.username = this.username;
         user.fullname = this.fullname;
+        user.avatar_url = this.avatar_url;
         return (user);
     }
 }

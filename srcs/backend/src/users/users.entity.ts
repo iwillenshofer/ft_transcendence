@@ -1,38 +1,41 @@
 import { RoomEntity } from 'src/chat/models/room.entity';
 import { BaseEntity, Entity, Unique, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany } from 'typeorm';
-  
+
 @Entity({ name: 'User' })
 @Unique(['id'])
 export class UserEntity extends BaseEntity {
-    @PrimaryColumn({ nullable: false, type: 'integer'})
-    id: number;
+  @PrimaryColumn({ nullable: false, type: 'integer' })
+  id: number;
 
-    @Column({ nullable: false, type: 'varchar', length: 200 })
-    username: string;
+  @Column({ nullable: false, type: 'varchar', length: 200 })
+  username: string;
 
-    @Column({ nullable: false, type: 'varchar', length: 200 })
-    fullname: string;
+  @Column({ nullable: false, type: 'varchar', length: 200 })
+  fullname: string;
 
-    @Column({ nullable: true, type: 'varchar', length: 200 })
-    refreshtoken: string;
+  @Column({ nullable: false, type: 'varchar', length: 2048 })
+  avatar_url: string;
 
-    @Column({ nullable: true, type: 'boolean', default: false })
-    tfa_enabled: boolean;
+  @Column({ nullable: true, type: 'varchar', length: 200 })
+  refreshtoken: string;
 
-    @Column({ nullable: true,  type: 'varchar', length: 200})
-    tfa_code: string;
+  @Column({ nullable: true, type: 'boolean', default: false })
+  tfa_enabled: boolean;
 
-		@ManyToMany(() => RoomEntity, room => room.users)
-		rooms: RoomEntity[];
+  @Column({ nullable: true, type: 'varchar', length: 200 })
+  tfa_code: string;
 
-    @CreateDateColumn()
-    created_at: Date;
+  @ManyToMany(() => RoomEntity, room => room.users)
+  rooms: RoomEntity[];
 
-    @UpdateDateColumn()
-    updated_at: Date;
+  @CreateDateColumn()
+  created_at: Date;
 
-    @Column({ nullable: false, type: 'boolean', default: false })
-    tfa_fulfilled: boolean; // MUST BE REMOVED AFTER CREATING DTO
+  @UpdateDateColumn()
+  updated_at: Date;
+
+  @Column({ nullable: false, type: 'boolean', default: false })
+  tfa_fulfilled: boolean; // MUST BE REMOVED AFTER CREATING DTO
 
 
 }

@@ -24,11 +24,12 @@ let UsersService = class UsersService {
         });
         return (results);
     }
-    async createUser(intra_id, login, displayname) {
+    async createUser(intra_id, login, displayname, image_url) {
         const user = await app_datasource_1.dataSource.getRepository(users_entity_1.UserEntity).create({
             id: intra_id,
             username: login,
-            fullname: displayname
+            fullname: displayname,
+            avatar_url: image_url
         });
         const results = await app_datasource_1.dataSource.getRepository(users_entity_1.UserEntity).save(user)
             .then((ret) => users_dto_1.UserDTO.fromEntity(ret));

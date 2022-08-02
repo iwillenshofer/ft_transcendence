@@ -3,7 +3,7 @@ import { UserDTO } from './users.dto';
 export { UserEntity };
 export declare class UsersService {
     getUser(intra_id: number): Promise<UserDTO | null>;
-    createUser(intra_id: number, login: string, displayname: string): Promise<UserDTO>;
+    createUser(intra_id: number, login: string, displayname: string, image_url: string): Promise<UserDTO>;
     updateRefreshToken(id: number, token: string): Promise<void>;
     getRefreshToken(id: number): Promise<string>;
     enable2FASecret(id: number, enable?: boolean): Promise<void>;

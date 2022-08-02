@@ -23,11 +23,12 @@ export class UsersService {
 		return (results);
 	}
 
-	async createUser(intra_id: number, login: string, displayname: string): Promise<UserDTO> {
+	async createUser(intra_id: number, login: string, displayname: string, image_url: string): Promise<UserDTO> {
 		const user: UserEntity = await dataSource.getRepository(UserEntity).create({
 			id: intra_id,
 			username: login,
-			fullname: displayname
+			fullname: displayname,
+			avatar_url: image_url
 		});
 		const results = await dataSource.getRepository(UserEntity).save(user)
 			.then((ret) => UserDTO.fromEntity(ret));
@@ -38,7 +39,7 @@ export class UsersService {
 		let user = await dataSource.getRepository(UserEntity).findOneBy({ id: id });
 		user.refreshtoken = token;
 		const results = await dataSource.getRepository(UserEntity).save(user);
-		return ;
+		return;
 	}
 
 	async getRefreshToken(id: number): Promise<string> {
@@ -50,21 +51,21 @@ export class UsersService {
 		let user = await dataSource.getRepository(UserEntity).findOneBy({ id: id });
 		user.tfa_enabled = enable;
 		const results = await dataSource.getRepository(UserEntity).save(user);
-		return ;
+		return;
 	}
 
 	async set2FASecret(id: number, secret: string): Promise<void> {
 		let user = await dataSource.getRepository(UserEntity).findOneBy({ id: id });
 		user.tfa_code = secret;
 		const results = await dataSource.getRepository(UserEntity).save(user);
-		return ;
+		return;
 	}
 
 	async disable2FASecret(id: number, secret: string): Promise<void> {
 		let user = await dataSource.getRepository(UserEntity).findOneBy({ id: id });
 		user.tfa_enabled = false;
 		const results = await dataSource.getRepository(UserEntity).save(user);
-		return ;
+		return;
 	}
 
 	async getTfaEnabled(id: number): Promise<boolean> {

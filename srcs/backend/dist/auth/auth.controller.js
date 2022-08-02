@@ -17,11 +17,11 @@ const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
 const jwt_guard_1 = require("./jwt/jwt.guard");
 const jwtrefresh_guard_1 = require("./jwt/jwtrefresh.guard");
+const intra42_guard_1 = require("./intra42/intra42.guard");
 const tfa_guard_1 = require("./tfa/tfa.guard");
 const users_service_1 = require("../users/users.service");
 const PlatformTools_1 = require("typeorm/platform/PlatformTools");
 const users_dto_1 = require("../users/users.dto");
-const fakeintra42_guard_1 = require("./intra42/fakeintra42.guard");
 let AuthController = class AuthController {
     constructor(authService, userService) {
         this.authService = authService;
@@ -82,7 +82,7 @@ let AuthController = class AuthController {
     }
 };
 __decorate([
-    (0, common_1.UseGuards)(fakeintra42_guard_1.FakeIntra42Guard),
+    (0, common_1.UseGuards)(intra42_guard_1.Intra42Guard),
     (0, common_1.Get)("login"),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Response)()),
@@ -91,7 +91,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
-    (0, common_1.UseGuards)(fakeintra42_guard_1.FakeIntra42Guard),
+    (0, common_1.UseGuards)(intra42_guard_1.Intra42Guard),
     (0, common_1.Get)("callback"),
     __param(0, (0, common_1.Response)()),
     __param(1, (0, common_1.Request)()),

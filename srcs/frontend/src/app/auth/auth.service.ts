@@ -6,7 +6,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { User } from './user.model';
 
 @Injectable({
-  providedIn: 'root'
+	providedIn: 'root'
 })
 
 /*
@@ -17,19 +17,18 @@ import { User } from './user.model';
 
 export class AuthService {
 
-  	constructor(
+	constructor(
 		private cookieService: CookieService,
 		private router: Router,
 		private http: HttpClient
-	)
-	{
+	) {
 		this.userSubject = new BehaviorSubject<User | null>(this.getUserFromLocalStorage());
 		this.user = this.userSubject.asObservable();
 	}
 
 	public userSubject: BehaviorSubject<User | null>;
 	public user: Observable<User | null>;
-	
+
 	isAuthenticated(): boolean {
 		if (!(this.userSubject.value) || !(this.userSubject.value.tfa_fulfilled))
 			return false;
@@ -51,13 +50,11 @@ export class AuthService {
 		window.location.href = url;
 	};
 
-	serverLogout()
-	{
+	serverLogout() {
 		return (this.http.get('/backend/auth/logout', { withCredentials: true }));
 	}
 
-	refreshToken()
-	{
+	refreshToken() {
 		return (this.http.get<any>('/backend/auth/refreshtoken', { withCredentials: true }));
 	}
 
@@ -78,8 +75,7 @@ export class AuthService {
 
 	getUserFromLocalStorage(): User | null {
 		let user: string | null = localStorage.getItem('user');
-		if (user)		
-		{
+		if (user) {
 			let result: User = JSON.parse(user);
 			return (result);
 		}
@@ -93,6 +89,6 @@ export class AuthService {
 			return (true);
 		return (false);
 	}
-	
-	
+
+
 }

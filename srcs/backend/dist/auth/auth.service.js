@@ -30,7 +30,7 @@ let AuthService = class AuthService {
         user = await this.userService.getUser(data.id);
         console.log(user);
         if (!user)
-            user = await this.userService.createUser(data.id, data.login, data.displayname);
+            user = await this.userService.createUser(data.id, data.login, data.displayname, data.image_url);
         return (user);
     }
     async getAccessToken(user, tfa_fulfilled = false) {
