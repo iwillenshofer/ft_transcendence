@@ -5,4 +5,3 @@ srcs/frontend/node_modules
 srcs/backend/node_modules
 srcs/backend/dist
 srcs/postgres/data/postgres
-.github/
