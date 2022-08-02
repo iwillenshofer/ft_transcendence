@@ -1,6 +1,6 @@
 
 
-![example workflow](https://github.com/romanbtt/ft_transcendence/workflows/CI/badge.svg)
+[![Build](https://github.com/romanbtt/ft_transcendence/actions/workflows/build.yml/badge.svg)](https://github.com/romanbtt/ft_transcendence/actions/workflows/build.yml)
 
 #Sandbox
 > It is a Dockerfile running node.js used to fiddle with the code and develop.
