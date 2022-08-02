@@ -25,4 +25,4 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Build the stack
-        run: docker-compose up --build
+        run: docker-compose up -d
