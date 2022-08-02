@@ -1,3 +1,4 @@
+import { FakeIntra42Strategy } from './intra42/fakeintra42.strategy';
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -19,7 +20,7 @@ import { PassportModule } from '@nestjs/passport';
 		})
 	],
 	controllers: [AuthController],
-	providers: [AuthService, Intra42Strategy, JwtStrategy, JwtRefreshStrategy, TfaStrategy]
+	providers: [AuthService, Intra42Strategy, JwtStrategy, JwtRefreshStrategy, TfaStrategy, FakeIntra42Strategy]
 })
 
 export class AuthModule { }
