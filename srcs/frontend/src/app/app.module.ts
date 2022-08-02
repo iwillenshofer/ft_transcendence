@@ -15,8 +15,11 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AuthguardService } from './auth/guards/authguard.service';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { ChatModule } from './chat/chat.module';
-import { NavbarComponent } from './components/home/navbar/navbar.component';
-import { SidebarComponent } from './components/home/sidebar/sidebar.component';
+import { NavbarComponent } from './components/navigation/navbar/navbar.component';
+import { SidebarComponent } from './components/navigation/sidebar/sidebar.component';
+import { GameComponent } from './components/game/game.component';
+import { ChatComponent } from './components/chat/chat.component';
+import { FriendsComponent } from './components/friends/friends.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +31,9 @@ import { SidebarComponent } from './components/home/sidebar/sidebar.component';
     TwofactorComponent,
     NavbarComponent,
     SidebarComponent,
+    GameComponent,
+    ChatComponent,
+    FriendsComponent,
   ],
   imports: [
     BrowserModule,

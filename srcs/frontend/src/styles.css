@@ -11,3 +11,9 @@ body {
     margin: 0;
     font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
+.main {
+    margin-left: 360px;
+    /* Same as the width of the sidebar */
+    padding: 0px 10px;
+}

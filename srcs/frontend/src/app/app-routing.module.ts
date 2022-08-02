@@ -6,19 +6,25 @@ import { LoginpageComponent } from './components/login/loginpage/loginpage.compo
 import { LoginCallbackComponent } from './components/login/callback/callback.component';
 import { AuthguardService } from './auth/guards/authguard.service';
 import { TwofactorComponent } from './components/login/twofactor/twofactor.component';
+import { GameComponent } from './components/game/game.component';
+import { ChatComponent } from './components/chat/chat.component';
+import { FriendsComponent } from './components/friends/friends.component';
 
 const routes: Routes = [
 	{ path: '', redirectTo: 'home', pathMatch: 'full' },
-	{ path: 'home', component: HomeComponent, canActivate: [AuthguardService]},
+	{ path: 'home', component: HomeComponent, canActivate: [AuthguardService] },
 	{ path: 'login', component: LoginpageComponent },
 	{ path: 'login/callback', component: LoginCallbackComponent },
-	{ path: 'enable2fa', component: TwofactorComponent, canActivate: [AuthguardService]},
+	{ path: 'enable2fa', component: TwofactorComponent, canActivate: [AuthguardService] },
+	{ path: 'pong', component: GameComponent },
+	{ path: 'chat', component: ChatComponent },
+	{ path: 'friends', component: FriendsComponent }
 
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+	imports: [RouterModule.forRoot(routes)],
+	exports: [RouterModule]
 })
 
 
