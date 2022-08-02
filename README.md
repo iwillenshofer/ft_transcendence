@@ -1,3 +1,7 @@
+
+
+![example workflow](https://github.com/romanbtt/ft_transcendence/actions/workflows/CI/badge.svg)
+
 #Sandbox
 > It is a Dockerfile running node.js used to fiddle with the code and develop.
 
