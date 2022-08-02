@@ -38,8 +38,8 @@ services:
         container_name: postgres
         volumes:
             - "./srcs/postgres/data/postgres:/data/postgres"
-#        ports:
-#            - "5442:5432"
+        ports:
+            - "5442:5432"
         expose: 
             - "3000"
         env_file:
