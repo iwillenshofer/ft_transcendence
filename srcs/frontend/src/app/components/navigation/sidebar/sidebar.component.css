@@ -67,10 +67,11 @@
 .avatar-img {
 
     position: relative;
-    top: 0;
+    top: 20px;
     left: 0;
     border-radius: 50%;
-    width: 260px;
+    width: 250px;
+    height: 250px;
     margin: auto;
     display: block;
 }
@@ -78,7 +79,7 @@
 span.edit {
     position: absolute;
     top: 200px;
-    left: 240px;
+    left: 230px;
 }
 
 .name {
