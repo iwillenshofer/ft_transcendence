@@ -8,9 +8,9 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { ThisReceiver } from '@angular/compiler';
 
 @Component({
-  selector: 'app-callback',
-  templateUrl: './callback.component.html',
-  styleUrls: ['./callback.component.css']
+	selector: 'app-callback',
+	templateUrl: './callback.component.html',
+	styleUrls: ['./callback.component.scss']
 })
 
 /*
@@ -30,38 +30,35 @@ export class LoginCallbackComponent implements OnInit {
 		private cookieService: CookieService,
 		private http: HttpClient,
 		private router: Router,
-	)
-	{
+	) {
 		this.authService.user.subscribe(user => this.currentUser = user);
 		this.dataSubject = new BehaviorSubject<any>(null);
 	}
 
-	logOut(){
+	logOut() {
 		this.authService.logout();
 	}
 
-	initLogin(){
+	initLogin() {
 		this.authService.initLogin();
 	}
 
-  	ngOnInit() {
-			console.log('profile');
-			this.getToken();
-	  }
+	ngOnInit() {
+		console.log('profile');
+		this.getToken();
+	}
 
 	async getToken() {
 		this.activatedRoute.queryParams.subscribe(params => {
 			const code = params['code'];
-			if (!(code))
-			{
+			if (!(code)) {
 				this.router.navigate(['/']);
-				return ;
+				return;
 			}
 			this.http.get<any>('/backend/auth/token/' + code).subscribe(result => {
-				if (!(result) || !(result.token))
-				{
+				if (!(result) || !(result.token)) {
 					this.router.navigate(['/']);
-					return ;
+					return;
 				}
 				localStorage.setItem('token', result.token);
 				this.getUser();
@@ -81,20 +78,20 @@ export class LoginCallbackComponent implements OnInit {
 				this.router.navigate(['/']);
 			else if (this.authService.isJwtAuthenticated())
 				this.need_tfa = true;
-			});
+		});
 	}
 
 	async getData() {
 		this.http.get<User>('/backend/auth/data', { withCredentials: true }).subscribe(result => {
 			this.dataSubject.next(result);
 		});
- 	}
+	}
 
 	async refreshToken() {
 		this.http.get<User>('/backend/auth/refreshtoken', { withCredentials: true }).subscribe(result => {
 			console.log(result);
 		});
- 	}
+	}
 }
 
 

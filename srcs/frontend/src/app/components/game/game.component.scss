@@ -1,0 +1,23 @@
+$table-color: #333;
+
+*,
+*::after,
+*::before {
+    box-sizing: border-box;
+}
+
+.table {
+    height: 100px;
+    width: 100px;
+    background-color: $table-color;
+}
+
+.score {
+    background-color: $table-color;
+}
+
+.ball {
+    background-color: black;
+    width: 10px;
+    height: 10px;
+}
