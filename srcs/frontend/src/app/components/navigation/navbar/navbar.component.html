@@ -1,12 +1,13 @@
 <nav class="navbar navbar-expand-lg navbar-dark">
-    <a class="navbar-brand" href="#">PONG!</a>
-
 
     <!-- <button class="navbar-toggler" type="button" (click)="toggleNavbar()">
         <span class="navbar-toggler-icon"></span>
     </button> -->
 
-    <div class="collapse navbar-collapse justify-content-end show" [ngClass]="{ 'show': navbarOpen }">
+    <ul class="navbar-brand" routerLink="/home" href="#">
+        <li>Pong</li>
+    </ul>
+    <div class="collapse navbar-collapse show" [ngClass]="{ 'show': navbarOpen }">
         <ul class="navbar-nav">
 
             <li class="nav-item" routerLink="/home" href="#">Home</li>
