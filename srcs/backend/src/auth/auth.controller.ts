@@ -24,7 +24,11 @@ export class AuthController {
 	** since the user is not logged in yet, only intra42 guard is used
 	*/
 
+<<<<<<< HEAD
 	// // @UseGuards(FakeIntra42Guard)
+=======
+	// @UseGuards(FakeIntra42Guard)
+>>>>>>> login-page
 	@UseGuards(Intra42Guard)
 	@Get("login")
 	async login(@Request() req, @Response() res) {
