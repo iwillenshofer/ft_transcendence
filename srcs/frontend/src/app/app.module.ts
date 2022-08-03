@@ -22,6 +22,8 @@ import { ChatComponent } from './components/chat/chat.component';
 import { FriendsComponent } from './components/friends/friends.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NavigationComponent } from './components/navigation/navigation.component';
+import { DialogComponent } from './components/dialog/dialog.component';
+import { DialogContentComponent } from './components/dialog/components/dialog-content/dialog-content.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +39,8 @@ import { NavigationComponent } from './components/navigation/navigation.componen
     GameComponent,
     ChatComponent,
     FriendsComponent,
+    DialogComponent,
+    DialogContentComponent,
   ],
   imports: [
     BrowserModule,
