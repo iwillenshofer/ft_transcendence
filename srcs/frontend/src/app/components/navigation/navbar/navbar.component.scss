@@ -8,8 +8,7 @@
 .nav-link {
     margin: 15px 15px 5px 0px;
     width: 100px;
-    text-align: center;
-    border-radius: 10px;
+    background-color: none;
 }
 
 .navbar-brand {
@@ -18,8 +17,27 @@
 
 nav ul {
     display: flex;
+    float: right;
     flex-direction: row;
     flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+nav li {
+    margin-right: 10px;
+    padding-top: 10px;
+    list-style: none;
+    width: 100px;
+    height: 30px;
+    text-align: center;
+    border-radius: 10px;
+    background-color: white;
+    cursor: pointer;
+}
+
+nav li:hover,
+nav li:active {
+    background-color: #e7e7e7;
 }
 
 .navbar-ligth {
