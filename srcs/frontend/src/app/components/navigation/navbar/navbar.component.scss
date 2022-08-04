@@ -2,9 +2,10 @@
 
 .navbar {
     background-color: #303564;
-    margin-left: 360px;
+    // margin-left: 360px;
     /* Same as the width of the sidebar */
     min-height: 100px;
+    // z-index: 0;
 }
 
 .nav-link {

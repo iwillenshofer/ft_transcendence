@@ -3,17 +3,18 @@
     /* Full-height: remove this if you want "auto" height */
     width: 360px;
     /* Set the width of the sidebar */
-    position: fixed;
+    position: absolute;
     /* Fixed Sidebar (stay in place on scroll) */
-    z-index: 1;
+    // z-index: 0;
     /* Stay on top */
     top: 0;
     /* Stay at the top */
     left: 0;
     background-color: #303564;
     overflow-x: hidden;
+    margin-top: 100px;
     /* Disable horizontal scroll */
-    padding-top: 20px;
+    // padding-top: 20px;
 }
 
 .sidenav a {

@@ -1,12 +1,12 @@
-<app-navigation></app-navigation>
+<app-navbar></app-navbar>
 <div class="main">
     <div class="table">
         <div class="score">
             <div id="player1-score">0</div>
             <div id="player2-score">0</div>
         </div>
-        <div class="ball" id="ball"></div>
-        <div class="paddle left" id="player1-paddle"></div>
-        <div class="paddle right" id="player2-paddle"></div>
+        <app-ball></app-ball>
+        <app-paddle #player1 [name]="'player1'" [side]="'left'"></app-paddle>
+        <app-paddle #player2 [name]="'player2'" [side]="'right'"></app-paddle>
     </div>
 </div>
