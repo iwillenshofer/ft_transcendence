@@ -7,8 +7,8 @@ $table-color: #333;
 }
 
 .table {
-    height: 100px;
-    width: 100px;
+    height: 100%;
+    // width: 100px;
     background-color: $table-color;
 }
 
@@ -20,4 +20,23 @@ $table-color: #333;
     background-color: black;
     width: 10px;
     height: 10px;
+}
+
+.paddle {
+    // position: absolute;
+    background-color: white;
+    width: 1vh;
+    height: 10vh;
+}
+
+.paddle.left {
+    // left: 1vw;
+    float: left;
+    margin-left: 10px;
+}
+
+.paddle.right {
+    float: right;
+    margin-right: 10px;
+    // right: 1vw;
 }
