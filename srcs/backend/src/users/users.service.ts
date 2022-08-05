@@ -42,6 +42,14 @@ export class UsersService {
 		return;
 	}
 
+	async updateUrlAvatar(id: number, url: string): Promise<void> {
+		let user = await dataSource.getRepository(UserEntity).findOneBy({ id: id });
+		user.avatar_url = "http://localhost:3000/" + url;
+		const results = await dataSource.getRepository(UserEntity).save(user);
+		console.log(user.avatar_url)
+		return;
+	}
+
 	async getRefreshToken(id: number): Promise<string> {
 		let user = await dataSource.getRepository(UserEntity).findOneBy({ id: id });
 		return (user.refreshtoken);
