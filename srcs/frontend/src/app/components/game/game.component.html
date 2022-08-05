@@ -2,11 +2,13 @@
 <div class="main">
     <div class="table">
         <div class="score">
-            <div id="player1-score">0</div>
-            <div id="player2-score">0</div>
+            <div id="player1-score">{{ player1Score }}</div>
+            <div id="player2-score">{{ player2Score }}</div>
         </div>
         <app-ball></app-ball>
         <app-paddle #player1 [name]="'player1'" [side]="'left'"></app-paddle>
         <app-paddle #player2 [name]="'player2'" [side]="'right'"></app-paddle>
+        <!-- <app-paddle #computer [name]="'computer'" [side]="'right'"></app-paddle> -->
+
     </div>
 </div>
