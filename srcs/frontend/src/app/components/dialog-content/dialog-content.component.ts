@@ -31,19 +31,16 @@ export class DialogContentComponent implements OnInit {
     this.editmode = true;
     this.errorMsg = ""
     const ext = event.target.files[0].name.split('.').pop().toLowerCase();
-    if (ext === 'jpg' || ext === 'jpeg' || ext === 'png') {
-      this.file = event.target.files[0];
-    }
-    else {
+    if (ext !== 'jpg' && ext !== 'jpeg' && ext !== 'png') {
       this.editmode = false;
       this.errorMsg = "You can only upload a jpg, jpeg or png file."
     }
-    if (event.target.files[0].size < 2000000) {
-      this.file = event.target.files[0];
+    else if (event.target.files[0].size > 2000000) {
+      this.editmode = false;
+      this.errorMsg = "You can only upload a file less than 2mb."
     }
     else {
-      this.editmode = false;
-      this.errorMsg += "\nYou can only upload a file less than 2mb."
+      this.file = event.target.files[0];
     }
   }
 
