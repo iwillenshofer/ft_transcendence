@@ -1,0 +1,22 @@
+<strong style="font-size: 20px;">Change your profile picture</strong><br>
+<em>
+    <small>Accepted formats : .jpg .jpeg .png</small><br>
+    <small>Max size : 2MB</small>
+</em>
+<p></p>
+
+<div class="text-center">
+    <input class="form-control" type="file" accept=".jpg,.jpeg,.png" (change)="onChange($event)">
+
+    <button [disabled]="!editmode ? 'disabled' : null" (click)="onUpload()" class="btn btn-success">
+        Upload
+    </button>
+</div>
+
+<div class="container" *ngIf="loading">
+    <h3>Loading ...</h3>
+</div>
+
+<div class="errorMsg" *ngIf="errorMsg">
+    <em>{{ errorMsg }}</em>
+</div>

@@ -22,9 +22,10 @@ import { ChatComponent } from './components/chat/chat.component';
 import { FriendsComponent } from './components/friends/friends.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NavigationComponent } from './components/navigation/navigation.component';
-import { DialogContentComponent } from './components/dialog-content/dialog-content.component';
+import { DialogAvatarComponent } from './components/dialogs/components/dialog-avatar/dialog-avatar.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatDialogModule } from '@angular/material/dialog'
+import { MatDialogModule } from '@angular/material/dialog';
+import { DialogUsernameComponent } from './components/dialogs/components/dialog-username/dialog-username.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,9 @@ import { MatDialogModule } from '@angular/material/dialog'
     GameComponent,
     ChatComponent,
     FriendsComponent,
-    DialogContentComponent,
+    DialogAvatarComponent,
+    DialogUsernameComponent,
+
   ],
   imports: [
     BrowserModule,

@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class SidebarService {
   ImageUrl: string | undefined = ""
-  Username: string = ""
+  Username: string | undefined = ""
 
   constructor() { }
 
@@ -13,8 +13,16 @@ export class SidebarService {
     return this.ImageUrl;
   }
 
+  GetUsername(): string | undefined {
+    return this.Username;
+  }
+
   SetImageUrl(url: string | undefined) {
-    console.log("SetImage : " + url)
     this.ImageUrl = url;
+  }
+
+  SetUsername(username: string | undefined) {
+    console.log("SET user :" + username)
+    this.Username = username;
   }
 }

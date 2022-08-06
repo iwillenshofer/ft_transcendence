@@ -2,15 +2,15 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/auth/auth.service';
 import { UploadService } from 'src/app/upload-file/upload-file.service';
-import { SidebarService } from '../navigation/sidebar/sidebar.service';
+import { SidebarService } from '../../../navigation/sidebar/sidebar.service';
 
 
 @Component({
-  selector: 'app-dialog-content',
-  templateUrl: './dialog-content.component.html',
-  styleUrls: ['./dialog-content.component.scss']
+  selector: 'app-dialog-avatar',
+  templateUrl: './dialog-username.component.html',
+  styleUrls: ['./dialog-username.component.scss']
 })
-export class DialogContentComponent implements OnInit {
+export class DialogUsernameComponent implements OnInit {
 
   // Variable to store shortLink from api response
   loading: boolean = false; // Flag variable
@@ -37,7 +37,7 @@ export class DialogContentComponent implements OnInit {
     }
     else if (event.target.files[0].size > 2000000) {
       this.editmode = false;
-      this.errorMsg = "You can only upload a file less than 2mb."
+      this.errorMsg = "You can only upload a file less than 2MB."
     }
     else {
       this.file = event.target.files[0];

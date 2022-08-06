@@ -1,3 +1,10 @@
+<strong style="font-size: 20px;">Change your profile picture</strong><br>
+<em>
+    <small>Accepted formats : .jpg .jpeg .png</small><br>
+    <small>Max size : 2MB</small>
+</em>
+<p></p>
+
 <div class="text-center">
     <input class="form-control" type="file" accept=".jpg,.jpeg,.png" (change)="onChange($event)">
 
@@ -6,11 +13,10 @@
     </button>
 </div>
 
-<!--Flag variable is used here-->
 <div class="container" *ngIf="loading">
     <h3>Loading ...</h3>
 </div>
 
 <div class="errorMsg" *ngIf="errorMsg">
-    <h3>{{ errorMsg }}</h3>
+    <em>{{ errorMsg }}</em>
 </div>
