@@ -1,0 +1,17 @@
+<div class="text-center">
+    <input class="form-control" type="file" accept=".jpg,.jpeg,.png" (change)="onChange($event)">
+
+    <button [disabled]="!editmode ? 'disabled' : null" (click)="onUpload()" class="btn btn-success">
+        Upload
+    </button>
+</div>
+
+
+<!--Flag variable is used here-->
+<div class="container" *ngIf="loading">
+    <h3>Loading ...</h3>
+</div>
+
+<div class="errorMsg" *ngIf="errorMsg">
+    <h3>{{ errorMsg }}</h3>
+</div>

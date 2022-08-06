@@ -22,8 +22,9 @@ import { ChatComponent } from './components/chat/chat.component';
 import { FriendsComponent } from './components/friends/friends.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NavigationComponent } from './components/navigation/navigation.component';
-import { DialogComponent } from './components/dialog/dialog.component';
-import { DialogContentComponent } from './components/dialog/components/dialog-content/dialog-content.component';
+import { DialogContentComponent } from './components/dialog-content/dialog-content.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatDialogModule } from '@angular/material/dialog'
 
 @NgModule({
   declarations: [
@@ -39,7 +40,6 @@ import { DialogContentComponent } from './components/dialog/components/dialog-co
     GameComponent,
     ChatComponent,
     FriendsComponent,
-    DialogComponent,
     DialogContentComponent,
   ],
   imports: [
@@ -48,7 +48,9 @@ import { DialogContentComponent } from './components/dialog/components/dialog-co
     ReactiveFormsModule,
     AuthModule.forRoot(),
     ChatModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    BrowserAnimationsModule,
+    MatDialogModule
   ],
   providers: [
     {

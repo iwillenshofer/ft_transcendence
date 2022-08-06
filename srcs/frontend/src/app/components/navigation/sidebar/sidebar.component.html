@@ -1,8 +1,10 @@
 <div class="sidenav">
     <div class="avatar">
-        <img src="{{ currentUser?.avatar_url }}" alt="Avatar" class="avatar-img">
-        <span class="edit"><a href="#">
+        <img src="{{ image }}" alt="Avatar" class="avatar-img">
+        <span class="edit">
+            <a href="javascript:void(0)" mat-raised-button (click)="openDialog()">
                 <fa-icon [icon]="faEdit" size="lg" [style]="{'color': 'white'}"></fa-icon>
-            </a></span>
+            </a>
+        </span>
     </div>
 </div>
