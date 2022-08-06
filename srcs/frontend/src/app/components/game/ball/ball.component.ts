@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 export const INITIAL_VELOCITY = .025
-export const VELOCITY_INCREASE = 0.00001
+export const VELOCITY_INCREASE = 0.000001
 
 @Component({
   selector: 'app-ball',
@@ -61,14 +61,19 @@ export class BallComponent implements OnInit {
   reset() {
     this.x = 50;
     this.y = 50;
-    this.direction = { x: 0.75, y: 0.5 };
+    this.direction = { x: 0, y: 0 };
     while (Math.abs(this.direction.x) <= 0.2 || Math.abs(this.direction.x) >= 0.9) {
-      const heading = Math.random() % (2 * Math.PI);
+      const heading = this.randomNumberBetween(0, 2 * Math.PI);
       console.log(heading)
       this.direction = { x: Math.cos(heading), y: Math.sin(heading) };
     }
     this.velocity = INITIAL_VELOCITY;
   }
+
+  randomNumberBetween(min: number, max: number) {
+    return Math.random() * (max - min) + min;
+  }
+
 
   rect() {
     return this.ballElem.getBoundingClientRect()

@@ -2,7 +2,7 @@ import { PaddleComponent } from './paddle/paddle.component';
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { BallComponent } from './ball/ball.component';
 
-export const PADDLE_SPEED = 4.2;
+export const PADDLE_SPEED = 8;
 
 @Component({
   selector: 'app-game',
@@ -34,23 +34,23 @@ export class GameComponent implements OnInit {
 
       case 'w':
       case 'W':
-        if (Number(this.player1Paddle.rect.y) > 106)
+        if (Number(this.player1Paddle.rect.y) > 155)
           this.player1Paddle.position -= PADDLE_SPEED;
         break;
 
       case 's':
       case 'S':
-        if (Number(this.player1Paddle.rect.y) < 689)
+        if (Number(this.player1Paddle.rect.y) < 600)
           this.player1Paddle.position += PADDLE_SPEED;
         break;
 
       case 'ArrowUp':
-        if (this.player2Paddle && Number(this.player2Paddle.rect.y) > 106)
+        if (this.player2Paddle && Number(this.player2Paddle.rect.y) > 155)
           this.player2Paddle.position -= PADDLE_SPEED;
         break;
 
       case 'ArrowDown':
-        if (this.player2Paddle && Number(this.player2Paddle.rect.y) < 689)
+        if (this.player2Paddle && Number(this.player2Paddle.rect.y) < 600)
           this.player2Paddle.position += PADDLE_SPEED;
         break;
 
@@ -70,11 +70,12 @@ export class GameComponent implements OnInit {
     if (this.lastTime) {
       const delta = time - this.lastTime;
 
+      this.ball.update(delta, [this.player1Paddle.rect, this.player1Paddle.rect]);
       if (this.player2Paddle)
-        this.ball.update(delta, [this.player1Paddle.rect, this.player2Paddle.rect]);
+        this.ball.update(delta, [this.player2Paddle.rect, this.player2Paddle.rect]);
 
       if (this.computerPaddle) {
-        this.ball.update(delta, [this.player1Paddle.rect, this.computerPaddle]);
+        this.ball.update(delta, [this.computerPaddle.rect, this.computerPaddle]);
         this.computerPaddle.update(delta, this.ball.y)
       }
 

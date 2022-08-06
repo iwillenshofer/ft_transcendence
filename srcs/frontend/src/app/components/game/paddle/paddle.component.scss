@@ -8,8 +8,8 @@
     background-color: $paddle-color;
     top: calc(var(--paddle-position) * 1%);
     transform: translateY(-50%);
-    width: 1vh;
-    height: 10vh;
+    width: 2vh;
+    height: 20vh;
 }
 
 .paddle.left {
