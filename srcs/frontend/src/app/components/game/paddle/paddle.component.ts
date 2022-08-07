@@ -39,7 +39,7 @@ export class PaddleComponent implements OnInit, AfterViewChecked {
 
   update(delta: number, ballHeight: number) {
     if (this.name === 'computer')
-      this.position += COMPUTER_SPEED * delta * (ballHeight - this.position);
+      this.position += COMPUTER_SPEED * delta * (ballHeight - this.position) * 0.5;
   }
 
   reset() {
