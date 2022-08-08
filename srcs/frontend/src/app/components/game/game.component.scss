@@ -40,29 +40,19 @@
 
 .pause-button,
 .resume-button {
-    position: absolute;
     color: white;
     cursor: pointer;
-    margin-left: auto;
-    margin-right: auto;
-    left: 0;
-    right: 0;
+    @include center-absolute;
+    align-items: center;
     bottom: 10px;
-    text-align: center;
 }
 
 .pause-div {
     font-family: "Lucida Console", "Courier New", monospace;
-    align-items: center;
-    position: absolute;
     color: white;
-    margin-left: auto;
-    margin-right: auto;
-    left: 0;
-    right: 0;
+    @include center-absolute;
+    align-items: center;
     bottom: 50%;
-    text-align: center;
-    text-align: center;
 }
 
 .pause-div__title {
@@ -76,15 +66,46 @@
 
 .finished-div {
     font-family: "Lucida Console", "Courier New", monospace;
-    align-items: center;
-    position: absolute;
     color: white;
-    margin-left: auto;
-    margin-right: auto;
-    left: 0;
-    right: 0;
+    @include center-absolute;
+    align-items: center;
     bottom: 50%;
-    text-align: center;
-    text-align: center;
     font-size: 48px;
+}
+
+.start-menu {
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    @include center-absolute;
+    bottom: 30%;
+}
+
+.start-menu button {
+    text-align: left;
+    font-family: "Lucida Console", "Courier New", monospace;
+    height: 10vh;
+    cursor: pointer;
+    font-size: 24px;
+    background-color: black;
+    color: white;
+    opacity: .5;
+}
+
+.start-menu button {
+    text-align: left;
+    font-family: "Lucida Console", "Courier New", monospace;
+    height: 10vh;
+    cursor: pointer;
+    font-size: 24px;
+    background-color: black;
+    color: white;
+    opacity: .75;
+    border: none;
+}
+
+.start-menu button:hover {
+    opacity: 1;
+    border-right: 1px solid white;
+    border-left: 1px solid white;
 }
