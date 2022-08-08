@@ -15,6 +15,7 @@ export class GameComponent implements OnInit {
   currentAnimationFrameId?: number;
   player1Score = 0;
   player2Score = 0;
+  paused: boolean = false;
 
   constructor() { }
 
@@ -29,28 +30,28 @@ export class GameComponent implements OnInit {
       case 'Escape':
       case 'p':
       case 'P':
-        console.log("Pause")
+        this.pause();
         break;
 
       case 'w':
       case 'W':
-        if (Number(this.player1Paddle.rect.y) > 155)
+        if (!this.paused && Number(this.player1Paddle.rect.y) > 155)
           this.player1Paddle.position -= PADDLE_SPEED;
         break;
 
       case 's':
       case 'S':
-        if (Number(this.player1Paddle.rect.y) < 600)
+        if (!this.paused && Number(this.player1Paddle.rect.y) < 600)
           this.player1Paddle.position += PADDLE_SPEED;
         break;
 
       case 'ArrowUp':
-        if (this.player2Paddle && Number(this.player2Paddle.rect.y) > 155)
+        if (!this.paused && this.player2Paddle && Number(this.player2Paddle.rect.y) > 155)
           this.player2Paddle.position -= PADDLE_SPEED;
         break;
 
       case 'ArrowDown':
-        if (this.player2Paddle && Number(this.player2Paddle.rect.y) < 600)
+        if (!this.paused && this.player2Paddle && Number(this.player2Paddle.rect.y) < 600)
           this.player2Paddle.position += PADDLE_SPEED;
         break;
 
@@ -70,13 +71,13 @@ export class GameComponent implements OnInit {
     if (this.lastTime) {
       const delta = time - this.lastTime;
 
-      this.ball.update(delta, [this.player1Paddle.rect, this.player1Paddle.rect]);
       if (this.player2Paddle)
-        this.ball.update(delta, [this.player2Paddle.rect, this.player2Paddle.rect]);
+        this.ball.update(delta, [this.player1Paddle.rect, this.player2Paddle.rect]);
 
       if (this.computerPaddle) {
-        this.ball.update(delta, [this.computerPaddle.rect, this.computerPaddle]);
-        this.computerPaddle.update(delta, this.ball.y)
+        this.ball.update(delta, [this.player1Paddle.rect, this.computerPaddle.rect]);
+        if (Number(this.ball.y) > 15 && Number(this.ball.y) < 85)
+          this.computerPaddle.update(delta, this.ball.y)
       }
 
       if (this.isLose()) {
@@ -102,6 +103,17 @@ export class GameComponent implements OnInit {
     this.ball.reset();
     if (this.computerPaddle)
       this.computerPaddle.reset()
+  }
+
+  pause() {
+    this.paused = !this.paused;
+    if (this.paused) {
+      this.lastTime = 0;
+      window.cancelAnimationFrame(this.currentAnimationFrameId as number);
+    }
+    if (!this.paused) {
+      window.requestAnimationFrame(this.update.bind(this));
+    }
   }
 }
 

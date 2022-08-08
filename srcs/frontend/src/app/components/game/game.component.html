@@ -7,7 +7,10 @@
         </div>
         <app-ball></app-ball>
         <app-paddle #player1 [name]="'player1'" [side]="'left'"></app-paddle>
-        <app-paddle #player2 [name]="'player2'" [side]="'right'"></app-paddle>
-        <!-- <app-paddle #computer [name]="'computer'" [side]="'right'"></app-paddle> -->
+        <!-- <app-paddle #player2 [name]="'player2'" [side]="'right'"></app-paddle> -->
+        <app-paddle #computer [name]="'computer'" [side]="'right'"></app-paddle>
+        <div *ngIf="paused" class="pause-div">PAUSED</div>
+        <p *ngIf="!paused" class="pause-button" (click)="pause()">Pause</p>
+        <p *ngIf="paused" class="pause-button" (click)="pause()">Resume</p>
     </div>
 </div>
