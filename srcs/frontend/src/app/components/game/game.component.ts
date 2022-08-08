@@ -3,7 +3,7 @@ import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { BallComponent } from './ball/ball.component';
 
 export const PADDLE_SPEED = 8;
-export const MAX_SCORE = 10;
+export const MAX_SCORE = 1;
 
 @Component({
   selector: 'app-game',
