@@ -24,6 +24,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { BallComponent } from './components/game/ball/ball.component';
 import { PaddleComponent } from './components/game/paddle/paddle.component';
+import { PowerupComponent } from './components/game/powerup/powerup.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { PaddleComponent } from './components/game/paddle/paddle.component';
     FriendsComponent,
     BallComponent,
     PaddleComponent,
+    PowerupComponent,
   ],
   imports: [
     BrowserModule,

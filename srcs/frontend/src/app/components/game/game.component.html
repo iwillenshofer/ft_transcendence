@@ -2,10 +2,22 @@
 <div class="main">
     <div class="table">
         <div class="start-menu" *ngIf="!play">
-            <button (click)="start('local')">Local multiplayer</button>
-            <button (click)="start('computer')">vs Computer</button>
-            <button>Random multiplayer</button>
-            <button>vs Friend</button>
+            <button class="game-mode" (click)="start('local')">LOCAL MULTIPLAYER</button>
+            <button class="game-mode" (click)="start('computer')">VS COMPUTER</button>
+            <button class="game-mode">RANDOM MULTIPLAYER</button>
+            <button class="game-mode">VS FRIEND</button>
+            <!-- <button>INSTRUCTIONS</button> -->
+            <div class="custom">
+                <div *ngIf="!powerUpMode" class="square" (click)="togglePowerUp()"></div>
+                <div *ngIf="powerUpMode" class="square" (click)="togglePowerUp()">X</div>
+                Power-ups
+            </div>
+        </div>
+        <div class="instructions-menu" *ngIf="!play">
+            <p>INSTRUCTIONS</p>
+            <p>Player 1: Keys [W] [S]</p>
+            <p>Player 2: Arrows [Up] [Down]</p>
+            <p>[P] Pause</p>
         </div>
         <div *ngIf="play">
             <div class="score">
@@ -13,6 +25,7 @@
                 <div id="player2-score">{{ player2Score }}</div>
             </div>
             <app-ball *ngIf="!finished"></app-ball>
+            <app-powerup *ngIf="!finished && powerUpMode"></app-powerup>
             <app-paddle #player1 [name]="'player1'" [side]="'left'"></app-paddle>
             <app-paddle #player2 *ngIf="mode == 'local'" [name]="'player2'" [side]="'right'"></app-paddle>
             <app-paddle #computer *ngIf="mode == 'computer'" [name]="'computer'" [side]="'right'"></app-paddle>
@@ -21,11 +34,11 @@
         </div>
         <div *ngIf="paused" class="pause-div">
             <p class="pause-div__title">PAUSED</p>
-            <p class="pause-div__text">Press 'q' to quit</p>
+            <p class="pause-div__text">Press [Q] to quit</p>
         </div>
         <div *ngIf="finished" class="finished-div">
             {{ message }}
-            <p class="pause-div__text">Press 'q' to quit</p>
+            <p class="pause-div__text">Press [Q] to quit</p>
         </div>
     </div>
 </div>

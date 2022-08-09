@@ -1,6 +1,8 @@
+import { PowerupComponent } from './powerup/powerup.component';
 import { PaddleComponent } from './paddle/paddle.component';
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { BallComponent } from './ball/ball.component';
+
 
 export const PADDLE_SPEED = 8;
 export const MAX_SCORE = 10;
@@ -21,6 +23,7 @@ export class GameComponent implements OnInit {
   finished: boolean = false;
   message!: string;
   mode!: string;
+  powerUpMode: boolean = false;
 
   constructor() { }
 
@@ -28,10 +31,10 @@ export class GameComponent implements OnInit {
   @ViewChild('player1') player1Paddle!: PaddleComponent;
   @ViewChild('player2') player2Paddle!: PaddleComponent;
   @ViewChild('computer') computerPaddle!: PaddleComponent;
+  @ViewChild(PowerupComponent) powerup!: PowerupComponent;
 
   @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
     switch (event.key) {
-      case 'Escape':
       case 'p':
       case 'P':
         if (this.play && !this.finished)
@@ -53,15 +56,15 @@ export class GameComponent implements OnInit {
       case 'ArrowUp':
         if (!this.paused && this.player2Paddle && Number(this.player2Paddle.rect.y) > 155)
           this.player2Paddle.position -= PADDLE_SPEED;
-        if (!this.paused && this.computerPaddle && Number(this.player1Paddle.rect.y) > 155)
-          this.player1Paddle.position -= PADDLE_SPEED;
+        // if (!this.paused && this.computerPaddle && Number(this.player1Paddle.rect.y) > 155)
+        // this.player1Paddle.position -= PADDLE_SPEED;
         break;
 
       case 'ArrowDown':
         if (!this.paused && this.player2Paddle && Number(this.player2Paddle.rect.y) < 600)
           this.player2Paddle.position += PADDLE_SPEED;
-        if (!this.paused && this.computerPaddle && Number(this.player1Paddle.rect.y) < 600)
-          this.player1Paddle.position += PADDLE_SPEED;
+        // if (!this.paused && this.computerPaddle && Number(this.player1Paddle.rect.y) < 600)
+        // this.player1Paddle.position += PADDLE_SPEED;
         break;
 
       case 'q':
@@ -108,11 +111,18 @@ export class GameComponent implements OnInit {
         if (Number(this.ball.y) > 15 && Number(this.ball.y) < 85)
           this.computerPaddle.update(delta, this.ball.y)
       }
-
-      if (this.isLose()) {
-        this.handleLose();
-      }
     }
+
+    // if (this.powerup && !(time % 5))
+    //   this.powerup.showPowerUp = true;
+
+    // if (this.powerup && this.powerup.isCollision(this.ball.rect()))
+    //   console.log("collision")
+
+    if (this.isLose()) {
+      this.handleLose();
+    }
+
     this.lastTime = time;
     this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
     if (this.player1Score == MAX_SCORE || this.player2Score == MAX_SCORE)
@@ -161,6 +171,10 @@ export class GameComponent implements OnInit {
       else
         this.message = "Player2 won!";
     }
+  }
+
+  togglePowerUp() {
+    this.powerUpMode = !this.powerUpMode;
   }
 }
 

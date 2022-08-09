@@ -79,6 +79,6 @@ export class BallComponent implements OnInit {
   }
 
   isCollision(rect1: DOMRect, rect2: DOMRect) {
-    return rect1.left <= rect2.right && rect1.right >= rect2.left && rect1.top <= rect2.bottom && rect1.bottom >= rect2.top;
+    return Math.ceil(rect1.left) <= Math.floor(rect2.right) && Math.ceil(rect1.right) >= Math.floor(rect2.left) && Math.ceil(rect1.top) <= Math.floor(rect2.bottom) && Math.ceil(rect1.bottom) >= Math.floor(rect2.top);
   }
 }
