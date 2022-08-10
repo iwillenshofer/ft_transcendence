@@ -1,12 +1,12 @@
 @import '../game_variables.scss';
 
 .paddle {
-    margin-top: 50px;
+    // margin-top: 50px;
     --paddle-position: 50;
 
     position: absolute;
     background-color: $paddle-color;
-    top: calc(var(--paddle-position) * 1%);
+    top: calc(calc(var(--paddle-position) * 1%) + 50px);
     transform: translateY(-50%);
     width: 2vh;
     height: 20vh;

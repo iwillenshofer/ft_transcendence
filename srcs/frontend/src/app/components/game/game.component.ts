@@ -3,7 +3,7 @@ import { PaddleComponent } from './paddle/paddle.component';
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { BallComponent } from './ball/ball.component';
 
-export const PADDLE_SPEED = 8;
+export const PADDLE_SPEED = 0.1;
 export const MAX_SCORE = 10;
 
 @Component({
@@ -22,7 +22,8 @@ export class GameComponent implements OnInit {
   finished: boolean = false;
   message!: string;
   mode!: string;
-  powerUpMode: boolean = false;
+  powerUpMode: boolean = true;
+  initHeight = window.innerHeight;
 
   constructor() { }
 
@@ -33,6 +34,10 @@ export class GameComponent implements OnInit {
   @ViewChild(PowerupComponent) powerup!: PowerupComponent;
 
   @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
+    let cont = 0;
+    let tableRect = document.getElementById('table')!.getBoundingClientRect();
+    let max_height = tableRect.top;
+    let min_height = tableRect.bottom;
     switch (event.key) {
       case 'p':
       case 'P':
@@ -42,25 +47,26 @@ export class GameComponent implements OnInit {
 
       case 'w':
       case 'W':
-        if (!this.paused && Number(this.player1Paddle.rect.y) > 155)
+        while (++cont < 50 && !this.paused && Number(this.player1Paddle.rect.top) > max_height) {
           this.player1Paddle.position -= PADDLE_SPEED;
+        }
         break;
 
       case 's':
       case 'S':
-        if (!this.paused && Number(this.player1Paddle.rect.y) < 600)
+        while (++cont < 50 && !this.paused && Number(this.player1Paddle.rect.y) < min_height - this.player1Paddle.rect.height)
           this.player1Paddle.position += PADDLE_SPEED;
         break;
 
       case 'ArrowUp':
-        if (!this.paused && this.player2Paddle && Number(this.player2Paddle.rect.y) > 155)
+        while (++cont < 50 && !this.paused && this.player2Paddle && Number(this.player2Paddle.rect.y) > max_height)
           this.player2Paddle.position -= PADDLE_SPEED;
         // if (!this.paused && this.computerPaddle && Number(this.player1Paddle.rect.y) > 155)
         // this.player1Paddle.position -= PADDLE_SPEED;
         break;
 
       case 'ArrowDown':
-        if (!this.paused && this.player2Paddle && Number(this.player2Paddle.rect.y) < 600)
+        while (++cont < 50 && !this.paused && this.player2Paddle && Number(this.player2Paddle.rect.y) < min_height - this.player2Paddle.rect.height)
           this.player2Paddle.position += PADDLE_SPEED;
         // if (!this.paused && this.computerPaddle && Number(this.player1Paddle.rect.y) < 600)
         // this.player1Paddle.position += PADDLE_SPEED;
@@ -74,7 +80,6 @@ export class GameComponent implements OnInit {
         break;
 
       default:
-        console.log(event.key)
         break;
     }
   }
@@ -111,9 +116,13 @@ export class GameComponent implements OnInit {
           this.computerPaddle.update(delta, this.ball.y)
       }
     }
-
     if (this.powerUpMode) {
-      if (time - this.powerup.time > 5000) {
+      if (this.initHeight != window.innerHeight) {
+        this.powerup.update();
+        this.initHeight = window.innerHeight;
+      }
+      // if (time - this.powerup.time > 5000) {
+      if (time - this.powerup.time > 1) {
         this.powerup.display();
       }
       if (this.powerup.bg_color != 'black' && this.powerup.isCollision(this.ball.rect())) {

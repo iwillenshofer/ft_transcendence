@@ -1,6 +1,6 @@
 <app-navbar></app-navbar>
 <div class="main">
-    <div class="table">
+    <div class="table" id="table">
         <div class="start-menu" *ngIf="!play">
             <button class="game-mode" (click)="start('local')">LOCAL MULTIPLAYER</button>
             <button class="game-mode" (click)="start('computer')">VS COMPUTER</button>
@@ -29,12 +29,13 @@
             <app-paddle #player1 [name]="'player1'" [side]="'left'"></app-paddle>
             <app-paddle #player2 *ngIf="mode == 'local'" [name]="'player2'" [side]="'right'"></app-paddle>
             <app-paddle #computer *ngIf="mode == 'computer'" [name]="'computer'" [side]="'right'"></app-paddle>
-            <p *ngIf="!paused" class="pause-button" (click)="pause()">Pause</p>
-            <p *ngIf="paused" class="resume-button" (click)="pause()">Resume</p>
+            <!-- <p *ngIf="!paused" class="pause-button" (click)="pause()">Pause</p> -->
+            <!-- <p *ngIf="paused" class="resume-button" (click)="pause()">Resume</p> -->
         </div>
         <div *ngIf="paused" class="pause-div">
             <p class="pause-div__title">PAUSED</p>
-            <p class="pause-div__text">Press [Q] to quit</p>
+            <p class="pause-div__text">[P] Resume</p>
+            <p class="pause-div__text">[Q] Quit</p>
         </div>
         <div *ngIf="finished" class="finished-div">
             {{ message }}

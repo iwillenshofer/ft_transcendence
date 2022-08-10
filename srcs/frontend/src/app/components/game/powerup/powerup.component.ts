@@ -23,7 +23,8 @@ export class PowerupComponent implements OnInit {
 
   update() {
     this.x = this.randomNumberBetween(10, 90);
-    this.y = this.randomNumberBetween(13, 87);
+    //rect.bottom >= (window.innerHeight - 5) || rect.top <= 104
+    this.y = this.randomNumberBetween(105, window.innerHeight - this.rect().height - 5);
   }
 
   rect() {
@@ -66,6 +67,8 @@ export class PowerupComponent implements OnInit {
   }
 
   collided(time: number) {
+    let color = this.bg_color;
+    console.log(color);
     this.bg_color = 'black';
     this.update();
     this.time = time;
