@@ -31,14 +31,16 @@ export class AuthService {
 	}
 
 	async getAccessToken(user: any, tfa_fulfilled: boolean = false) {
-		if (!(tfa_fulfilled))
+		if (!(tfa_fulfilled)) {
 			tfa_fulfilled = !(await this.userService.getTfaEnabled(user.id));
+		}
 		const payload = { username: user.username, id: user.id, tfa_fulfilled: tfa_fulfilled };
-		return (this.jwtService.sign(payload, { secret: process.env.JWT_SECRET, expiresIn: 3 }));
+		console.log("created access token: " + JSON.stringify(payload))
+		return (this.jwtService.sign(payload, { secret: process.env.JWT_SECRET, expiresIn: 300 }));
 	}
 
 	async getRefreshToken(user: any) {
-		const payload = { username: user.username, id: user.id };
+		const payload = { username: user.username, id: user.id};
 		return (this.jwtService.sign(payload, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: 60 * 60 * 24 * 7 }));
 	}
 
@@ -115,5 +117,12 @@ export class AuthService {
 		}
 		const otp_url = authenticator.keyuri(String(user_id), 'ft_transcendence', await this.userService.getTfaCode(user_id));
 		return toFileStream(stream, otp_url);
+	}
+
+	public async retrieveTfaCode(user_id: number, stream: Writable) {
+		console.log("qrcode user " + user_id);
+		let user_info: UserDTO = await this.userService.getUser(user_id);
+		const code = await this.userService.getTfaCode(user_id);
+		return code;
 	}
 }

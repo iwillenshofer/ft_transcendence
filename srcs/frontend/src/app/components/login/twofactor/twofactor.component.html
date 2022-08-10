@@ -1,7 +1,9 @@
-<app-navigation></app-navigation>
+<app-navigation *ngIf="tfa_fulfilled.value"></app-navigation>
 
 <div class="main">
     <img *ngIf="qrCode.value" class="images" [src]="qrCode.value" />
     Code: <input type="text" name="code" [formControl]="codeControl">
+
     <app-button name="Submit" (btnClick)="submitCode()"></app-button>
 </div>
+

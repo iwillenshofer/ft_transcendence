@@ -60,6 +60,8 @@ export class AuthController {
 		console.log("user-profile:" + JSON.stringify(req.user));
 		let user: UserDTO = UserDTO.from(await this.userService.getUser(req.user.id));
 		user.tfa_fulfilled = (!(await this.userService.getTfaEnabled(req.user.id)) || req.user.tfa_fulfilled);
+		console.log("enabled:" + (await this.userService.getTfaEnabled(req.user.id)));
+		console.log("fulfilled:" + req.user.tfa_fulfilled);
 		console.log("user dto:" + JSON.stringify(user));
 		return (JSON.stringify(user));
 	}
@@ -73,7 +75,6 @@ export class AuthController {
 		}
 		const refreshtoken = await this.authService.getRefreshToken({ username: callback_code.username, id: callback_code.id });
 		const callback_token: string = await this.authService.getAccessToken({ username: callback_code.username, id: callback_code.id });
-
 		res.cookie('refresh_token', refreshtoken, { httpOnly: true });
 		await this.userService.updateRefreshToken(callback_code.id, refreshtoken);
 		return { token: callback_token };
@@ -117,6 +118,14 @@ export class AuthController {
 		return await this.authService.generateQrCode(req.user.id, res);
 	}
 
+	@UseGuards(JwtGuard)
+	@Get('tfa_keycode')
+	async get_tfakeycode(@Res() res: Writable, @Request() req) {
+		let key_code: string = await this.authService.retrieveTfaCode(req.user.id, res);
+		console.log("key_code: "+ key_code);
+		return { key_code: key_code };
+	}
+
 	@UseGuards(TfaGuard)
 	@Post('tfa_disable')
 	async activate_tfa(@Request() req) {
@@ -127,7 +136,11 @@ export class AuthController {
 	@Post('tfa_verify')
 	async verify_tfa(@Body() body: any, @Request() req, @Response() res): Promise<any> {
 		const verified: boolean = await this.authService.verifyTwoFactor(req.user.id, body.code);
-		res.send(JSON.stringify({ msg: verified }));
+		let callback_token: string = null;
+		if (verified) {
+			callback_token = await this.authService.getAccessToken({ username: req.user.username, id: req.user.id }, true);
+		}
+		res.send(JSON.stringify({ msg: verified, token: callback_token }));
 		return;
 	}
 }
