@@ -3,7 +3,6 @@ import { PaddleComponent } from './paddle/paddle.component';
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { BallComponent } from './ball/ball.component';
 
-
 export const PADDLE_SPEED = 8;
 export const MAX_SCORE = 10;
 
@@ -113,11 +112,14 @@ export class GameComponent implements OnInit {
       }
     }
 
-    // if (this.powerup && !(time % 5))
-    //   this.powerup.showPowerUp = true;
-
-    // if (this.powerup && this.powerup.isCollision(this.ball.rect()))
-    //   console.log("collision")
+    if (this.powerUpMode) {
+      if (time - this.powerup.time > 5000) {
+        this.powerup.display();
+      }
+      if (this.powerup.bg_color != 'black' && this.powerup.isCollision(this.ball.rect())) {
+        this.powerup.collided(time);
+      }
+    }
 
     if (this.isLose()) {
       this.handleLose();

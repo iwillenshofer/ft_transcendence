@@ -3,13 +3,15 @@
 .powerup {
     --x: 50;
     --y: 50;
+    --bg-color: black;
 
     position: absolute;
-    background-color: $powerup-color;
+    background-color: var(--bg-color);
     left: calc((var(--x) * 1%));
     top: calc((var(--y) * 1%));
     transform: translate(-50%, -50%);
     width: 10vh;
     height: 10vh;
     margin-top: 50px;
+    z-index: 0;
 }

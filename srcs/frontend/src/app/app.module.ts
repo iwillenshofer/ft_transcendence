@@ -50,7 +50,7 @@ import { PowerupComponent } from './components/game/powerup/powerup.component';
     ReactiveFormsModule,
     AuthModule.forRoot(),
     ChatModule,
-    FontAwesomeModule
+    FontAwesomeModule,
   ],
   providers: [
     {
