@@ -22,7 +22,7 @@ export class GameComponent implements OnInit {
   finished: boolean = false;
   message!: string;
   mode!: string;
-  powerUpMode: boolean = true;
+  powerUpMode: boolean = false;
   initHeight = window.innerHeight;
 
   constructor() { }
@@ -107,37 +107,79 @@ export class GameComponent implements OnInit {
     if (this.lastTime) {
       const delta = time - this.lastTime;
 
-      if (this.player2Paddle)
+      if (this.player2Paddle) {
         this.ball.update(delta, [this.player1Paddle.rect, this.player2Paddle.rect]);
+      }
 
       if (this.computerPaddle) {
+        let table = document.getElementById('table')!.getBoundingClientRect();
         this.ball.update(delta, [this.player1Paddle.rect, this.computerPaddle.rect]);
-        if (Number(this.ball.y) > 15 && Number(this.ball.y) < 85)
-          this.computerPaddle.update(delta, this.ball.y)
+        this.computerPaddle.update(delta, this.ball.y, table);
       }
-    }
-    if (this.powerUpMode) {
-      if (this.initHeight != window.innerHeight) {
-        this.powerup.update();
-        this.initHeight = window.innerHeight;
-      }
-      // if (time - this.powerup.time > 5000) {
-      if (time - this.powerup.time > 1) {
-        this.powerup.display();
-      }
-      if (this.powerup.bg_color != 'black' && this.powerup.isCollision(this.ball.rect())) {
-        this.powerup.collided(time);
-      }
-    }
 
-    if (this.isLose()) {
-      this.handleLose();
     }
+    if (this.powerUpMode)
+      this.powerUps(time);
+
+    if (this.isLose())
+      this.handleLose();
 
     this.lastTime = time;
     this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
     if (this.player1Score == MAX_SCORE || this.player2Score == MAX_SCORE)
       this.finish();
+  }
+
+  powerUps(time: number) {
+    let anyPaddle;
+    if (this.player2Paddle)
+      anyPaddle = this.player2Paddle
+    else
+      anyPaddle = this.computerPaddle
+
+    if (this.initHeight != window.innerHeight) {
+      this.powerup.update();
+      this.initHeight = window.innerHeight;
+    }
+    if (time - this.powerup.time > 5000 && this.ball.lastTouch) {
+      this.powerup.display();
+    }
+    if (this.powerup.bg_color != 'black' && this.powerup.isCollision(this.ball.rect())) {
+      let color = this.powerup.bg_color;
+      switch (color) {
+        case 'green':
+          this.powerup.collid = "BIG PADDLE";
+          if (this.ball.lastTouch == 1) {
+            this.player1Paddle.reset();
+            this.player1Paddle.height = 50;
+          }
+          if (this.ball.lastTouch == 2) {
+            anyPaddle.reset();
+            anyPaddle.height = 50;
+          }
+          break;
+        case 'red':
+          this.powerup.collid = "small paddle"
+          if (this.ball.lastTouch == 1)
+            this.player1Paddle.height = 10;
+          if (this.ball.lastTouch == 2)
+            anyPaddle.height = 10;
+          break;
+        case 'blue':
+          this.powerup.collid = "BIG BALL"
+          this.ball.size = 10;
+          break;
+        default:
+          break;
+      }
+      this.powerup.collided(time);
+    }
+
+    if (time - this.powerup.time > 10000) {
+      this.player1Paddle.height = 20;
+      anyPaddle.height = 20;
+      this.ball.size = 2;
+    }
   }
 
   isLose() {

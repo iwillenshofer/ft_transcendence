@@ -12,6 +12,7 @@ export class BallComponent implements OnInit {
 
   ballElem!: HTMLElement;
   direction: { x: number; y: number } = { x: 0.0, y: 0.0 };
+  lastTouch: number = 0;
 
   velocity: number = INITIAL_VELOCITY;
 
@@ -53,7 +54,13 @@ export class BallComponent implements OnInit {
       this.direction.y *= -1;
     }
 
-    if (paddleRects.some(r => this.isCollision(r, rect))) {
+    if (this.isCollision(paddleRects[0], rect)) {
+      this.lastTouch = 1;
+      this.direction.x *= -1;
+    }
+
+    if (this.isCollision(paddleRects[1], rect)) {
+      this.lastTouch = 2;
       this.direction.x *= -1;
     }
   }
@@ -61,6 +68,7 @@ export class BallComponent implements OnInit {
   reset() {
     this.x = 50;
     this.y = 50;
+    this.lastTouch = 0;
     this.direction = { x: 0, y: 0 };
     while (Math.abs(this.direction.x) <= 0.2 || Math.abs(this.direction.x) >= 0.9) {
       const heading = this.randomNumberBetween(0, 2 * Math.PI);
@@ -73,12 +81,19 @@ export class BallComponent implements OnInit {
     return Math.random() * (max - min) + min;
   }
 
-
   rect() {
     return this.ballElem.getBoundingClientRect()
   }
 
   isCollision(rect1: DOMRect, rect2: DOMRect) {
     return Math.ceil(rect1.left) <= Math.floor(rect2.right) && Math.ceil(rect1.right) >= Math.floor(rect2.left) && Math.ceil(rect1.top) <= Math.floor(rect2.bottom) && Math.ceil(rect1.bottom) >= Math.floor(rect2.top);
+  }
+
+  get size() {
+    return parseFloat(getComputedStyle(this.ballElem).getPropertyValue("--ball-size"))
+  }
+
+  set size(value: number) {
+    this.ballElem.style.setProperty("--ball-size", value.toString());
   }
 }

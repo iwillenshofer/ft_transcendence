@@ -3,6 +3,7 @@
 .ball {
     --x: 50;
     --y: 50;
+    --ball-size: 2;
 
     position: absolute;
     background-color: $ball-color;
@@ -10,8 +11,8 @@
     top: calc((var(--y) * 1%));
     border-radius: 50%;
     transform: translate(-50%, -50%);
-    width: 1.5vh;
-    height: 1.5vh;
+    width: calc((var(--ball-size) * 1vh));
+    height: calc((var(--ball-size) * 1vh));
     margin-top: 50px;
     z-index: 10;
 }

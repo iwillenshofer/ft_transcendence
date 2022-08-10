@@ -54,6 +54,7 @@
     @include center-absolute;
     align-items: center;
     top: calc(105px + 10%);
+    background-color: black;
 }
 
 .pause-div__title {
@@ -72,6 +73,7 @@
     align-items: center;
     top: calc(105px + 10%);
     font-size: 10vh;
+    background-color: black;
 }
 
 .start-menu {

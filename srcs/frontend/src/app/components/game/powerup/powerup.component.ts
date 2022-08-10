@@ -10,6 +10,7 @@ export class PowerupComponent implements OnInit {
   powerElem!: HTMLElement;
   time: number = 1;
   effect: number = 1;
+  collid: string = "";
 
   constructor() { }
 
@@ -24,7 +25,7 @@ export class PowerupComponent implements OnInit {
   update() {
     this.x = this.randomNumberBetween(10, 90);
     //rect.bottom >= (window.innerHeight - 5) || rect.top <= 104
-    this.y = this.randomNumberBetween(105, window.innerHeight - this.rect().height - 5);
+    this.y = this.randomNumberBetween(105, window.innerHeight - this.rect().height - 15);
   }
 
   rect() {
@@ -67,24 +68,22 @@ export class PowerupComponent implements OnInit {
   }
 
   collided(time: number) {
-    let color = this.bg_color;
-    console.log(color);
-    this.bg_color = 'black';
-    this.update();
     this.time = time;
+    this.update();
+    this.bg_color = 'black';
+    // let powertext = document.getElementById('powertext')!;
+    // powertext.style.animationPlayState = 'running';
+
   }
 
   display() {
+    this.collid = "";
     if (this.effect > 0 && this.effect <= 33)
       this.bg_color = 'blue';
-    // this.effect = 'fast'
-
     if (this.effect > 33 && this.effect <= 66)
       this.bg_color = 'green';
-    // this.effect = 'bigger'
     if (this.effect > 66 && this.effect <= 100)
       this.bg_color = 'red';
-    // this.effect = 'small'
     if (this.effect == 100)
       this.effect = 1;
     else

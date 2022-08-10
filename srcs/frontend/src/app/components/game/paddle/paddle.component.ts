@@ -1,6 +1,6 @@
 import { AfterViewChecked, Component, Input, OnInit } from '@angular/core';
 
-export const COMPUTER_SPEED = 0.02
+export const COMPUTER_SPEED = 0.5
 
 @Component({
   selector: 'app-paddle',
@@ -9,7 +9,7 @@ export const COMPUTER_SPEED = 0.02
 })
 export class PaddleComponent implements OnInit, AfterViewChecked {
 
-  PaddleElem!: HTMLElement;
+  paddleElem!: HTMLElement;
   @Input() name!: 'player1' | 'player2' | 'computer';
   @Input() side!: 'left' | 'right';
   hasReset = false;
@@ -17,9 +17,9 @@ export class PaddleComponent implements OnInit, AfterViewChecked {
   constructor() { }
 
   ngAfterViewChecked(): void {
-    let PaddleElem = document.getElementById(`${this.name}-paddle`);
-    if (PaddleElem) {
-      this.PaddleElem = PaddleElem;
+    let paddleElem = document.getElementById(`${this.name}-paddle`);
+    if (paddleElem) {
+      this.paddleElem = paddleElem;
       if (!this.hasReset) {
         this.hasReset = true;
         this.reset();
@@ -30,23 +30,39 @@ export class PaddleComponent implements OnInit, AfterViewChecked {
   ngOnInit(): void { }
 
   get position() {
-    return parseFloat(getComputedStyle(this.PaddleElem).getPropertyValue("--paddle-position"))
+    return parseFloat(getComputedStyle(this.paddleElem).getPropertyValue("--paddle-position"))
   }
 
   set position(value: number) {
-    this.PaddleElem.style.setProperty("--paddle-position", value.toString());
+    this.paddleElem.style.setProperty("--paddle-position", value.toString());
   }
 
-  update(delta: number, ballHeight: number) {
-    if (this.name === 'computer')
-      this.position += COMPUTER_SPEED * delta * (ballHeight - this.position) * 0.5;
+  update(delta: number, ballHeight: number, table: DOMRect) {
+    let direction = Math.round(ballHeight - this.position);
+    if (this.name === 'computer') {
+      if (this.rect.top > table.top && this.rect.bottom < table.bottom)
+        this.position += COMPUTER_SPEED * direction;
+      if (this.rect.top < table.top || this.rect.bottom > table.bottom)
+        this.position -= COMPUTER_SPEED * direction;;
+    }
   }
 
   reset() {
     this.position = 50;
+    this.height = 20;
   }
 
   get rect() {
-    return this.PaddleElem.getBoundingClientRect();
+    return this.paddleElem.getBoundingClientRect();
   }
+
+  get height() {
+    return parseFloat(getComputedStyle(this.paddleElem).getPropertyValue("--paddle-size"))
+  }
+
+  set height(value: number) {
+    this.paddleElem.style.setProperty("--paddle-size", value.toString());
+  }
+
+
 }

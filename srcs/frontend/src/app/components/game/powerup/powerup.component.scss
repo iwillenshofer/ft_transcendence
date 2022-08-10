@@ -10,7 +10,41 @@
     transform: translate(-50%, -50%);
     left: calc((var(--x) * 1%));
     top: calc((var(--y) * 1px) + 5vh);
-    width: 10vh;
-    height: 10vh;
+    width: 8vh;
+    height: 8vh;
     z-index: 0;
+}
+
+.powerup h1 {
+    @include center-absolute();
+    // display: flex;
+    flex-direction: column;
+    font-size: 7vh;
+    margin-top: -0.5vh;
+}
+
+p {
+    --effect-color: black;
+    font-family: "Lucida Console", "Courier New", monospace;
+    font-size: 5vh;
+    color: var(--effect-color);
+    @include center-absolute();
+    position: relative;
+    animation-duration: 7s;
+    animation-iteration-count: 1;
+    -moz-animation-iteration-count: 1;
+    -webkit-animation-iteration-count: 1;
+    -o-animation-iteration-count: 1;
+    animation-name: fadeOut;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        color: white;
+    }
+
+    100% {
+        opacity: 0;
+    }
 }
