@@ -47,26 +47,26 @@ export class GameComponent implements OnInit {
 
       case 'w':
       case 'W':
-        while (++cont < 50 && !this.paused && Number(this.player1Paddle.rect.top) > max_height) {
+        while (++cont < 100 && !this.paused && Number(this.player1Paddle.rect.top) > max_height) {
           this.player1Paddle.position -= PADDLE_SPEED;
         }
         break;
 
       case 's':
       case 'S':
-        while (++cont < 50 && !this.paused && Number(this.player1Paddle.rect.y) < min_height - this.player1Paddle.rect.height)
+        while (++cont < 100 && !this.paused && Number(this.player1Paddle.rect.y) < min_height - this.player1Paddle.rect.height)
           this.player1Paddle.position += PADDLE_SPEED;
         break;
 
       case 'ArrowUp':
-        while (++cont < 50 && !this.paused && this.player2Paddle && Number(this.player2Paddle.rect.y) > max_height)
+        while (++cont < 100 && !this.paused && this.player2Paddle && Number(this.player2Paddle.rect.y) > max_height)
           this.player2Paddle.position -= PADDLE_SPEED;
         // if (!this.paused && this.computerPaddle && Number(this.player1Paddle.rect.y) > 155)
         // this.player1Paddle.position -= PADDLE_SPEED;
         break;
 
       case 'ArrowDown':
-        while (++cont < 50 && !this.paused && this.player2Paddle && Number(this.player2Paddle.rect.y) < min_height - this.player2Paddle.rect.height)
+        while (++cont < 100 && !this.paused && this.player2Paddle && Number(this.player2Paddle.rect.y) < min_height - this.player2Paddle.rect.height)
           this.player2Paddle.position += PADDLE_SPEED;
         // if (!this.paused && this.computerPaddle && Number(this.player1Paddle.rect.y) < 600)
         // this.player1Paddle.position += PADDLE_SPEED;
