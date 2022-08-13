@@ -16,7 +16,7 @@ export class UserEntity extends BaseEntity {
   @Column({ nullable: false, type: 'varchar', length: 2048 })
   avatar_url: string;
 
-  @Column({ nullable: true, type: 'varchar', length: 200 })
+  @Column({ nullable: true, type: 'varchar', length: 500 })
   refreshtoken: string;
 
   @Column({ nullable: true, type: 'boolean', default: false })

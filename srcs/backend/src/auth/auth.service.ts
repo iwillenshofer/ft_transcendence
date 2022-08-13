@@ -9,14 +9,19 @@ import { dataSource } from 'src/app.datasource';
 import { AuthInterface } from './models/auth.interface';
 import * as crypto from 'crypto';
 import { AuthEntity } from './models/auth.entity';
+import { toDataURL } from 'qrcode';
 import { UserInterface } from 'src/users/users.interface';
+import { keyDecoder, keyEncoder } from '@otplib/plugin-thirty-two'; // use your chosen base32 plugin
+import { createDigest, createRandomBytes } from '@otplib/plugin-crypto'; // use your chosen crypto plugin
+import { json } from 'stream/consumers';
+
 
 @Injectable()
 export class AuthService {
 	constructor(
 		private jwtService: JwtService,
-		private userService: UsersService
-	) { }
+		private userService: UsersService,
+	) { };
 
 	async getOrCreateUser(data: any): Promise<UserDTO> {
 		let user: UserDTO | null;
@@ -31,14 +36,16 @@ export class AuthService {
 	}
 
 	async getAccessToken(user: any, tfa_fulfilled: boolean = false) {
-		if (!(tfa_fulfilled))
+		if (!(tfa_fulfilled)) {
 			tfa_fulfilled = !(await this.userService.getTfaEnabled(user.id));
+		}
 		const payload = { username: user.username, id: user.id, tfa_fulfilled: tfa_fulfilled };
-		return (this.jwtService.sign(payload, { secret: process.env.JWT_SECRET, expiresIn: 3 }));
+		console.log("created access token: " + JSON.stringify(payload))
+		return (this.jwtService.sign(payload, { secret: process.env.JWT_SECRET, expiresIn: 300 }));
 	}
 
 	async getRefreshToken(user: any) {
-		const payload = { username: user.username, id: user.id };
+		const payload = { username: user.username, id: user.id};
 		return (this.jwtService.sign(payload, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: 60 * 60 * 24 * 7 }));
 	}
 
@@ -106,14 +113,12 @@ export class AuthService {
 		return false;
 	}
 
-	public async generateQrCode(user_id: number, stream: Writable) {
+	public async generateTFA(user_id: number) {
 		console.log("qrcode user " + user_id);
 		let user_info: UserDTO = await this.userService.getUser(user_id);
-		if (this.userService.getTfaEnabled(user_id)) {
-			const secret = authenticator.generateSecret();
-			await this.userService.set2FASecret(user_id, secret);
-		}
-		const otp_url = authenticator.keyuri(String(user_id), 'ft_transcendence', await this.userService.getTfaCode(user_id));
-		return toFileStream(stream, otp_url);
+		const secret = authenticator.generateSecret();
+		await this.userService.set2FASecret(user_id, secret);
+		const otp_url = authenticator.keyuri(String(user_id), 'ft_transcendence', secret);
+		return ({key_code: secret, qr_code: await toDataURL(otp_url)});
 	}
 }

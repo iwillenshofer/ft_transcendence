@@ -62,6 +62,7 @@ export class AuthService {
 		this.serverLogout().subscribe({
 			next: () => {
 				this.userSubject.next(null);
+				this.serverLogout();
 				localStorage.removeItem('user');
 				localStorage.removeItem('token');
 				this.router.navigate(['/login']);
