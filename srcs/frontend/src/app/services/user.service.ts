@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 
 @Injectable({
@@ -16,8 +16,9 @@ export class UserService {
 
   uploadProfilePicture(file: any): Observable<any> {
     const formData = new FormData();
-    const filename = this.authService.getUserFromLocalStorage()?.id + '.' + file.name.split('.').pop();
+    const filename = "image" + '.' + file.name.split('.').pop();
     formData.append("file", file, filename);
+    formData.append("oldAvatar", this.ImageUrl);
     return this.http.post("/backend/user/upload", formData, { withCredentials: true })
   }
 

@@ -1,12 +1,9 @@
 import { HttpService } from '@nestjs/axios';
-import { Body, Controller, Get, NotFoundException, Param, Post, Put, Req, Request, Response, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Request, Response, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { url } from 'inspector';
 import { diskStorage } from 'multer';
 import { Observable, of } from 'rxjs';
-import { AuthService } from 'src/auth/auth.service';
 import { JwtGuard } from 'src/auth/jwt/jwt.guard';
-import { json } from 'stream/consumers';
 import { v4 as uuidv4 } from 'uuid';
 import { UsersService } from './users.service';
 
@@ -42,12 +39,15 @@ export class UsersController {
         storage: diskStorage({
             destination: './uploads/profileimages',
             filename: (req, file, cb) => {
-                const filename = uuidv4() + '-' + file.originalname
+                const ext = '.' + file.originalname.split('.').pop();
+                const filename = uuidv4() + ext;
                 cb(null, filename)
             }
         })
     }))
     uploadFile(@Request() req, @UploadedFile() file): Observable<Object> {
+        const oldAvatar = req.body.oldAvatar.split('/').pop();
+        this.userService.deleteAvatar(oldAvatar);
         this.userService.updateUrlAvatar(req.user.id, 'user/image/' + file.filename)
         return of({ imagePath: 'user/image/' + file.filename })
     }

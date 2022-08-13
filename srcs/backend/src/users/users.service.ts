@@ -5,8 +5,8 @@ import { UserDTO } from './users.dto';
 import { HttpService } from '@nestjs/axios';
 export { UserEntity }
 import { createWriteStream } from 'fs';
-import { pipe } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
+import * as fs from 'fs';
 /*
 ** This is basically a the Database... We will implement TypeORM.
 */
@@ -32,7 +32,7 @@ export class UsersService {
 	async createUser(intra_id: number, login: string, displayname: string, image_url: string): Promise<UserDTO> {
 
 		const ext = '.' + image_url.split('.').pop();
-		const filename = uuidv4() + '-' + intra_id.toString() + ext;
+		const filename = uuidv4() + ext;
 		const writer = createWriteStream('uploads/profileimages/' + filename)
 		const response = await this.httpService.axiosRef({
 			url: image_url,
@@ -127,5 +127,13 @@ export class UsersService {
 	async getTfaCode(id: number): Promise<string> {
 		let user = await dataSource.getRepository(UserEntity).findOneBy({ id: id });
 		return (user.tfa_code);
+	}
+
+	async deleteAvatar(oldAvatar: string) {
+		await fs.unlink('./uploads/profileimages/' + oldAvatar, (err) => {
+			if (err)
+				throw err;
+			console.log('./uploads/profileimages/' + oldAvatar + ' was deleted.')
+		})
 	}
 }
