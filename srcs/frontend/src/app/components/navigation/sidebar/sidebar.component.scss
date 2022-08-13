@@ -17,6 +17,12 @@
     // padding-top: 20px;
 }
 
+@media screen and (max-width: 1000px) {
+    .sidenav {
+        display: none;
+    }
+}
+
 .sidenav a {
     padding: 6px 8px 6px 16px;
     text-decoration: none;
@@ -66,26 +72,33 @@
 }
 
 .avatar-img {
-
     position: relative;
-    top: 20px;
     left: 0;
-    border-radius: 50%;
-    width: 250px;
+    border-radius: 25%;
+    width: 70%;
     height: 250px;
     margin: auto;
     display: block;
+    padding-bottom: 30px;
 }
 
 span.edit {
     position: absolute;
-    top: 200px;
+    top: 220px;
     left: 230px;
 }
 
-.name {
+.username {
     color: white;
     font-size: 28px;
     justify-content: center;
     display: flex;
+}
+
+.username p {
+    margin-block: auto;
+}
+
+.a {
+    cursor: pointer;
 }

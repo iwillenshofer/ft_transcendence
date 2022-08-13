@@ -8,6 +8,13 @@
     // z-index: 0;
 }
 
+@media screen and (max-width: 1000px) {
+    .navbar {
+        margin-left: 0px;
+        min-height: 100px;
+    }
+}
+
 .nav-link {
     margin: 15px 15px 5px 0px;
     width: 100px;

@@ -1,14 +1,14 @@
 export class User {
 	id: number;
-	nickname: string;
+	username: string;
 	fullname: string;
 	avatar_url: string;
 	tfa_enabled: boolean;
 	tfa_fulfilled: boolean;
 
-	constructor(id: number, nickname: string, fullname: string, avatar_url: string, tfa_enabled: boolean = false, tfa_fulfilled: boolean = false) {
+	constructor(id: number, username: string, fullname: string, avatar_url: string, tfa_enabled: boolean = false, tfa_fulfilled: boolean = false) {
 		this.id = id;
-		this.nickname = nickname;
+		this.username = username;
 		this.fullname = fullname;
 		this.avatar_url = avatar_url;
 		this.tfa_enabled = tfa_enabled;

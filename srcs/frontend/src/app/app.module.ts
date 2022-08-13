@@ -25,6 +25,11 @@ import { NavigationComponent } from './components/navigation/navigation.componen
 import { BallComponent } from './components/game/ball/ball.component';
 import { PaddleComponent } from './components/game/paddle/paddle.component';
 import { PowerupComponent } from './components/game/powerup/powerup.component';
+import { DialogAvatarComponent } from './components/dialogs/components/dialog-avatar/dialog-avatar.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatDialogModule } from '@angular/material/dialog';
+import { DialogUsernameComponent } from './components/dialogs/components/dialog-username/dialog-username.component';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
   declarations: [
@@ -43,6 +48,9 @@ import { PowerupComponent } from './components/game/powerup/powerup.component';
     BallComponent,
     PaddleComponent,
     PowerupComponent,
+    DialogAvatarComponent,
+    DialogUsernameComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -51,6 +59,10 @@ import { PowerupComponent } from './components/game/powerup/powerup.component';
     AuthModule.forRoot(),
     ChatModule,
     FontAwesomeModule,
+    BrowserAnimationsModule,
+    MatDialogModule,
+    MatInputModule,
+    ReactiveFormsModule
   ],
   providers: [
     {

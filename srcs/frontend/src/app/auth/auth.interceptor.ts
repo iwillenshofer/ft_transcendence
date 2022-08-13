@@ -6,19 +6,21 @@ import { Injectable } from "@angular/core";
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-	constructor (
+	constructor(
 		private authService: AuthService,
 		private router: Router,
 		private http: HttpClient
 	) { }
 
-	intercept (req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-		const new_req = req.clone({	
+	intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+		const new_req = req.clone({
 			headers: req.headers.set('authorization', 'Bearer ' + localStorage.getItem('token')),
-			withCredentials: true}
-			);
+			withCredentials: true
+		}
+		);
 		if (req.url.indexOf('/refreshtoken') >= 0)
 			return next.handle(new_req);
+		console.log(new_req.url)
 		return next.handle(new_req).pipe<any>(
 			catchError((error) => {
 				console.log('the error was here1');
@@ -38,10 +40,11 @@ export class AuthInterceptor implements HttpInterceptor {
 				console.log(JSON.stringify(data));
 				localStorage.removeItem('token');
 				localStorage.setItem('token', data.token);
-				const new_req = req.clone({	
+				const new_req = req.clone({
 					headers: req.headers.set('authorization', 'Bearer ' + data.token),
-					withCredentials: true}
-					);
+					withCredentials: true
+				}
+				);
 				return next.handle(new_req);
 			}),
 			catchError((error) => {
@@ -50,5 +53,5 @@ export class AuthInterceptor implements HttpInterceptor {
 			})
 		)
 	}
-			
+
 }

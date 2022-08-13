@@ -1,8 +1,17 @@
 <div class="sidenav">
     <div class="avatar">
-        <img src="{{ currentUser?.avatar_url }}" alt="Avatar" class="avatar-img">
-        <span class="edit"><a href="#">
-                <fa-icon [icon]="faEdit" size="lg" [style]="{'color': 'white'}"></fa-icon>
-            </a></span>
+        <img src="{{ this.image }}" alt="Avatar" class="avatar-img">
+        <span class="edit">
+            <a mat-raised-button (click)="openDialogAvatar()">
+                <fa-icon style="cursor: pointer;" [icon]="faEdit" size="lg" [style]="{'color': 'white'}"></fa-icon>
+            </a>
+        </span>
+    </div>
+
+    <div class="username">
+        <p>{{ this.username }}</p>
+        <a mat-raised-button (click)="openDialogUsername()">
+            <fa-icon style="cursor: pointer;" [icon]="faEdit" size="xs" [style]="{'color': 'white'}"></fa-icon>
+        </a>
     </div>
 </div>
