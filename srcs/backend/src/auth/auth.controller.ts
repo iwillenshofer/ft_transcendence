@@ -9,6 +9,7 @@ import { Writable } from 'typeorm/platform/PlatformTools';
 import { UserDTO } from 'src/users/users.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { FakeIntra42Guard } from './intra42/fakeintra42.guard';
+import { authenticate } from 'passport';
 
 @Controller("auth")
 export class AuthController {
@@ -111,20 +112,17 @@ export class AuthController {
 	/*
 	** 2FA
 	*/
+	
+	/*
+	** retrieves keycode + qrcode
+	*/
 	@UseGuards(JwtGuard)
-	@Get('tfa_qrcode')
-	@Header('content-type', 'image/png')
-	async get_qrcode(@Res() res: Writable, @Request() req) {
-		return await this.authService.generateQrCode(req.user.id, res);
+	@Get('tfa_retrieve')
+	async get_tfa(@Request() req) {
+		let key_code: any = await this.authService.generateTFA(req.user.id);
+		return (JSON.stringify(key_code));
 	}
 
-	@UseGuards(JwtGuard)
-	@Get('tfa_keycode')
-	async get_tfakeycode(@Res() res: Writable, @Request() req) {
-		let key_code: string = await this.authService.retrieveTfaCode(req.user.id, res);
-		console.log("key_code: "+ key_code);
-		return { key_code: key_code };
-	}
 
 	@UseGuards(TfaGuard)
 	@Post('tfa_disable')

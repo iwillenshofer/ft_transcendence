@@ -11,6 +11,10 @@ class ResponseMessage {
   msg: boolean = false;
 }
 
+class ResponseMessage2 {
+	msg: string = "";
+  }
+
 @Component({
   selector: 'app-twofactor',
   templateUrl: './twofactor.component.html',
@@ -24,12 +28,12 @@ export class TwofactorComponent {
     private authService: AuthService,
     private router: Router,
   ) {
-    this.keyCode = new BehaviorSubject<String | null>("hello");
+    this.keyCode = new BehaviorSubject<SafeUrl | null>("hello");
     this.qrCode = new BehaviorSubject<SafeUrl | null>(null);
     this.tfa_fulfilled = new BehaviorSubject<boolean>(false);
   }
 
-  keyCode: BehaviorSubject<String | null>;
+  keyCode: BehaviorSubject<SafeUrl | null>;
   qrCode: BehaviorSubject<SafeUrl | null>;
   codeControl = new FormControl();
   tfa_fulfilled: BehaviorSubject<boolean>;
@@ -37,7 +41,9 @@ export class TwofactorComponent {
   ngOnInit(): void {
     this.tfa_fulfilled.next(this.authService.isAuthenticated());
     if (this.router.url == '/enable2fa')
-      this.getCode();
+	{
+		this.getQRCode();
+	}
     console.log("KEY:" + this.keyCode.value);
   }
 
@@ -62,18 +68,11 @@ export class TwofactorComponent {
     });
   }
 
-  async getCode() {
-
-    this.http.get<Blob>('/backend/auth/tfa_qrcode', { withCredentials: true, responseType: 'blob' as 'json' }).subscribe((result) => {
-      this.qrCode.next(this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(result)));
-    });
+  getQRCode() {
+    this.http.get<any>('/backend/auth/tfa_retrieve', { withCredentials: true }).subscribe((result) => {
+		console.log("code" + JSON.stringify(result));
+	  this.keyCode.next(result.key_code);
+      this.qrCode.next(result.qr_code);
+	});
   }
-
-  async getKeyCode() {
-    this.http.get<any>('/backend/auth/tfa_keycode', { withCredentials: true}).subscribe((result) => {
-      this.keyCode.next(result.key_code);
-    });
-  }
-
-
 }

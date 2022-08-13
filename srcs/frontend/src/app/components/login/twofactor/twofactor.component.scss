@@ -1,0 +1,57 @@
+@import url('http://fonts.cdnfonts.com/css/dec-terminal-modern');
+
+.twoFactor {
+    height: 100%;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center center;
+	font-family: 'DEC Terminal Modern', sans-serif; 
+    position: relative;
+    text-align: center;
+    border: 20px;
+    margin: 30px 330px 0px 300px;
+	color:black
+}
+
+.keyCode {
+	font-family: sans-serif;
+    font-size: 20px;
+}
+
+.inputCode {
+    font-size: 40px;
+}
+
+.TfaTitle {
+    font-size: 30px;
+}
+
+.steps {
+    margin: 30px 20px 0px 20px;
+    font-size: 15px;
+    text-align: left;
+
+}
+
+h1 {
+    font-size: 80px;
+    color: white;
+}
+
+button {
+    margin-top: 10px;
+    height: 70px;
+    width: 150px;
+    background-color: white;
+    color: black;
+    border: 2px solid #e7e7e7;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 20px;
+}
+
+button:hover {
+    background-color: #e7e7e7;
+    color: black;
+}

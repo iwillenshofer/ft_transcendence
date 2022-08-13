@@ -1,8 +1,1 @@
-<p>callback works!</p>
-<p> Logged in: {{ currentUser | json }} </p>
-<p> Logged in: {{ dataSubject.value | json }} </p>
-
-<app-button name="Logout" (btnClick)="logOut()"></app-button>
-<app-button name="Get Data" (btnClick)="getData()"></app-button>
-<br />
 <app-twofactor *ngIf="need_tfa"></app-twofactor>

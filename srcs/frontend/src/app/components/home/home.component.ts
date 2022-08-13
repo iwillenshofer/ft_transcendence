@@ -53,7 +53,8 @@ export class HomeComponent implements OnInit {
   disableTfa() {
     this.http.post('/backend/auth/tfa_disable', null, { withCredentials: true }).subscribe((result) => {
       let res = result;
-      console.log(res);
+      if (res)
+		this.tfa_enabled = false;
     });
   }
 
