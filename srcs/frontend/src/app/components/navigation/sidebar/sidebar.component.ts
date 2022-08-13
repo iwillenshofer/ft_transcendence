@@ -4,9 +4,8 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from 'src/app/auth/auth.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogAvatarComponent } from '../../dialogs/components/dialog-avatar/dialog-avatar.component';
-import { Time } from '@angular/common';
-import { SidebarService } from './sidebar.service';
 import { DialogUsernameComponent } from '../../dialogs/components/dialog-username/dialog-username.component';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -19,33 +18,33 @@ export class SidebarComponent implements OnInit {
   faEdit = faEdit;
   IsDialogOpen = false;
   image: string = "";
-  username: string | undefined = ""
+  username: string = ""
 
   constructor(
+    private userService: UserService,
     private authService: AuthService,
-    public dialog: MatDialog,
-    public sidebarService: SidebarService
+    public dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
-    this.currentUser = this.authService.getUserFromLocalStorage();
-    if (this.sidebarService.GetImageUrl() == '')
-      this.sidebarService.SetImageUrl(this.currentUser?.avatar_url);
-    if (this.sidebarService.GetUsername() == '')
-      this.sidebarService.SetUsername(this.currentUser?.username)
-    this.image = '/backend/' + this.sidebarService.GetImageUrl();
-    this.username = this.sidebarService.GetUsername();
+    if (this.userService.ImageUrl == '')
+      this.userService.getImageFromServer().subscribe(
+        (result) => { this.image = this.userService.ImageUrl = '/backend/' + result.url })
+    else
+      this.image = this.userService.ImageUrl;
+    if (this.userService.Username == '')
+      this.userService.getUsernameFromServer().subscribe(
+        (result) => { this.username = this.userService.Username = result.username })
+    else
+      this.username = this.userService.Username;
   }
 
   openDialogAvatar() {
     const dialogRef = this.dialog.open(DialogAvatarComponent, {
       data: { title: 'Change your profile picture' }
     });
-
-    dialogRef.backdropClick
-
     dialogRef.afterClosed().subscribe(
-      result => this.getLinkPicture()
+      () => this.image = this.userService.ImageUrl
     );
   }
 
@@ -54,14 +53,8 @@ export class SidebarComponent implements OnInit {
       data: { title: 'Change your username' }
     });
 
-    dialogRef.backdropClick
-
     dialogRef.afterClosed().subscribe(
-      result => this.getLinkPicture()
+      () => this.username = this.userService.Username
     );
-  }
-
-  getLinkPicture() {
-    this.image = '/backend/' + this.sidebarService.GetImageUrl();
   }
 }

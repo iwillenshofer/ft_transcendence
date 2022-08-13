@@ -1,15 +1,17 @@
 import { HttpService } from '@nestjs/axios';
-import { Controller, Get, NotFoundException, Param, Post, Req, Request, Response, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, Post, Put, Req, Request, Response, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { url } from 'inspector';
 import { diskStorage } from 'multer';
 import { Observable, of } from 'rxjs';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtGuard } from 'src/auth/jwt/jwt.guard';
+import { json } from 'stream/consumers';
 import { v4 as uuidv4 } from 'uuid';
 import { UsersService } from './users.service';
 
 
-@Controller('users')
+@Controller('user')
 export class UsersController {
 
     constructor(
@@ -18,25 +20,47 @@ export class UsersController {
     ) { }
 
     @UseGuards(JwtGuard)
+    @Post('username')
+    async updateUsername(@Request() req, @Body() body): Promise<Object> {
+        return of({ username: await this.userService.updateUsername(req.user.id, body.username) })
+    }
+
+    @UseGuards(JwtGuard)
+    @Get('username')
+    async getUsername(@Request() req) {
+        return of({ username: await this.userService.getUsername(req.user.id) })
+    }
+
+    @Get('is-username-taken/:username')
+    async isUsernameTaken(@Param('username') username, @Request() req) {
+        return of(await this.userService.isUsernameTaken(username))
+    }
+
+    @UseGuards(JwtGuard)
     @Post('upload')
     @UseInterceptors(FileInterceptor('file', {
         storage: diskStorage({
             destination: './uploads/profileimages',
             filename: (req, file, cb) => {
                 const filename = uuidv4() + '-' + file.originalname
-                console.log('backend: ' + filename)
                 cb(null, filename)
             }
         })
     }))
-
     uploadFile(@Request() req, @UploadedFile() file): Observable<Object> {
-        this.userService.updateUrlAvatar(req.user.id, 'users/image/' + file.filename)
-        return of({ imagePath: 'users/image/' + file.filename })
+        this.userService.updateUrlAvatar(req.user.id, 'user/image/' + file.filename)
+        return of({ imagePath: 'user/image/' + file.filename })
     }
 
     @Get('image/:imgpath')
     seeUploadedFile(@Param('imgpath') image, @Response() res) {
         return res.sendFile(image, { root: './uploads/profileimages/' });
+    }
+
+    @UseGuards(JwtGuard)
+    @Get('image-url')
+    async getImgUrl(@Request() req, @Response() res) {
+        const path: string = await this.userService.getUrlAvatar(req.user.id);
+        res.status(200).send({ url: path });
     }
 }

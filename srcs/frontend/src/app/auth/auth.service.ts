@@ -82,10 +82,6 @@ export class AuthService {
 		return (null);
 	}
 
-	updateUserInLocalStorage(user: User) {
-		localStorage.setItem('user', JSON.stringify(user));
-	}
-
 	tryLogin(): boolean {
 		let result: User | null = this.getUserFromLocalStorage();
 		this.userSubject.next(result);

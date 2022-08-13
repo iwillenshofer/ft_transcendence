@@ -32,7 +32,8 @@ export class UsersService {
 	async createUser(intra_id: number, login: string, displayname: string, image_url: string): Promise<UserDTO> {
 
 		const ext = '.' + image_url.split('.').pop();
-		const writer = createWriteStream('uploads/profileimages/' + uuidv4() + '-' + intra_id.toString() + ext)
+		const filename = uuidv4() + '-' + intra_id.toString() + ext;
+		const writer = createWriteStream('uploads/profileimages/' + filename)
 		const response = await this.httpService.axiosRef({
 			url: image_url,
 			method: 'GET',
@@ -40,7 +41,7 @@ export class UsersService {
 		});
 
 		response.data.pipe(writer);
-		image_url = 'users/image/' + intra_id.toString() + ext;
+		image_url = 'user/image/' + filename;
 
 		const user: UserEntity = await dataSource.getRepository(UserEntity).create({
 			id: intra_id,
@@ -64,13 +65,37 @@ export class UsersService {
 		let user = await dataSource.getRepository(UserEntity).findOneBy({ id: id });
 		user.avatar_url = url;
 		const results = await dataSource.getRepository(UserEntity).save(user);
-		console.log(user.avatar_url)
 		return;
+	}
+
+	async updateUsername(id: number, username: string): Promise<string> {
+		let alreadyExist = await dataSource.getRepository(UserEntity).findOneBy({ username: username });
+		if (alreadyExist)
+			return "";
+		let user = await dataSource.getRepository(UserEntity).findOneBy({ id: id });
+		user.username = username;
+		const results = await dataSource.getRepository(UserEntity).save(user);
+		return username;
+	}
+
+	async getUsername(id: number) {
+		let user = await dataSource.getRepository(UserEntity).findOneBy({ id: id });
+		return (user.username);
+	}
+
+	async getUrlAvatar(id: number): Promise<string> {
+		let user = await dataSource.getRepository(UserEntity).findOneBy({ id: id });
+		return (user.avatar_url);
 	}
 
 	async getRefreshToken(id: number): Promise<string> {
 		let user = await dataSource.getRepository(UserEntity).findOneBy({ id: id });
 		return (user.refreshtoken);
+	}
+
+	async isUsernameTaken(username: string) {
+		let count = await dataSource.getRepository(UserEntity).countBy({ username: username })
+		return count == 0 ? false : true;
 	}
 
 	async enable2FASecret(id: number, enable: boolean = true): Promise<void> {

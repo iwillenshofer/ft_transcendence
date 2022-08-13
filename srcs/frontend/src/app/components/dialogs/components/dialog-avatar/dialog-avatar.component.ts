@@ -1,9 +1,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/auth/auth.service';
-import { UploadService } from 'src/app/upload-file/upload-file.service';
-import { SidebarService } from '../../../navigation/sidebar/sidebar.service';
-
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-dialog-avatar',
@@ -19,8 +17,7 @@ export class DialogAvatarComponent implements OnInit {
   editmode: boolean = false;
 
   // Inject service 
-  constructor(private fileUploadService: UploadService,
-    public sidebarService: SidebarService,
+  constructor(private userService: UserService,
     public authService: AuthService) { }
 
   ngOnInit(): void {
@@ -50,12 +47,11 @@ export class DialogAvatarComponent implements OnInit {
       return;
     }
     this.loading = !this.loading;
-    this.fileUploadService.upload(this.file).subscribe(
+    this.userService.uploadProfilePicture(this.file).subscribe(
       (event: any) => {
         if (typeof (event) === 'object') {
-
-          this.sidebarService.SetImageUrl(event.imagePath)
-          this.loading = false; // Flag variable
+          this.userService.ImageUrl = '/backend/' + event.imagePath
+          this.loading = false;
         }
       }
     );

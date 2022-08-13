@@ -26,6 +26,7 @@ import { DialogAvatarComponent } from './components/dialogs/components/dialog-av
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material/dialog';
 import { DialogUsernameComponent } from './components/dialogs/components/dialog-username/dialog-username.component';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
   declarations: [
@@ -53,7 +54,9 @@ import { DialogUsernameComponent } from './components/dialogs/components/dialog-
     ChatModule,
     FontAwesomeModule,
     BrowserAnimationsModule,
-    MatDialogModule
+    MatDialogModule,
+    MatInputModule,
+    ReactiveFormsModule
   ],
   providers: [
     {

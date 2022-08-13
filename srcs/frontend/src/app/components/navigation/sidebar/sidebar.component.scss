@@ -74,6 +74,7 @@
     height: 250px;
     margin: auto;
     display: block;
+    padding-bottom: 30px;
 }
 
 span.edit {
@@ -82,9 +83,13 @@ span.edit {
     left: 230px;
 }
 
-.name {
+.username {
     color: white;
     font-size: 28px;
     justify-content: center;
     display: flex;
+}
+
+.username p {
+    margin-block: auto;
 }
