@@ -16,6 +16,12 @@
     padding-top: 20px;
 }
 
+@media screen and (max-width: 1000px) {
+    .sidenav {
+        display: none;
+    }
+}
+
 .sidenav a {
     padding: 6px 8px 6px 16px;
     text-decoration: none;
@@ -65,12 +71,10 @@
 }
 
 .avatar-img {
-
     position: relative;
-    top: 20px;
     left: 0;
-    border-radius: 50%;
-    width: 250px;
+    border-radius: 25%;
+    width: 70%;
     height: 250px;
     margin: auto;
     display: block;
@@ -92,4 +96,8 @@ span.edit {
 
 .username p {
     margin-block: auto;
+}
+
+.a {
+    cursor: pointer;
 }

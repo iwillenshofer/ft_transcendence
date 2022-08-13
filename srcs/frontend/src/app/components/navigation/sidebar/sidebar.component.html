@@ -2,16 +2,16 @@
     <div class="avatar">
         <img src="{{ this.image }}" alt="Avatar" class="avatar-img">
         <span class="edit">
-            <a href="javascript:void(0)" mat-raised-button (click)="openDialogAvatar()">
-                <fa-icon [icon]="faEdit" size="lg" [style]="{'color': 'white'}"></fa-icon>
+            <a mat-raised-button (click)="openDialogAvatar()">
+                <fa-icon style="cursor: pointer;" [icon]="faEdit" size="lg" [style]="{'color': 'white'}"></fa-icon>
             </a>
         </span>
     </div>
 
     <div class="username">
         <p>{{ this.username }}</p>
-        <a href="javascript:void(0)" mat-raised-button (click)="openDialogUsername()">
-            <fa-icon [icon]="faEdit" size="xs" [style]="{'color': 'white'}"></fa-icon>
+        <a mat-raised-button (click)="openDialogUsername()">
+            <fa-icon style="cursor: pointer;" [icon]="faEdit" size="xs" [style]="{'color': 'white'}"></fa-icon>
         </a>
     </div>
 </div>
