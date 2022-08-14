@@ -50,12 +50,15 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/enable2fa']);
   }
 
-  disableTfa() {
-    this.http.post('/backend/auth/tfa_disable', null, { withCredentials: true }).subscribe((result) => {
+  async disableTfa() {
+    this.http.post('/backend/auth/tfa_disable', null, { withCredentials: true }).subscribe(async (result) => {
       let res = result;
       if (res)
-		this.tfa_enabled = false;
-    });
+	  {
+		await this.authService.updateUser();
+		this.tfa_enabled = this.authService.userSubject.value?.tfa_enabled;
+	  }
+	});
   }
 
   logOut() {
