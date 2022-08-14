@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { CookieService } from 'ngx-cookie-service'
 import { Router } from '@angular/router'
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, firstValueFrom } from 'rxjs';
+import { map } from 'rxjs';
 import { User } from './user.model';
 
 @Injectable({
@@ -73,6 +74,18 @@ export class AuthService {
 	/*
 	**
 	*/
+
+	async getUser() {
+		return firstValueFrom(this.http.get<User>('/backend/auth/profile', { withCredentials: true }));
+	}
+
+	async updateUser() {
+		let x = await this.getUser();
+		this.userSubject.next(x);
+		localStorage.removeItem('user');
+		localStorage.setItem('user', JSON.stringify(x));
+		console.log('x:' +  JSON.stringify(x));
+	}
 
 	getUserFromLocalStorage(): User | null {
 		let user: string | null = localStorage.getItem('user');

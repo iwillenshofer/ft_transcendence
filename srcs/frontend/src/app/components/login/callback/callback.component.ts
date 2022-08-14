@@ -44,10 +44,9 @@ export class LoginCallbackComponent implements OnInit {
 	}
 
 	ngOnInit() {
-		console.log('profile');
 		this.getToken();
 	}
-
+	
 	async getToken() {
 		this.activatedRoute.queryParams.subscribe(params => {
 			const code = params['code'];
@@ -65,20 +64,16 @@ export class LoginCallbackComponent implements OnInit {
 			});
 		});
 	}
-
+	
 	/*
 	** the functions below must be implemented in other services, like User service
 	*/
 	async getUser() {
-		console.log('current token: ' + localStorage.getItem('token'));
-		this.http.get<User>('/backend/auth/profile', { withCredentials: true }).subscribe(result => {
-			this.authService.userSubject.next(result);
-			localStorage.setItem('user', JSON.stringify(result));
-			if (this.authService.isAuthenticated())
-				this.router.navigate(['/']);
-			else if (this.authService.isJwtAuthenticated())
-				this.need_tfa = true;
-		});
+		let x = await this.authService.updateUser();
+		if (this.authService.isAuthenticated())
+			this.router.navigate(['/']);
+		else if (this.authService.isJwtAuthenticated())
+			this.need_tfa = true;
 	}
 
 	async getData() {
