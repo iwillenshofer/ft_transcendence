@@ -1,7 +1,7 @@
-<app-navigation *ngIf="tfa_fulfilled.value"></app-navigation>
+<app-navbar  *ngIf="tfa_fulfilled.value"></app-navbar>
+<app-sidebar *ngIf="tfa_fulfilled.value"></app-sidebar>
 
-
-<div [ngClass]="qrCode.value ? 'main' : 'twoFactor'">
+<div [ngClass]="qrCode.value ? 'rightnav' : 'twoFactor'">
 	<div class="twoFactor">
 	<div class="TfaTitle">
 		Two-factor Authentication
@@ -35,6 +35,3 @@
 	</div>
 	
 </div>
-
-
->>>>>>> auth

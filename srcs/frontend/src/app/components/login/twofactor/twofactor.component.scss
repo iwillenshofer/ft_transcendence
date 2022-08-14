@@ -1,16 +1,19 @@
 @import url('http://fonts.cdnfonts.com/css/dec-terminal-modern');
 
 .twoFactor {
-    height: 100%;
-    background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: center center;
 	font-family: 'DEC Terminal Modern', sans-serif; 
-    position: relative;
     text-align: center;
     border: 20px;
-    margin: 30px 330px 0px 300px;
+    /*margin: 30px 330px 0px 300px;*/
 	color:black
+}
+
+/* right-nav: to be used by the 'content page' */
+.rightnav {
+	float: left;
+	width: 80%;
 }
 
 .keyCode {
@@ -23,6 +26,7 @@
 }
 
 .TfaTitle {
+	margin: 30px 20px 0px 20px;
     font-size: 30px;
 }
 

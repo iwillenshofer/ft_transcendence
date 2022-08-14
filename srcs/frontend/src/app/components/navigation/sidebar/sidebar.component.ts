@@ -6,6 +6,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogAvatarComponent } from '../../dialogs/components/dialog-avatar/dialog-avatar.component';
 import { DialogUsernameComponent } from '../../dialogs/components/dialog-username/dialog-username.component';
 import { UserService } from 'src/app/services/user.service';
+import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-sidebar',
@@ -18,15 +20,18 @@ export class SidebarComponent implements OnInit {
   faEdit = faEdit;
   IsDialogOpen = false;
   image: string = "";
-  username: string = ""
+  username: string = "";
 
   constructor(
     private userService: UserService,
     private authService: AuthService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+	private router: Router,
+	private http: HttpClient,
   ) { }
 
   ngOnInit(): void {
+	this.tfa_enabled = this.authService.userSubject.value?.tfa_enabled;
     if (this.userService.ImageUrl == '')
       this.userService.getImageFromServer().subscribe(
         (result) => { this.image = this.userService.ImageUrl = '/backend/' + result.url })
@@ -57,4 +62,24 @@ export class SidebarComponent implements OnInit {
       () => this.username = this.userService.Username
     );
   }
+
+  enableTfa() {
+    this.router.navigate(['/enable2fa']);
+  }
+
+  async disableTfa() {
+    this.http.post('/backend/auth/tfa_disable', null, { withCredentials: true }).subscribe(async (result) => {
+      let res = result;
+      if (res)
+	  {
+		await this.authService.updateUser();
+		this.tfa_enabled = this.authService.userSubject.value?.tfa_enabled;
+	  }
+	});
+  }
+
+  logOut() {
+    this.authService.logout();
+  }
+
 }

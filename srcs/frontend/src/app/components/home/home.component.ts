@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { AuthService } from 'src/app/auth/auth.service';
 import { User } from 'src/app/auth/user.model';
 import { ChatService } from 'src/app/chat/chat.service';
@@ -13,7 +12,6 @@ import { ChatService } from 'src/app/chat/chat.service';
 export class HomeComponent implements OnInit {
 
   currentUser: User | null = null;
-  tfa_enabled: boolean | undefined = false;
   data: any = null;
 
   title = this.chatService.getMessage();
@@ -21,12 +19,10 @@ export class HomeComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private http: HttpClient,
-    private router: Router,
     private chatService: ChatService
   ) { }
 
   ngOnInit(): void {
-    this.tfa_enabled = this.authService.userSubject.value?.tfa_enabled;
     this.http.get('/backend/auth/data', { withCredentials: true }).subscribe((result) => {
       this.data = result;
     });
@@ -46,22 +42,5 @@ export class HomeComponent implements OnInit {
     this.chatService.sendMessage("message");
   }
 
-  enableTfa() {
-    this.router.navigate(['/enable2fa']);
-  }
 
-  async disableTfa() {
-    this.http.post('/backend/auth/tfa_disable', null, { withCredentials: true }).subscribe(async (result) => {
-      let res = result;
-      if (res)
-	  {
-		await this.authService.updateUser();
-		this.tfa_enabled = this.authService.userSubject.value?.tfa_enabled;
-	  }
-	});
-  }
-
-  logOut() {
-    this.authService.logout();
-  }
 }
