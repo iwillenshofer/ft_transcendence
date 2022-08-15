@@ -9,6 +9,7 @@ import { TwofactorComponent } from './components/login/twofactor/twofactor.compo
 import { GameComponent } from './components/game/game.component';
 import { ChatComponent } from './components/chat/chat.component';
 import { FriendsComponent } from './components/friends/friends.component';
+import { ProfileComponent } from './components/profile/profile.component';
 
 const routes: Routes = [
 	{ path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -18,7 +19,9 @@ const routes: Routes = [
 	{ path: 'enable2fa', component: TwofactorComponent, canActivate: [AuthguardService] },
 	{ path: 'pong', component: GameComponent },
 	{ path: 'chat', component: ChatComponent },
-	{ path: 'friends', component: FriendsComponent }
+	{ path: 'friends', component: FriendsComponent },
+	{ path: 'profile', component: ProfileComponent }
+
 
 ];
 

@@ -18,6 +18,7 @@
 
 .score {
     // margin-left: 360px;
+    margin-top: 1.5vh;
     display: flex;
     justify-content: center;
     font-weight: bold;
@@ -53,13 +54,14 @@
     color: white;
     @include center-absolute;
     align-items: center;
-    top: calc(105px + 10%);
+    top: calc(105px + 20vh);
     background-color: black;
 }
 
 .pause-div__title {
     font-size: 10vh;
-    margin: 10px;
+    // padding: 10px;
+    margin-bottom: 10vh;
 }
 
 .pause-div__text {
@@ -71,9 +73,13 @@
     color: white;
     @include center-absolute;
     align-items: center;
-    top: calc(105px + 10%);
+    top: calc(105px + 20vh);
     font-size: 10vh;
     background-color: black;
+}
+
+.finished-div p {
+    margin-top: 10vh;
 }
 
 .start-menu {
@@ -141,6 +147,7 @@
     position: absolute;
     right: 20%;
     top: calc(105px + 10%);
+    margin-top: 30px;
     font-family: "Lucida Console", "Courier New", monospace;
     font-size: 2.5vh;
     background-color: black;
