@@ -27,4 +27,4 @@ jobs:
       - name: Build the stack
         run: docker-compose up -d
       - name: Test
-        run: healthcheck.sh api 120
+        run: healthcheck.sh postgres 120 && healthcheck.sh backend 120 && healthcheck.sh frontend 120
