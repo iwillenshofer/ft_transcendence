@@ -28,6 +28,6 @@ jobs:
         run: docker-compose up -d
         
       - name: curl
-        uses: wei/curl@master
-        with:
-          args: http://frontend:4200/
+        run: |
+          sleep 10
+          curl -s --retry 10 --retry-connrefused --insecure http://0.0.0.0:4200
