@@ -26,5 +26,4 @@ jobs:
       # Runs a single command using the runners shell
       - name: Build the stack
         run: docker-compose up -d
-      - name: Test
-        run: healthcheck.sh postgres 120 && healthcheck.sh backend 120 && healthcheck.sh frontend 120
+
