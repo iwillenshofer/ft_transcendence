@@ -1,28 +1,25 @@
-import { RoomEntity } from 'src/chat/models/room.entity';
 import { UserEntity } from 'src/users/users.entity';
-import { BeforeInsert, BeforeRecover, BaseEntity, Entity, Unique, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, OneToOne, PrimaryGeneratedColumn, JoinColumn, ManyToOne } from 'typeorm';
-import * as crypto from 'crypto';
-import { promisify } from 'util';
+import { BaseEntity, Entity, Unique, Column, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, JoinColumn, ManyToOne } from 'typeorm';
 
 @Entity({ name: 'Auth' })
 @Unique(['id'])
 export class AuthEntity extends BaseEntity {
-		@PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-		@ManyToOne(() => UserEntity)
-		@JoinColumn()
-		user: UserEntity;
+  @ManyToOne(() => UserEntity)
+  @JoinColumn()
+  user: UserEntity;
 
-		@Column({ type: 'varchar'})
-    hash: string;
+  @Column({ type: 'varchar' })
+  hash: string;
 
-		@Column({ nullable: false, type: 'boolean', default: false })
-    used: boolean;
+  @Column({ nullable: false, type: 'boolean', default: false })
+  used: boolean;
 
-    @CreateDateColumn()
-    created_at: Date;
+  @CreateDateColumn()
+  created_at: Date;
 
-    @UpdateDateColumn()
-    updated_at: Date;
+  @UpdateDateColumn()
+  updated_at: Date;
 }

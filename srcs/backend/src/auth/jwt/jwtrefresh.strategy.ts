@@ -1,6 +1,6 @@
-import { ExtractJwt, Strategy, JwtFromRequestFunction } from 'passport-jwt'
+import { ExtractJwt, Strategy } from 'passport-jwt'
 import { PassportStrategy } from '@nestjs/passport'
-import { Injectable, HttpException, UnauthorizedException } from '@nestjs/common'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { Request } from 'express'
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt'
@@ -17,7 +17,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
 	constructor(
 		private userService: UsersService,
 		private jwtService: JwtService
-		) {
+	) {
 		super({
 			ignoreExpiration: true,
 			passReqToCallback: true,
@@ -32,8 +32,8 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
 		if (!payload || !(refreshtoken))
 			throw new UnauthorizedException;
 		try {
-			await this.jwtService.verify(refreshtoken, {secret: process.env.JWT_REFRESH_SECRET});
-		} catch(err) {
+			await this.jwtService.verify(refreshtoken, { secret: process.env.JWT_REFRESH_SECRET });
+		} catch (err) {
 			throw new UnauthorizedException;
 		}
 		const user_refreshtoken = await this.userService.getRefreshToken(payload.id);
@@ -42,4 +42,3 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
 		return payload;
 	}
 }
-

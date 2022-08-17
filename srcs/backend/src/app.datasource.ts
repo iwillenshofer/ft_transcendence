@@ -1,4 +1,3 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { AuthEntity } from './auth/models/auth.entity';
 import { RoomEntity } from './chat/models/room.entity';

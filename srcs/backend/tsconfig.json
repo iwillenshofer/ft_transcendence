@@ -16,16 +16,6 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false,
-  },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    // "test",
-    // "dist",
-    "src/**/*spec.ts",
-    "**/media"
-  ]
+    "noFallthroughCasesInSwitch": false
+  }
 }

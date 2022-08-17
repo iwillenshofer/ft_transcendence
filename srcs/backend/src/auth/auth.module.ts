@@ -11,16 +11,16 @@ import { TfaStrategy } from './tfa/tfa.strategy';
 import { PassportModule } from '@nestjs/passport';
 
 @Module({
-	imports: [
-		UsersModule,
-		PassportModule,
-		JwtModule.register({
-			secret: process.env.JWT_SECRET,
-			signOptions: { expiresIn: '60s' },
-		})
-	],
-	controllers: [AuthController],
-	providers: [AuthService, Intra42Strategy, JwtStrategy, JwtRefreshStrategy, TfaStrategy, FakeIntra42Strategy]
+    imports: [
+        UsersModule,
+        PassportModule,
+        JwtModule.register({
+            secret: process.env.JWT_SECRET,
+            signOptions: { expiresIn: '60s' },
+        })
+    ],
+    controllers: [AuthController],
+    providers: [AuthService, Intra42Strategy, JwtStrategy, JwtRefreshStrategy, TfaStrategy, FakeIntra42Strategy]
 })
 
 export class AuthModule { }

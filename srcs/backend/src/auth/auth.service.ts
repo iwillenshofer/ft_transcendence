@@ -1,20 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt'
 import { authenticator } from "otplib";
-import { toFileStream } from "qrcode";
 import { UsersService } from 'src/users/users.service';
 import { UserDTO } from 'src/users/users.dto';
-import { Writable } from 'typeorm/platform/PlatformTools';
 import { dataSource } from 'src/app.datasource';
 import { AuthInterface } from './models/auth.interface';
 import * as crypto from 'crypto';
 import { AuthEntity } from './models/auth.entity';
 import { toDataURL } from 'qrcode';
-import { UserInterface } from 'src/users/users.interface';
-import { keyDecoder, keyEncoder } from '@otplib/plugin-thirty-two'; // use your chosen base32 plugin
-import { createDigest, createRandomBytes } from '@otplib/plugin-crypto'; // use your chosen crypto plugin
-import { json } from 'stream/consumers';
-
 
 @Injectable()
 export class AuthService {
@@ -45,7 +38,7 @@ export class AuthService {
 	}
 
 	async getRefreshToken(user: any) {
-		const payload = { username: user.username, id: user.id};
+		const payload = { username: user.username, id: user.id };
 		return (this.jwtService.sign(payload, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: 60 * 60 * 24 * 7 }));
 	}
 
@@ -119,6 +112,6 @@ export class AuthService {
 		const secret = authenticator.generateSecret();
 		await this.userService.set2FASecret(user_id, secret);
 		const otp_url = authenticator.keyuri(String(user_id), 'ft_transcendence', secret);
-		return ({key_code: secret, qr_code: await toDataURL(otp_url)});
+		return ({ key_code: secret, qr_code: await toDataURL(otp_url) });
 	}
 }

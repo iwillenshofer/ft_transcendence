@@ -1,15 +1,11 @@
-import { Controller, Get, Post, UseGuards, Request, Response, Req, Res, Header, Body, Param, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards, Request, Response, Res, Body, Param } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtGuard } from './jwt/jwt.guard';
 import { JwtRefreshGuard } from './jwt/jwtrefresh.guard';
 import { Intra42Guard } from './intra42/intra42.guard';
 import { TfaGuard } from './tfa/tfa.guard';
 import { UsersService } from 'src/users/users.service';
-import { Writable } from 'typeorm/platform/PlatformTools';
 import { UserDTO } from 'src/users/users.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { FakeIntra42Guard } from './intra42/fakeintra42.guard';
-import { authenticate } from 'passport';
 
 @Controller("auth")
 export class AuthController {
@@ -112,7 +108,7 @@ export class AuthController {
 	/*
 	** 2FA
 	*/
-	
+
 	/*
 	** retrieves keycode + qrcode
 	*/

@@ -36,6 +36,4 @@ export class UserEntity extends BaseEntity {
 
   @Column({ nullable: false, type: 'boolean', default: false })
   tfa_fulfilled: boolean; // MUST BE REMOVED AFTER CREATING DTO
-
-
 }
