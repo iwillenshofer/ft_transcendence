@@ -7,14 +7,13 @@ services:
         ports:
              - "4200:4200"
         depends_on:
-            - backend
+            backend: 
+                condition: service_healthy
         restart: always
         env_file:
             - variables.env
         volumes:
             - "./srcs/frontend:/frontend"
-
-
 
     backend:
         build: ./srcs/backend
@@ -25,17 +24,23 @@ services:
         ports:            #this exposes the 3000 port to the host. maybe we should change to
             - "3000:3000" # expose 3000, which would expose it only docker-compose own network
         depends_on:
-            - db
+            db: 
+                condition: service_healthy
         restart: always
         env_file:
             - variables.env
         volumes:
             - "./srcs/backend:/backend"
-
+        healthcheck:
+            test: curl -f http://backend:3000/health
+            interval: 30s 
+            timeout: 10s
+            retries: 3
 
     db:
         image: postgres:13.0
         container_name: postgres
+        user: postgres
         volumes:
             - "./srcs/postgres/data/postgres:/data/postgres"
         ports:
@@ -45,3 +50,8 @@ services:
         env_file:
             - variables.env
         restart: always
+        healthcheck:
+            test: pg_isready
+            interval: 30s 
+            timeout: 10s
+            retries: 3

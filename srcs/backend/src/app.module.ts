@@ -5,10 +5,12 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ChatModule } from './chat/chat.module';
 import { JwtModule } from '@nestjs/jwt';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [AuthModule, UsersModule, ChatModule,
-    JwtModule.register({ secret: process.env.JWT_SECRET })
+    JwtModule.register({ secret: process.env.JWT_SECRET }),
+    HealthModule
   ],
   controllers: [AppController],
   providers: [AppService],
