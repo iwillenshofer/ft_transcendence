@@ -30,4 +30,4 @@ jobs:
       - name: curl
         uses: wei/curl@master
         with:
-          args: http://localhost:4200/
+          args: http://frontend:4200/
