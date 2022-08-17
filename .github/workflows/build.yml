@@ -27,12 +27,7 @@ jobs:
       - name: Build the stack
         run: docker-compose up -d
         
-  curl:
-  
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: curl
-      uses: wei/curl@master
-      with:
-        args: https://localhost:4200/
+      - name: curl
+        uses: wei/curl@master
+        with:
+          args: https://localhost:4200/
