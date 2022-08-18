@@ -17,5 +17,5 @@ jobs:
       - name: Test Frontend
         uses: wei/curl@master
         with:
-          args:  curl http://frontend:4200
+          args: curl http://localhost:4200
           
