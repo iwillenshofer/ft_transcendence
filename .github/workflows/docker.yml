@@ -24,9 +24,11 @@ jobs:
 
     - name: Install dependencies
       run: npm install
+      working-directory: ./srcs/frontend
 
     - name: Run tests
       run: npm run test
+      working-directory: ./srcs/frontend
 
     - name: Stop containers
       if: always()
