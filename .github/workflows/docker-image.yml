@@ -17,4 +17,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Test Frontend
-        run: docker run --network container:frontend appropriate/curl -s -v --retry 10 --retry-connrefused http://localhost:4200/
+        run: sleep 120 && curl http://frontend:4200
