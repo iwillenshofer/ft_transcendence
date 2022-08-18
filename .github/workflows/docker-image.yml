@@ -7,7 +7,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
       - name: Build the stack
         run: docker-compose up -d
         
@@ -15,7 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     container: ubuntu
     steps:
-      - uses: actions/checkout@v3
       - name: Test Frontend
-        shell: bash
-        run:  curl http://frontend:4200
+        uses: wei/curl@master
+        with:
+          args:  curl http://frontend:4200
+          
