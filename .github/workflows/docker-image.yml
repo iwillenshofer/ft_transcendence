@@ -17,4 +17,5 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Test Frontend
-        run: apt-get install curl && sleep 150 && curl http://frontend:4200
+        shell: bash
+        run:  curl http://frontend:4200
