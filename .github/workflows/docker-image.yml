@@ -9,15 +9,3 @@ jobs:
     steps:
       - name: Build the stack
         run: docker-compose up -d
-        
-  test:
-    runs-on: ubuntu-latest
-    container: ubuntu
-    steps:
-      - name: Wait
-        run: sleep 150
-      - name: Test Frontend
-        uses: wei/curl@master
-        with:
-          args: curl http://localhost:4200
-          
