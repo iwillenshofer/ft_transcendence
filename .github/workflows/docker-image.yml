@@ -4,11 +4,20 @@ on:
     branches: [ "bug_cli" ]
   workflow_dispatch:
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
       - name: Build the stack
         run: docker-compose up -d
+        
+  test:
+    runs-on: ubuntu-latest
+    container: ubuntu
+    steps:
+      - name: Wait
+        run: sleep 150
       - name: Test Frontend
-        run: docker run --network container:frontend appropriate/curl -s --retry 10 --retry-connrefused http://localhost:4200/
+        uses: wei/curl@master
+        with:
+          args: curl http://localhost:4200
+          
