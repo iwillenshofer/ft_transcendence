@@ -13,4 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build ./srcs/frontend --file ./srcs/frontend/Dockerfile --tag my-image-name:$(date +%s)
+    - run: docker build ./srcs/frontend --file ./srcs/frontend/Dockerfile --tag my-image-name:$(date +%s)
+    - run: apt-get update; apt-get install curl -y
+    - run: curl localhost:4200 > curl_result_docker
+    - run: cat curl_result_docker
