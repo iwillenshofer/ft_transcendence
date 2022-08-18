@@ -1,19 +1,25 @@
-name: Docker Image CI
+name: ci
 
 on:
   push:
     branches: [ "bug_cli" ]
-
 jobs:
-
-  build:
-
-    runs-on: ubuntu-latest
-
+  test:
+    runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-    - run: docker build ./srcs/frontend --file ./srcs/frontend/Dockerfile --tag my-image-name:$(date +%s)
-    - run: apt-get update; apt-get install curl -y
-    - run: curl localhost:4200 > curl_result_docker
-    - run: cat curl_result_docker
+      - name: Check out code
+        uses: actions/checkout@v2
+        
+      - name: Run docker-compose
+        run: docker-compose up -d
+        
+      - name: Cypress tests
+        uses: cypress-io/github-action@v2
+        with:
+          start: npm start
+          wait-on: 'http://localhost:4200'
+          record: true
+          
+            
+        
+        
