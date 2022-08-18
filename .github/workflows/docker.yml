@@ -1,22 +1,33 @@
-name: ci
+name: Test
 
 on:
   push:
-    branches: [ "bug_cli" ]
+    branches:
+    - bug_cli
+
 jobs:
-  test_frontend:
+  docker:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ../srcs/frontend
+
     steps:
-      - uses: actions/checkout@v2
-      - name: Angular Full CI
-        uses: colbyhill21/angular-full-ci/@v1.0
-        with:
-          testcommand: run test:ci
-          karma: true
-          
-            
-        
-        
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Start containers
+      run: docker-compose -f "docker-compose.yaml" up -d --build
+
+    - name: Install node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16.x
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run tests
+      run: npm run test
+
+    - name: Stop containers
+      if: always()
+      run: docker-compose -f "docker-compose.yaml" down
