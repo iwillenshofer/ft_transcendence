@@ -4,21 +4,18 @@ on:
   push:
     branches: [ "bug_cli" ]
 jobs:
-  test:
-    runs-on: ubuntu-20.04
+  test_frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./srcs/frontend
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-        
-      - name: Run docker-compose
-        run: docker-compose up -d
-        
-      - name: Cypress tests
-        uses: cypress-io/github-action@v2
+      - uses: actions/checkout@v2
+      - name: Angular Full CI
+        uses: colbyhill21/angular-full-ci/@v1.0
         with:
-          start: npm start
-          wait-on: 'http://localhost:4200'
-          record: true
+          testcommand: run test:ci
+          karma: true
           
             
         
