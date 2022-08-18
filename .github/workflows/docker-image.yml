@@ -1,8 +1,7 @@
-name: Docker Compose Actions Workflow
+name: Test
 on:
   push:
     branches: [ "bug_cli" ]
-  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
