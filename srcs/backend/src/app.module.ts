@@ -1,22 +1,21 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatModule } from './chat/chat.module';
-import { AppMiddleware } from './app.middleware';
-import { AuthController } from './auth/auth.controller';
 import { JwtModule } from '@nestjs/jwt';
+import { HealthModule } from './health/health.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, ChatModule, 
-    JwtModule.register({secret: process.env.JWT_SECRET})
+  imports: [AuthModule, UsersModule, ChatModule,
+    JwtModule.register({ secret: process.env.JWT_SECRET }),
+    HealthModule
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 
 export class AppModule implements NestModule {
-    configure() {}
+  configure() { }
 }

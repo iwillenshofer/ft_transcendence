@@ -28,7 +28,7 @@ export class DialogUsernameComponent implements OnInit {
   }
 
   // OnClick of button Upload
-  updateName(user: string) {
+  updateName(user: string | null) {
     this.userService.updateUsername(user).subscribe(
       (event: any) => {
         if (event.username != '') {

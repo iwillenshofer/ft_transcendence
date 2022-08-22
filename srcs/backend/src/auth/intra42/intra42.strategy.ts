@@ -5,11 +5,6 @@ import { HttpService } from "@nestjs/axios";
 import { lastValueFrom } from 'rxjs';
 import { AuthService } from "../auth.service";
 
-/*
-**
-**
-**
-*/
 @Injectable()
 export class Intra42Strategy extends PassportStrategy(Strategy, "intra42")
 {
@@ -24,7 +19,6 @@ export class Intra42Strategy extends PassportStrategy(Strategy, "intra42")
 			// scope: ['public'],
 		})
 	}
-
 
 	async validate(req: Request, accessToken: string, refreshToken: string): Promise<any> {
 		console.log(accessToken);

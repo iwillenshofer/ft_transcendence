@@ -4,7 +4,6 @@ import { Strategy } from "passport-strategy";
 import { AuthService } from "../auth.service";
 import { UserDTO } from "src/users/users.dto";
 import { Request } from "express";
-import { ParamsDictionary } from "express-serve-static-core";
 import { ParsedQs } from "qs";
 
 /*
@@ -18,7 +17,7 @@ export class FakeIntra42Strategy extends PassportStrategy(Strategy, 'fake42strat
         super();
     }
 
-    async authenticate(req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>, options?: any): Promise<void> {
+    async authenticate(req: Request<any, any, ParsedQs, Record<string, any>>, options?: any): Promise<void> {
         if (req.url == '/auth/login') {
             this.redirect('/auth/callback');
         }

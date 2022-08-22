@@ -45,3 +45,5 @@ services:
         env_file:
             - variables.env
         restart: always
+
+        

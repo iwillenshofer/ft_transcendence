@@ -1,7 +1,6 @@
-import { ExtractJwt, Strategy, JwtFromRequestFunction } from 'passport-jwt'
+import { ExtractJwt, Strategy } from 'passport-jwt'
 import { PassportStrategy } from '@nestjs/passport'
-import { Injectable, HttpException, UnauthorizedException } from '@nestjs/common'
-import { Request } from 'express'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {

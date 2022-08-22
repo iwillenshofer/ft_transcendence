@@ -7,7 +7,6 @@ import { JwtGuard } from 'src/auth/jwt/jwt.guard';
 import { v4 as uuidv4 } from 'uuid';
 import { UsersService } from './users.service';
 
-
 @Controller('user')
 export class UsersController {
 
