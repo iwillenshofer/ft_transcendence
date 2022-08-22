@@ -1,24 +1,11 @@
 <div class="sidenav">
     <div class="avatar">
         <img src="{{ this.image }}" alt="Avatar" class="avatar-img">
-        <span class="edit">
-            <a mat-raised-button (click)="openDialogAvatar()">
-                <fa-icon style="cursor: pointer;" [icon]="faEdit" size="lg" [style]="{'color': 'white'}"></fa-icon>
-            </a>
-        </span>
     </div>
 
     <div class="username">
-        <p>{{ this.username }}</p>
-        <a mat-raised-button (click)="openDialogUsername()">
-            <fa-icon style="cursor: pointer;" [icon]="faEdit" size="xs" [style]="{'color': 'white'}"></fa-icon>
-        </a>
+        {{ this.username }}
     </div>
 
-
-    <div class="buttons"><br>
-		<app-button *ngIf="tfa_enabled" name="Disable TFA" (btnClick)="disableTfa()"></app-button>
-		<app-button *ngIf="!tfa_enabled" name="Enable TFA" (btnClick)="enableTfa()"></app-button><br>
-		<app-button name="Logout" (btnClick)="logOut()"></app-button>
-	</div>
+    <button class="profile" routerLink="/profile" href="#">Profile</button>
 </div>
