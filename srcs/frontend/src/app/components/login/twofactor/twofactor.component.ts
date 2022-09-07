@@ -28,7 +28,7 @@ export class TwofactorComponent {
     private authService: AuthService,
     private router: Router,
   ) {
-    this.keyCode = new BehaviorSubject<SafeUrl | null>("hello");
+    this.keyCode = new BehaviorSubject<SafeUrl | null>("");
     this.qrCode = new BehaviorSubject<SafeUrl | null>(null);
     this.tfa_fulfilled = new BehaviorSubject<boolean>(false);
   }
