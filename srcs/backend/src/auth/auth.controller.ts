@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { JwtGuard } from './jwt/jwt.guard';
 import { JwtRefreshGuard } from './jwt/jwtrefresh.guard';
 import { Intra42Guard } from './intra42/intra42.guard';
+import { FakeIntra42Guard } from './intra42/fakeintra42.guard';
 import { TfaGuard } from './tfa/tfa.guard';
 import { UsersService } from 'src/users/users.service';
 import { UserDTO } from 'src/users/users.dto';
@@ -21,8 +22,8 @@ export class AuthController {
 	** since the user is not logged in yet, only intra42 guard is used
 	*/
 
-	// @UseGuards(FakeIntra42Guard)
-	@UseGuards(Intra42Guard)
+	@UseGuards(FakeIntra42Guard)
+	// @UseGuards(Intra42Guard)
 	@Get("login")
 	async login(@Request() req, @Response() res) {
 		return;
@@ -32,8 +33,8 @@ export class AuthController {
 	** /auth/callback is the intra's return
 	*/
 
-	// @UseGuards(FakeIntra42Guard)
-	@UseGuards(Intra42Guard)
+	@UseGuards(FakeIntra42Guard)
+	// @UseGuards(Intra42Guard)
 	@Get("callback")
 	async callback(@Response() res, @Request() req) {
 		console.log(req.user);

@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogUsernameComponent } from '../dialogs/components/dialog-username/dialog-username.component'
+import { DialogUsernameComponent } from '../dialogs/dialog-username/dialog-username.component'
 import { UserService } from 'src/app/services/user.service';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import { DialogAvatarComponent } from '../dialogs/components/dialog-avatar/dialog-avatar.component';
+import { DialogAvatarComponent } from '../dialogs/dialog-avatar/dialog-avatar.component';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/auth/auth.service';
 import { HttpClient } from '@angular/common/http';

@@ -1,0 +1,156 @@
+@import './game_variables.scss';
+@import url(//db.onlinewebfonts.com/c/7bc71114a54a06cbaf716a3264b70bd6?family=Arcade+Classic);
+
+*,
+*::after,
+*::before {
+    box-sizing: border-box;
+}
+
+.table {
+    height: 100%;
+    // width: 100px;
+    background-color: $table-color;
+    // margin-bottom: 10px;
+    border-top: 5px solid white;
+    border-bottom: 5px solid white;
+}
+
+.score {
+    // margin-left: 360px;
+    margin-top: 1.5vh;
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 7vh;
+    color: $score-color;
+}
+
+.score>* {
+    flex-grow: 1;
+    flex-basis: 0;
+    padding: 0 2vh;
+    margin: 1vh 0;
+    opacity: .5;
+    z-index: 7;
+}
+
+.score> :first-child {
+    text-align: right;
+    border-right: .5vh solid white;
+}
+
+// .pause-button,
+// .resume-button {
+//     color: white;
+//     cursor: pointer;
+//     @include center-absolute;
+//     align-items: center;
+//     bottom: 10px;
+// }
+
+.pause-div {
+    font-family: "Lucida Console", "Courier New", monospace;
+    color: white;
+    @include center-absolute;
+    align-items: center;
+    top: calc(105px + 20vh);
+    background-color: black;
+}
+
+.pause-div__title {
+    font-size: 10vh;
+    // padding: 10px;
+    margin-bottom: 10vh;
+}
+
+.pause-div__text {
+    font-size: 3vh;
+}
+
+.finished-div {
+    font-family: "Lucida Console", "Courier New", monospace;
+    color: white;
+    @include center-absolute;
+    align-items: center;
+    top: calc(105px + 20vh);
+    font-size: 10vh;
+    background-color: black;
+}
+
+.finished-div p {
+    margin-top: 10vh;
+}
+
+.start-menu {
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    // @include center-absolute;
+    left: 20%;
+    top: calc(105px + 10%);
+}
+
+.start-menu .game-mode {
+    text-align: left;
+    font-family: "Lucida Console", "Courier New", monospace;
+    height: 10vh;
+    cursor: pointer;
+    font-size: 3vh;
+    background-color: black;
+    color: white;
+    opacity: .75;
+    border: none;
+}
+
+.start-menu .game-mode:hover {
+    opacity: 1;
+    border-right: 2px solid white;
+    border-left: 2px solid white;
+}
+
+.start-menu .square {
+    background-color: black;
+    border: 2px solid white;
+    color: white;
+    cursor: pointer;
+    height: 4vh;
+    width: 4vh;
+    margin-right: 10px;
+    font-size: 5vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.start-menu .square>selected {
+    opacity: 1;
+}
+
+.start-menu .custom {
+    margin-top: 15px;
+    margin-left: 10px;
+    background-color: black;
+    color: white;
+    display: flex;
+    opacity: .75;
+    font-family: "Lucida Console", "Courier New", monospace;
+    font-size: 3vh;
+    background-color: black;
+    color: white;
+}
+
+.instructions-menu {
+    width: 30%;
+    position: absolute;
+    right: 20%;
+    top: calc(105px + 10%);
+    margin-top: 30px;
+    font-family: "Lucida Console", "Courier New", monospace;
+    font-size: 2.5vh;
+    background-color: black;
+    color: white;
+    opacity: .75;
+}

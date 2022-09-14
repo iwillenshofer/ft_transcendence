@@ -6,7 +6,7 @@ import { LoginpageComponent } from './components/login/loginpage/loginpage.compo
 import { LoginCallbackComponent } from './components/login/callback/callback.component';
 import { AuthguardService } from './auth/guards/authguard.service';
 import { TwofactorComponent } from './components/login/twofactor/twofactor.component';
-import { GameComponent } from './components/game/game.component';
+import { GameComponent } from './components/old-game/game.component';
 import { ChatComponent } from './components/chat/chat.component';
 import { FriendsComponent } from './components/friends/friends.component';
 import { ProfileComponent } from './components/profile/profile.component';
