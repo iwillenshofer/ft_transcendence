@@ -6,11 +6,13 @@ import { UsersModule } from './users/users.module';
 import { ChatModule } from './chat/chat.module';
 import { JwtModule } from '@nestjs/jwt';
 import { HealthModule } from './health/health.module';
+import { GameModule } from './game/game.module';
 
 @Module({
   imports: [AuthModule, UsersModule, ChatModule,
     JwtModule.register({ secret: process.env.JWT_SECRET }),
-    HealthModule
+    HealthModule,
+    GameModule
   ],
   controllers: [AppController],
   providers: [AppService],
