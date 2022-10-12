@@ -1,4 +1,3 @@
-import { gameSocket } from './game-socket';
 import { PowerupComponent } from './powerup/powerup.component';
 import { PaddleComponent } from './paddle/paddle.component';
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
@@ -26,7 +25,7 @@ export class GameComponent implements OnInit {
   powerUpMode: boolean = false;
   initHeight = window.innerHeight;
 
-  constructor(private socket: gameSocket) { }
+  constructor() { }
 
   @ViewChild(BallComponent) ball!: BallComponent;
   @ViewChild('player1') player1Paddle!: PaddleComponent;
@@ -233,10 +232,10 @@ export class GameComponent implements OnInit {
 
 
   joinQueue() {
-    if (!this.powerUpMode)
-      this.socket.emit("joinNormalGame");
-    else
-      this.socket.emit("joinPowerGame");
+    // if (!this.powerUpMode)
+    // this.socket.emit("joinNormalGame");
+    // else
+    // this.socket.emit("joinPowerGame");
     // this.stat = GameStat.NORMAL_QUEUE;
   }
 }
