@@ -17,13 +17,13 @@
 
 .powerup h1 {
     @include center-absolute();
-    // display: flex;
-    flex-direction: column;
     font-size: 7vh;
-    margin-top: -0.5vh;
+    margin-top: 50%;
+    transform: translateY(-50%);
 }
 
 p {
+    margin-top: 1.5vh;
     --effect-color: black;
     font-family: "Lucida Console", "Courier New", monospace;
     font-size: 5vh;
