@@ -42,3 +42,12 @@ export class GameGateway {
     }
   }
 }
+
+/*
+      https://www.youtube.com/watch?app=desktop&v=atbdpX4CViM
+      https://nest-ionic-examples.github.io/01-simple-chat/
+      https://www.digitalocean.com/community/tutorials/angular-socket-io
+      https://www.thepolyglotdeveloper.com/2019/04/using-socketio-create-multiplayer-game-angular-nodejs/
+      https://docs.nestjs.com/websockets/gateways
+      https://socket.io/docs/v4/typescript/
+*/
