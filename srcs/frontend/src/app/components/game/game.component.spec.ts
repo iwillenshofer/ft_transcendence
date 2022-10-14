@@ -11,9 +11,7 @@ describe('GameComponent', () => {
       declarations: [ GameComponent ]
     })
     .compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(GameComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

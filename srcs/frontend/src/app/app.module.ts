@@ -22,9 +22,9 @@ import { ChatComponent } from './components/chat/chat.component';
 import { FriendsComponent } from './components/friends/friends.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NavigationComponent } from './components/navigation/navigation.component';
-import { BallComponent } from './components/game/ball/ball.component';
-import { PaddleComponent } from './components/game/paddle/paddle.component';
-import { PowerupComponent } from './components/game/powerup/powerup.component';
+// import { BallComponent } from './components/game/ball/ball.component';
+// import { PaddleComponent } from './components/game/paddle/paddle.component';
+// import { PowerupComponent } from './components/game/powerup/powerup.component';
 import { DialogAvatarComponent } from './components/dialogs/dialog-avatar/dialog-avatar.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -46,9 +46,9 @@ import { ProfileComponent } from './components/profile/profile.component';
     GameComponent,
     ChatComponent,
     FriendsComponent,
-    BallComponent,
-    PaddleComponent,
-    PowerupComponent,
+    // BallComponent,
+    // PaddleComponent,
+    // PowerupComponent,
     DialogAvatarComponent,
     DialogUsernameComponent,
     ProfileComponent,
