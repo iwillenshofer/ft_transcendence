@@ -8,21 +8,23 @@ export class GameGateway {
   server: Server;
 
   position = {
-    x: 200,
-    y: 200
+    x: 500,
+    y: 200,
   };
+
+  player1: any = null;
+  player2: any = null;
 
   @SubscribeMessage('joinGame')
   joinGame(client: Socket) {
-    console.log('PSOTICAO', this.position)
+    this.setPlayers(client.id);
     this.server.emit("position", this.position);
-
   }
 
   @SubscribeMessage('move')
-  move(client: Socket, data: string) {
-    console.log('NAYRAN', data);
-    switch (data) {
+  move(client: Socket, command: string) {
+    console.log(client.id, command);
+    switch (command) {
       case "left":
         this.position.x -= 5;
         this.server.emit("position", this.position);
@@ -40,6 +42,13 @@ export class GameGateway {
         this.server.emit("position", this.position);
         break;
     }
+  }
+
+  setPlayers(player: any) {
+    if (!this.player1)
+      this.player1 = player;
+    else if (!this.player2)
+      this.player2 = player;
   }
 }
 
