@@ -1,4 +1,4 @@
 #!/bin/sh
-
- npm install
- npm run start
+npm config set timeout 6000000 
+ npm install 
+ npm run start:dev

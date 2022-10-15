@@ -31,6 +31,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { DialogUsernameComponent } from './components/dialogs/components/dialog-username/dialog-username.component';
 import { MatInputModule } from '@angular/material/input';
 import { ProfileComponent } from './components/profile/profile.component';
+import { AlertsModule } from './alerts/alerts.module';
 
 @NgModule({
   declarations: [
@@ -52,7 +53,6 @@ import { ProfileComponent } from './components/profile/profile.component';
     DialogAvatarComponent,
     DialogUsernameComponent,
     ProfileComponent,
-
   ],
   imports: [
     BrowserModule,
@@ -64,7 +64,8 @@ import { ProfileComponent } from './components/profile/profile.component';
     BrowserAnimationsModule,
     MatDialogModule,
     MatInputModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+	AlertsModule
   ],
   providers: [
     {

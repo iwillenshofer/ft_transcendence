@@ -6,6 +6,7 @@ import { User } from 'src/app/auth/user.model';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ThisReceiver } from '@angular/compiler';
+import { AlertsService } from 'src/app/alerts/alerts.service';
 
 @Component({
 	selector: 'app-callback',
@@ -30,6 +31,7 @@ export class LoginCallbackComponent implements OnInit {
 		private cookieService: CookieService,
 		private http: HttpClient,
 		private router: Router,
+		private alertservice: AlertsService
 	) {
 		this.authService.user.subscribe(user => this.currentUser = user);
 		this.dataSubject = new BehaviorSubject<any>(null);
@@ -51,11 +53,13 @@ export class LoginCallbackComponent implements OnInit {
 		this.activatedRoute.queryParams.subscribe(params => {
 			const code = params['code'];
 			if (!(code)) {
+				this.alertservice.danger('Login failed. Is everything OK with the intranet?')
 				this.router.navigate(['/']);
 				return;
 			}
 			this.http.get<any>('/backend/auth/token/' + code).subscribe(result => {
 				if (!(result) || !(result.token)) {
+					this.alertservice.info('Invalid token. What are you trying to do here?')
 					this.router.navigate(['/']);
 					return;
 				}
