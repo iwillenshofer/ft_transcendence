@@ -29,7 +29,9 @@ export class AuthInterceptor implements HttpInterceptor {
 				if (error.status == 401) {
 					return this.handleError(req, next, error);
 				} else {
-					return throwError(() => error);
+					this.alertservice.danger("Something bad happened and you'll have to login again!")
+					this.authService.logout();
+					return this.router.navigate(['/']);
 				}
 			})
 		)
@@ -50,12 +52,9 @@ export class AuthInterceptor implements HttpInterceptor {
 				return next.handle(new_req);
 			}),
 			catchError((error) => {
+				this.alertservice.danger("Is your token that old? Let's login again")
 				this.authService.logout();
-				if (error.status == 401) {
-					this.alertservice.warning("Invalid Credentials... let's login again, shall we?")
-					this.router.navigate(['/']);
-				} 
-				return throwError(() => error);
+				return this.router.navigate(['/']);
 			})
 		)
 	}
