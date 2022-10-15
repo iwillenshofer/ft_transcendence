@@ -3,13 +3,15 @@ import { Router } from "@angular/router";
 import { AuthService } from "./auth.service";
 import { catchError, Observable, throwError, switchMap, map } from "rxjs";
 import { Injectable } from "@angular/core";
+import { AlertsService } from "../alerts/alerts.service";
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 	constructor(
 		private authService: AuthService,
 		private router: Router,
-		private http: HttpClient
+		private http: HttpClient,
+		private alertservice: AlertsService
 	) { }
 
 	intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -49,6 +51,10 @@ export class AuthInterceptor implements HttpInterceptor {
 			}),
 			catchError((error) => {
 				this.authService.logout();
+				if (error.status == 401) {
+					this.alertservice.warning("Invalid Credentials... let's login again, shall we?")
+					this.router.navigate(['/']);
+				} 
 				return throwError(() => error);
 			})
 		)

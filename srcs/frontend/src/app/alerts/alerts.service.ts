@@ -29,6 +29,10 @@ export class AlertsService {
 	this.alert({ type: "info", msg: message });
   }
 
+  warning(message: string) {
+	this.alert({ type: "warning", msg: message });
+  }
+  
   success(message: string) {
 	this.alert({ type: "success", msg: message });
   }
