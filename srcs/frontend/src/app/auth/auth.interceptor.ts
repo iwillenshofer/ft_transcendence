@@ -53,7 +53,7 @@ export class AuthInterceptor implements HttpInterceptor {
 			}),
 			catchError((error) => {
 				console.log('');
-				this.alertservice.danger("Is your token that old? Let's login again")
+				this.alertservice.danger("Is your token that old or are you trying something fancy? Let's login again")
 				this.authService.logout();
 				return this.router.navigate(['/']);
 			})
