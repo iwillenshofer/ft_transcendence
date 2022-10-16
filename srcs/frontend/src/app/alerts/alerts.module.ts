@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { AlertsComponent } from './alerts.component';
 import { AlertModule } from 'ngx-bootstrap/alert';
 
-
-
 @NgModule({
   declarations: [
 	AlertsComponent
@@ -12,7 +10,7 @@ import { AlertModule } from 'ngx-bootstrap/alert';
   
   imports: [
     CommonModule,
-	AlertModule
+	AlertModule,
   ],
   exports: [
 	AlertsComponent

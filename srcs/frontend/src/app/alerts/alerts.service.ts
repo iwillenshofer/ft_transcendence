@@ -22,6 +22,7 @@ export class AlertsService {
   }
 
   danger(message: string) {
+	this.clear();
 	this.alert({ type: "danger", msg: message });
   }
 
@@ -37,12 +38,13 @@ export class AlertsService {
 	this.alert({ type: "success", msg: message });
   }
 
-  clear(message: string) {
+  clear() {
 	this.alertsSubject.next([]);
   	this.alerts = [];
   }
 
   remove(removedAlert: any): void {
+	console.log('removed alert');
 	this.alerts = this.alerts.filter(alert => alert !== removedAlert);
 	this.alertsSubject.next(this.alerts);
   }

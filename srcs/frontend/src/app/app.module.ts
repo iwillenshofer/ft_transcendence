@@ -65,7 +65,7 @@ import { AlertsModule } from './alerts/alerts.module';
     MatDialogModule,
     MatInputModule,
     ReactiveFormsModule,
-	AlertsModule
+	AlertsModule,
   ],
   providers: [
     {

@@ -23,9 +23,10 @@ export class AlertsComponent implements OnInit {
 
   timeout: number = 5000;
   dismissible: boolean = true;
-  
+  dismissOnTimeout: number = 5000;
+
   onClosed(dismissedAlert: any): void {
-//	this.alertsService.remove(dismissedAlert);
+	this.alertsService.remove(dismissedAlert);
   }
 
 }
