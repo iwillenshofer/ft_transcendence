@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { ChatModule } from './chat/chat.module';
 import { JwtModule } from '@nestjs/jwt';
 import { HealthModule } from './health/health.module';
+import { EncryptService } from './services/encrypt.service';
 
 @Module({
   imports: [AuthModule, UsersModule, ChatModule,
