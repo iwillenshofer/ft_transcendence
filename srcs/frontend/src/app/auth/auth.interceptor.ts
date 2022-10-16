@@ -3,13 +3,15 @@ import { Router } from "@angular/router";
 import { AuthService } from "./auth.service";
 import { catchError, Observable, throwError, switchMap, map } from "rxjs";
 import { Injectable } from "@angular/core";
+import { AlertsService } from "../alerts/alerts.service";
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 	constructor(
 		private authService: AuthService,
 		private router: Router,
-		private http: HttpClient
+		private http: HttpClient,
+		private alertservice: AlertsService
 	) { }
 
 	intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -18,16 +20,18 @@ export class AuthInterceptor implements HttpInterceptor {
 			withCredentials: true
 		}
 		);
-		if (req.url.indexOf('/refreshtoken') >= 0)
+		if (req.url.indexOf('/refreshtoken') >= 0 || req.url.indexOf('/logout') >= 0)
 			return next.handle(new_req);
 		console.log(new_req.url)
 		return next.handle(new_req).pipe<any>(
 			catchError((error) => {
-				console.log('the error was here1');
+				console.log('the error was here13');
 				if (error.status == 401) {
 					return this.handleError(req, next, error);
 				} else {
-					return throwError(() => error);
+					this.alertservice.danger("Something bad happened and you'll have to login again!")
+					this.authService.logout();
+					return this.router.navigate(['/']);
 				}
 			})
 		)
@@ -48,8 +52,10 @@ export class AuthInterceptor implements HttpInterceptor {
 				return next.handle(new_req);
 			}),
 			catchError((error) => {
+				console.log('');
+				this.alertservice.danger("Is your token that old or are you trying something fancy? Let's login again")
 				this.authService.logout();
-				return throwError(() => error);
+				return this.router.navigate(['/']);
 			})
 		)
 	}

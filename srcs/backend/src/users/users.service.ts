@@ -7,6 +7,8 @@ export { UserEntity }
 import { createWriteStream } from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import * as fs from 'fs';
+import { EncryptService } from 'src/services/encrypt.service';
+
 /*
 ** This is basically a the Database... We will implement TypeORM.
 */
@@ -14,7 +16,10 @@ import * as fs from 'fs';
 @Injectable()
 export class UsersService {
 
-	constructor(private readonly httpService: HttpService) { }
+	constructor(
+		private readonly httpService: HttpService,
+		private readonly encrypt: EncryptService
+		) { }
 
 	async getUser(intra_id: number): Promise<UserDTO | null> {
 
@@ -55,7 +60,7 @@ export class UsersService {
 
 	async updateRefreshToken(id: number, token: string): Promise<void> {
 		let user = await dataSource.getRepository(UserEntity).findOneBy({ id: id });
-		user.refreshtoken = token;
+		user.refreshtoken = this.encrypt.encode(token);
 		const results = await dataSource.getRepository(UserEntity).save(user);
 		return;
 	}
@@ -89,7 +94,7 @@ export class UsersService {
 
 	async getRefreshToken(id: number): Promise<string> {
 		let user = await dataSource.getRepository(UserEntity).findOneBy({ id: id });
-		return (user.refreshtoken);
+		return (this.encrypt.decode(user.refreshtoken));
 	}
 
 	async isUsernameTaken(username: string) {
@@ -106,7 +111,7 @@ export class UsersService {
 
 	async set2FASecret(id: number, secret: string): Promise<void> {
 		let user = await dataSource.getRepository(UserEntity).findOneBy({ id: id });
-		user.tfa_code = secret;
+		user.tfa_code = this.encrypt.encode(secret);
 		console.log("secret saved:" + secret);
 		const results = await dataSource.getRepository(UserEntity).save(user);
 		return;
@@ -127,7 +132,7 @@ export class UsersService {
 	async getTfaCode(id: number): Promise<string> {
 		let user = await dataSource.getRepository(UserEntity).findOneBy({ id: id });
 		console.log("secret retrieved:" + user.tfa_code);
-		return (user.tfa_code);
+		return (this.encrypt.decode(user.tfa_code));
 	}
 
 	async deleteAvatar(oldAvatar: string) {

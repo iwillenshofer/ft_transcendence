@@ -34,9 +34,9 @@ export class Intra42Strategy extends PassportStrategy(Strategy, "intra42")
 			console.log(data);
 			user = await this.authService.getOrCreateUser(data.data);
 			if (!user)
-				throw new UnauthorizedException();
+				return (null);
 		} catch (error) {
-			throw new UnauthorizedException();
+			return (null);
 		}
 		return (user);
 	}

@@ -4,6 +4,7 @@ import { FormControl, FormControlDirective, ReactiveFormsModule } from '@angular
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { AlertsService } from 'src/app/alerts/alerts.service';
 import { AuthService } from 'src/app/auth/auth.service';
 import { User } from 'src/app/auth/user.model';
 
@@ -27,8 +28,9 @@ export class TwofactorComponent {
     private readonly sanitizer: DomSanitizer,
     private authService: AuthService,
     private router: Router,
+	private alertservice: AlertsService
   ) {
-    this.keyCode = new BehaviorSubject<SafeUrl | null>("hello");
+    this.keyCode = new BehaviorSubject<SafeUrl | null>("");
     this.qrCode = new BehaviorSubject<SafeUrl | null>(null);
     this.tfa_fulfilled = new BehaviorSubject<boolean>(false);
   }
@@ -50,21 +52,18 @@ export class TwofactorComponent {
   async submitCode() {
     this.http.post<ResponseMessage>('/backend/auth/tfa_verify', { code: this.codeControl.value }, { withCredentials: true }).subscribe((result) => {
       let res: any = result;
-      console.log(res);
-      if (res.msg) {
-        console.log("ORIG: " + localStorage.getItem('token'));
+      if (res?.msg == true) {
         localStorage.removeItem('token');
         localStorage.setItem('token', res.token);
-        console.log("NEW: " + localStorage.getItem('token'));
-
-        console.log("MSG: " + JSON.stringify(res.msg));
         this.http.get<User>('/backend/auth/profile', { withCredentials: true }).subscribe(result => {
           this.authService.userSubject.next(result);
           localStorage.setItem('user', JSON.stringify(result));
-          console.log("Activated TFA" + JSON.stringify(result));
+		  this.alertservice.success('Code successfuly validated');
           this.router.navigate(['/']);
         });
-      }
+      } else {
+		this.alertservice.warning('Invalid Code');
+	  }
     });
   }
 
