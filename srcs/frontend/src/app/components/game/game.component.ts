@@ -8,8 +8,6 @@ import io from "socket.io-client";
 })
 export class GameComponent implements OnInit {
 
-
-
   @ViewChild("game")
   private gameCanvas!: ElementRef;
 
@@ -20,12 +18,6 @@ export class GameComponent implements OnInit {
 
   @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
     switch (event.key) {
-      // case 'p':
-      // case 'P':
-      //   if (this.play && !this.finished)
-      //     this.pause();
-      //   break;
-
       case 'w':
       case 'W':
       case 'ArrowUp':
@@ -49,13 +41,18 @@ export class GameComponent implements OnInit {
   }
 
   public ngAfterViewInit() {
+    this.fillCanvas();
+  }
+
+  fillCanvas() {
     this.context = this.gameCanvas.nativeElement.getContext("2d");
-    this.context.fillRect(50, 200, 10, 50);
-    this.context.fillRect(500, 200, 10, 50);
+    this.context.fillRect(50, 200, 5, 100);
+    this.context.fillRect(500, 200, 5, 100);
+    // this.context.style.background-color: preserveWhitespacesDefault;
     this.socket.on("position", (positionP1: { x: any; y: any }, positionP2: { x: any, y: any }) => {
       this.context.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
-      this.context.fillRect(positionP1.x, positionP1.y, 10, 50);
-      this.context.fillRect(positionP2.x, positionP2.y, 10, 50);
+      this.context.fillRect(positionP1.x, positionP1.y, 5, 100);
+      this.context.fillRect(positionP2.x, positionP2.y, 5, 100);
     });
   }
 }

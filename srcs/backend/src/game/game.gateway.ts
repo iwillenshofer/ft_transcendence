@@ -35,7 +35,7 @@ export class GameGateway {
     if (client.id == this.player1) {
       position = this.positionP1;
     }
-    console.log(client.id, this.player1, this.player2);
+    // console.log(client.id, this.player1, this.player2);
     switch (command) {
       case "up":
         position.y -= 5;
