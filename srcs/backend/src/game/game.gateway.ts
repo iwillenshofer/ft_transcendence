@@ -7,7 +7,12 @@ export class GameGateway {
   @WebSocketServer()
   server: Server;
 
-  position = {
+  positionP1 = {
+    x: 50,
+    y: 200,
+  };
+
+  positionP2 = {
     x: 500,
     y: 200,
   };
@@ -17,38 +22,30 @@ export class GameGateway {
 
   @SubscribeMessage('joinGame')
   joinGame(client: Socket) {
-    this.setPlayers(client.id);
-    this.server.emit("position", this.position);
+    this.server.emit("position", this.positionP1, this.positionP2);
   }
 
   @SubscribeMessage('move')
   move(client: Socket, command: string) {
-    console.log(client.id, command);
+    if (!this.player1)
+      this.player1 = client.id;
+    else
+      this.player2 = client.id;
+    let position = this.positionP2;
+    if (client.id == this.player1) {
+      position = this.positionP1;
+    }
+    console.log(client.id, this.player1, this.player2);
     switch (command) {
-      case "left":
-        this.position.x -= 5;
-        this.server.emit("position", this.position);
-        break;
-      case "right":
-        this.position.x += 5;
-        this.server.emit("position", this.position);
-        break;
       case "up":
-        this.position.y -= 5;
-        this.server.emit("position", this.position);
+        position.y -= 5;
+        this.server.emit("position", this.positionP1, this.positionP2);
         break;
       case "down":
-        this.position.y += 5;
-        this.server.emit("position", this.position);
+        position.y += 5;
+        this.server.emit("position", this.positionP1, this.positionP2);
         break;
     }
-  }
-
-  setPlayers(player: any) {
-    if (!this.player1)
-      this.player1 = player;
-    else if (!this.player2)
-      this.player2 = player;
   }
 }
 
