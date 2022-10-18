@@ -107,7 +107,6 @@ export class UsersService {
 	async set2FASecret(id: number, secret: string): Promise<void> {
 		let user = await dataSource.getRepository(UserEntity).findOneBy({ id: id });
 		user.tfa_code = secret;
-		console.log("secret saved:" + secret);
 		const results = await dataSource.getRepository(UserEntity).save(user);
 		return;
 	}
@@ -126,7 +125,6 @@ export class UsersService {
 
 	async getTfaCode(id: number): Promise<string> {
 		let user = await dataSource.getRepository(UserEntity).findOneBy({ id: id });
-		console.log("secret retrieved:" + user.tfa_code);
 		return (user.tfa_code);
 	}
 
@@ -134,7 +132,6 @@ export class UsersService {
 		await fs.unlink('./uploads/profileimages/' + oldAvatar, (err) => {
 			if (err)
 				throw err;
-			console.log('./uploads/profileimages/' + oldAvatar + ' was deleted.')
 		})
 	}
 }

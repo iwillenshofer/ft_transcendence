@@ -46,7 +46,7 @@ export class LoginCallbackComponent implements OnInit {
 	ngOnInit() {
 		this.getToken();
 	}
-	
+
 	async getToken() {
 		this.activatedRoute.queryParams.subscribe(params => {
 			const code = params['code'];
@@ -64,7 +64,7 @@ export class LoginCallbackComponent implements OnInit {
 			});
 		});
 	}
-	
+
 	/*
 	** the functions below must be implemented in other services, like User service
 	*/
@@ -84,7 +84,6 @@ export class LoginCallbackComponent implements OnInit {
 
 	async refreshToken() {
 		this.http.get<User>('/backend/auth/refreshtoken', { withCredentials: true }).subscribe(result => {
-			console.log(result);
 		});
 	}
 }

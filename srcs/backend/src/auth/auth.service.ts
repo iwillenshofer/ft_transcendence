@@ -22,7 +22,6 @@ export class AuthService {
 		if (!data || !(data?.id) || !(data?.login) || !(data?.displayname))
 			return (null);
 		user = await this.userService.getUser(data.id);
-		console.log(user);
 		if (!user)
 			user = await this.userService.createUser(data.id, data.login, data.displayname, data.image_url);
 		return (user);
@@ -33,7 +32,6 @@ export class AuthService {
 			tfa_fulfilled = !(await this.userService.getTfaEnabled(user.id));
 		}
 		const payload = { username: user.username, id: user.id, tfa_fulfilled: tfa_fulfilled };
-		console.log("created access token: " + JSON.stringify(payload))
 		return (this.jwtService.sign(payload, { secret: process.env.JWT_SECRET, expiresIn: 300 }));
 	}
 
@@ -49,7 +47,6 @@ export class AuthService {
 		let new_code: AuthInterface = new AuthEntity;
 		var hexstring = crypto.randomBytes(64).toString('hex');
 		new_code.user = await this.userService.getUser(user_id);
-		console.log(new_code.user)
 		if (!(new_code.user))
 			return (null);
 		new_code.hash = crypto.pbkdf2Sync(hexstring, process.env.JWT_SECRET, 1000, 64, `sha512`).toString(`hex`);
@@ -63,7 +60,6 @@ export class AuthService {
 			.createQueryBuilder('auth')
 			.leftJoinAndSelect('auth.user', 'user')
 			.where('auth.hash = :hash', { hash }).getOne();
-		console.log("Query:" + JSON.stringify(query));
 		const now = new Date(Date.now());
 		now.setMinutes(now.getMinutes() - 100);
 		if (!(query) || query.created_at < now)
@@ -94,11 +90,8 @@ export class AuthService {
 
 	async verifyTwoFactor(user_id: number, code: string) {
 		const user_info: UserDTO = await this.userService.getUser(user_id);
-		console.log("tfa user" + JSON.stringify(user_id));
 		if (authenticator.verify({ token: code, secret: await this.userService.getTfaCode(user_id) })) {
-			console.log("verification passed")
 			if (!(await this.userService.getTfaEnabled(user_id))) {
-				console.log("tfa not yet enabled");
 				await this.userService.enable2FASecret(user_id, true);
 			}
 			return true;
@@ -107,7 +100,6 @@ export class AuthService {
 	}
 
 	public async generateTFA(user_id: number) {
-		console.log("qrcode user " + user_id);
 		let user_info: UserDTO = await this.userService.getUser(user_id);
 		const secret = authenticator.generateSecret();
 		await this.userService.set2FASecret(user_id, secret);

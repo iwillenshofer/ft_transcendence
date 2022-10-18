@@ -20,10 +20,8 @@ export class AuthInterceptor implements HttpInterceptor {
 		);
 		if (req.url.indexOf('/refreshtoken') >= 0)
 			return next.handle(new_req);
-		console.log(new_req.url)
 		return next.handle(new_req).pipe<any>(
 			catchError((error) => {
-				console.log('the error was here1');
 				if (error.status == 401) {
 					return this.handleError(req, next, error);
 				} else {

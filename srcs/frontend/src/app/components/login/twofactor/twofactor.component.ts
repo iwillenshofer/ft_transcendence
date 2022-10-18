@@ -12,8 +12,8 @@ class ResponseMessage {
 }
 
 class ResponseMessage2 {
-	msg: string = "";
-  }
+  msg: string = "";
+}
 
 @Component({
   selector: 'app-twofactor',
@@ -40,28 +40,21 @@ export class TwofactorComponent {
 
   ngOnInit(): void {
     this.tfa_fulfilled.next(this.authService.isAuthenticated());
-    if (this.router.url == '/enable2fa')
-	{
-		this.getQRCode();
-	}
-    console.log("KEY:" + this.keyCode.value);
+    if (this.router.url == '/enable2fa') {
+      this.getQRCode();
+    }
   }
 
   async submitCode() {
     this.http.post<ResponseMessage>('/backend/auth/tfa_verify', { code: this.codeControl.value }, { withCredentials: true }).subscribe((result) => {
       let res: any = result;
-      console.log(res);
       if (res.msg) {
-        console.log("ORIG: " + localStorage.getItem('token'));
         localStorage.removeItem('token');
         localStorage.setItem('token', res.token);
-        console.log("NEW: " + localStorage.getItem('token'));
 
-        console.log("MSG: " + JSON.stringify(res.msg));
         this.http.get<User>('/backend/auth/profile', { withCredentials: true }).subscribe(result => {
           this.authService.userSubject.next(result);
           localStorage.setItem('user', JSON.stringify(result));
-          console.log("Activated TFA" + JSON.stringify(result));
           this.router.navigate(['/']);
         });
       }
@@ -70,9 +63,8 @@ export class TwofactorComponent {
 
   getQRCode() {
     this.http.get<any>('/backend/auth/tfa_retrieve', { withCredentials: true }).subscribe((result) => {
-		console.log("code" + JSON.stringify(result));
-	  this.keyCode.next(result.key_code);
+      this.keyCode.next(result.key_code);
       this.qrCode.next(result.qr_code);
-	});
+    });
   }
 }

@@ -33,14 +33,12 @@ export class AuthService {
 	isAuthenticated(): boolean {
 		if (!(this.userSubject.value) || !(this.userSubject.value.tfa_fulfilled))
 			return false;
-		console.log(this.userSubject.value);
 		return (true);
 	}
 
 	isJwtAuthenticated(): boolean {
 		if (!(this.userSubject.value) || !(this.userSubject.value.id))
 			return false;
-		console.log(this.userSubject.value);
 		return (true);
 	}
 	/*
@@ -84,7 +82,6 @@ export class AuthService {
 		this.userSubject.next(x);
 		localStorage.removeItem('user');
 		localStorage.setItem('user', JSON.stringify(x));
-		console.log('x:' +  JSON.stringify(x));
 	}
 
 	getUserFromLocalStorage(): User | null {

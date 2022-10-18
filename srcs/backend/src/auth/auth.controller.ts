@@ -37,7 +37,6 @@ export class AuthController {
 	// @UseGuards(Intra42Guard)
 	@Get("callback")
 	async callback(@Response() res, @Request() req) {
-		console.log(req.user);
 		if (req.user) {
 			/*
 			** yey, we have a user, returned by intra42Strategy.
@@ -55,12 +54,8 @@ export class AuthController {
 	@UseGuards(JwtGuard)
 	@Get('profile')
 	async profile(@Request() req) {
-		console.log("user-profile:" + JSON.stringify(req.user));
 		let user: UserDTO = UserDTO.from(await this.userService.getUser(req.user.id));
 		user.tfa_fulfilled = (!(await this.userService.getTfaEnabled(req.user.id)) || req.user.tfa_fulfilled);
-		console.log("enabled:" + (await this.userService.getTfaEnabled(req.user.id)));
-		console.log("fulfilled:" + req.user.tfa_fulfilled);
-		console.log("user dto:" + JSON.stringify(user));
 		return (JSON.stringify(user));
 	}
 
