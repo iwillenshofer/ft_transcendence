@@ -1,8 +1,20 @@
 <app-navbar></app-navbar>
-<!-- 
-    canvas on DB:
-        width: 560
-        height: 400
- -->
-<canvas #game class="table" width="560" height="500"></canvas>
+<div class="table" *ngIf="menu">
+    <div class="menu">
+        <p class="menu__title">Play</p>
+        <button (click)="startGame('on-random')">Online random</button>
+        <button (click)="startGame('on-friend')">Online friend</button>
+        <button (click)="startGame('off')">Offline friend</button>
+        <button (click)="startGame('computer')">Offline computer</button>
+
+    </div>
+    <div class="instructions">
+        <p>INSTRUCTIONS</p>
+        <p>Player 1: Keys [W] [S]</p>
+        <p>Player 2: Arrows [Up] [Down]</p>
+        <p>[P] Pause</p>
+    </div>
+</div>
+<app-online-game *ngIf="mode == 'on-random' || mode == 'on-friend'"></app-online-game>
+<app-offline-game *ngIf="mode == 'off' || mode == 'computer'"></app-offline-game>
 <div class="lines"></div>

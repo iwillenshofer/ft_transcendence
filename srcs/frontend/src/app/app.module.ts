@@ -31,6 +31,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { DialogUsernameComponent } from './components/dialogs/dialog-username/dialog-username.component';
 import { MatInputModule } from '@angular/material/input';
 import { ProfileComponent } from './components/profile/profile.component';
+import { OfflineGameComponent } from './components/game/offline-game/offline-game.component';
+import { OnlineGameComponent } from './components/game/online-game/online-game.component';
 
 @NgModule({
   declarations: [
@@ -52,6 +54,8 @@ import { ProfileComponent } from './components/profile/profile.component';
     DialogAvatarComponent,
     DialogUsernameComponent,
     ProfileComponent,
+    OfflineGameComponent,
+    OnlineGameComponent,
 
   ],
   imports: [
