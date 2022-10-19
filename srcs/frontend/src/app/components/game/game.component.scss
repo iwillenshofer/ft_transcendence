@@ -15,6 +15,17 @@
 .table {
     width: calc(100% - 10px);
     height: calc(100% - 110px);
-    background-color: white;
-    border: 5px solid red;
+    background-color: black;
+    border: 5px solid white;
+}
+
+.lines {
+    background-image: linear-gradient(to bottom, white 50%, black 50%);
+    background-size: 40px 40px;
+    background-repeat: repeat-y;
+    position: absolute;
+    width: 20px;
+    height: calc(100% - 120px);
+    left: calc(50% - 5px);
+    top: 115px;
 }

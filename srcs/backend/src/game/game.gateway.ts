@@ -10,12 +10,12 @@ export class GameGateway {
   server: Server;
 
   positionP1 = {
-    x: 50,
+    x: 20,
     y: 200,
   };
 
   positionP2 = {
-    x: 500,
+    x: 535,
     y: 200,
   };
 
@@ -47,11 +47,13 @@ export class GameGateway {
     // console.log(client.id, this.player1, this.player2);
     switch (command) {
       case "up":
-        position.y -= 5;
+        if (position.y > 0)
+          position.y -= 5;
         this.server.emit("position", this.positionP1, this.positionP2);
         break;
       case "down":
-        position.y += 5;
+        if (position.y < 400)
+          position.y += 5;
         this.server.emit("position", this.positionP1, this.positionP2);
         break;
     }
