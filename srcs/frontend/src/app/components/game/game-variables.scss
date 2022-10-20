@@ -1,0 +1,18 @@
+@mixin table {
+    width: calc(100%);
+    height: calc(100% - 100px);
+    background-color: black;
+    border: 5px solid white;
+}
+
+@mixin lines {
+    background-image: linear-gradient(to bottom, white 50%, black 50%);
+    background-size: 40px 40px;
+    background-repeat: repeat-y;
+    position: absolute;
+    width: 20px;
+    height: calc(100% - 120px);
+    left: calc(50%);
+    transform: translateX(-50%);
+    top: 110px;
+}

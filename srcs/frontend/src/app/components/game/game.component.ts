@@ -17,7 +17,6 @@ export class GameComponent implements OnInit {
 
   startGame(mode: string) {
     this.mode = mode;
-    console.log(this.mode)
     this.menu = false;
   }
 }

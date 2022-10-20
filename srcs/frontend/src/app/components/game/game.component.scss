@@ -1,20 +1,11 @@
+@import './game-variables.scss';
+
 .table {
-    width: calc(100% - 10px);
-    height: calc(100% - 110px);
-    background-color: black;
-    border: 5px solid white;
+    @include table;
 }
 
 .lines {
-    background-image: linear-gradient(to bottom, white 50%, black 50%);
-    background-size: 40px 40px;
-    background-repeat: repeat-y;
-    position: absolute;
-    width: 20px;
-    height: calc(100% - 120px);
-    left: calc(50%);
-    transform: translateX(-50%);
-    top: 110px;
+    @include lines;
 }
 
 .menu {
@@ -23,7 +14,7 @@
     position: absolute;
     left: calc(20%);
     text-align: center;
-    top: 20%;
+    margin-top: 10vh;
 
     &__title {
         font-size: 5vh;
@@ -36,7 +27,7 @@
         text-align: left;
         font-family: "Lucida Console", "Courier New", monospace;
         height: 10vh;
-        width: 18vw;
+        width: 19vw;
         cursor: pointer;
         font-size: 3vh;
         background-color: black;
@@ -54,7 +45,7 @@
 }
 
 .instructions {
-    top: 20%;
+    margin-top: 20vh;
     font-family: "Lucida Console", "Courier New", monospace;
     font-size: 2.5vh;
     color: white;

@@ -4,8 +4,8 @@
         <p class="menu__title">Play</p>
         <button (click)="startGame('on-random')">Online random</button>
         <button (click)="startGame('on-friend')">Online friend</button>
-        <button (click)="startGame('off')">Offline friend</button>
-        <button (click)="startGame('computer')">Offline computer</button>
+        <button>Offline friend</button>
+        <button>Offline computer</button>
 
     </div>
     <div class="instructions">
@@ -16,5 +16,5 @@
     </div>
 </div>
 <app-online-game *ngIf="mode == 'on-random' || mode == 'on-friend'"></app-online-game>
-<app-offline-game *ngIf="mode == 'off' || mode == 'computer'"></app-offline-game>
+<!-- <app-offline-game *ngIf="mode == 'off' || mode == 'computer'"></app-offline-game> -->
 <div class="lines"></div>

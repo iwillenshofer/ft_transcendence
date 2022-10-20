@@ -21,16 +21,12 @@ import { ChatComponent } from './components/chat/chat.component';
 import { FriendsComponent } from './components/friends/friends.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NavigationComponent } from './components/navigation/navigation.component';
-import { BallComponent } from './components/game/offline-game/ball/ball.component';
-import { PaddleComponent } from './components/game/offline-game/paddle/paddle.component';
-import { PowerupComponent } from './components/game/offline-game/powerup/powerup.component';
 import { DialogAvatarComponent } from './components/dialogs/dialog-avatar/dialog-avatar.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material/dialog';
 import { DialogUsernameComponent } from './components/dialogs/dialog-username/dialog-username.component';
 import { MatInputModule } from '@angular/material/input';
 import { ProfileComponent } from './components/profile/profile.component';
-import { OfflineGameComponent } from './components/game/offline-game/offline-game.component';
 import { OnlineGameComponent } from './components/game/online-game/online-game.component';
 import { AlertsModule } from './alerts/alerts.module';
 
@@ -48,15 +44,10 @@ import { AlertsModule } from './alerts/alerts.module';
     GameComponent,
     ChatComponent,
     FriendsComponent,
-    BallComponent,
-    PaddleComponent,
-    PowerupComponent,
     DialogAvatarComponent,
     DialogUsernameComponent,
     ProfileComponent,
-    OfflineGameComponent,
     OnlineGameComponent,
-
   ],
   imports: [
     BrowserModule,
