@@ -29,7 +29,7 @@ export class AuthController {
 		return;
 	}
 
-	/*
+	/*zszzzzz
 	** /auth/callback is the intra's return
 	*/
 
@@ -38,16 +38,11 @@ export class AuthController {
 	@Get("callback")
 	async callback(@Response() res, @Request() req) {
 		if (req.user) {
-			/*
-			** yey, we have a user, returned by intra42Strategy.
-			** let's get the JWT Token.
-			** Will have to check for 2FA first probably here.
-			*/
 			const random_code: string = await this.authService.generateCallbackCode(req.user.id)
 			res.status(200).redirect('/login/callback?code=' + random_code);
 		}
 		else {
-			res.sendStatus(401);
+			res.status(401).redirect('/login/callback');
 		}
 	}
 

@@ -13,7 +13,6 @@ import { AuthInterceptor } from './auth/auth.interceptor';
 import { TwofactorComponent } from './components/login/twofactor/twofactor.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AuthguardService } from './auth/guards/authguard.service';
-import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { ChatModule } from './chat/chat.module';
 import { NavbarComponent } from './components/navigation/navbar/navbar.component';
 import { SidebarComponent } from './components/navigation/sidebar/sidebar.component';
@@ -22,9 +21,9 @@ import { ChatComponent } from './components/chat/chat.component';
 import { FriendsComponent } from './components/friends/friends.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NavigationComponent } from './components/navigation/navigation.component';
-// import { BallComponent } from './components/game/ball/ball.component';
-// import { PaddleComponent } from './components/game/paddle/paddle.component';
-// import { PowerupComponent } from './components/game/powerup/powerup.component';
+import { BallComponent } from './components/game/offline-game/ball/ball.component';
+import { PaddleComponent } from './components/game/offline-game/paddle/paddle.component';
+import { PowerupComponent } from './components/game/offline-game/powerup/powerup.component';
 import { DialogAvatarComponent } from './components/dialogs/dialog-avatar/dialog-avatar.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -33,6 +32,7 @@ import { MatInputModule } from '@angular/material/input';
 import { ProfileComponent } from './components/profile/profile.component';
 import { OfflineGameComponent } from './components/game/offline-game/offline-game.component';
 import { OnlineGameComponent } from './components/game/online-game/online-game.component';
+import { AlertsModule } from './alerts/alerts.module';
 
 @NgModule({
   declarations: [
@@ -48,9 +48,9 @@ import { OnlineGameComponent } from './components/game/online-game/online-game.c
     GameComponent,
     ChatComponent,
     FriendsComponent,
-    // BallComponent,
-    // PaddleComponent,
-    // PowerupComponent,
+    BallComponent,
+    PaddleComponent,
+    PowerupComponent,
     DialogAvatarComponent,
     DialogUsernameComponent,
     ProfileComponent,
@@ -68,7 +68,8 @@ import { OnlineGameComponent } from './components/game/online-game/online-game.c
     BrowserAnimationsModule,
     MatDialogModule,
     MatInputModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    AlertsModule,
   ],
   providers: [
     {

@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { CookieService } from 'ngx-cookie-service'
 import { Router } from '@angular/router'
-import { Observable, BehaviorSubject, firstValueFrom } from 'rxjs';
-import { map } from 'rxjs';
+import { Observable, BehaviorSubject, firstValueFrom, catchError } from 'rxjs';
+import { switchMap } from 'rxjs';
 import { User } from './user.model';
 
 @Injectable({
@@ -57,15 +57,21 @@ export class AuthService {
 		return (this.http.get<any>('/backend/auth/refreshtoken', { withCredentials: true }));
 	}
 
+	performLogout(): Promise<any> {
+		this.userSubject.next(null);
+		localStorage.removeItem('user');
+		localStorage.removeItem('token');
+		return this.router.navigate(['/login']);
+	}
+	
 	logout(): void {
 		this.serverLogout().subscribe({
 			next: () => {
-				this.userSubject.next(null);
-				this.serverLogout();
-				localStorage.removeItem('user');
-				localStorage.removeItem('token');
-				this.router.navigate(['/login']);
-			}
+				this.performLogout();
+			},
+			error: () => {
+				this.performLogout();
+			},
 		});
 	}
 

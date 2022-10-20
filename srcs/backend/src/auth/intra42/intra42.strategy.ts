@@ -29,9 +29,9 @@ export class Intra42Strategy extends PassportStrategy(Strategy, "intra42")
 			const data = await lastValueFrom(req);
 			user = await this.authService.getOrCreateUser(data.data);
 			if (!user)
-				throw new UnauthorizedException();
+				return (null);
 		} catch (error) {
-			throw new UnauthorizedException();
+			return (null);
 		}
 		return (user);
 	}
