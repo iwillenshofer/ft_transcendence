@@ -34,13 +34,6 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  async getMessage() {
-    this.title = this.chatService.getMessage();
-  }
-
-  async sendMessage() {
-    this.chatService.sendMessage("message");
-  }
 
 
 }

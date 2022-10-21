@@ -1,17 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { RoomEntity } from 'src/chat/models/room.entity';
-import { dataSource } from 'src/app.datasource';
 import { RoomInterface } from 'src/chat/models/room.interface';
 import { UserInterface } from 'src/users/users.interface';
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class RoomService {
 
-	constructor() { }
+	constructor(
+		@InjectRepository(RoomEntity)
+		private readonly roomRepository: Repository<RoomEntity>
+	) { }
 
 	async createRoom(room: RoomInterface, creator: UserInterface): Promise<RoomInterface> {
-		const new_room = await this.addCreatorToRoom(room, creator);
-		return dataSource.getRepository(RoomEntity).save(new_room);
+		const newRoom = await this.addCreatorToRoom(room, creator);
+		return this.roomRepository.save(newRoom);
 	}
 
 	async addCreatorToRoom(room: RoomInterface, creator: UserInterface): Promise<RoomInterface> {
@@ -19,12 +24,12 @@ export class RoomService {
 		return (room);
 	}
 
-	async getUserRooms(user_id: number): Promise<RoomInterface[]> {
-		const query = dataSource.getRepository(RoomEntity)
+	async getRoomsForUsers(userId: number, options: IPaginationOptions): Promise<Pagination<RoomInterface>> {
+		const query = this.roomRepository
 			.createQueryBuilder('room')
 			.leftJoin('room.users', 'user')
-			.where('user.id = :user_id', { user_id });
-		return query.getMany();
+			.where('user.id = :userId', { userId })
+			.leftJoinAndSelect('room.users', 'all_users')
+		return paginate(query, options);
 	}
-
 }

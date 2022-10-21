@@ -3,15 +3,18 @@ import { JwtService } from '@nestjs/jwt'
 import { authenticator } from "otplib";
 import { UsersService } from 'src/users/users.service';
 import { UserDTO } from 'src/users/users.dto';
-import { dataSource } from 'src/app.datasource';
 import { AuthInterface } from './models/auth.interface';
 import * as crypto from 'crypto';
 import { AuthEntity } from './models/auth.entity';
 import { toDataURL } from 'qrcode';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
 	constructor(
+		@InjectRepository(AuthEntity)
+		private readonly authRepository: Repository<AuthEntity>,
 		private jwtService: JwtService,
 		private userService: UsersService,
 	) { };
@@ -53,13 +56,13 @@ export class AuthService {
 		if (!(new_code.user))
 			return (null);
 		new_code.hash = crypto.pbkdf2Sync(hexstring, process.env.JWT_SECRET, 1000, 64, `sha512`).toString(`hex`);
-		dataSource.getRepository(AuthEntity).save(new_code);
+		this.authRepository.save(new_code);
 		return hexstring;
 	}
 
 	async retrieveCallbackToken(code: string): Promise<{ username: string, id: number } | null> {
 		const hash = crypto.pbkdf2Sync(code, process.env.JWT_SECRET, 1000, 64, `sha512`).toString(`hex`);
-		const query = await dataSource.getRepository(AuthEntity)
+		const query = await this.authRepository
 			.createQueryBuilder('auth')
 			.leftJoinAndSelect('auth.user', 'user')
 			.where('auth.hash = :hash', { hash }).getOne();
@@ -68,7 +71,7 @@ export class AuthService {
 		now.setMinutes(now.getMinutes() - 100);
 		if (!(query) || query.created_at < now)
 			return (null);
-		dataSource.getRepository(AuthEntity).delete(query.id);
+		this.authRepository.delete(query.id);
 		return { username: query.user.username, id: query.user.id };
 	}
 

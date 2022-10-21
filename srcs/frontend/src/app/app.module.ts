@@ -32,6 +32,11 @@ import { DialogUsernameComponent } from './components/dialogs/components/dialog-
 import { MatInputModule } from '@angular/material/input';
 import { ProfileComponent } from './components/profile/profile.component';
 import { AlertsModule } from './alerts/alerts.module';
+import { CreateRoomComponent } from './components/create-room/create-room.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatListModule } from '@angular/material/list';
 
 @NgModule({
   declarations: [
@@ -53,6 +58,7 @@ import { AlertsModule } from './alerts/alerts.module';
     DialogAvatarComponent,
     DialogUsernameComponent,
     ProfileComponent,
+    CreateRoomComponent,
   ],
   imports: [
     BrowserModule,
@@ -65,7 +71,11 @@ import { AlertsModule } from './alerts/alerts.module';
     MatDialogModule,
     MatInputModule,
     ReactiveFormsModule,
-	AlertsModule,
+    AlertsModule,
+    MatPaginatorModule,
+    MatCardModule,
+    MatButtonModule,
+    MatListModule,
   ],
   providers: [
     {

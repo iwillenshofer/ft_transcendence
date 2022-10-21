@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 import { UserEntity } from 'src/users/users.entity';
 
-@Entity({name: "Rooms"})
+@Entity({ name: "Rooms" })
 @Unique(['id'])
 
 export class RoomEntity {
@@ -12,7 +12,7 @@ export class RoomEntity {
 	@Column()
 	name: string;
 
-	@Column({nullable: true})
+	@Column({ nullable: true })
 	description: string;
 
 	@ManyToMany(() => UserEntity)
