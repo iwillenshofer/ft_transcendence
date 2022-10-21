@@ -3,7 +3,8 @@ import { WebSocketGateway, SubscribeMessage, WebSocketServer } from '@nestjs/web
 import { Server, Socket } from 'socket.io';
 import { TfaGuard } from 'src/auth/tfa/tfa.guard';
 
-export const INITIAL_VELOCITY = .005;
+export const INITIAL_VELOCITY = 3;
+export const MAX_SCORE = 10;
 
 @WebSocketGateway({ cors: '*:*' })
 export class GameGateway {
@@ -16,13 +17,13 @@ export class GameGateway {
     x: 0,
     y: 0,
   };
-  scoreP1: number = 0;
+  scoreP1: number = 11;
   player2: any;
   positionP2 = {
     x: 0,
     y: 0,
   };
-  scoreP2: number = 0;
+  scoreP2: number = 11;
   ball = {
     x: 0,
     y: 0,
@@ -69,12 +70,12 @@ export class GameGateway {
   handleDisconnect(client: Socket, ...args: any[]) {
     if (client.id == this.player1) {
       this.player1 = null;
-      console.log('player1 disconnected')
+      // console.log('player1 disconnected')
       this.resetPlayersPosition();
     }
     else if (client.id == this.player2) {
       this.player2 = null;
-      console.log('player2 disconnected')
+      // console.log('player2 disconnected')
       this.resetPlayersPosition();
     }
   }
@@ -82,15 +83,15 @@ export class GameGateway {
   setPlayers(clientId) {
     if (!this.player1) {
       this.player1 = clientId;
-      console.log('player1 connected')
+      // console.log('player1 connected')
     }
     else if (!this.player2) {
       this.player2 = clientId;
-      console.log('player2 connected')
+      // console.log('player2 connected')
       this.resetPlayersPosition();
     }
     else {
-      console.log('spec')
+      // console.log('spec')
     }
   }
 
@@ -130,11 +131,13 @@ export class GameGateway {
     if (this.isCollision(this.rectP1(), rect)) {
       this.lastTouch = 1;
       this.ballDirection.x *= -1;
+      this.ballRandomY();
     }
 
     if (this.isCollision(this.rectP2(), rect)) {
       this.lastTouch = 2;
       this.ballDirection.x *= -1;
+      this.ballRandomY();
     }
   }
 
@@ -178,26 +181,32 @@ export class GameGateway {
   }
 
   handleLose() {
+    let ballSide;
     let finished = false;
     let finishedMessageP1;
     let finishedMessageP2;
     const rect = this.ballRect();
-    if (rect.right >= 560)
+    if (rect.right >= 560) {
       this.scoreP1 += 1;
-    if (rect.left <= 0)
+      ballSide = -1;
+    }
+    if (rect.left <= 0) {
       this.scoreP2 += 1;
-    if (this.scoreP1 == 1) {
+      ballSide = 1;
+    }
+    if (this.scoreP1 == MAX_SCORE) {
       finished = true;
       finishedMessageP1 = 'Winner';
       finishedMessageP2 = 'Loser';
     }
-    else if (this.scoreP2 == 1) {
+    else if (this.scoreP2 == MAX_SCORE) {
       finished = true;
       finishedMessageP1 = 'Loser';
       finishedMessageP2 = 'Winner';
     }
     this.resetPlayersPosition()
     this.resetBall();
+    this.ballDirection.x *= ballSide;
     this.server.to(this.player1).emit("score", this.scoreP1, this.scoreP2, finished, finishedMessageP1);
     this.server.to(this.player2).emit("score", this.scoreP1, this.scoreP2, finished, finishedMessageP2);
   }
@@ -208,11 +217,25 @@ export class GameGateway {
     this.ballDirection.x = 200;
     this.ballDirection.y = 200;
     this.velocity = INITIAL_VELOCITY;
+    this.ballRandomX();
+    this.ballRandomY();
   }
 
   resetScore() {
     this.scoreP1 = 0;
     this.scoreP2 = 0;
+  }
+
+  ballRandomX() {
+    this.ballDirection.x = Math.cos(this.randomNumberBetween(0.2, 0.9));
+  }
+
+  ballRandomY() {
+    this.ballDirection.y = Math.sin(this.randomNumberBetween(0, 2 * Math.PI));
+  }
+
+  randomNumberBetween(min: number, max: number) {
+    return Math.random() * (max - min) + min;
   }
 
 }

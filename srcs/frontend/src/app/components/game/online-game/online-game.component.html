@@ -4,13 +4,13 @@
         height: 500
  -->
 <canvas #game class="table" width="560" height="500"></canvas>
-<div class="waiting" *ngIf="isWaiting">
-    <p>Waiting for another player</p>
-</div>
+<span class="waiting" *ngIf="isWaiting">
+    Waiting for another player
+</span>
 <div class="score">
     <div style="float: left;">{{scoreP1}}</div>
     <div style="float: right;">{{scoreP2}}</div>
 </div>
-<div class="finished" *ngIf="finished">
-    <p>{{finishedMessage}}</p>
-</div>
+<span class="finished" *ngIf="finished">
+    {{finishedMessage}}
+</span>
