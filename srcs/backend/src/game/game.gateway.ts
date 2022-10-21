@@ -14,17 +14,26 @@ export class GameGateway {
     x: 0,
     y: 0,
   };
+  scoreP1: number = 0;
   player2: any;
   positionP2 = {
     x: 0,
     y: 0,
   };
+  scoreP2: number = 0;
+  ball = {
+    x: 0,
+    y: 0,
+  }
+  ballDirection: { x: number; y: number } = { x: 0.0, y: 0.0 };
+  velocity: number = .001;
+  lastTouch: number = 0;
 
   @SubscribeMessage('joinGame')
   joinGame(client: Socket) {
+    this.resetBall();
     this.setPlayers(client.id);
     this.server.emit("players", this.player1, this.player2);
-    this.server.emit("position", this.positionP1, this.positionP2);
   }
 
   @SubscribeMessage('move')
@@ -87,6 +96,101 @@ export class GameGateway {
     this.positionP2.x = 535;
     this.positionP2.y = 200;
   }
+
+  lastTime!: number;
+  currentAnimationFrameId?: number;
+
+  @SubscribeMessage('ballTime')
+  updateBall(client: Socket, time: number) {
+    if (this.lastTime) {
+      const delta = time - this.lastTime;
+      this.ballUpdate(time, [this.rectP1, this.rectP2]);
+      this.server.emit("ballUpdate", this.ball);
+      this.server.emit("position", this.positionP1, this.positionP2);
+    }
+    if (this.isLose())
+      this.handleLose();
+    this.lastTime = time;
+  }
+
+  ballUpdate(delta: number, paddleRects: any[]) {
+    this.ball.x += this.ballDirection.x * this.velocity * delta;
+    this.ball.y += this.ballDirection.y * this.velocity * delta;
+    this.velocity += 0.000000005 * delta;
+
+    const rect = this.ballRect()
+
+    if (rect.bottom >= 500 || rect.top <= 100) {
+      this.ballDirection.y *= -1;
+    }
+
+    if (this.isCollision(this.rectP1(), rect)) {
+      this.lastTouch = 1;
+      this.ballDirection.x *= -1;
+    }
+
+    if (this.isCollision(paddleRects[1], rect)) {
+      this.lastTouch = 2;
+      this.ballDirection.x *= -1;
+    }
+  }
+
+  rectP1() {
+    let rect = {
+      bottom: this.positionP1.y + 50,
+      top: this.positionP1.y - 50,
+      right: this.positionP1.x + 5,
+      left: this.positionP1.x - 5,
+    }
+    return rect;
+  }
+
+  rectP2() {
+    let rect = {
+      bottom: this.positionP2.y + 50,
+      top: this.positionP2.y - 50,
+      right: this.positionP2.x + 5,
+      left: this.positionP2.x - 5,
+    }
+    return rect;
+  }
+
+  ballRect() {
+    let rect = {
+      bottom: this.ball.y + 5,
+      top: this.ball.y - 5,
+      right: this.ball.x + 5,
+      left: this.ball.y + 5,
+
+    }
+    return rect;
+  }
+
+  isCollision(rect1, rect2) {
+    return Math.ceil(rect1.left) <= Math.floor(rect2.right) && Math.ceil(rect1.right) >= Math.floor(rect2.left) && Math.ceil(rect1.top) <= Math.floor(rect2.bottom) && Math.ceil(rect1.bottom) >= Math.floor(rect2.top);
+  }
+
+  isLose() {
+    const rect = this.ballRect();
+    return rect.right >= 560 || rect.left <= 0;
+  }
+
+  handleLose() {
+    const rect = this.ballRect();
+    if (rect.right >= 560)
+      this.scoreP1 += 1;
+    if (rect.left <= 0)
+      this.scoreP2 += 1;
+    this.resetBall();
+  }
+
+  resetBall() {
+    this.ball.x = 280;
+    this.ball.y = 250;
+    this.ballDirection.x = 200;
+    this.ballDirection.y = 200;
+  }
+
 }
 
 /*
