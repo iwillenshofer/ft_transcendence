@@ -10,15 +10,16 @@ export class OnlineGameComponent implements OnInit {
 
   @ViewChild("game")
   private gameCanvas!: ElementRef;
-  @ViewChild("ball")
-  private ballCanvas!: ElementRef;
   private socket: any;
   private player1: any;
   private player2: any;
   isWaiting: boolean = true;
   scoreP1: number = 0;
   scoreP2: number = 0;
-
+  private ball: any;
+  currentAnimationFrameId?: number;
+  finished: boolean = false;
+  finishedMessage: string = '';
 
   @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
     switch (event.key) {
@@ -45,6 +46,7 @@ export class OnlineGameComponent implements OnInit {
   }
 
   public ngAfterViewInit() {
+    this.drawLines();
     this.socket.on("players", (player1: any, player2: any) => {
       if (player1) {
         this.player1 = this.gameCanvas.nativeElement.getContext("2d");
@@ -68,29 +70,34 @@ export class OnlineGameComponent implements OnInit {
 
   lastTime!: number;
   update() {
-    this.socket.emit("ballTime", 1);
+    this.socket.emit("gameUpdate", 1);
     this.draw()
     this.updateScore();
     this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
   }
 
   updateScore() {
-    this.socket.on("score", (scoreP1: number, scoreP2: number) => {
+    this.socket.on("score", (scoreP1: number, scoreP2: number, finished: boolean, finishedMessage: string) => {
       this.scoreP1 = scoreP1;
       this.scoreP2 = scoreP2;
+      this.finished = finished;
+      if (this.finished) {
+        this.draw();
+        this.finishedMessage = finishedMessage;
+        this.finish();
+      }
     })
   }
 
-  private ball: any;
-  currentAnimationFrameId?: number;
+  finish() {
+    window.cancelAnimationFrame(this.currentAnimationFrameId as number);
+  }
 
   draw() {
     this.socket.on("draw", (ball: any, positionP1: any, positionP2: any) => {
       this.ball.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
-      this.ball.beginPath();
-      this.ball.arc(ball.x, ball.y, 10, 0, Math.PI * 2, true);
-      this.ball.closePath();
-      this.ball.fill();
+      this.drawLines();
+      this.drawBall(ball.x, ball.y);
       this.updatePaddles(positionP1, positionP2);
     });
   }
@@ -98,7 +105,13 @@ export class OnlineGameComponent implements OnInit {
   updatePaddles(positionP1: { x: any; y: any; }, positionP2: { x: any; y: any; }) {
     this.player1.fillRect(positionP1.x, positionP1.y, 10, 100);
     this.player2.fillRect(positionP2.x, positionP2.y, 10, 100);
-    this.drawLines();
+  }
+
+  drawBall(x: any, y: any) {
+    this.ball.beginPath();
+    this.ball.arc(x, y, 10, 0, Math.PI * 2, true);
+    this.ball.closePath();
+    this.ball.fill();
   }
 
   drawLines() {

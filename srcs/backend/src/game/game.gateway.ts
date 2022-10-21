@@ -3,6 +3,8 @@ import { WebSocketGateway, SubscribeMessage, WebSocketServer } from '@nestjs/web
 import { Server, Socket } from 'socket.io';
 import { TfaGuard } from 'src/auth/tfa/tfa.guard';
 
+export const INITIAL_VELOCITY = .005;
+
 @WebSocketGateway({ cors: '*:*' })
 export class GameGateway {
 
@@ -26,7 +28,7 @@ export class GameGateway {
     y: 0,
   }
   ballDirection: { x: number; y: number } = { x: 0.0, y: 0.0 };
-  velocity: number = .002;
+  velocity: number = INITIAL_VELOCITY;
   lastTouch: number = 0;
 
   @SubscribeMessage('joinGame')
@@ -49,13 +51,14 @@ export class GameGateway {
     if (client.id == this.player1 || client.id == this.player2) {
       switch (command) {
         case "up":
-          if (position.y > 0)
-            position.y -= 5;
+          if (position.y > 0) {
+            position.y -= 30;
+          }
           this.server.emit("position", this.positionP1, this.positionP2);
           break;
         case "down":
           if (position.y < 400)
-            position.y += 5;
+            position.y += 30;
           this.server.emit("position", this.positionP1, this.positionP2);
           break;
       }
@@ -101,8 +104,8 @@ export class GameGateway {
   lastTime!: number;
   currentAnimationFrameId?: number;
 
-  @SubscribeMessage('ballTime')
-  updateBall(client: Socket, time: number) {
+  @SubscribeMessage('gameUpdate')
+  update(client: Socket, time: number) {
     if (this.lastTime) {
       const delta = time - this.lastTime;
       this.ballUpdate(time);
@@ -116,7 +119,7 @@ export class GameGateway {
   ballUpdate(delta: number) {
     this.ball.x += this.ballDirection.x * this.velocity * delta;
     this.ball.y += this.ballDirection.y * this.velocity * delta;
-    this.velocity += 0.000000005 * delta;
+    this.velocity += 0.000003;
 
     const rect = this.ballRect()
 
@@ -139,8 +142,8 @@ export class GameGateway {
     let rect = {
       bottom: this.positionP1.y + 100,
       top: this.positionP1.y,
-      right: this.positionP1.x + 5,
-      left: this.positionP1.x - 5,
+      right: this.positionP1.x + 10,
+      left: this.positionP1.x,
     }
     return rect;
   }
@@ -149,8 +152,8 @@ export class GameGateway {
     let rect = {
       bottom: this.positionP2.y + 100,
       top: this.positionP2.y,
-      right: this.positionP2.x + 5,
-      left: this.positionP2.x - 5,
+      right: this.positionP2.x + 10,
+      left: this.positionP2.x,
     }
     return rect;
   }
@@ -160,7 +163,7 @@ export class GameGateway {
       bottom: this.ball.y + 5,
       top: this.ball.y - 5,
       right: this.ball.x + 5,
-      left: this.ball.y + 5,
+      left: this.ball.x - 5,
     }
     return rect;
   }
@@ -175,13 +178,28 @@ export class GameGateway {
   }
 
   handleLose() {
+    let finished = false;
+    let finishedMessageP1;
+    let finishedMessageP2;
     const rect = this.ballRect();
     if (rect.right >= 560)
       this.scoreP1 += 1;
     if (rect.left <= 0)
       this.scoreP2 += 1;
-    this.server.emit("score", this.scoreP1, this.scoreP2);
+    if (this.scoreP1 == 1) {
+      finished = true;
+      finishedMessageP1 = 'Winner';
+      finishedMessageP2 = 'Loser';
+    }
+    else if (this.scoreP2 == 1) {
+      finished = true;
+      finishedMessageP1 = 'Loser';
+      finishedMessageP2 = 'Winner';
+    }
+    this.resetPlayersPosition()
     this.resetBall();
+    this.server.to(this.player1).emit("score", this.scoreP1, this.scoreP2, finished, finishedMessageP1);
+    this.server.to(this.player2).emit("score", this.scoreP1, this.scoreP2, finished, finishedMessageP2);
   }
 
   resetBall() {
@@ -189,6 +207,7 @@ export class GameGateway {
     this.ball.y = 250;
     this.ballDirection.x = 200;
     this.ballDirection.y = 200;
+    this.velocity = INITIAL_VELOCITY;
   }
 
   resetScore() {

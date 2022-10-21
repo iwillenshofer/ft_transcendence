@@ -5,17 +5,7 @@
 }
 
 .waiting {
-    color: white;
-    font-family: $game-font-family;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    height: 100px;
-    background-color: black;
-    z-index: 1;
-    transform: translateX(-50%);
-    font-size: 30px;
-    text-align: center;
+    @include popUp(30px);
 }
 
 .score {
@@ -30,4 +20,8 @@
     font-size: 60px;
     width: 20%;
     opacity: 0.75;
+}
+
+.finished {
+    @include popUp(100px);
 }

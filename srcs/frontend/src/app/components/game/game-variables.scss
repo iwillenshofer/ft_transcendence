@@ -18,3 +18,17 @@ $game-font-family: "Lucida Console", "Courier New", monospace;
     transform: translateX(-50%);
     top: 110px;
 }
+
+@mixin popUp($font-size) {
+    color: white;
+    font-family: $game-font-family;
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    height: 20%;
+    background-color: black;
+    z-index: 1;
+    transform: translateX(-50%);
+    font-size: $font-size;
+    text-align: center;
+}
