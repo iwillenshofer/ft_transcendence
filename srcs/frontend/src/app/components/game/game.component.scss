@@ -9,7 +9,7 @@
 }
 
 .menu {
-    font-family: "Lucida Console", "Courier New", monospace;
+    font-family: $game-font-family;
     color: white;
     position: absolute;
     left: calc(20%);
@@ -25,9 +25,9 @@
 
     button {
         text-align: left;
-        font-family: "Lucida Console", "Courier New", monospace;
+        font-family: $game-font-family;
         height: 10vh;
-        width: 19vw;
+        width: 20vw;
         cursor: pointer;
         font-size: 3vh;
         background-color: black;
@@ -46,7 +46,7 @@
 
 .instructions {
     margin-top: 20vh;
-    font-family: "Lucida Console", "Courier New", monospace;
+    font-family: $game-font-family;
     font-size: 2.5vh;
     color: white;
     position: absolute;

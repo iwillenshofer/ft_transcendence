@@ -6,21 +6,28 @@ export class GameEntity {
     id: string;
 
     @Column()
-    playerOne: UserEntity;
+    player1: any = null;
 
     @Column()
-    playerTwo: UserEntity;
+    player2: any = null;
 
     @Column()
-    playerOneScore: number;
+    positionP1: {
+        x: number,
+        y: number
+    };
 
     @Column()
-    playerTwoScore: number;
+    positionP2: {
+        x: number,
+        y: number
+    };
 
-    // @Column("int")
-    // @ManyToOne(() => UserEntity, user => user.gamesPlayed)
-    // @JoinColumn({ name: "gamesPlayed" })
-    // public gamesPlayed: UserEntity;
+    @Column()
+    scoreP1: number;
+
+    @Column()
+    scoreP2: number;
 
     @Column()
     isDefault: boolean;

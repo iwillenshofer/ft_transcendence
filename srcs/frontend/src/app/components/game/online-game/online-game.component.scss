@@ -3,3 +3,15 @@
 .table {
     @include table;
 }
+
+.waiting {
+    color: white;
+    font-family: $game-font-family;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background-color: black;
+    z-index: 1;
+    transform: translateX(-50%);
+    font-size: 30px;
+}

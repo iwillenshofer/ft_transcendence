@@ -10,9 +10,11 @@ export class OnlineGameComponent implements OnInit {
 
   @ViewChild("game")
   private gameCanvas!: ElementRef;
-
-  private context: any;
   private socket: any;
+  private player1: any;
+  private player2: any;
+  isWaiting: boolean = true;
+
 
   @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
     switch (event.key) {
@@ -39,16 +41,31 @@ export class OnlineGameComponent implements OnInit {
   }
 
   public ngAfterViewInit() {
-    this.context = this.gameCanvas.nativeElement.getContext("2d");
-    this.updatePaddles();
+    this.socket.on("players", (player1: any, player2: any) => {
+      if (player1) {
+        this.player1 = this.gameCanvas.nativeElement.getContext("2d");
+        this.player1.fillStyle = "white";
+        this.player1.fillRect(20, 200, 10, 100);
+      }
+      if (player2) {
+        this.player2 = this.gameCanvas.nativeElement.getContext("2d");
+        this.player2.fillStyle = "white";
+        this.player1.fillRect(535, 200, 10, 100);
+      }
+      if (this.player1 && this.player2) {
+        this.isWaiting = false;
+        this.updatePaddles();
+      }
+    })
+
   }
 
   updatePaddles() {
-    this.context.fillStyle = "white";
     this.socket.on("position", (positionP1: { x: any; y: any }, positionP2: { x: any, y: any }) => {
-      this.context.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
-      this.context.fillRect(positionP1.x, positionP1.y, 10, 100);
-      this.context.fillRect(positionP2.x, positionP2.y, 10, 100);
+      this.player1.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+      this.player2.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+      this.player1.fillRect(positionP1.x, positionP1.y, 10, 100);
+      this.player2.fillRect(positionP2.x, positionP2.y, 10, 100);
     });
   }
 }
