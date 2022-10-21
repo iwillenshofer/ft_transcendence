@@ -9,10 +9,10 @@ $game-font-family: "Lucida Console", "Courier New", monospace;
 
 @mixin lines {
     background-image: linear-gradient(to bottom, white 50%, black 50%);
-    background-size: 40px 40px;
+    background-size: 30px 30px;
     background-repeat: repeat-y;
     position: absolute;
-    width: 20px;
+    width: 15px;
     height: calc(100% - 120px);
     left: calc(50%);
     transform: translateX(-50%);

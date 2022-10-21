@@ -10,6 +10,8 @@ export class OnlineGameComponent implements OnInit {
 
   @ViewChild("game")
   private gameCanvas!: ElementRef;
+  @ViewChild("ball")
+  private ballCanvas!: ElementRef;
   private socket: any;
   private player1: any;
   private player2: any;
@@ -50,11 +52,15 @@ export class OnlineGameComponent implements OnInit {
       if (player2) {
         this.player2 = this.gameCanvas.nativeElement.getContext("2d");
         this.player2.fillStyle = "white";
-        this.player1.fillRect(535, 200, 10, 100);
+        this.player2.fillRect(535, 200, 10, 100);
       }
+      this.drawLines();
       if (this.player1 && this.player2) {
         this.isWaiting = false;
         this.updatePaddles();
+        this.ball = this.gameCanvas.nativeElement.getContext("2d");
+        this.drawBall()
+        // this.updateBall(1);
       }
     })
 
@@ -66,6 +72,39 @@ export class OnlineGameComponent implements OnInit {
       this.player2.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
       this.player1.fillRect(positionP1.x, positionP1.y, 10, 100);
       this.player2.fillRect(positionP2.x, positionP2.y, 10, 100);
+      this.drawBall();
+      this.drawLines();
     });
   }
+
+  lastTime!: number;
+  private ball: any;
+
+  drawBall() {
+    this.ball.beginPath();
+    this.ball.arc(280, 250, 10, 0, Math.PI * 2, true);
+    this.ball.closePath();
+    this.ball.fill();
+  }
+
+  drawLines() {
+    for (let x = 3; x < 500;) {
+      this.gameCanvas.nativeElement.getContext("2d").fillRect(275, x, 12, 10);
+      x += 20;
+    }
+  }
+
+  // updateBall(time: number) {
+  //   if (this.lastTime) {
+  //     const delta = time - this.lastTime;
+  //     this.ball.update(delta);
+  //     if (this.isLose())
+  //       this.handleLose();
+
+  //     this.lastTime = time;
+  //     this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
+  //     if (this.player1Score == MAX_SCORE || this.player2Score == MAX_SCORE)
+  //       this.finish();
+  //   }
+  // }
 }

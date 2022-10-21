@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-game',
@@ -9,7 +9,6 @@ export class GameComponent implements OnInit {
 
   menu: boolean = true;
   paused: boolean = false;
-
   mode: string = '';
 
   public ngOnInit() {
