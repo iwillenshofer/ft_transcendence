@@ -16,6 +16,8 @@ export class OnlineGameComponent implements OnInit {
   private player1: any;
   private player2: any;
   isWaiting: boolean = true;
+  scoreP1: number = 0;
+  scoreP2: number = 0;
 
 
   @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
@@ -69,9 +71,16 @@ export class OnlineGameComponent implements OnInit {
     this.socket.emit("ballTime", 1);
     this.drawBall()
     this.updatePaddles();
+    this.updateScore();
     this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
   }
 
+  updateScore() {
+    this.socket.on("score", (scoreP1: number, scoreP2: number) => {
+      this.scoreP1 = scoreP1;
+      this.scoreP2 = scoreP2;
+    })
+  }
 
   updatePaddles() {
     this.socket.on("position", (positionP1: { x: any; y: any }, positionP2: { x: any, y: any }) => {
@@ -86,7 +95,7 @@ export class OnlineGameComponent implements OnInit {
 
   drawBall() {
     this.socket.on("ballUpdate", (ball: { x: any; y: any }) => {
-      this.player2.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+      this.ball.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
       this.ball.beginPath();
       this.ball.arc(ball.x, ball.y, 10, 0, Math.PI * 2, true);
       this.ball.closePath();

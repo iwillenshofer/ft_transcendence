@@ -1,9 +1,13 @@
 <!-- 
     canvas on DB:
         width: 560
-        height: 400
+        height: 500
  -->
 <canvas #game class="table" width="560" height="500"></canvas>
 <div class="waiting" *ngIf="isWaiting">
     Waiting for another player
+</div>
+<div class="score">
+    <div style="float: left;">{{scoreP1}}</div>
+    <div style="float: right;">{{scoreP2}}</div>
 </div>

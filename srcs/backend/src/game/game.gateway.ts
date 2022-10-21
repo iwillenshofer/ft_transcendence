@@ -26,12 +26,13 @@ export class GameGateway {
     y: 0,
   }
   ballDirection: { x: number; y: number } = { x: 0.0, y: 0.0 };
-  velocity: number = .001;
+  velocity: number = .002;
   lastTouch: number = 0;
 
   @SubscribeMessage('joinGame')
   joinGame(client: Socket) {
     this.resetBall();
+    this.resetScore();
     this.setPlayers(client.id);
     this.server.emit("players", this.player1, this.player2);
   }
@@ -104,7 +105,7 @@ export class GameGateway {
   updateBall(client: Socket, time: number) {
     if (this.lastTime) {
       const delta = time - this.lastTime;
-      this.ballUpdate(time, [this.rectP1, this.rectP2]);
+      this.ballUpdate(time);
       this.server.emit("ballUpdate", this.ball);
       this.server.emit("position", this.positionP1, this.positionP2);
     }
@@ -113,14 +114,14 @@ export class GameGateway {
     this.lastTime = time;
   }
 
-  ballUpdate(delta: number, paddleRects: any[]) {
+  ballUpdate(delta: number) {
     this.ball.x += this.ballDirection.x * this.velocity * delta;
     this.ball.y += this.ballDirection.y * this.velocity * delta;
     this.velocity += 0.000000005 * delta;
 
     const rect = this.ballRect()
 
-    if (rect.bottom >= 500 || rect.top <= 100) {
+    if (rect.bottom >= 500 || rect.top <= 0) {
       this.ballDirection.y *= -1;
     }
 
@@ -129,7 +130,7 @@ export class GameGateway {
       this.ballDirection.x *= -1;
     }
 
-    if (this.isCollision(paddleRects[1], rect)) {
+    if (this.isCollision(this.rectP2(), rect)) {
       this.lastTouch = 2;
       this.ballDirection.x *= -1;
     }
@@ -137,8 +138,8 @@ export class GameGateway {
 
   rectP1() {
     let rect = {
-      bottom: this.positionP1.y + 50,
-      top: this.positionP1.y - 50,
+      bottom: this.positionP1.y + 100,
+      top: this.positionP1.y,
       right: this.positionP1.x + 5,
       left: this.positionP1.x - 5,
     }
@@ -147,8 +148,8 @@ export class GameGateway {
 
   rectP2() {
     let rect = {
-      bottom: this.positionP2.y + 50,
-      top: this.positionP2.y - 50,
+      bottom: this.positionP2.y + 100,
+      top: this.positionP2.y,
       right: this.positionP2.x + 5,
       left: this.positionP2.x - 5,
     }
@@ -161,13 +162,12 @@ export class GameGateway {
       top: this.ball.y - 5,
       right: this.ball.x + 5,
       left: this.ball.y + 5,
-
     }
     return rect;
   }
 
   isCollision(rect1, rect2) {
-    return Math.ceil(rect1.left) <= Math.floor(rect2.right) && Math.ceil(rect1.right) >= Math.floor(rect2.left) && Math.ceil(rect1.top) <= Math.floor(rect2.bottom) && Math.ceil(rect1.bottom) >= Math.floor(rect2.top);
+    return rect1.left <= rect2.right && rect1.right >= rect2.left && rect1.top <= rect2.bottom && rect1.bottom >= rect2.top;
   }
 
   isLose() {
@@ -181,6 +181,7 @@ export class GameGateway {
       this.scoreP1 += 1;
     if (rect.left <= 0)
       this.scoreP2 += 1;
+    this.server.emit("score", this.scoreP1, this.scoreP2);
     this.resetBall();
   }
 
@@ -189,6 +190,11 @@ export class GameGateway {
     this.ball.y = 250;
     this.ballDirection.x = 200;
     this.ballDirection.y = 200;
+  }
+
+  resetScore() {
+    this.scoreP1 = 0;
+    this.scoreP2 = 0;
   }
 
 }
