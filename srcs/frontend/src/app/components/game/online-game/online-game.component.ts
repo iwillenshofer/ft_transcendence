@@ -69,8 +69,7 @@ export class OnlineGameComponent implements OnInit {
   lastTime!: number;
   update() {
     this.socket.emit("ballTime", 1);
-    this.drawBall()
-    this.updatePaddles();
+    this.draw()
     this.updateScore();
     this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
   }
@@ -82,25 +81,24 @@ export class OnlineGameComponent implements OnInit {
     })
   }
 
-  updatePaddles() {
-    this.socket.on("position", (positionP1: { x: any; y: any }, positionP2: { x: any, y: any }) => {
-      this.player1.fillRect(positionP1.x, positionP1.y, 10, 100);
-      this.player2.fillRect(positionP2.x, positionP2.y, 10, 100);
-      this.drawLines();
-    });
-  }
-
   private ball: any;
   currentAnimationFrameId?: number;
 
-  drawBall() {
-    this.socket.on("ballUpdate", (ball: { x: any; y: any }) => {
+  draw() {
+    this.socket.on("draw", (ball: any, positionP1: any, positionP2: any) => {
       this.ball.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
       this.ball.beginPath();
       this.ball.arc(ball.x, ball.y, 10, 0, Math.PI * 2, true);
       this.ball.closePath();
       this.ball.fill();
+      this.updatePaddles(positionP1, positionP2);
     });
+  }
+
+  updatePaddles(positionP1: { x: any; y: any; }, positionP2: { x: any; y: any; }) {
+    this.player1.fillRect(positionP1.x, positionP1.y, 10, 100);
+    this.player2.fillRect(positionP2.x, positionP2.y, 10, 100);
+    this.drawLines();
   }
 
   drawLines() {

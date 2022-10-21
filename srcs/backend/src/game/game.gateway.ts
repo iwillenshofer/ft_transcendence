@@ -106,8 +106,7 @@ export class GameGateway {
     if (this.lastTime) {
       const delta = time - this.lastTime;
       this.ballUpdate(time);
-      this.server.emit("ballUpdate", this.ball);
-      this.server.emit("position", this.positionP1, this.positionP2);
+      this.server.emit("draw", this.ball, this.positionP1, this.positionP2);
     }
     if (this.isLose())
       this.handleLose();
