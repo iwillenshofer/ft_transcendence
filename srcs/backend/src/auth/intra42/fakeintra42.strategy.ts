@@ -39,7 +39,6 @@ export class FakeIntra42Strategy extends PassportStrategy(Strategy, 'fake42strat
                 { id: 19224, login: 'login6', displayname: 'displayname6', image_url: 'https://i.imgflip.com/19d7hr.jpg' }
             ];
             const idx = Math.floor(Math.random() * (this_user.length));
-            console.log('IDX:' + idx);
             user = await this.authService.getOrCreateUser(this_user[idx]);
             if (!user)
                 throw new UnauthorizedException();

@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { JwtGuard } from './jwt/jwt.guard';
 import { JwtRefreshGuard } from './jwt/jwtrefresh.guard';
 import { Intra42Guard } from './intra42/intra42.guard';
+import { FakeIntra42Guard } from './intra42/fakeintra42.guard';
 import { TfaGuard } from './tfa/tfa.guard';
 import { UsersService } from 'src/users/users.service';
 import { UserDTO } from 'src/users/users.dto';
@@ -21,8 +22,8 @@ export class AuthController {
 	** since the user is not logged in yet, only intra42 guard is used
 	*/
 
-	// @UseGuards(FakeIntra42Guard)
-	@UseGuards(Intra42Guard)
+	@UseGuards(FakeIntra42Guard)
+	// @UseGuards(Intra42Guard)
 	@Get("login")
 	async login(@Request() req, @Response() res) {
 		return;
@@ -32,12 +33,10 @@ export class AuthController {
 	** /auth/callback is the intra's return
 	*/
 
-	// @UseGuards(FakeIntra42Guard)zzzzzz
-	@UseGuards(Intra42Guard)
+	@UseGuards(FakeIntra42Guard)
+	// @UseGuards(Intra42Guard)
 	@Get("callback")
 	async callback(@Response() res, @Request() req) {
-		console.log(req.user);
-		console.log(req.err);
 		if (req.user) {
 			const random_code: string = await this.authService.generateCallbackCode(req.user.id)
 			res.status(200).redirect('/login/callback?code=' + random_code);
@@ -50,12 +49,8 @@ export class AuthController {
 	@UseGuards(JwtGuard)
 	@Get('profile')
 	async profile(@Request() req) {
-		console.log("user-profile:" + JSON.stringify(req.user));
 		let user: UserDTO = UserDTO.from(await this.userService.getUser(req.user.id));
 		user.tfa_fulfilled = (!(await this.userService.getTfaEnabled(req.user.id)) || req.user.tfa_fulfilled);
-		console.log("enabled:" + (await this.userService.getTfaEnabled(req.user.id)));
-		console.log("fulfilled:" + req.user.tfa_fulfilled);
-		console.log("user dto:" + JSON.stringify(user));
 		return (JSON.stringify(user));
 	}
 

@@ -24,7 +24,6 @@ export class TfaStrategy extends PassportStrategy(Strategy, 'tfa') {
 	}
 
 	async validate(req: Request, payload: any) {
-		console.log("payload:" + JSON.stringify(payload));
 		if (!payload || !payload.id || !payload.tfa_fulfilled)
 			throw new UnauthorizedException;
 		return payload;

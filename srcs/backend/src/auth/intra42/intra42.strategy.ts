@@ -21,17 +21,12 @@ export class Intra42Strategy extends PassportStrategy(Strategy, "intra42")
 	}
 
 	async validate(req: Request, accessToken: string, refreshToken: string): Promise<any> {
-		console.log(accessToken);
-		console.log(refreshToken);
-		console.log(req.url);
 		let user: any = null;
 		let httpservice = new HttpService;
 		let header = { Authorization: `Bearer ${accessToken}` }
 		try {
 			const req = await httpservice.get(process.env.BASE_URL + "/v2/me", { headers: header });
-			console.log(req);
 			const data = await lastValueFrom(req);
-			console.log(data);
 			user = await this.authService.getOrCreateUser(data.data);
 			if (!user)
 				return (null);

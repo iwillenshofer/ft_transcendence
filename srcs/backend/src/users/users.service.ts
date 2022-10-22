@@ -141,7 +141,6 @@ export class UsersService {
 		await fs.unlink('./uploads/profileimages/' + oldAvatar, (err) => {
 			if (err)
 				throw err;
-			console.log('./uploads/profileimages/' + oldAvatar + ' was deleted.')
 		})
 	}
 }

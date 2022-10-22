@@ -28,7 +28,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   afterInit(server: Server) {
-    console.log('init');
   }
 
   @UseGuards(TfaGuard)

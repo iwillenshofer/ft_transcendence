@@ -1,0 +1,37 @@
+$game-font-family: "Lucida Console", "Courier New", monospace;
+
+@mixin table {
+    width: calc(100%);
+    height: calc(100% - 100px);
+    background-color: black;
+    border: 5px solid white;
+}
+
+@mixin lines {
+    background-image: linear-gradient(to bottom, white 50%, black 50%);
+    background-size: 30px 30px;
+    background-repeat: repeat-y;
+    position: absolute;
+    width: 15px;
+    height: calc(100% - 120px);
+    left: calc(50%);
+    transform: translateX(-50%);
+    top: 110px;
+}
+
+@mixin popUp($font-size) {
+    color: white;
+    font-family: $game-font-family;
+    position: absolute;
+    margin-top: 110px;
+    top: 30%;
+    left: 50%;
+    background-color: black;
+    z-index: 1;
+    transform: translateX(-50%);
+    font-size: $font-size;
+    text-align: center;
+    line-height: calc(2*$font-size);
+    display: inline-block;
+    vertical-align: middle;
+}

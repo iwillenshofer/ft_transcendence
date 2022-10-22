@@ -11,6 +11,8 @@ import { UserEntity } from './users/users.entity';
 import { RoomEntity } from './chat/models/room.entity';
 import { AuthEntity } from './auth/models/auth.entity';
 import { EncryptService } from './services/encrypt.service';
+import { HealthModule } from './health/health.module';
+import { GameModule } from './game/game.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { EncryptService } from './services/encrypt.service';
       entities: [UserEntity, RoomEntity, AuthEntity],
       synchronize: true,
     })
+    HealthModule,
+    GameModule
   ],
   controllers: [AppController],
   providers: [AppService],
