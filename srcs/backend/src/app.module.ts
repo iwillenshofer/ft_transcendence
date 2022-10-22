@@ -10,8 +10,6 @@ import { DataSource } from 'typeorm';
 import { UserEntity } from './users/users.entity';
 import { RoomEntity } from './chat/models/room.entity';
 import { AuthEntity } from './auth/models/auth.entity';
-import { EncryptService } from './services/encrypt.service';
-import { HealthModule } from './health/health.module';
 import { GameModule } from './game/game.module';
 
 @Module({
@@ -29,9 +27,8 @@ import { GameModule } from './game/game.module';
       database: process.env.POSTGRES_DB || 'postgres',
       entities: [UserEntity, RoomEntity, AuthEntity],
       synchronize: true,
-    })
-    HealthModule,
-    GameModule
+    }),
+    GameModule,
   ],
   controllers: [AppController],
   providers: [AppService],
