@@ -32,11 +32,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @UseGuards(TfaGuard)
   async handleConnection(socket: Socket, ...args: any[]) {
-    const user: UserInterface = await this.userService.getUser(+socket.handshake.headers.userid);
-    const rooms = await this.roomService.getRoomsForUsers(user.id, { page: 1, limit: 10 });
-    rooms.meta.currentPage -= 1;
-    socket.data.user = user.username;
-    return this.server.to(socket.id).emit('rooms', rooms);
+    // const user: UserInterface = await this.userService.getUser(+socket.handshake.headers.userid);
+    // const rooms = await this.roomService.getRoomsForUsers(user.id, { page: 1, limit: 10 });
+    // rooms.meta.currentPage -= 1;
+    // socket.data.user = user.username;
+    // return this.server.to(socket.id).emit('rooms', rooms);
   }
 
   handleDisconnect(client: Socket, ...args: any[]) {
