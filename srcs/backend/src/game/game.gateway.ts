@@ -69,20 +69,20 @@ export class GameGateway {
   @UseGuards(TfaGuard)
   handleDisconnect(client: Socket, ...args: any[]) {
     const game = this.games[this.findGameBySocketId(client.id)]
-    this.finishGame(game, client.id);
-  }
-
-  finishGame(game: Game, socketID: string) {
     game.finished = true;
-    if (socketID == game.player1.socket) {
+    if (client.id == game.player1.socket) {
       game.player1.message = 'Loser';
-      game.player2.message == 'Winner';
+      game.player2.message = 'Winner';
+      if (!game.player2.socket) {
+        this.games.splice(Number(game.gameID), 1);
+        delete this.games[game.gameID];
+      }
     }
-    if (socketID == game.player2.socket) {
+    if (client.id == game.player2.socket) {
       game.player1.message = 'Winner';
-      game.player2.message == 'Loser';
+      game.player2.message = 'Loser';
     }
-    this.server.to(game.gameID).emit("score", game.player1, game.player2, game.finished);
+    // this.server.to(game.gameID).emit("score", game.player1, game.player2, game.finished);
   }
 
   findGameBySocketId(socketID: string) {
@@ -106,12 +106,16 @@ export class GameGateway {
     if (game.isLose()) {
       game.handleLose();
     }
-    if (game.finished) {
-      // this.games.
-      // delete this.games[gameID]
-    }
     this.server.to(gameID).emit("score", game.player1, game.player2, game.finished);
     game.lastTime = Number(time);
+  }
+
+  @SubscribeMessage('endGame')
+  endGame(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+    if (!this.games[data[0]].player1.socket && !this.games[data[0]].player2.socket) {
+      this.games.splice(Number(data[0]), 1);
+      delete this.games[data[0]];
+    }
   }
 }
 

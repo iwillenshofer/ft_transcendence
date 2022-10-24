@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, OnInit, HostListener, Input } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit, HostListener, Input, OnDestroy } from '@angular/core';
 import io from "socket.io-client";
 import { UserService } from 'src/app/services/user.service';
 
@@ -8,7 +8,7 @@ import { UserService } from 'src/app/services/user.service';
   templateUrl: './online-game.component.html',
   styleUrls: ['./online-game.component.scss']
 })
-export class OnlineGameComponent implements OnInit {
+export class OnlineGameComponent implements OnInit, OnDestroy {
 
   @Input() mode: any;
   @ViewChild("game")
@@ -58,6 +58,10 @@ export class OnlineGameComponent implements OnInit {
     this.socket.emit("joinGame", this.username);
   }
 
+  ngOnDestroy() {
+    this.socket.disconnect();
+  }
+
   public ngAfterViewInit() {
     this.drawLines();
     this.socket.on("players", (player1: any, player2: any, gameID: string) => {
@@ -105,10 +109,11 @@ export class OnlineGameComponent implements OnInit {
     if (this.socket.id == player1.socket) {
       this.finishedMessage = player1.message;
     }
-    else if (this.socket.id == player2.socket) {
+    if (this.socket.id == player2.socket) {
       this.finishedMessage = player2.message;
     }
     window.cancelAnimationFrame(this.currentAnimationFrameId as number);
+    this.socket.emit('endGame', this.gameID);
   }
 
   draw() {

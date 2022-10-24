@@ -3,7 +3,7 @@
     <div class="menu">
         <p class="menu__title">Play</p>
         <button (click)="startGame('random')">vs Random</button>
-        <button (click)="startGame('friend')">vs Friend</button>
+        <button>vs Friend</button>
         <button>Live Games</button>
         <!-- <button>Offline friend</button> -->
         <!-- <button>Offline computer</button> -->
@@ -17,6 +17,6 @@
         <!-- <p>[P] - Pause</p> -->
     </div>
 </div>
-<app-online-game *ngIf="mode == 'random' || mode == 'friend'" [mode]="mode"></app-online-game>
+<app-online-game *ngIf="mode == 'random'" [mode]="mode"></app-online-game>
 <!-- <app-offline-game *ngIf="mode == 'off' || mode == 'computer'"></app-offline-game> -->
 <div class="lines" *ngIf="mode != 'random' && mode != 'friend)'"></div>
