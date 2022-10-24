@@ -91,19 +91,18 @@ export class OnlineGameComponent implements OnInit {
   }
 
   finish(player1: any, player2: any) {
-    if (this.socket == player1.socket) {
+    console.log(this.socket, player1.socket)
+    if (this.socket.id == player1.socket) {
       if (player1.score > player2.score)
         this.finishedMessage = 'Winner';
       else
         this.finishedMessage = 'Loser';
     }
-    else if (this.socket == player2.socket) {
-      if (this.socket == player1.socket) {
-        if (player2.score > player1.score)
-          this.finishedMessage = 'Winner';
-        else
-          this.finishedMessage = 'Loser';
-      }
+    else if (this.socket.id == player2.socket) {
+      if (player2.score > player1.score)
+        this.finishedMessage = 'Winner';
+      else
+        this.finishedMessage = 'Loser';
     }
     window.cancelAnimationFrame(this.currentAnimationFrameId as number);
   }

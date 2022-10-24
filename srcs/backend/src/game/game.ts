@@ -1,4 +1,5 @@
 export const INITIAL_VELOCITY = 3;
+export const MAX_SCORE = 1;
 
 interface IPlayer {
     socket: string,
@@ -6,8 +7,6 @@ interface IPlayer {
     y: number,
     score: number,
 }
-
-export const MAX_SCORE = 10;
 
 export class Game {
 
