@@ -42,6 +42,13 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
         this.socket.emit("move", this.gameID, "down");
         break;
 
+      case 'q':
+      case 'Q':
+        if (this.finished || this.isWaiting) {
+          location.reload();
+        }
+        break;
+
       default:
         break;
     }
@@ -63,7 +70,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   public ngAfterViewInit() {
-    this.drawLines();
     this.socket.on("players", (player1: any, player2: any, gameID: string) => {
       if (player1) {
         this.player1 = this.gameCanvas.nativeElement.getContext("2d");

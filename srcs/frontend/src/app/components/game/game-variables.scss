@@ -31,7 +31,7 @@ $game-font-family: "Lucida Console", "Courier New", monospace;
     transform: translateX(-50%);
     font-size: $font-size;
     text-align: center;
-    line-height: calc(2*$font-size);
+    line-height: normal;
     display: inline-block;
     vertical-align: middle;
 }
