@@ -104,7 +104,12 @@ export class GameGateway {
     const game = this.games[gameID];
     if (game.lastTime) {
       game.ballUpdate(time);
-      this.server.to(gameID).emit("draw", game.ball, game.player1, game.player2);
+      // console.log(game.powerUps)
+      // if (game.powerUps == "true") {
+      //   console.log(game.powerUp)
+      //   game.powerUpsUpdate(0)
+      // }
+      this.server.to(gameID).emit("draw", game.ball, game.player1, game.player2, game.powerUp);
     }
     if (game.isLose()) {
       game.handleLose();

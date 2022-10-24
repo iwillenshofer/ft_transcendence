@@ -35,6 +35,12 @@ export class Game {
         x: 0,
         y: 0,
     }
+    powerUp = {
+        x: 0,
+        y: 0,
+        time: 0,
+        show: false
+    }
     ballDirection: { x: number; y: number } = { x: 0.0, y: 0.0 };
     velocity: number = INITIAL_VELOCITY;
     lastTouch: number = 0;
@@ -187,4 +193,61 @@ export class Game {
         this.player2.x = 535;
         this.player2.y = 200;
     }
+
+    powerUpsUpdate() {
+        // if (time == 0) {
+        //     this.powerUp.x = this.randomNumberBetween(25, 535);
+        //     this.powerUp.y = this.randomNumberBetween(0, 450);
+        // }
+        // time = 1;
+        // this.resetPowerUp();
+        // if (time - this.powerUp.time > 5000 && this.lastTouch)
+        this.powerUp.show = true;
+        // if (time - this.powerup.time > 5000 && this.ball.lastTouch) {
+        //     this.powerup.display();
+        // }
+        // if (this.powerup.bg_color != 'black' && this.powerup.isCollision(this.ball.rect())) {
+        //     let color = this.powerup.bg_color;
+        //     switch (color) {
+        //         case 'green':
+        //             this.powerup.collid = "BIG PADDLE";
+        //             if (this.ball.lastTouch == 1) {
+        //                 this.player1Paddle.reset();
+        //                 this.player1Paddle.height = 50;
+        //             }
+        //             if (this.ball.lastTouch == 2) {
+        //                 anyPaddle.reset();
+        //                 anyPaddle.height = 50;
+        //             }
+        //             break;
+        //         case 'red':
+        //             this.powerup.collid = "small paddle"
+        //             if (this.ball.lastTouch == 1)
+        //                 this.player1Paddle.height = 10;
+        //             if (this.ball.lastTouch == 2)
+        //                 anyPaddle.height = 10;
+        //             break;
+        //         case 'blue':
+        //             this.powerup.collid = "BIG BALL"
+        //             this.ball.size = 10;
+        //             break;
+        //         default:
+        //             break;
+        //     }
+        //     this.powerup.collided(time);
+        // }
+
+        // if (time - this.powerup.time > 10000) {
+        //     this.player1Paddle.height = 20;
+        //     anyPaddle.height = 20;
+        //     this.ball.size = 2;
+        // }
+    }
+
+    // resetPowerUp() {
+    //     this.powerUp.x = this.randomNumberBetween(25, 535);
+    //     this.powerUp.y = this.randomNumberBetween(0, 450);
+    //     this.powerUp.time = 0;
+    //     this.powerUp.show = false;
+    // }
 }

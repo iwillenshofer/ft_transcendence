@@ -61,7 +61,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     //     (result) => { this.username = this.userService.Username = result.username })
     // else
     //   this.username = this.userService.Username;
-    // console.log(this.username)
+    console.log(this.powerUps)
     this.socket = io("http://localhost:3000/game");
     this.socket.emit("joinGame", this.powerUps);
   }
@@ -124,11 +124,12 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   draw() {
-    this.socket.on("draw", (ball: any, player1: any, player2: any) => {
+    this.socket.on("draw", (ball: any, player1: any, player2: any, powerUp: any) => {
       this.ball.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
       this.drawLines();
       this.drawBall(ball.x, ball.y);
       this.updatePaddles(player1.x, player1.y, player2.x, player2.y);
+      this.drawPowerUp(powerUp)
     });
   }
 
@@ -148,6 +149,14 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     for (let x = 3; x < 500;) {
       this.gameCanvas.nativeElement.getContext("2d").fillRect(275, x, 12, 10);
       x += 20;
+    }
+  }
+
+  drawPowerUp(powerUp: any) {
+    console.log('pow')
+    if (powerUp.show) {
+      console.log('up')
+      this.gameCanvas.nativeElement.getContext("2d").fillRect(40, 40, 50, 50);
     }
   }
 }
