@@ -1,11 +1,12 @@
 export const INITIAL_VELOCITY = 3;
-export const MAX_SCORE = 1;
+export const MAX_SCORE = 2;
 
 interface IPlayer {
     socket: string,
     x: number,
     y: number,
     score: number,
+    message: string
 }
 
 export class Game {
@@ -20,12 +21,14 @@ export class Game {
         x: 0,
         y: 0,
         score: 0,
+        message: ''
     };
     player2: IPlayer = {
         socket: '',
         x: 0,
         y: 0,
         score: 0,
+        message: ''
     };
     ball = {
         x: 0,
@@ -34,7 +37,7 @@ export class Game {
     ballDirection: { x: number; y: number } = { x: 0.0, y: 0.0 };
     velocity: number = INITIAL_VELOCITY;
     lastTouch: number = 0;
-    // lastTime!: number;
+    lastTime!: number;
     currentAnimationFrameId?: number;
     finished: boolean = false;
 
@@ -134,8 +137,16 @@ export class Game {
             this.player2.score += 1;
             ballSide = 1;
         }
-        if (this.player1.score == MAX_SCORE || this.player2.score == MAX_SCORE)
+        if (this.player1.score == MAX_SCORE) {
             this.finished = true;
+            this.player1.message = 'Winner';
+            this.player2.message = 'Loser';
+        }
+        else if (this.player2.score == MAX_SCORE) {
+            this.finished = true;
+            this.player1.message = 'Loser';
+            this.player2.message = 'Winner';
+        }
         this.resetPlayersPosition()
         this.resetBall();
         this.ballDirection.x *= ballSide;

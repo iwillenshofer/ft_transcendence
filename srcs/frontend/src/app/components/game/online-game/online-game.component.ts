@@ -1,5 +1,6 @@
 import { Component, ViewChild, ElementRef, OnInit, HostListener, Input } from '@angular/core';
 import io from "socket.io-client";
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-online-game',
@@ -22,6 +23,9 @@ export class OnlineGameComponent implements OnInit {
   finished: boolean = false;
   finishedMessage: string = '';
   private gameID: string = '';
+  username: string = '';
+
+  constructor(private userService: UserService) { }
 
   @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
     switch (event.key) {
@@ -43,8 +47,14 @@ export class OnlineGameComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // if (this.userService.Username == '')
+    //   this.userService.getUsernameFromServer().subscribe(
+    //     (result) => { this.username = this.userService.Username = result.username })
+    // else
+    //   this.username = this.userService.Username;
+    // console.log(this.username)
     this.socket = io("http://localhost:3000/game");
-    this.socket.emit("joinGame");
+    this.socket.emit("joinGame", this.username);
   }
 
   public ngAfterViewInit() {
@@ -91,18 +101,11 @@ export class OnlineGameComponent implements OnInit {
   }
 
   finish(player1: any, player2: any) {
-    console.log(this.socket, player1.socket)
     if (this.socket.id == player1.socket) {
-      if (player1.score > player2.score)
-        this.finishedMessage = 'Winner';
-      else
-        this.finishedMessage = 'Loser';
+      this.finishedMessage = player1.message;
     }
     else if (this.socket.id == player2.socket) {
-      if (player2.score > player1.score)
-        this.finishedMessage = 'Winner';
-      else
-        this.finishedMessage = 'Loser';
+      this.finishedMessage = player2.message;
     }
     window.cancelAnimationFrame(this.currentAnimationFrameId as number);
   }

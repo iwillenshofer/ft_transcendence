@@ -15,8 +15,9 @@ export class GameGateway {
   games: Game[] = [];
 
   @SubscribeMessage('joinGame')
-  joinGame(client: Socket) {
+  joinGame(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let gameIndex = this.checkGameArray();
+    console.log('data', data);
     this.setPlayers(client, gameIndex);
   }
 
@@ -54,7 +55,6 @@ export class GameGateway {
 
   @SubscribeMessage('move')
   move(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
-    console.log(data)
     let gameID = data[0];
     let command = data[1];
     let player;
@@ -69,34 +69,50 @@ export class GameGateway {
 
   @UseGuards(TfaGuard)
   handleDisconnect(client: Socket, ...args: any[]) {
-    // if (client.id == this.player1) {
-    //   this.player1 = null;
-    //   // console.log('player1 disconnected')
-    //   this.resetPlayersPosition();
-    // }
-    // else if (client.id == this.player2) {
-    //   this.player2 = null;
-    //   // console.log('player2 disconnected')
-    //   this.resetPlayersPosition();
-    // }
+    const game = this.games[this.findGameBySocketId(client.id)]
+    this.finishGame(game, client.id);
   }
 
-  lastTime!: number;
+  finishGame(game: Game, socketID: string) {
+    game.finished = true;
+    if (socketID == game.player1.socket) {
+      game.player1.message = 'Loser';
+      game.player2.message == 'Winner';
+    }
+    if (socketID == game.player2.socket) {
+      game.player1.message = 'Winner';
+      game.player2.message == 'Loser';
+    }
+    this.server.to(game.gameID).emit("score", game.player1, game.player2, game.finished);
+  }
+
+  findGameBySocketId(socketID: string) {
+    for (let index = 0; index < this.games.length; index++) {
+      let game = this.games[index];
+      if (game.player1.socket == socketID || game.player2.socket == socketID)
+        return (index);
+    }
+  }
+
 
   @SubscribeMessage('gameUpdate')
-  update(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
+  update(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let gameID = data[0];
     let time = data[1];
     const game = this.games[gameID];
-    if (this.lastTime) {
+    if (game.lastTime) {
       game.ballUpdate(time);
       this.server.to(gameID).emit("draw", game.ball, game.player1, game.player2);
     }
     if (game.isLose()) {
       game.handleLose();
     }
+    if (game.finished) {
+      // this.games.
+      // delete this.games[gameID]
+    }
     this.server.to(gameID).emit("score", game.player1, game.player2, game.finished);
-    this.lastTime = Number(time);
+    game.lastTime = Number(time);
   }
 }
 
