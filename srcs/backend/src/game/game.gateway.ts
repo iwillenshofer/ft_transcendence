@@ -6,7 +6,7 @@ import { TfaGuard } from 'src/auth/tfa/tfa.guard';
 export const INITIAL_VELOCITY = 3;
 export const MAX_SCORE = 10;
 
-@WebSocketGateway({ cors: '*:*' })
+@WebSocketGateway({ cors: '*:*', namespace: 'game' })
 export class GameGateway {
 
   @WebSocketServer()
@@ -34,6 +34,7 @@ export class GameGateway {
 
   @SubscribeMessage('joinGame')
   joinGame(client: Socket) {
+    console.log('game', client.id);
     this.resetBall();
     this.resetScore();
     this.setPlayers(client.id);

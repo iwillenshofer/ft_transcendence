@@ -32,6 +32,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @UseGuards(TfaGuard)
   async handleConnection(socket: Socket, ...args: any[]) {
+    console.log('chat', socket.id);
     // const user: UserInterface = await this.userService.getUser(+socket.handshake.headers.userid);
     // const rooms = await this.roomService.getRoomsForUsers(user.id, { page: 1, limit: 10 });
     // rooms.meta.currentPage -= 1;

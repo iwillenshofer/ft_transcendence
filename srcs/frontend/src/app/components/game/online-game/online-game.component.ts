@@ -41,7 +41,7 @@ export class OnlineGameComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.socket = io("http://localhost:3000");
+    this.socket = io("http://localhost:3000/game");
     this.socket.emit("joinGame");
   }
 
