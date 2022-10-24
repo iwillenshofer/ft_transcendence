@@ -15,6 +15,6 @@
         <p>[P] Pause</p>
     </div>
 </div>
-<app-online-game *ngIf="mode == 'on-random' || mode == 'on-friend'"></app-online-game>
+<app-online-game *ngIf="mode == 'on-random' || mode == 'on-friend'" [mode]="mode"></app-online-game>
 <!-- <app-offline-game *ngIf="mode == 'off' || mode == 'computer'"></app-offline-game> -->
 <div class="lines" *ngIf="mode != 'on-random' && mode != 'on-friend)'"></div>

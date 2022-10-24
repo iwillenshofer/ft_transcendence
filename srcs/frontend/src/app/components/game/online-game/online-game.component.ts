@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, OnInit, HostListener } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit, HostListener, Input } from '@angular/core';
 import io from "socket.io-client";
 
 @Component({
@@ -8,6 +8,7 @@ import io from "socket.io-client";
 })
 export class OnlineGameComponent implements OnInit {
 
+  @Input() mode: any;
   @ViewChild("game")
   private gameCanvas!: ElementRef;
   private socket: any;
@@ -20,19 +21,20 @@ export class OnlineGameComponent implements OnInit {
   currentAnimationFrameId?: number;
   finished: boolean = false;
   finishedMessage: string = '';
+  private gameID: string = '';
 
   @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
     switch (event.key) {
       case 'w':
       case 'W':
       case 'ArrowUp':
-        this.socket.emit("move", "up");
+        this.socket.emit("move", this.gameID, "up");
         break;
 
       case 's':
       case 'S':
       case 'ArrowDown':
-        this.socket.emit("move", "down");
+        this.socket.emit("move", this.gameID, "down");
         break;
 
       default:
@@ -47,7 +49,7 @@ export class OnlineGameComponent implements OnInit {
 
   public ngAfterViewInit() {
     this.drawLines();
-    this.socket.on("players", (player1: any, player2: any) => {
+    this.socket.on("players", (player1: any, player2: any, gameID: string) => {
       if (player1) {
         this.player1 = this.gameCanvas.nativeElement.getContext("2d");
         this.player1.fillStyle = "white";
@@ -60,6 +62,7 @@ export class OnlineGameComponent implements OnInit {
       }
       this.drawLines();
       if (this.player1 && this.player2) {
+        this.gameID = gameID;
         this.isWaiting = false;
         this.ball = this.gameCanvas.nativeElement.getContext("2d");
         this.update();
@@ -68,43 +71,55 @@ export class OnlineGameComponent implements OnInit {
 
   }
 
-  lastTime!: number;
   update() {
-    this.socket.emit("gameUpdate", 1);
+    this.socket.emit("gameUpdate", this.gameID, 1);
     this.draw()
     this.updateScore();
     this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
   }
 
   updateScore() {
-    this.socket.on("score", (scoreP1: number, scoreP2: number, finished: boolean, finishedMessage: string) => {
-      this.scoreP1 = scoreP1;
-      this.scoreP2 = scoreP2;
+    this.socket.on("score", (player1: any, player2: any, finished: boolean) => {
+      this.scoreP1 = player1.score;
+      this.scoreP2 = player2.score;
       this.finished = finished;
       if (this.finished) {
         this.draw();
-        this.finishedMessage = finishedMessage;
-        this.finish();
+        this.finish(player1, player2);
       }
     })
   }
 
-  finish() {
+  finish(player1: any, player2: any) {
+    if (this.socket == player1.socket) {
+      if (player1.score > player2.score)
+        this.finishedMessage = 'Winner';
+      else
+        this.finishedMessage = 'Loser';
+    }
+    else if (this.socket == player2.socket) {
+      if (this.socket == player1.socket) {
+        if (player2.score > player1.score)
+          this.finishedMessage = 'Winner';
+        else
+          this.finishedMessage = 'Loser';
+      }
+    }
     window.cancelAnimationFrame(this.currentAnimationFrameId as number);
   }
 
   draw() {
-    this.socket.on("draw", (ball: any, positionP1: any, positionP2: any) => {
+    this.socket.on("draw", (ball: any, player1: any, player2: any) => {
       this.ball.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
       this.drawLines();
       this.drawBall(ball.x, ball.y);
-      this.updatePaddles(positionP1, positionP2);
+      this.updatePaddles(player1.x, player1.y, player2.x, player2.y);
     });
   }
 
-  updatePaddles(positionP1: { x: any; y: any; }, positionP2: { x: any; y: any; }) {
-    this.player1.fillRect(positionP1.x, positionP1.y, 10, 100);
-    this.player2.fillRect(positionP2.x, positionP2.y, 10, 100);
+  updatePaddles(P1x: number, P1y: number, P2x: number, P2y: number) {
+    this.player1.fillRect(P1x, P1y, 10, 100);
+    this.player2.fillRect(P2x, P2y, 10, 100);
   }
 
   drawBall(x: any, y: any) {
