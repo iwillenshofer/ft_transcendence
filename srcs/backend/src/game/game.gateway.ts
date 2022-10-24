@@ -16,19 +16,22 @@ export class GameGateway {
 
   @SubscribeMessage('joinGame')
   joinGame(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    let gameIndex = this.checkGameArray();
+    let powerUps = data;
+    let gameIndex = this.checkGameArray(powerUps);
     this.setPlayers(client, gameIndex);
   }
 
-  checkGameArray() {
+  checkGameArray(powerUps: string) {
     if (this.games.length > 0) {
       for (let index = 0; index < this.games.length; index++) {
-        if (this.games[index].player1.socket == '' || this.games[index].player2.socket == '') {
-          return index;
+        if (this.games[index].powerUps === powerUps) {
+          if (this.games[index].player1.socket == '' || this.games[index].player2.socket == '') {
+            return index;
+          }
         }
       };
     }
-    this.games.push(new Game(this.games.length.toString()));
+    this.games.push(new Game(this.games.length.toString(), powerUps));
     return this.games.length - 1;
   }
 

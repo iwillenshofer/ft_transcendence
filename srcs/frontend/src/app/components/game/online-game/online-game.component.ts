@@ -11,6 +11,7 @@ import { UserService } from 'src/app/services/user.service';
 export class OnlineGameComponent implements OnInit, OnDestroy {
 
   @Input() mode: any;
+  @Input() powerUps: any;
   @ViewChild("game")
   private gameCanvas!: ElementRef;
   private socket: any;
@@ -62,7 +63,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     //   this.username = this.userService.Username;
     // console.log(this.username)
     this.socket = io("http://localhost:3000/game");
-    this.socket.emit("joinGame", this.username);
+    this.socket.emit("joinGame", this.powerUps);
   }
 
   ngOnDestroy() {

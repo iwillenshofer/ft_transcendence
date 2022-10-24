@@ -11,8 +11,9 @@ interface IPlayer {
 
 export class Game {
 
-    constructor(gameId: string) {
+    constructor(gameId: string, powerUps: string) {
         this.gameID = gameId;
+        this.powerUps = powerUps;
     }
 
     gameID: string;
@@ -40,6 +41,7 @@ export class Game {
     lastTime!: number;
     currentAnimationFrameId?: number;
     finished: boolean = false;
+    powerUps: string = '';
 
     gameStart() {
         this.resetPlayersPosition();
