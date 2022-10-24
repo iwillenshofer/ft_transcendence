@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { MatCheckboxModule } from '@angular/material/checkbox'
 
 @Component({
   selector: 'app-game',
@@ -10,6 +11,7 @@ export class GameComponent implements OnInit {
   menu: boolean = true;
   paused: boolean = false;
   mode: string = '';
+  powerUps: boolean = false;
 
   public ngOnInit() {
   }
@@ -17,5 +19,9 @@ export class GameComponent implements OnInit {
   startGame(mode: string) {
     this.mode = mode;
     this.menu = false;
+  }
+
+  togglePowerUps() {
+    this.powerUps = !this.powerUps;
   }
 }

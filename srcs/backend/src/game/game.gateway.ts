@@ -17,7 +17,6 @@ export class GameGateway {
   @SubscribeMessage('joinGame')
   joinGame(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let gameIndex = this.checkGameArray();
-    console.log('data', data);
     this.setPlayers(client, gameIndex);
   }
 

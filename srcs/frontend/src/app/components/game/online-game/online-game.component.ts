@@ -2,6 +2,7 @@ import { Component, ViewChild, ElementRef, OnInit, HostListener, Input } from '@
 import io from "socket.io-client";
 import { UserService } from 'src/app/services/user.service';
 
+
 @Component({
   selector: 'app-online-game',
   templateUrl: './online-game.component.html',
