@@ -14,7 +14,7 @@ $game-font-family: "Lucida Console", "Courier New", monospace;
     position: absolute;
     width: 15px;
     height: calc(100% - 120px);
-    left: calc(50%);
+    left: 50%;
     transform: translateX(-50%);
     top: 110px;
 }
@@ -23,15 +23,13 @@ $game-font-family: "Lucida Console", "Courier New", monospace;
     color: white;
     font-family: $game-font-family;
     position: absolute;
-    margin-top: 110px;
-    top: 30%;
+    margin-top: 100px;
+    top: 40%;
     left: 50%;
+    transform: translate(-50%, -50%);
     background-color: black;
     z-index: 1;
-    transform: translateX(-50%);
+    height: calc(2 * $font-size);
     font-size: $font-size;
     text-align: center;
-    line-height: normal;
-    display: inline-block;
-    vertical-align: middle;
 }

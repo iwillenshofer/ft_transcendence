@@ -77,8 +77,8 @@ export class GameGateway {
       game.player1.message = 'Loser';
       game.player2.message = 'Winner';
       if (!game.player2.socket) {
-        this.games.splice(Number(game.gameID), 1);
         delete this.games[game.gameID];
+        this.games.splice(Number(game.gameID), 1);
       }
     }
     if (client.id == game.player2.socket) {
@@ -121,8 +121,8 @@ export class GameGateway {
   @SubscribeMessage('endGame')
   endGame(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     if (!this.games[data[0]].player1.socket && !this.games[data[0]].player2.socket) {
-      this.games.splice(Number(data[0]), 1);
       delete this.games[data[0]];
+      this.games.splice(Number(data[0]), 1);
     }
   }
 }

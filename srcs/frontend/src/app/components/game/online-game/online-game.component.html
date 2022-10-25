@@ -1,18 +1,13 @@
-<canvas #game class="table" width="560" height="500"></canvas>
+<canvas #game class="table" width="1280" height="720"></canvas>
 <div class="waiting" *ngIf="isWaiting">
-    <span>
-        Waiting for another player
-        <p></p>
-    </span>
-    <span class="quit">[Q] - Quit</span>
+    <p class="waiting__title">Waiting for another player</p>
+    <p class="quit">[Q] - Quit</p>
 </div>
-<div class="score">
+<div *ngIf="!isWaiting" class="score">
     <div style="float: left;">{{scoreP1}}</div>
     <div style="float: right;">{{scoreP2}}</div>
 </div>
 <div class="finished" *ngIf="finished">
-    <span>
-        {{finishedMessage}}
-    </span>
-    <span class="quit">[Q] - Quit</span>
+    <p class="finished__title">{{finishedMessage}}</p>
+    <p class="quit">[Q] - Quit</p>
 </div>

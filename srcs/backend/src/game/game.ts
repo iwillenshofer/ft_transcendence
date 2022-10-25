@@ -1,5 +1,6 @@
 export const INITIAL_VELOCITY = 3;
-export const MAX_SCORE = 2;
+export const MAX_SCORE = 10;
+export const VELOCITY_INCREASE = 0.5;
 
 interface IPlayer {
     socket: string,
@@ -16,6 +17,14 @@ export class Game {
         this.powerUps = powerUps;
     }
 
+    table = {
+        width: 1280,
+        height: 720
+    };
+    paddle = {
+        width: 15,
+        height: 150
+    }
     gameID: string;
     player1: IPlayer = {
         socket: '',
@@ -64,7 +73,7 @@ export class Game {
                     }
                     break;
                 case "down":
-                    if (player.y < 400)
+                    if (player.y < (this.table.height - this.paddle.height))
                         player.y += 30;
                     break;
             }
@@ -74,11 +83,10 @@ export class Game {
     ballUpdate(delta: number) {
         this.ball.x += this.ballDirection.x * this.velocity * delta;
         this.ball.y += this.ballDirection.y * this.velocity * delta;
-        this.velocity += 0.000003;
 
         const rect = this.ballRect()
 
-        if (rect.bottom >= 500 || rect.top <= 0) {
+        if (rect.bottom >= this.table.height || rect.top <= 0) {
             this.ballDirection.y *= -1;
         }
 
@@ -86,20 +94,22 @@ export class Game {
             this.lastTouch = 1;
             this.ballDirection.x *= -1;
             this.ballRandomY();
+            this.velocity += VELOCITY_INCREASE;
         }
 
         if (this.isCollision(this.rectP2(), rect)) {
             this.lastTouch = 2;
             this.ballDirection.x *= -1;
             this.ballRandomY();
+            this.velocity += VELOCITY_INCREASE;
         }
     }
 
     rectP1() {
         let rect = {
-            bottom: this.player1.y + 100,
+            bottom: this.player1.y + this.paddle.height,
             top: this.player1.y,
-            right: this.player1.x + 10,
+            right: this.player1.x + this.paddle.width,
             left: this.player1.x,
         }
         return rect;
@@ -107,9 +117,9 @@ export class Game {
 
     rectP2() {
         let rect = {
-            bottom: this.player2.y + 100,
+            bottom: this.player2.y + this.paddle.height,
             top: this.player2.y,
-            right: this.player2.x + 10,
+            right: this.player2.x + this.paddle.width,
             left: this.player2.x,
         }
         return rect;
@@ -131,13 +141,13 @@ export class Game {
 
     isLose() {
         const rect = this.ballRect();
-        return rect.right >= 560 || rect.left <= 0;
+        return rect.right >= this.table.width || rect.left <= 0;
     }
 
     handleLose() {
         let ballSide;
         const rect = this.ballRect();
-        if (rect.right >= 560) {
+        if (rect.right >= this.table.width) {
             this.player1.score += 1;
             ballSide = -1;
         }
@@ -161,10 +171,8 @@ export class Game {
     }
 
     resetBall() {
-        this.ball.x = 280;
-        this.ball.y = 250;
-        this.ballDirection.x = 200;
-        this.ballDirection.y = 200;
+        this.ball.x = this.table.width / 2;
+        this.ball.y = this.table.height / 2;
         this.velocity = INITIAL_VELOCITY;
         this.ballRandomX();
         this.ballRandomY();
@@ -189,9 +197,9 @@ export class Game {
 
     resetPlayersPosition() {
         this.player1.x = 20;
-        this.player1.y = 200;
-        this.player2.x = 535;
-        this.player2.y = 200;
+        this.player1.y = (this.table.height / 2) - (this.paddle.height / 2);
+        this.player2.x = this.table.width - 30; // - 10 da margin
+        this.player2.y = (this.table.height / 2) - (this.paddle.height / 2);
     }
 
     powerUpsUpdate() {

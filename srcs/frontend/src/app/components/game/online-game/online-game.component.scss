@@ -5,7 +5,11 @@
 }
 
 .waiting {
-    @include popUp(30px);
+    @include popUp(3vh);
+
+    // &__title {
+    //     margin-top: 50%;
+    // }
 }
 
 .score {
@@ -24,9 +28,16 @@
 }
 
 .finished {
-    @include popUp(100px);
+    @include popUp(10vh);
+
+    &__title {
+        margin-top: 10vh;
+        // height: 10vh;
+        transform: translateY(-50%);
+    }
 }
 
 .quit {
-    font-size: 20px;
+    font-size: 2vh;
+    margin-top: 30px;
 }

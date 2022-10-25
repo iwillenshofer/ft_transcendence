@@ -75,12 +75,12 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       if (player1) {
         this.player1 = this.gameCanvas.nativeElement.getContext("2d");
         this.player1.fillStyle = "white";
-        this.player1.fillRect(20, 200, 10, 100);
+        // this.player1.fillRect(20, 360, 10, 100);
       }
       if (player2) {
         this.player2 = this.gameCanvas.nativeElement.getContext("2d");
         this.player2.fillStyle = "white";
-        this.player2.fillRect(535, 200, 10, 100);
+        // this.player2.fillRect(1260, 360, 10, 100);
       }
       this.drawLines();
       if (this.player1 && this.player2) {
@@ -105,10 +105,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.scoreP1 = player1.score;
       this.scoreP2 = player2.score;
       this.finished = finished;
-      if (this.finished) {
-        this.draw();
+      if (this.finished)
         this.finish(player1, player2);
-      }
     })
   }
 
@@ -127,15 +125,16 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.socket.on("draw", (ball: any, player1: any, player2: any, powerUp: any) => {
       this.ball.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
       this.drawLines();
-      this.drawBall(ball.x, ball.y);
+      if (!this.finished)
+        this.drawBall(ball.x, ball.y);
       this.updatePaddles(player1.x, player1.y, player2.x, player2.y);
       this.drawPowerUp(powerUp)
     });
   }
 
   updatePaddles(P1x: number, P1y: number, P2x: number, P2y: number) {
-    this.player1.fillRect(P1x, P1y, 10, 100);
-    this.player2.fillRect(P2x, P2y, 10, 100);
+    this.player1.fillRect(P1x, P1y, 15, 150);
+    this.player2.fillRect(P2x, P2y, 15, 150);
   }
 
   drawBall(x: any, y: any) {
@@ -146,8 +145,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   drawLines() {
-    for (let x = 3; x < 500;) {
-      this.gameCanvas.nativeElement.getContext("2d").fillRect(275, x, 12, 10);
+    for (let x = 3; x < 720;) {
+      this.gameCanvas.nativeElement.getContext("2d").fillRect(640, x, 12, 10);
       x += 20;
     }
   }
