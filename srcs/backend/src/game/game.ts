@@ -12,9 +12,9 @@ interface IPlayer {
 
 export class Game {
 
-    constructor(gameId: string, powerUps: string) {
+    constructor(gameId: string, custom: string) {
         this.gameID = gameId;
-        this.powerUps = powerUps;
+        this.isCustom = custom;
     }
 
     table = {
@@ -43,20 +43,21 @@ export class Game {
     ball = {
         x: 0,
         y: 0,
+        radius: 5
     }
     powerUp = {
         x: 0,
         y: 0,
         time: 0,
-        show: false
+        show: false,
+        type: 0
     }
     ballDirection: { x: number; y: number } = { x: 0.0, y: 0.0 };
     velocity: number = INITIAL_VELOCITY;
     lastTouch: number = 0;
-    lastTime!: number;
-    currentAnimationFrameId?: number;
     finished: boolean = false;
-    powerUps: string = '';
+    isCustom: string = '';
+    lastTime: number = 0;
 
     gameStart() {
         this.resetPlayersPosition();
@@ -127,10 +128,22 @@ export class Game {
 
     ballRect() {
         let rect = {
-            bottom: this.ball.y + 5,
-            top: this.ball.y - 5,
-            right: this.ball.x + 5,
-            left: this.ball.x - 5,
+            bottom: this.ball.y + this.ball.radius,
+            top: this.ball.y - this.ball.radius,
+            right: this.ball.x + this.ball.radius,
+            left: this.ball.x - this.ball.radius,
+        }
+        return rect;
+    }
+
+    powerUpRect() {
+        let rect = {
+            // bottom: this.powerUp.y + 100,
+            bottom: 1280,
+            // top: this.powerUp.y,
+            top: 0,
+            right: this.powerUp.x + 100,
+            left: this.powerUp.x,
         }
         return rect;
     }
@@ -202,60 +215,39 @@ export class Game {
         this.player2.y = (this.table.height / 2) - (this.paddle.height / 2);
     }
 
-    powerUpsUpdate() {
-        // if (time == 0) {
-        //     this.powerUp.x = this.randomNumberBetween(25, 535);
-        //     this.powerUp.y = this.randomNumberBetween(0, 450);
+    powerUpUpdate() {
+        this.powerUp.time += 1;
+        if (!this.powerUp.show && this.powerUp.time > 200 && this.lastTouch) {
+            this.resetPowerUp();
+            this.powerUp.show = true;
+        }
+        // if (this.powerUp.show && this.powerUp.time > 5000) {
+        //     this.resetPowerUp();
         // }
-        // time = 1;
-        // this.resetPowerUp();
-        // if (time - this.powerUp.time > 5000 && this.lastTouch)
-        this.powerUp.show = true;
-        // if (time - this.powerup.time > 5000 && this.ball.lastTouch) {
-        //     this.powerup.display();
-        // }
-        // if (this.powerup.bg_color != 'black' && this.powerup.isCollision(this.ball.rect())) {
-        //     let color = this.powerup.bg_color;
-        //     switch (color) {
-        //         case 'green':
-        //             this.powerup.collid = "BIG PADDLE";
-        //             if (this.ball.lastTouch == 1) {
-        //                 this.player1Paddle.reset();
-        //                 this.player1Paddle.height = 50;
-        //             }
-        //             if (this.ball.lastTouch == 2) {
-        //                 anyPaddle.reset();
-        //                 anyPaddle.height = 50;
-        //             }
-        //             break;
-        //         case 'red':
-        //             this.powerup.collid = "small paddle"
-        //             if (this.ball.lastTouch == 1)
-        //                 this.player1Paddle.height = 10;
-        //             if (this.ball.lastTouch == 2)
-        //                 anyPaddle.height = 10;
-        //             break;
-        //         case 'blue':
-        //             this.powerup.collid = "BIG BALL"
-        //             this.ball.size = 10;
-        //             break;
-        //         default:
-        //             break;
-        //     }
-        //     this.powerup.collided(time);
-        // }
-
-        // if (time - this.powerup.time > 10000) {
-        //     this.player1Paddle.height = 20;
-        //     anyPaddle.height = 20;
-        //     this.ball.size = 2;
-        // }
+        if (this.powerUp.show && this.isCollision(this.ballRect(), this.powerUpRect())) {
+            this.resetPowerUp();
+            // this.powerUp.time = -1000;
+            this.givePowerUp();
+        }
     }
 
-    // resetPowerUp() {
-    //     this.powerUp.x = this.randomNumberBetween(25, 535);
-    //     this.powerUp.y = this.randomNumberBetween(0, 450);
-    //     this.powerUp.time = 0;
-    //     this.powerUp.show = false;
-    // }
+    resetPowerUp() {
+        this.powerUp.x = this.randomNumberBetween(30, this.table.width - 130); // powerup size = 100
+        this.powerUp.y = this.randomNumberBetween(0, this.table.height - 100);
+        this.powerUp.time = 0;
+        this.powerUp.show = false;
+    }
+
+    givePowerUp() {
+        console.log('player', this.lastTouch)
+        let power = Math.round(this.randomNumberBetween(1, 3))
+        this.powerUp.type = 1;
+        this.ball.radius = 20;
+        if (power == 1)
+            console.log('1');
+        else if (power == 2)
+            console.log('2');
+        else if (power == 3)
+            console.log('3');
+    }
 }

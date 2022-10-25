@@ -16,22 +16,22 @@ export class GameGateway {
 
   @SubscribeMessage('joinGame')
   joinGame(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    let powerUps = data;
-    let gameIndex = this.checkGameArray(powerUps);
+    let customGame = data;
+    let gameIndex = this.checkGameArray(customGame);
     this.setPlayers(client, gameIndex);
   }
 
-  checkGameArray(powerUps: string) {
+  checkGameArray(customGame: string) {
     if (this.games.length > 0) {
       for (let index = 0; index < this.games.length; index++) {
-        if (this.games[index].powerUps === powerUps) {
+        if (this.games[index].isCustom === customGame) {
           if (this.games[index].player1.socket == '' || this.games[index].player2.socket == '') {
             return index;
           }
         }
       };
     }
-    this.games.push(new Game(this.games.length.toString(), powerUps));
+    this.games.push(new Game(this.games.length.toString(), customGame));
     return this.games.length - 1;
   }
 
@@ -104,11 +104,8 @@ export class GameGateway {
     const game = this.games[gameID];
     if (game.lastTime) {
       game.ballUpdate(time);
-      // console.log(game.powerUps)
-      // if (game.powerUps == "true") {
-      //   console.log(game.powerUp)
-      //   game.powerUpsUpdate(0)
-      // }
+      if (game.isCustom)
+        game.powerUpUpdate()
       this.server.to(gameID).emit("draw", game.ball, game.player1, game.player2, game.powerUp);
     }
     if (game.isLose()) {

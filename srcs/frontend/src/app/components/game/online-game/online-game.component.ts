@@ -61,7 +61,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     //     (result) => { this.username = this.userService.Username = result.username })
     // else
     //   this.username = this.userService.Username;
-    console.log(this.powerUps)
     this.socket = io("http://localhost:3000/game");
     this.socket.emit("joinGame", this.powerUps);
   }
@@ -126,7 +125,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.ball.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
       this.drawLines();
       if (!this.finished)
-        this.drawBall(ball.x, ball.y);
+        this.drawBall(ball.x, ball.y, ball.radius);
       this.updatePaddles(player1.x, player1.y, player2.x, player2.y);
       this.drawPowerUp(powerUp)
     });
@@ -137,9 +136,9 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.player2.fillRect(P2x, P2y, 15, 150);
   }
 
-  drawBall(x: any, y: any) {
+  drawBall(x: any, y: any, radius: any) {
     this.ball.beginPath();
-    this.ball.arc(x, y, 10, 0, Math.PI * 2, true);
+    this.ball.arc(x, y, radius * 2, 0, Math.PI * 2, true);
     this.ball.closePath();
     this.ball.fill();
   }
@@ -152,10 +151,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   drawPowerUp(powerUp: any) {
-    console.log('pow')
     if (powerUp.show) {
-      console.log('up')
-      this.gameCanvas.nativeElement.getContext("2d").fillRect(40, 40, 50, 50);
+      this.gameCanvas.nativeElement.getContext("2d").fillRect(powerUp.x, powerUp.y, 100, 100);
     }
   }
 }
