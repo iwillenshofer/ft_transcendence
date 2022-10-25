@@ -9,6 +9,7 @@ import * as fs from 'fs';
 import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EncryptService } from 'src/services/encrypt.service';
+import { UserInterface } from './users.interface';
 
 /*
 ** This is basically a the Database... We will implement TypeORM.
@@ -33,6 +34,13 @@ export class UsersService {
 			return (UserDTO.fromEntity(ret));
 		});
 		return (results);
+	}
+
+	async getUser2(id: number): Promise<UserInterface | null> {
+
+		let user = await this.userRepository.findOneBy({ id: id });
+		console.log("getuser2" + user.username)
+		return (user);
 	}
 
 	async createUser(intra_id: number, login: string, displayname: string, image_url: string): Promise<UserDTO> {

@@ -7,10 +7,11 @@ import { ChatModule } from './chat/chat.module';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { UserEntity } from './users/users.entity';
-import { RoomEntity } from './chat/models/room.entity';
 import { AuthEntity } from './auth/models/auth.entity';
 import { GameModule } from './game/game.module';
+import { UserEntity } from './users/users.entity';
+import { RoomEntity } from './rooms/rooms.entity';
+import { RoomsModule } from './rooms/rooms.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { GameModule } from './game/game.module';
       synchronize: true,
     }),
     GameModule,
+    RoomsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

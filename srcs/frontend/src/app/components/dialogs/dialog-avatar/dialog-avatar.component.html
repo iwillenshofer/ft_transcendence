@@ -1,22 +1,22 @@
-<strong style="font-size: 20px;">Change your profile picture</strong><br>
-<em>
-    <small>Accepted formats : .jpg .jpeg .png</small><br>
-    <small>Max size : 2MB</small>
-</em>
-<p></p>
+<mat-card-title>Change avatar</mat-card-title>
+<mat-card>
+    <em>
+        <small>Accepted formats : .jpg .jpeg .png</small><br>
+        <small>Max size : 2MB</small>
+    </em>
+    <p></p>
 
-<div class="text-center">
-    <input class="form-control" type="file" accept=".jpg,.jpeg,.png" (change)="onChange($event)">
+    <div class="text-center">
+        <input class="form-control" type="file" accept=".jpg,.jpeg,.png" (change)="onChange($event)">
+        <mat-error *ngIf="true">{{ errorMsg }}</mat-error>
 
-    <button [disabled]="!editmode ? 'disabled' : null" (click)="onUpload()" class="btn btn-success">
-        Upload
-    </button>
-</div>
+        <br>
+        <div class="button">
+            <button mat-raised-button (click)="onUpload()" [disabled]="!editmode ? 'disabled' : null">Upload</button>
+        </div>
+    </div>
 
-<div class="container" *ngIf="loading">
-    <h3>Loading ...</h3>
-</div>
-
-<div class="errorMsg" *ngIf="errorMsg">
-    <em>{{ errorMsg }}</em>
-</div>
+    <div class="container" *ngIf="loading">
+        <h3>Loading ...</h3>
+    </div>
+</mat-card>

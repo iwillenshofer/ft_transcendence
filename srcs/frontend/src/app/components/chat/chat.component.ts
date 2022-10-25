@@ -4,7 +4,9 @@ import { MatSelectionListChange } from '@angular/material/list';
 import { PageEvent } from '@angular/material/paginator';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ChatService } from 'src/app/chat/chat.service';
-import { RoomInterface } from 'src/app/model/room.interface';
+import { RoomInterface, RoomPaginateInterface } from 'src/app/model/room.interface';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogNewRoomComponent } from '../dialogs/dialog-new-room/dialog-new-room.component';
 
 @Component({
   selector: 'app-chat',
@@ -13,16 +15,22 @@ import { RoomInterface } from 'src/app/model/room.interface';
 })
 export class ChatComponent implements OnInit, AfterViewInit {
 
-  rooms$ = this.chatService.getMyRooms();
+  rooms$: Observable<RoomPaginateInterface> = this.chatService.getMyRooms();
   selectedRoom = null;
+  Isrooms: boolean = false;
 
-  constructor(private chatService: ChatService) { }
+  constructor(
+    private chatService: ChatService,
+    public dialog: MatDialog) { }
 
   ngOnInit(): void {
+    this.chatService.emitPaginateRooms(10, 0);
+    this.Isrooms = this.rooms$.subscribe.length > 0;
   }
 
   ngAfterViewInit(): void {
     this.chatService.emitPaginateRooms(10, 0);
+    this.Isrooms = this.rooms$.subscribe.length > 0;
   }
 
   onSelectRoom(event: MatSelectionListChange) {
@@ -34,5 +42,12 @@ export class ChatComponent implements OnInit, AfterViewInit {
     console.log(pageEvent.pageIndex);
     this.chatService.emitPaginateRooms(pageEvent.pageSize, pageEvent.pageIndex);
   }
+
+  openDialogNewRoom() {
+    const dialogRef = this.dialog.open(DialogNewRoomComponent, {
+      data: { title: 'Change your profile picture' }
+    });
+  }
+
 
 }

@@ -4,11 +4,11 @@ import { TfaGuard } from 'src/auth/tfa/tfa.guard';
 import { Server, Socket } from 'socket.io';
 import { UsersService } from 'src/users/users.service';
 import { UserInterface } from 'src/users/users.interface';
-import { RoomService } from '../services/room/room.service';
-import { RoomInterface } from '../models/room.interface';
 import { PageInterface } from '../models/page.interface';
+import { RoomsService } from 'src/rooms/rooms.service';
+import { RoomInterface } from 'src/rooms/rooms.interface';
 
-@WebSocketGateway({ cors: true })
+@WebSocketGateway({ cors: true, path: '/chat' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @WebSocketServer()
@@ -17,7 +17,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private messages: string[] = [];
 
   constructor(private userService: UsersService,
-    private roomService: RoomService) { }
+    private roomService: RoomsService) { }
 
   //@UseGuards(TfaGuard)
   @SubscribeMessage('message')
@@ -32,11 +32,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @UseGuards(TfaGuard)
   async handleConnection(socket: Socket, ...args: any[]) {
-    // const user: UserInterface = await this.userService.getUser(+socket.handshake.headers.userid);
-    // const rooms = await this.roomService.getRoomsForUsers(user.id, { page: 1, limit: 10 });
-    // rooms.meta.currentPage -= 1;
-    // socket.data.user = user.username;
-    // return this.server.to(socket.id).emit('rooms', rooms);
+    const user: UserInterface = await this.userService.getUser(+socket.handshake.headers.userid);
+    const rooms = await this.roomService.getRoomsForUsers(user.id, { page: 1, limit: 10 });
+    rooms.meta.currentPage -= 1;
+    socket.data.user = user.username;
+    return this.server.to(socket.id).emit('rooms', rooms);
   }
 
   handleDisconnect(client: Socket, ...args: any[]) {

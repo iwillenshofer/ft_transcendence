@@ -1,4 +1,4 @@
-import { RoomEntity } from 'src/chat/models/room.entity';
+import { RoomEntity } from 'src/rooms/rooms.entity';
 import { BaseEntity, Entity, Unique, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany } from 'typeorm';
 
 @Entity({ name: 'User' })

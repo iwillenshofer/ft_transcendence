@@ -34,6 +34,14 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
+import { DialogNewRoomComponent } from './components/dialogs/dialog-new-room/dialog-new-room.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 @NgModule({
   declarations: [
@@ -54,6 +62,7 @@ import { MatListModule } from '@angular/material/list';
     ProfileComponent,
     CreateRoomComponent,
     OnlineGameComponent,
+    DialogNewRoomComponent,
   ],
   imports: [
     BrowserModule,
@@ -71,6 +80,13 @@ import { MatListModule } from '@angular/material/list';
     MatCardModule,
     MatButtonModule,
     MatListModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatIconModule,
+    MatSnackBarModule,
+    MatChipsModule,
+    MatAutocompleteModule,
+    MatToolbarModule
   ],
   providers: [
     {

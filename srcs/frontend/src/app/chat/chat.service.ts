@@ -7,12 +7,15 @@ import { UserInterface } from '../model/user.interface';
 import { RoomInterface } from '../model/room.interface';
 import { getSupportedInputTypes } from '@angular/cdk/platform';
 import { RoomPaginateInterface } from '../model/room.interface';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
 @Injectable()
 export class ChatService {
 
-  constructor(private socket: ChatSocket) { }
+  constructor(
+    private socket: ChatSocket,
+    private snackBar: MatSnackBar) { }
 
 
   sendMessage() {
@@ -26,17 +29,12 @@ export class ChatService {
     return this.socket.fromEvent<RoomPaginateInterface>('rooms');
   }
 
-  createRoom() {
-    const user1: UserInterface = {
-      id: 66498
-    };
-
-    const room: RoomInterface = {
-      name: 'testRoom',
-      users: [user1]
-    }
-
+  createRoom(room: RoomInterface) {
     this.socket.emit('createRoom', room);
+    this.snackBar.open(`Room ${room.name} created successfully`, 'Close', {
+      duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
+    });
+
   }
 
   emitPaginateRooms(limit: number, page: number) {

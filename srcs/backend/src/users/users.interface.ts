@@ -1,4 +1,4 @@
-import { RoomInterface } from "src/chat/models/room.interface";
+import { RoomInterface } from "src/rooms/rooms.interface";
 
 export interface UserInterface {
   id?: number;

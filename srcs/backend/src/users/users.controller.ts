@@ -27,6 +27,12 @@ export class UsersController {
         return of({ username: await this.userService.getUsername(req.user.id) })
     }
 
+    @UseGuards(JwtGuard)
+    @Get('getuser')
+    async getUser(@Request() req) {
+        return of({ username: await this.userService.getUser2(req.user.id) })
+    }
+
     @Get('is-username-taken/:username')
     async isUsernameTaken(@Param('username') username, @Request() req) {
         return of(await this.userService.isUsernameTaken(username))

@@ -50,7 +50,7 @@ export class DialogAvatarComponent implements OnInit {
     this.userService.uploadProfilePicture(this.file).subscribe(
       (event: any) => {
         if (typeof (event) === 'object') {
-          this.userService.ImageUrl = '/backend/' + event.imagePath
+          this.userService.setAvatar('/backend/' + event.imagePath)
           this.loading = false;
         }
       }
