@@ -15,6 +15,7 @@ export class GameComponent implements OnInit {
   powerUps: boolean = false;
   showLiveGames: boolean = false;
   liveGames: any;
+  toWatch: any;
 
   public ngOnInit() {
   }
@@ -41,5 +42,11 @@ export class GameComponent implements OnInit {
 
   toggleInstructions() {
     this.showLiveGames = false;
+  }
+
+  watchGame(gameID: any) {
+    this.menu = false;
+    this.mode = 'spec';
+    this.toWatch = gameID;
   }
 }

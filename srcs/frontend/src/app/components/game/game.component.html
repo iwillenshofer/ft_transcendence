@@ -21,9 +21,10 @@
     <div *ngIf="showLiveGames" class="instructions">
         <p>LIVE GAMES:</p>
         <p *ngIf="!liveGames">No one is playing right now!</p>
-        <!-- <p>[P] - Pause</p> -->
+        <button *ngFor="let game of liveGames" (click)="watchGame(game.gameID)">{{game.gameID}}</button>
     </div>
 </div>
-<app-online-game *ngIf="mode == 'random'" [mode]="mode" [powerUps]="powerUps"></app-online-game>
+<app-online-game *ngIf="mode == 'random' || mode == 'spec'" [specGame]="toWatch" [mode]="mode" [powerUps]="powerUps">
+</app-online-game>
 <!-- <app-offline-game *ngIf="mode == 'off' || mode == 'computer'"></app-offline-game> -->
 <div class="lines" *ngIf="mode != 'random' && mode != 'friend)'"></div>

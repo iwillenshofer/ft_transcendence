@@ -15,6 +15,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   private canvas: any;
   @Input() mode: any;
   @Input() powerUps: any;
+  @Input() specGame: any;
   private socket: any;
   private player1: boolean = false;
   private player2: boolean = false;
@@ -26,7 +27,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   finishedMessage: string = '';
   private gameID: string = '';
   username: string = '';
-  effect: number = 0;
 
   constructor(private userService: UserService) { }
 
@@ -35,20 +35,20 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       case 'w':
       case 'W':
       case 'ArrowUp':
-        if (this.player1 && this.player2)
+        if (this.player1 && this.player2 && this.mode != 'spec')
           this.socket.emit("move", this.gameID, "up");
         break;
 
       case 's':
       case 'S':
       case 'ArrowDown':
-        if (this.player1 && this.player2)
+        if (this.player1 && this.player2 && this.mode != 'spec')
           this.socket.emit("move", this.gameID, "down");
         break;
 
       case 'q':
       case 'Q':
-        if (this.finished || this.isWaiting) {
+        if (this.finished || this.isWaiting || this.mode == 'spec') {
           location.reload();
         }
         break;
@@ -65,7 +65,11 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     // else
     //   this.username = this.userService.Username;
     this.socket = io("http://localhost:3000/game");
-    this.socket.emit("joinGame", this.powerUps);
+    if (this.mode == 'spec') {
+      this.socket.emit("watchGame", this.specGame);
+    }
+    else
+      this.socket.emit("joinGame", this.powerUps);
   }
 
   ngOnDestroy() {
@@ -113,7 +117,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.finishedMessage = player2.message;
     }
     window.cancelAnimationFrame(this.currentAnimationFrameId as number);
-    this.socket.emit('endGame', this.gameID);
+    this.socket.disconnect();
   }
 
   draw() {
