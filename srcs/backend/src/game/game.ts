@@ -146,10 +146,8 @@ export class Game {
 
     powerUpRect() {
         let rect = {
-            // bottom: this.powerUp.y + 100,
-            bottom: 1280,
-            // top: this.powerUp.y,
-            top: 0,
+            bottom: this.powerUp.y + 100,
+            top: this.powerUp.y,
             right: this.powerUp.x + 100,
             left: this.powerUp.x,
         }

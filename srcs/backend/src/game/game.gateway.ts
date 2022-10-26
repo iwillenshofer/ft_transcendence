@@ -40,17 +40,17 @@ export class GameGateway {
     if (!game.player1.socket) {
       game.player1.socket = client.id;
       client.join(game.gameID);
-      console.log('player1 connected')
+      // console.log('player1 connected')
     }
     else if (!game.player2.socket) {
       game.player2.socket = client.id;
-      console.log('player2 connected')
+      // console.log('player2 connected')
       client.join(game.gameID)
       game.gameStart();
       this.server.to(game.gameID).emit("players", game.player1, game.player2, game.gameID);
     }
     else {
-      console.log('spec')
+      // console.log('spec')
       client.join(game.gameID)
     }
   }

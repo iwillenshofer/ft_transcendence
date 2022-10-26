@@ -31,28 +31,30 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   constructor(private userService: UserService) { }
 
   @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
-    switch (event.key) {
-      case 'w':
-      case 'W':
-      case 'ArrowUp':
-        this.socket.emit("move", this.gameID, "up");
-        break;
+    if (this.player1 && this.player2) {
+      switch (event.key) {
+        case 'w':
+        case 'W':
+        case 'ArrowUp':
+          this.socket.emit("move", this.gameID, "up");
+          break;
 
-      case 's':
-      case 'S':
-      case 'ArrowDown':
-        this.socket.emit("move", this.gameID, "down");
-        break;
+        case 's':
+        case 'S':
+        case 'ArrowDown':
+          this.socket.emit("move", this.gameID, "down");
+          break;
 
-      case 'q':
-      case 'Q':
-        if (this.finished || this.isWaiting) {
-          location.reload();
-        }
-        break;
+        case 'q':
+        case 'Q':
+          if (this.finished || this.isWaiting) {
+            location.reload();
+          }
+          break;
 
-      default:
-        break;
+        default:
+          break;
+      }
     }
   }
 
@@ -74,7 +76,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.socket.on("players", (player1: any, player2: any, gameID: string) => {
       if (player1) {
         this.player1 = this.gameCanvas.nativeElement.getContext("2d");
-        // this.player1.fillStyle = "white";
+        this.player1.fillStyle = "white";
         // this.player1.fillRect(20, 360, 10, 100);
       }
       if (player2) {
@@ -124,10 +126,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   draw() {
     this.socket.on("draw", (ball: any, player1: any, player2: any, powerUp: any) => {
       this.ball.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
-      if (powerUp.active)
-        this.ball.fillStyle = this.colorPowerUp();
-      else
-        this.ball.fillStyle = "white";
       this.drawLines();
       if (!this.finished)
         this.drawBall(ball.x, ball.y, ball.radius);
@@ -159,21 +157,23 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     let ctx = this.gameCanvas.nativeElement.getContext("2d");
     if (powerUp.show) {
       // ctx.lineWidth = "5";
-      ctx.rect(powerUp.x, powerUp.y, 100, 100);
-      ctx.fill();
+      // ctx.fillRect(powerUp.x, powerUp.y, 100, 100);
+      // ctx.fill();
+      var img = document.getElementById("powerUp");
+      ctx.drawImage(img, powerUp.x, powerUp.y, 100, 100);
     }
   }
 
-  colorPowerUp(): string {
-    if (this.effect == 10000)
-      this.effect = 1;
-    else
-      this.effect++;
-    if (this.effect > 0 && this.effect <= 3333)
-      return "blue";
-    if (this.effect > 3333 && this.effect <= 6666)
-      return "green";
-    else
-      return "red";
-  }
+  // colorPowerUp(): string {
+  //   if (this.effect == 10000)
+  //     this.effect = 1;
+  //   else
+  //     this.effect++;
+  //   if (this.effect > 0 && this.effect <= 3333)
+  //     return "blue";
+  //   if (this.effect > 3333 && this.effect <= 6666)
+  //     return "green";
+  //   else
+  //     return "red";
+  // }
 }
