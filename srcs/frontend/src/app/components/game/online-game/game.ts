@@ -76,7 +76,7 @@ export class Game {
             this.handleLose();
     }
 
-    move(player, command) {
+    move(player: { socket: string; y: number; }, command: any) {
         let height: any;
         if (player.socket == this.player1.socket)
             height = this.player1.height;
@@ -162,7 +162,7 @@ export class Game {
         return rect;
     }
 
-    isCollision(rect1, rect2) {
+    isCollision(rect1: { bottom: any; top: any; right: any; left: any; }, rect2: { bottom: any; top: any; right: any; left: any; }) {
         return rect1.left <= rect2.right && rect1.right >= rect2.left && rect1.top <= rect2.bottom && rect1.bottom >= rect2.top;
     }
 
@@ -172,7 +172,7 @@ export class Game {
     }
 
     handleLose() {
-        let ballSide;
+        let ballSide: any;
         const rect = this.ballRect();
         if (rect.right >= this.table.width) {
             this.player1.score += 1;

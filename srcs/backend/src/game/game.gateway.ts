@@ -61,7 +61,7 @@ export class GameGateway {
     }
     client.join(game.gameID)
     if (game.player1.socket && game.player2.socket)
-      this.server.to(game.gameID).emit("players", game.player1, game.player2, game.gameID);
+      this.server.to(game.gameID).emit("players", game.player1.socket, game.player2.socket, game.gameID);
   }
 
   @SubscribeMessage('move')
@@ -101,7 +101,6 @@ export class GameGateway {
         this.games.splice(Number(gameID), 1);
       }
     }
-    // this.server.to(game.gameID).emit("score", game.player1, game.player2, game.finished);
   }
 
   findGameBySocketId(socketID: string) {
@@ -115,25 +114,15 @@ export class GameGateway {
 
   @SubscribeMessage('gameUpdate')
   update(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    let gameID = data[0];
-    let time = data[1];
+    let gameID = data;
     const game = this.games[gameID];
-    if (game.lastTime) {
-      game.ballUpdate(time);
-      if (game.isCustom)
-        game.powerUpUpdate()
-      this.server.to(gameID).emit("draw", game.ball, game.player1, game.player2, game.powerUp);
+    console.log('2')
+    if (client.id == game.player1.socket) {
+      console.log('1')
+      game.update();
     }
-    if (game.isLose()) {
-      game.handleLose();
-    }
-    this.server.to(gameID).emit("score", game.player1, game.player2, game.finished);
-    game.lastTime = Number(time);
-  }
-
-  @SubscribeMessage('endGame')
-  endGame(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-
+    this.server.to(gameID).emit("draw", game.ball, game.player1, game.player2, game.powerUp);
+    // this.server.to(gameID).emit("score", game.player1, game.player2, game.finished);
   }
 }
 

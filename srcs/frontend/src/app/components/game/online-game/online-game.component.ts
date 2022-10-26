@@ -17,8 +17,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   @Input() powerUps: any;
   @Input() specGame: any;
   private socket: any;
-  private player1: boolean = false;
-  private player2: boolean = false;
+  private player1: any;
+  private player2: any;
   isWaiting: boolean = true;
   scoreP1: number = 0;
   scoreP2: number = 0;
@@ -80,12 +80,13 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.canvas = this.gameCanvas.nativeElement.getContext("2d");
     this.canvas.fillStyle = "white";
     this.socket.on("players", (player1: any, player2: any, gameID: string) => {
+      console.log('players');
       if (player1)
-        this.player1 = true;
+        this.player1 = player1;
       if (player2)
-        this.player2 = true;
+        this.player2 = player2;
+      this.gameID = gameID;
       if (this.player1 && this.player2) {
-        this.gameID = gameID;
         this.isWaiting = false;
         this.update();
       }
@@ -93,21 +94,22 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   update() {
-    this.socket.emit("gameUpdate", this.gameID, 1);
+    if (this.socket.id == this.player1)
+      this.socket.emit("gameUpdate", this.gameID);
     this.draw()
-    this.updateScore();
+    // this.updateScore();
     this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
   }
 
-  updateScore() {
-    this.socket.on("score", (player1: any, player2: any, finished: boolean) => {
-      this.scoreP1 = player1.score;
-      this.scoreP2 = player2.score;
-      this.finished = finished;
-      if (this.finished)
-        this.finish(player1, player2);
-    })
-  }
+  // updateScore() {
+  //   this.socket.on("score", (player1: any, player2: any, finished: boolean) => {
+  //     this.scoreP1 = player1.score;
+  //     this.scoreP2 = player2.score;
+  //     this.finished = finished;
+  //     if (this.finished)
+  //       this.finish(player1, player2);
+  //   })
+  // }
 
   finish(player1: any, player2: any) {
     if (this.socket.id == player1.socket) {
