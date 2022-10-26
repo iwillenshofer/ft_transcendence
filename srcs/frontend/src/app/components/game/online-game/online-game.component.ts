@@ -10,17 +10,17 @@ import { UserService } from 'src/app/services/user.service';
 })
 export class OnlineGameComponent implements OnInit, OnDestroy {
 
-  @Input() mode: any;
-  @Input() powerUps: any;
   @ViewChild("game")
   private gameCanvas!: ElementRef;
+  private canvas: any;
+  @Input() mode: any;
+  @Input() powerUps: any;
   private socket: any;
-  private player1: any;
-  private player2: any;
+  private player1: boolean = false;
+  private player2: boolean = false;
   isWaiting: boolean = true;
   scoreP1: number = 0;
   scoreP2: number = 0;
-  private ball: any;
   currentAnimationFrameId?: number;
   finished: boolean = false;
   finishedMessage: string = '';
@@ -73,22 +73,19 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   public ngAfterViewInit() {
+    this.canvas = this.gameCanvas.nativeElement.getContext("2d");
+    this.canvas.fillStyle = "white";
     this.socket.on("players", (player1: any, player2: any, gameID: string) => {
-      if (player1) {
-        this.player1 = this.gameCanvas.nativeElement.getContext("2d");
-        this.player1.fillStyle = "white";
-      }
+      if (player1)
+        this.player1 = true;
       if (player2)
-        this.player2 = this.gameCanvas.nativeElement.getContext("2d");
-      this.drawLines();
+        this.player2 = true;
       if (this.player1 && this.player2) {
         this.gameID = gameID;
         this.isWaiting = false;
-        this.ball = this.gameCanvas.nativeElement.getContext("2d");
         this.update();
       }
     })
-
   }
 
   update() {
@@ -121,7 +118,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
 
   draw() {
     this.socket.on("draw", (ball: any, player1: any, player2: any, powerUp: any) => {
-      this.ball.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+      this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
       this.drawLines();
       if (!this.finished)
         this.drawBall(ball.x, ball.y, ball.radius);
@@ -131,15 +128,15 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   updatePaddles(P1: any, P2: any) {
-    this.player1.fillRect(P1.x, P1.y, P1.width, P1.height);
-    this.player2.fillRect(P2.x, P2.y, P2.width, P2.height);
+    this.canvas.fillRect(P1.x, P1.y, P1.width, P1.height);
+    this.canvas.fillRect(P2.x, P2.y, P2.width, P2.height);
   }
 
   drawBall(x: any, y: any, radius: any) {
-    this.ball.beginPath();
-    this.ball.arc(x, y, radius * 2, 0, Math.PI * 2, true);
-    this.ball.closePath();
-    this.ball.fill();
+    this.canvas.beginPath();
+    this.canvas.arc(x, y, radius * 2, 0, Math.PI * 2, true);
+    this.canvas.closePath();
+    this.canvas.fill();
   }
 
   drawLines() {
@@ -152,24 +149,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   drawPowerUp(powerUp: any) {
     let ctx = this.gameCanvas.nativeElement.getContext("2d");
     if (powerUp.show) {
-      // ctx.lineWidth = "5";
-      // ctx.fillRect(powerUp.x, powerUp.y, 100, 100);
-      // ctx.fill();
       var img = document.getElementById("powerUp");
       ctx.drawImage(img, powerUp.x, powerUp.y, 100, 100);
     }
   }
-
-  // colorPowerUp(): string {
-  //   if (this.effect == 10000)
-  //     this.effect = 1;
-  //   else
-  //     this.effect++;
-  //   if (this.effect > 0 && this.effect <= 3333)
-  //     return "blue";
-  //   if (this.effect > 3333 && this.effect <= 6666)
-  //     return "green";
-  //   else
-  //     return "red";
-  // }
 }
