@@ -26,6 +26,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   finishedMessage: string = '';
   private gameID: string = '';
   username: string = '';
+  effect: number = 0;
 
   constructor(private userService: UserService) { }
 
@@ -73,12 +74,12 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.socket.on("players", (player1: any, player2: any, gameID: string) => {
       if (player1) {
         this.player1 = this.gameCanvas.nativeElement.getContext("2d");
-        this.player1.fillStyle = "white";
+        // this.player1.fillStyle = "white";
         // this.player1.fillRect(20, 360, 10, 100);
       }
       if (player2) {
         this.player2 = this.gameCanvas.nativeElement.getContext("2d");
-        this.player2.fillStyle = "white";
+        // this.player2.fillStyle = "white";
         // this.player2.fillRect(1260, 360, 10, 100);
       }
       this.drawLines();
@@ -123,17 +124,21 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   draw() {
     this.socket.on("draw", (ball: any, player1: any, player2: any, powerUp: any) => {
       this.ball.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+      if (powerUp.active)
+        this.ball.fillStyle = this.colorPowerUp();
+      else
+        this.ball.fillStyle = "white";
       this.drawLines();
       if (!this.finished)
         this.drawBall(ball.x, ball.y, ball.radius);
-      this.updatePaddles(player1.x, player1.y, player2.x, player2.y);
+      this.updatePaddles(player1, player2);
       this.drawPowerUp(powerUp)
     });
   }
 
-  updatePaddles(P1x: number, P1y: number, P2x: number, P2y: number) {
-    this.player1.fillRect(P1x, P1y, 15, 150);
-    this.player2.fillRect(P2x, P2y, 15, 150);
+  updatePaddles(P1: any, P2: any) {
+    this.player1.fillRect(P1.x, P1.y, P1.width, P1.height);
+    this.player2.fillRect(P2.x, P2.y, P2.width, P2.height);
   }
 
   drawBall(x: any, y: any, radius: any) {
@@ -151,8 +156,24 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   drawPowerUp(powerUp: any) {
+    let ctx = this.gameCanvas.nativeElement.getContext("2d");
     if (powerUp.show) {
-      this.gameCanvas.nativeElement.getContext("2d").fillRect(powerUp.x, powerUp.y, 100, 100);
+      // ctx.lineWidth = "5";
+      ctx.rect(powerUp.x, powerUp.y, 100, 100);
+      ctx.fill();
     }
+  }
+
+  colorPowerUp(): string {
+    if (this.effect == 10000)
+      this.effect = 1;
+    else
+      this.effect++;
+    if (this.effect > 0 && this.effect <= 3333)
+      return "blue";
+    if (this.effect > 3333 && this.effect <= 6666)
+      return "green";
+    else
+      return "red";
   }
 }

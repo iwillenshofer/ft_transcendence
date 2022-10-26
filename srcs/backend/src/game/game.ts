@@ -7,7 +7,9 @@ interface IPlayer {
     x: number,
     y: number,
     score: number,
-    message: string
+    message: string,
+    width: number,
+    height: number
 }
 
 export class Game {
@@ -21,24 +23,24 @@ export class Game {
         width: 1280,
         height: 720
     };
-    paddle = {
-        width: 15,
-        height: 150
-    }
     gameID: string;
     player1: IPlayer = {
         socket: '',
         x: 0,
         y: 0,
         score: 0,
-        message: ''
+        message: '',
+        width: 15,
+        height: 150,
     };
     player2: IPlayer = {
         socket: '',
         x: 0,
         y: 0,
         score: 0,
-        message: ''
+        message: '',
+        width: 15,
+        height: 150,
     };
     ball = {
         x: 0,
@@ -50,7 +52,8 @@ export class Game {
         y: 0,
         time: 0,
         show: false,
-        type: 0
+        type: 0,
+        active: false,
     }
     ballDirection: { x: number; y: number } = { x: 0.0, y: 0.0 };
     velocity: number = INITIAL_VELOCITY;
@@ -66,7 +69,12 @@ export class Game {
     }
 
     move(player, command) {
-        if (player.socket == this.player1.socket || player.socket == this.player2.socket) {
+        let height: any;
+        if (player.socket == this.player1.socket)
+            height = this.player1.height;
+        if (player.socket == this.player2.socket)
+            height = this.player2.height;
+        if (height) {
             switch (command) {
                 case "up":
                     if (player.y > 0) {
@@ -74,7 +82,7 @@ export class Game {
                     }
                     break;
                 case "down":
-                    if (player.y < (this.table.height - this.paddle.height))
+                    if (player.y < (this.table.height - height))
                         player.y += 30;
                     break;
             }
@@ -108,9 +116,9 @@ export class Game {
 
     rectP1() {
         let rect = {
-            bottom: this.player1.y + this.paddle.height,
+            bottom: this.player1.y + this.player1.height,
             top: this.player1.y,
-            right: this.player1.x + this.paddle.width,
+            right: this.player1.x + this.player1.width,
             left: this.player1.x,
         }
         return rect;
@@ -118,9 +126,9 @@ export class Game {
 
     rectP2() {
         let rect = {
-            bottom: this.player2.y + this.paddle.height,
+            bottom: this.player2.y + this.player2.height,
             top: this.player2.y,
-            right: this.player2.x + this.paddle.width,
+            right: this.player2.x + this.player2.width,
             left: this.player2.x,
         }
         return rect;
@@ -178,6 +186,7 @@ export class Game {
             this.player1.message = 'Loser';
             this.player2.message = 'Winner';
         }
+        this.resetPowers();
         this.resetPlayersPosition()
         this.resetBall();
         this.ballDirection.x *= ballSide;
@@ -210,9 +219,16 @@ export class Game {
 
     resetPlayersPosition() {
         this.player1.x = 20;
-        this.player1.y = (this.table.height / 2) - (this.paddle.height / 2);
+        this.player1.y = (this.table.height / 2) - (this.player1.height / 2);
         this.player2.x = this.table.width - 30; // - 10 da margin
-        this.player2.y = (this.table.height / 2) - (this.paddle.height / 2);
+        this.player2.y = (this.table.height / 2) - (this.player2.height / 2);
+    }
+
+    resetPlayerPosition(player: number) {
+        if (player == 1)
+            this.player1.y = (this.table.height / 2) - (this.player1.height / 2);
+        else
+            this.player2.y = (this.table.height / 2) - (this.player2.height / 2);
     }
 
     powerUpUpdate() {
@@ -221,12 +237,12 @@ export class Game {
             this.resetPowerUp();
             this.powerUp.show = true;
         }
-        // if (this.powerUp.show && this.powerUp.time > 5000) {
-        //     this.resetPowerUp();
-        // }
+        if (this.powerUp.show && this.powerUp.time > 5000) {
+            this.resetPowerUp();
+        }
         if (this.powerUp.show && this.isCollision(this.ballRect(), this.powerUpRect())) {
             this.resetPowerUp();
-            // this.powerUp.time = -1000;
+            this.powerUp.time = -3000;
             this.givePowerUp();
         }
     }
@@ -236,18 +252,36 @@ export class Game {
         this.powerUp.y = this.randomNumberBetween(0, this.table.height - 100);
         this.powerUp.time = 0;
         this.powerUp.show = false;
+        this.powerUp.active = false;
+    }
+
+    resetPowers() {
+        this.ball.radius = 5;
+        this.player1.height = 150;
+        this.player2.height = 150;
+        this.resetPowerUp();
     }
 
     givePowerUp() {
-        console.log('player', this.lastTouch)
+        this.powerUp.active = true;
         let power = Math.round(this.randomNumberBetween(1, 3))
-        this.powerUp.type = 1;
-        this.ball.radius = 20;
-        if (power == 1)
-            console.log('1');
-        else if (power == 2)
-            console.log('2');
-        else if (power == 3)
-            console.log('3');
+        let player;
+        if (this.lastTouch == 1)
+            player = this.player1
+        else
+            player = this.player2
+        if (power == 1) {
+            this.powerUp.type = power;
+            this.ball.radius = 20;
+        }
+        else if (power == 2) {
+            this.powerUp.type = power;
+            player.height = 500;
+            this.resetPlayerPosition(this.lastTouch);
+        }
+        else if (power == 3) {
+            this.powerUp.type = power;
+            player.height = 50;
+        }
     }
 }
