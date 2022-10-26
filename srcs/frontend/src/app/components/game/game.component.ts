@@ -1,5 +1,5 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { MatCheckboxModule } from '@angular/material/checkbox'
+import { Component, OnInit } from '@angular/core';
+import io from "socket.io-client";
 
 @Component({
   selector: 'app-game',
@@ -8,10 +8,13 @@ import { MatCheckboxModule } from '@angular/material/checkbox'
 })
 export class GameComponent implements OnInit {
 
+  private socket: any;
   menu: boolean = true;
   paused: boolean = false;
   mode: string = '';
   powerUps: boolean = false;
+  showLiveGames: boolean = false;
+  liveGames: any;
 
   public ngOnInit() {
   }
@@ -23,5 +26,20 @@ export class GameComponent implements OnInit {
 
   togglePowerUps() {
     this.powerUps = !this.powerUps;
+  }
+
+  toggleLiveGames() {
+    this.showLiveGames = true;
+    this.socket = io("http://localhost:3000/game");
+    this.socket.emit("liveGames");
+    this.socket.on("games", (games: any) => {
+      if (games.length > 0)
+        this.liveGames = games;
+    });
+    console.log(this.liveGames);
+  }
+
+  toggleInstructions() {
+    this.showLiveGames = false;
   }
 }

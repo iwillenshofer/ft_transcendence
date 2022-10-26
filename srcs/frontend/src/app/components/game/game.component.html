@@ -4,16 +4,23 @@
         <p class="menu__title">Play</p>
         <button (click)="startGame('random')">vs Random</button>
         <button>vs Friend</button>
-        <button>Live Games</button>
+        <button (click)="toggleLiveGames()">Live Games</button>
+        <button (click)="toggleInstructions()">Instructions</button>
+
         <!-- <button>Offline friend</button> -->
         <!-- <button>Offline computer</button> -->
         <!-- <mat-checkbox></mat-checkbox> -->
         <input type="checkbox" (change)="togglePowerUps()">Enable power-ups
     </div>
-    <div class="instructions">
+    <div *ngIf="!showLiveGames" class="instructions">
         <p>INSTRUCTIONS:</p>
         <p>[W] or [Up] - Move up</p>
         <p>[S] or [Down] - Move down</p>
+        <!-- <p>[P] - Pause</p> -->
+    </div>
+    <div *ngIf="showLiveGames" class="instructions">
+        <p>LIVE GAMES:</p>
+        <p *ngIf="!liveGames">No one is playing right now!</p>
         <!-- <p>[P] - Pause</p> -->
     </div>
 </div>
