@@ -31,30 +31,30 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   constructor(private userService: UserService) { }
 
   @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
-    if (this.player1 && this.player2) {
-      switch (event.key) {
-        case 'w':
-        case 'W':
-        case 'ArrowUp':
+    switch (event.key) {
+      case 'w':
+      case 'W':
+      case 'ArrowUp':
+        if (this.player1 && this.player2)
           this.socket.emit("move", this.gameID, "up");
-          break;
+        break;
 
-        case 's':
-        case 'S':
-        case 'ArrowDown':
+      case 's':
+      case 'S':
+      case 'ArrowDown':
+        if (this.player1 && this.player2)
           this.socket.emit("move", this.gameID, "down");
-          break;
+        break;
 
-        case 'q':
-        case 'Q':
-          if (this.finished || this.isWaiting) {
-            location.reload();
-          }
-          break;
+      case 'q':
+      case 'Q':
+        if (this.finished || this.isWaiting) {
+          location.reload();
+        }
+        break;
 
-        default:
-          break;
-      }
+      default:
+        break;
     }
   }
 
@@ -77,13 +77,9 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       if (player1) {
         this.player1 = this.gameCanvas.nativeElement.getContext("2d");
         this.player1.fillStyle = "white";
-        // this.player1.fillRect(20, 360, 10, 100);
       }
-      if (player2) {
+      if (player2)
         this.player2 = this.gameCanvas.nativeElement.getContext("2d");
-        // this.player2.fillStyle = "white";
-        // this.player2.fillRect(1260, 360, 10, 100);
-      }
       this.drawLines();
       if (this.player1 && this.player2) {
         this.gameID = gameID;
