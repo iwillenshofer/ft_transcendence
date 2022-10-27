@@ -351,3 +351,7 @@ export function setMode(mod: any) {
 export function setCustom(custom: boolean) {
     isCustom = custom;
 }
+
+export function stop() {
+    velocity = 0;
+}

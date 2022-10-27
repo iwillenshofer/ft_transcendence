@@ -54,9 +54,11 @@ export class GameGateway {
     const game = this.games[gameIndex]
     if (!game.player1.socket) {
       game.player1.socket = client.id;
+      console.log('player1 connected')
     }
     else if (!game.player2.socket) {
       game.player2.socket = client.id;
+      console.log('player2 connected')
     }
     client.join(game.gameID)
     if (game.player1.socket && game.player2.socket)
@@ -103,23 +105,16 @@ export class GameGateway {
     const gameID = this.findGameBySocketId(client.id);
     const game = this.games[gameID]
     if (game) {
-      if (client.id == game.player1.socket) {
-        game.player1.message = 'Loser';
-        game.player2.message = 'Winner';
-        if (!game.player2.socket) {
-          delete this.games[game.gameID];
-          this.games.splice(Number(game.gameID), 1);
-        }
-      }
-      if (client.id == game.player2.socket) {
-        game.player1.message = 'Winner';
-        game.player2.message = 'Loser';
+      if (client.id == game.player1.socket && !game.player2.socket) {
+        delete this.games[game.gameID];
+        this.games.splice(Number(game.gameID), 1);
       }
       if (!game.player1.socket && !game.player2.socket) {
         delete this.games[gameID];
         this.games.splice(Number(gameID), 1);
       }
     }
+    this.server.to(gameID.toString()).emit("endGame");
   }
 
   findGameBySocketId(socketID: string) {

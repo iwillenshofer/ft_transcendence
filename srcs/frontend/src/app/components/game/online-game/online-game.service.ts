@@ -62,6 +62,10 @@ export class OnlineGameService {
     game.setCustom(custom);
   }
 
+  stopGame() {
+    game.stop();
+  }
+
   // getScore() {
   //   return [game.player1.score, game.player2.score]
   // }

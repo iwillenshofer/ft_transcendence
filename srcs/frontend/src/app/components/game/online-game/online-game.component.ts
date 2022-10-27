@@ -59,8 +59,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.canvas.fillStyle = "white";
     this.socket.on("players", (player1: any, player2: any, gameID: string) => {
       this.setPlayers(player1, player2, gameID)
+      // this.gameService.reset()
       this.isWaiting = false;
-      this.gameService.reset()
       this.update();
     })
   }
@@ -68,8 +68,9 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   setPlayers(player1: any, player2: any, gameID: string) {
     if (player1)
       this.gameService.setP1Socket(player1);
-    if (player2)
+    if (player2) {
       this.gameService.setP2Socket(player2);
+    }
     if (player1 && player2) {
       this.gameService.setGameID(gameID);
       this.gameService.setGameSocket(this.socket);
@@ -106,13 +107,36 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     })
   }
 
+  endGame() {
+    this.socket.on("endGame", () => {
+      console.log('stop')
+      this.finished = true;
+      this.finish();
+    })
+  }
+
   finish() {
-    if (this.socket.id == this.player1.socket) {
-      this.finishedMessage = this.player1.message;
+    console.log('stop2')
+
+    if (this.socket.id == this.player1) {
+      if (this.scoreP1 > this.scoreP2)
+        this.finishedMessage = 'Winner';
+      else
+        this.finishedMessage = 'Loser'
     }
-    if (this.socket.id == this.player2.socket) {
-      this.finishedMessage = this.player2.message;
+    else if (this.socket.id == this.player2) {
+      if (this.scoreP2 > this.scoreP1)
+        this.finishedMessage = 'Winner';
+      else
+        this.finishedMessage = 'Loser'
     }
+    else {
+      if (this.scoreP1 > this.scoreP2)
+        this.finishedMessage = 'Player1 Won';
+      else
+        this.finishedMessage = 'Player2 Won'
+    }
+    this.gameService.stopGame();
     window.cancelAnimationFrame(this.currentAnimationFrameId as number);
     this.socket.disconnect();
   }
