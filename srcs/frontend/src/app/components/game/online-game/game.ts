@@ -176,17 +176,25 @@ function handleLose() {
     if (rect.right >= table.width) {
         player1.score += 1;
         isGameFinished();
-        if (isP1) {
+        if (isP1)
             _socket.emit('score', gameID, player1.score, player2.score, finished);
-        }
+        _socket.on("updateScore", (scoreP1: any, scoreP2: any, finish: any) => {
+            player1.score = scoreP1;
+            player2.score = scoreP2;
+            finished = finish;
+        })
         ballSide = -1;
     }
     if (rect.left <= 0) {
         player2.score += 1;
-        isGameFinished();
-        if (isP1) {
+        console.log('left')
+        if (isP1)
             _socket.emit('score', gameID, player1.score, player2.score, finished);
-        }
+        _socket.on("updateScore", (scoreP1: any, scoreP2: any, finish: any) => {
+            player1.score = scoreP1;
+            player2.score = scoreP2;
+            finished = finish;
+        })
         ballSide = 1;
     }
     resetPowers();
@@ -219,12 +227,12 @@ function resetBall() {
 function resetScore() {
     player1.score = 0;
     player2.score = 0;
+    _socket.emit('score', gameID, player1.score, player2.score, finished);
 }
 
 function syncBall() {
-    if (isP1) {
+    if (isP1)
         _socket.emit('randomBall', gameID, ball, ballDirection);
-    }
     if (!isP1) {
         _socket.on('ball', (newBall: any, ballDir: any) => {
             ball = newBall;

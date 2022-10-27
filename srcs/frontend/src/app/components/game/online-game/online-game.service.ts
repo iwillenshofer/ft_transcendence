@@ -35,8 +35,9 @@ export class OnlineGameService {
     game.update();
   }
 
-  reset() {
-    game.gameStart();
+  reset(socket: any) {
+    if (socket == game.player1.socket || socket == game.player2.socket)
+      game.gameStart();
   }
 
   isP1(socket: any) {
@@ -64,6 +65,19 @@ export class OnlineGameService {
 
   stopGame() {
     game.stop();
+  }
+
+  getFinalMessage(disconnected: any): string {
+    if (disconnected) {
+      if (game.player1.socket == disconnected)
+        return 'Player2 won by abandonment'
+      else if (game.player1.socket == disconnected)
+        return 'Player1 won by abandonment'
+    }
+    if (game.player1.score > game.player2.score)
+      return 'Player1 Won';
+    else
+      return 'Player2 Won';
   }
 
   // getScore() {

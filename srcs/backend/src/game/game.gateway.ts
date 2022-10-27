@@ -106,7 +106,7 @@ export class GameGateway {
     const gameID = this.findGameBySocketId(client.id);
     const game = this.games[gameID]
     if (game && (client.id == game.player1.socket || client.id == game.player2.socket)) {
-      this.server.to(gameID.toString()).emit("endGame");
+      this.server.to(gameID.toString()).emit("endGame", client.id);
       if (client.id == game.player1.socket && !game.player2.socket) {
         game.player1.socket = null;
         delete this.games[game.gameID];
@@ -138,6 +138,8 @@ export class GameGateway {
     let scoreP2 = data[2];
     let finished = data[3];
     this.games[gameID].finished = finished;
+    this.games[gameID].player1.score = scoreP1;
+    this.games[gameID].player2.score = scoreP2;
     this.server.to(gameID).emit("updateScore", scoreP1, scoreP2, finished);
   }
 

@@ -20,7 +20,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   isWaiting: boolean = true;
   currentAnimationFrameId?: number;
   finishedMessage: string = '';
-  private gameID: string = '';
   username: string = '';
   scoreP1: number = 0;
   scoreP2: number = 0;
@@ -35,11 +34,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // if (this.userService.Username == '')
-    //   this.userService.getUsernameFromServer().subscribe(
-    //     (result) => { this.username = this.userService.Username = result.username })
-    // else
-    //   this.username = this.userService.Username;
     this.socket = io("http://localhost:3000/game");
     if (this.mode == 'spec') {
       this.socket.emit("watchGame", this.specGame);
@@ -59,8 +53,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.canvas.fillStyle = "white";
     this.socket.on("players", (player1: any, player2: any, gameID: string) => {
       this.setPlayers(player1, player2, gameID)
-      // this.gameService.reset()
       this.isWaiting = false;
+      this.gameService.reset(this.socket.id)
       this.update();
     })
   }
@@ -77,7 +71,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.gameService.isP1(this.socket.id);
       this.player1 = this.gameService.getPlayer1();
       this.player2 = this.gameService.getPlayer2();
-      this.gameID = gameID;
     }
   }
 
@@ -104,39 +97,19 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.scoreP2 = scoreP2;
       this.finished = finished;
       if (finished)
-        this.finish();
+        this.finish(0);
     })
   }
 
   endGame() {
-    this.socket.on("endGame", () => {
-      console.log('stop')
+    this.socket.on("endGame", (disconnected: any) => {
       this.finished = true;
-      this.finish();
+      this.finish(disconnected);
     })
   }
 
-  finish() {
-    console.log('stop2')
-
-    if (this.socket.id == this.player1) {
-      if (this.scoreP1 > this.scoreP2)
-        this.finishedMessage = 'Winner';
-      else
-        this.finishedMessage = 'Loser'
-    }
-    else if (this.socket.id == this.player2) {
-      if (this.scoreP2 > this.scoreP1)
-        this.finishedMessage = 'Winner';
-      else
-        this.finishedMessage = 'Loser'
-    }
-    else {
-      if (this.scoreP1 > this.scoreP2)
-        this.finishedMessage = 'Player1 Won';
-      else
-        this.finishedMessage = 'Player2 Won'
-    }
+  finish(disconnected: any) {
+    this.finishedMessage = this.gameService.getFinalMessage(disconnected);
     this.gameService.stopGame();
     window.cancelAnimationFrame(this.currentAnimationFrameId as number);
     this.socket.disconnect();
