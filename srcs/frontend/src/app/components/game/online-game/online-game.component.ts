@@ -1,3 +1,4 @@
+import { AuthService } from 'src/app/auth/auth.service';
 import { Component, ViewChild, ElementRef, OnInit, HostListener, Input, OnDestroy } from '@angular/core';
 import io from "socket.io-client";
 import { OnlineGameService } from './online-game.service';
@@ -20,7 +21,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   isWaiting: boolean = true;
   currentAnimationFrameId?: number;
   finishedMessage: string = '';
-  username: string = '';
   scoreP1: number = 0;
   scoreP2: number = 0;
   finished: boolean = false;
@@ -29,7 +29,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   player2: any;
   ball: any;
 
-  constructor(public gameService: OnlineGameService) {
+  constructor(public gameService: OnlineGameService, private auth: AuthService) {
     this.ball = gameService.getBall();
   }
 
@@ -38,8 +38,11 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     if (this.mode == 'spec') {
       this.socket.emit("watchGame", this.specGame);
     }
-    else
-      this.socket.emit("joinGame", this.powerUps);
+    else {
+      this.auth.getUser().then(data => {
+        this.socket.emit("joinGame", this.powerUps, data.username);
+      });
+    }
     this.gameService.setMode(this.mode)
     this.gameService.setCustom(this.powerUps)
   }
@@ -60,12 +63,16 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   setPlayers(player1: any, player2: any, gameID: string) {
-    if (player1)
-      this.gameService.setP1Socket(player1);
-    if (player2) {
-      this.gameService.setP2Socket(player2);
+
+    if (player1.socket) {
+      this.gameService.setP1Socket(player1.socket);
+      this.gameService.setP1Username(player1.username)
     }
-    if (player1 && player2) {
+    if (player2.socket) {
+      this.gameService.setP2Socket(player2.socket);
+      this.gameService.setP2Username(player2.username)
+    }
+    if (player1.socket && player2.socket) {
       this.gameService.setGameID(gameID);
       this.gameService.setGameSocket(this.socket);
       this.gameService.isP1(this.socket.id);

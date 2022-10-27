@@ -27,14 +27,15 @@ export class GameGateway {
 
   @SubscribeMessage('watchGame')
   watchGame(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    this.setPlayers(client, data);
+    this.setPlayers(client, data, '');
   }
 
   @SubscribeMessage('joinGame')
   joinGame(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    let customGame = data;
+    let customGame = data[0];
+    let username = data[1];
     let gameIndex = this.checkGameArray(customGame);
-    this.setPlayers(client, gameIndex);
+    this.setPlayers(client, gameIndex, username);
   }
 
   checkGameArray(customGame: string) {
@@ -51,19 +52,19 @@ export class GameGateway {
     return this.games.length - 1;
   }
 
-  setPlayers(client, gameIndex) {
+  setPlayers(client, gameIndex, username) {
     const game = this.games[gameIndex]
     if (!game.player1.socket) {
       game.player1.socket = client.id;
-      console.log('player1 connected')
+      game.player1.username = username;
     }
     else if (!game.player2.socket) {
       game.player2.socket = client.id;
-      console.log('player2 connected')
+      game.player2.username = username;
     }
     client.join(game.gameID)
     if (game.player1.socket && game.player2.socket)
-      this.server.to(game.gameID).emit("players", game.player1.socket, game.player2.socket, game.gameID);
+      this.server.to(game.gameID).emit("players", game.player1, game.player2, game.gameID);
   }
 
   @SubscribeMessage('randomBall')

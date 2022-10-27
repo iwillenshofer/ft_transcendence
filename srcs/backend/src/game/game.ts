@@ -5,7 +5,8 @@ interface IPlayer {
     score: number,
     message: string,
     width: number,
-    height: number
+    height: number,
+    username: string,
 }
 
 export class Game {
@@ -21,6 +22,7 @@ export class Game {
         message: '',
         width: 15,
         height: 150,
+        username: ''
     };
     player2: IPlayer = {
         socket: '',
@@ -30,6 +32,7 @@ export class Game {
         message: '',
         width: 15,
         height: 150,
+        username: ''
     };
     finished: boolean = false;
     gameID: string;

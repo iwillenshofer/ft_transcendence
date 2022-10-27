@@ -13,22 +13,11 @@
 }
 
 .score {
-    color: white;
-    position: absolute;
-    z-index: 1;
-    top: 150px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    justify-content: space-between;
-    font-family: $game-font-family;
-    font-size: 60px;
-    width: 25%;
-    opacity: 0.75;
+    @include score(60px, 25%);
 }
 
-.name {
-    font-size: 10px;
+.usernames {
+    @include score(20px, 50%);
 }
 
 .finished {
@@ -36,7 +25,6 @@
 
     &__title {
         margin-top: 10vh;
-        // height: 10vh;
         transform: translateY(-50%);
     }
 }

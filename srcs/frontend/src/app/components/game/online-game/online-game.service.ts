@@ -31,6 +31,14 @@ export class OnlineGameService {
     game.setP2Socket(socket);
   }
 
+  setP1Username(username: any) {
+    game.setP1Username(username);
+  }
+
+  setP2Username(username: any) {
+    game.setP2Username(username);
+  }
+
   run() {
     game.update();
   }

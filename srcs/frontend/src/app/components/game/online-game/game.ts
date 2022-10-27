@@ -14,6 +14,7 @@ export let player1 = {
     message: '',
     width: 15,
     height: 150,
+    username: '',
 };
 
 export let player2 = {
@@ -24,6 +25,7 @@ export let player2 = {
     message: '',
     width: 15,
     height: 150,
+    username: '',
 };
 
 export let ball = {
@@ -187,7 +189,6 @@ function handleLose() {
     }
     if (rect.left <= 0) {
         player2.score += 1;
-        console.log('left')
         if (isP1)
             _socket.emit('score', gameID, player1.score, player2.score, finished);
         _socket.on("updateScore", (scoreP1: any, scoreP2: any, finish: any) => {
@@ -362,4 +363,12 @@ export function setCustom(custom: boolean) {
 
 export function stop() {
     velocity = 0;
+}
+
+export function setP1Username(username: string) {
+    player1.username = username;
+}
+
+export function setP2Username(username: string) {
+    player2.username = username;
 }

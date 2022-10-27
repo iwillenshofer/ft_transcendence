@@ -5,10 +5,18 @@
 </div>
 <div *ngIf="!isWaiting" class="score">
     <div style="float: left;">
-        <div class="name">player1</div>{{scoreP1}}
+        {{scoreP1}}
     </div>
     <div style="float: right;">
-        <div class="name">player2</div>{{scoreP2}}
+        {{scoreP2}}
+    </div>
+</div>
+<div *ngIf="!isWaiting" class="usernames">
+    <div style="float: left;">
+        {{player1.username}}
+    </div>
+    <div style="float: right;">
+        {{player2.username}}
     </div>
 </div>
 <div class="finished" *ngIf="finished">

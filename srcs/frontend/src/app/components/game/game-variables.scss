@@ -33,3 +33,18 @@ $game-font-family: "Lucida Console", "Courier New", monospace;
     font-size: $font-size;
     text-align: center;
 }
+
+@mixin score($font-size, $width) {
+    color: white;
+    position: absolute;
+    z-index: 1;
+    top: 150px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: inline-block;
+    justify-content: space-between;
+    font-family: $game-font-family;
+    font-size: $font-size;
+    width: $width;
+    opacity: 0.75;
+}
