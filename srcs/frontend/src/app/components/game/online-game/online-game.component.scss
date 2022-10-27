@@ -27,6 +27,10 @@
     opacity: 0.75;
 }
 
+.name {
+    font-size: 10px;
+}
+
 .finished {
     @include popUp(10vh);
 

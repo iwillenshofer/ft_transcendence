@@ -4,8 +4,12 @@
     <p class="quit">[Q] - Quit</p>
 </div>
 <div *ngIf="!isWaiting" class="score">
-    <div style="float: left;">{{scoreP1}}</div>
-    <div style="float: right;">{{scoreP2}}</div>
+    <div style="float: left;">
+        <div class="name">player1</div>{{scoreP1}}
+    </div>
+    <div style="float: right;">
+        <div class="name">player2</div>{{scoreP2}}
+    </div>
 </div>
 <div class="finished" *ngIf="finished">
     <p class="finished__title">{{finishedMessage}}</p>

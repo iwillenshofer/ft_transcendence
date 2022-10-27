@@ -1,6 +1,6 @@
 import { Component, ViewChild, ElementRef, OnInit, HostListener, Input, OnDestroy } from '@angular/core';
 import io from "socket.io-client";
-import { UserService } from 'src/app/services/user.service';
+import { OnlineGameService } from './online-game.service';
 
 
 @Component({
@@ -16,46 +16,22 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   @Input() mode: any;
   @Input() powerUps: any;
   @Input() specGame: any;
-  private socket: any;
-  private player1: any;
-  private player2: any;
+  socket: any;
   isWaiting: boolean = true;
-  scoreP1: number = 0;
-  scoreP2: number = 0;
   currentAnimationFrameId?: number;
-  finished: boolean = false;
   finishedMessage: string = '';
   private gameID: string = '';
   username: string = '';
+  scoreP1: number = 0;
+  scoreP2: number = 0;
+  finished: boolean = false;
 
-  constructor(private userService: UserService) { }
+  player1: any;
+  player2: any;
+  ball: any;
 
-  @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
-    switch (event.key) {
-      case 'w':
-      case 'W':
-      case 'ArrowUp':
-        if (this.player1 && this.player2 && this.mode != 'spec')
-          this.socket.emit("move", this.gameID, "up");
-        break;
-
-      case 's':
-      case 'S':
-      case 'ArrowDown':
-        if (this.player1 && this.player2 && this.mode != 'spec')
-          this.socket.emit("move", this.gameID, "down");
-        break;
-
-      case 'q':
-      case 'Q':
-        if (this.finished || this.isWaiting || this.mode == 'spec') {
-          location.reload();
-        }
-        break;
-
-      default:
-        break;
-    }
+  constructor(public gameService: OnlineGameService) {
+    this.ball = gameService.getBall();
   }
 
   ngOnInit(): void {
@@ -70,67 +46,74 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     }
     else
       this.socket.emit("joinGame", this.powerUps);
+    this.gameService.setMode(this.mode)
   }
 
   ngOnDestroy() {
     this.socket.disconnect();
   }
 
-  public ngAfterViewInit() {
+  ngAfterViewInit() {
     this.canvas = this.gameCanvas.nativeElement.getContext("2d");
     this.canvas.fillStyle = "white";
     this.socket.on("players", (player1: any, player2: any, gameID: string) => {
-      console.log('players');
-      if (player1)
-        this.player1 = player1;
-      if (player2)
-        this.player2 = player2;
-      this.gameID = gameID;
-      if (this.player1 && this.player2) {
-        this.isWaiting = false;
-        this.update();
-      }
+      this.setPlayers(player1, player2, gameID)
+      this.isWaiting = false;
+      this.gameService.reset()
+      this.update();
     })
   }
 
+  setPlayers(player1: any, player2: any, gameID: string) {
+    if (player1)
+      this.gameService.setP1Socket(player1);
+    if (player2)
+      this.gameService.setP2Socket(player2);
+    if (player1 && player2) {
+      this.gameService.setGameID(gameID);
+      this.gameService.setGameSocket(this.socket);
+      this.gameService.isP1(this.socket.id);
+      this.player1 = this.gameService.getPlayer1();
+      this.player2 = this.gameService.getPlayer2();
+      this.gameID = gameID;
+    }
+  }
+
   update() {
-    if (this.socket.id == this.player1)
-      this.socket.emit("gameUpdate", this.gameID);
-    this.draw()
-    // this.updateScore();
+    this.gameService.run();
+    this.draw();
+    this.updateScore();
     this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
   }
 
-  // updateScore() {
-  //   this.socket.on("score", (player1: any, player2: any, finished: boolean) => {
-  //     this.scoreP1 = player1.score;
-  //     this.scoreP2 = player2.score;
-  //     this.finished = finished;
-  //     if (this.finished)
-  //       this.finish(player1, player2);
-  //   })
-  // }
+  draw() {
+    this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+    this.drawLines();
+    if (!this.finished)
+      this.drawBall(this.gameService.getBall());
+    this.updatePaddles(this.gameService.getPlayer1(), this.gameService.getPlayer2());
+    this.drawPowerUp(this.gameService.getPowerUp())
+  }
 
-  finish(player1: any, player2: any) {
-    if (this.socket.id == player1.socket) {
-      this.finishedMessage = player1.message;
+  updateScore() {
+    this.socket.on("updateScore", (scoreP1: any, scoreP2: any, finished: any) => {
+      this.scoreP1 = scoreP1;
+      this.scoreP2 = scoreP2;
+      this.finished = finished;
+      if (finished)
+        this.finish();
+    })
+  }
+
+  finish() {
+    if (this.socket.id == this.player1.socket) {
+      this.finishedMessage = this.player1.message;
     }
-    if (this.socket.id == player2.socket) {
-      this.finishedMessage = player2.message;
+    if (this.socket.id == this.player2.socket) {
+      this.finishedMessage = this.player2.message;
     }
     window.cancelAnimationFrame(this.currentAnimationFrameId as number);
     this.socket.disconnect();
-  }
-
-  draw() {
-    this.socket.on("draw", (ball: any, player1: any, player2: any, powerUp: any) => {
-      this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
-      this.drawLines();
-      if (!this.finished)
-        this.drawBall(ball.x, ball.y, ball.radius);
-      this.updatePaddles(player1, player2);
-      this.drawPowerUp(powerUp)
-    });
   }
 
   updatePaddles(P1: any, P2: any) {
@@ -138,9 +121,9 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.canvas.fillRect(P2.x, P2.y, P2.width, P2.height);
   }
 
-  drawBall(x: any, y: any, radius: any) {
+  drawBall(ball: any) {
     this.canvas.beginPath();
-    this.canvas.arc(x, y, radius * 2, 0, Math.PI * 2, true);
+    this.canvas.arc(ball.x, ball.y, ball.radius * 2, 0, Math.PI * 2, true);
     this.canvas.closePath();
     this.canvas.fill();
   }
