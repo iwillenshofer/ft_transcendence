@@ -47,6 +47,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     else
       this.socket.emit("joinGame", this.powerUps);
     this.gameService.setMode(this.mode)
+    this.gameService.setCustom(this.powerUps)
   }
 
   ngOnDestroy() {

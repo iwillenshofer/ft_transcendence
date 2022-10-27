@@ -58,6 +58,10 @@ export class OnlineGameService {
     game.setMode(mode);
   }
 
+  setCustom(custom: boolean) {
+    game.setCustom(custom);
+  }
+
   // getScore() {
   //   return [game.player1.score, game.player2.score]
   // }

@@ -1,6 +1,6 @@
 export const INITIAL_VELOCITY = 3;
 export const MAX_SCORE = 1;
-export const VELOCITY_INCREASE = 0.5;
+export const VELOCITY_INCREASE = 1;
 
 let table = {
     width: 1280,
@@ -49,7 +49,7 @@ let ballDirection: { x: number; y: number } = { x: 0.0, y: 0.0 };
 let velocity: number = INITIAL_VELOCITY;
 let lastTouch: number = 0;
 let finished: boolean = false;
-let isCustom: string = '';
+export let isCustom: boolean;
 export let _socket: any;
 
 export function setGameSocket(socket: any) {
@@ -65,6 +65,7 @@ export function gameStart() {
 
 export function update() {
     ballUpdate();
+    syncPowerUp()
     paddleUpdate();
     if (isCustom)
         powerUpUpdate()
@@ -271,17 +272,30 @@ function powerUpUpdate() {
     }
     if (powerUp.show && isCollision(ballRect(), powerUpRect())) {
         resetPowerUp();
-        powerUp.time = -3000;
+        powerUp.time = -1000;
         givePowerUp();
     }
 }
 
 function resetPowerUp() {
-    powerUp.x = randomNumberBetween(30, table.width - 130); // powerup size = 100
-    powerUp.y = randomNumberBetween(0, table.height - 100);
-    powerUp.time = 0;
-    powerUp.show = false;
-    powerUp.active = false;
+    if (isP1) {
+        powerUp.x = randomNumberBetween(30, table.width - 130); // powerup size = 100
+        powerUp.y = randomNumberBetween(0, table.height - 100);
+        powerUp.time = 0;
+        powerUp.show = false;
+        powerUp.active = false;
+    }
+    syncPowerUp();
+}
+
+function syncPowerUp() {
+    if (isP1)
+        _socket.emit('powerUp', gameID, powerUp);
+    else {
+        _socket.on('updatePowerUp', (newPowerUp: any) => {
+            powerUp = newPowerUp;
+        })
+    }
 }
 
 function resetPowers() {
@@ -293,7 +307,7 @@ function resetPowers() {
 
 function givePowerUp() {
     powerUp.active = true;
-    let power = Math.round(randomNumberBetween(1, 3))
+    let power = Math.round(randomNumberBetween(1, 4))
     let player;
     if (lastTouch == 1)
         player = player1
@@ -312,6 +326,7 @@ function givePowerUp() {
         powerUp.type = power;
         player.height = 50;
     }
+    syncPowerUp();
 }
 
 export function setP1Socket(socket: any) {
@@ -331,4 +346,8 @@ export function setGameID(id: any) {
 
 export function setMode(mod: any) {
     mode = mod;
+}
+
+export function setCustom(custom: boolean) {
+    isCustom = custom;
 }
