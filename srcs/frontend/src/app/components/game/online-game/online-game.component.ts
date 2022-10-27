@@ -85,6 +85,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.gameService.run();
     this.draw();
     this.updateScore();
+    this.endGame();
     this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
   }
 

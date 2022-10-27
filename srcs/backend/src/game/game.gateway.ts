@@ -22,6 +22,7 @@ export class GameGateway {
         liveGames.push(game);
     });
     this.server.to(client.id).emit("games", liveGames);
+    liveGames.length = 0;
   }
 
   @SubscribeMessage('watchGame')
@@ -104,17 +105,22 @@ export class GameGateway {
   handleDisconnect(client: Socket, ...args: any[]) {
     const gameID = this.findGameBySocketId(client.id);
     const game = this.games[gameID]
-    if (game) {
+    if (game && (client.id == game.player1.socket || client.id == game.player2.socket)) {
+      this.server.to(gameID.toString()).emit("endGame");
       if (client.id == game.player1.socket && !game.player2.socket) {
+        game.player1.socket = null;
         delete this.games[game.gameID];
         this.games.splice(Number(game.gameID), 1);
       }
+      if (client.id == game.player1.socket)
+        game.player1.socket = null;
+      else
+        game.player2.socket = null;
       if (!game.player1.socket && !game.player2.socket) {
         delete this.games[gameID];
         this.games.splice(Number(gameID), 1);
       }
     }
-    this.server.to(gameID.toString()).emit("endGame");
   }
 
   findGameBySocketId(socketID: string) {
