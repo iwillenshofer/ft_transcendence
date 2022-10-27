@@ -57,25 +57,45 @@ export class GameGateway {
     }
     else if (!game.player2.socket) {
       game.player2.socket = client.id;
-      game.gameStart();
     }
     client.join(game.gameID)
     if (game.player1.socket && game.player2.socket)
       this.server.to(game.gameID).emit("players", game.player1.socket, game.player2.socket, game.gameID);
   }
 
+  @SubscribeMessage('randomBall')
+  ballDirectionX(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
+    let gameID = data[0];
+    let ball = data[1];
+    let ballDir = data[2];
+    this.server.to(gameID).emit("ball", ball, ballDir);
+  }
+
   @SubscribeMessage('move')
   move(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
     let gameID = data[0];
-    let command = data[1];
-    let player;
-    if (client.id == this.games[gameID].player1.socket) {
-      player = this.games[gameID].player1;
+    let game = this.games[gameID];
+    game.player1 = data[1];
+    game.player2 = data[2];
+    let command = data[3];
+    let player: any;
+    if (client.id == game.player1.socket)
+      player = game.player1;
+    else if (client.id == game.player2.socket)
+      player = game.player2;
+    switch (command) {
+      case "up":
+        if (player.y > 0) {
+          player.y -= 30;
+          this.server.to(gameID).emit("updatePaddle", game.player1, game.player2);
+        }
+        break;
+      case "down":
+        if (player.y < (720 - player.height))
+          player.y += 30;
+        this.server.to(gameID).emit("updatePaddle", game.player1, game.player2);
+        break;
     }
-    else if (client.id == this.games[gameID].player2.socket) {
-      player = this.games[gameID].player2;
-    }
-    this.games[gameID].move(player, command);
   }
 
   @UseGuards(TfaGuard)
@@ -83,7 +103,6 @@ export class GameGateway {
     const gameID = this.findGameBySocketId(client.id);
     const game = this.games[gameID]
     if (game) {
-      game.finished = true;
       if (client.id == game.player1.socket) {
         game.player1.message = 'Loser';
         game.player2.message = 'Winner';
@@ -111,19 +130,30 @@ export class GameGateway {
     }
   }
 
-
-  @SubscribeMessage('gameUpdate')
-  update(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    let gameID = data;
-    const game = this.games[gameID];
-    console.log('2')
-    if (client.id == game.player1.socket) {
-      console.log('1')
-      game.update();
-    }
-    this.server.to(gameID).emit("draw", game.ball, game.player1, game.player2, game.powerUp);
-    // this.server.to(gameID).emit("score", game.player1, game.player2, game.finished);
+  @SubscribeMessage('score')
+  score(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+    let gameID = data[0];
+    let scoreP1 = data[1];
+    let scoreP2 = data[2];
+    let finished = data[3];
+    this.games[gameID].finished = finished;
+    this.server.to(gameID).emit("updateScore", scoreP1, scoreP2, finished);
   }
+
+  @SubscribeMessage('powerUp')
+  powerUp(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+    let gameID = data[0];
+    let powerUp = data[1];
+    this.server.to(gameID).emit("updatePowerUp", powerUp);
+  }
+
+  // @SubscribeMessage('gameUpdate')
+  // update(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+  //   let gameID = data;
+  //   const game = this.games[gameID];
+  //   // this.server.to(gameID).emit("draw", game.ball, game.player1, game.player2, game.powerUp);
+  //   // this.server.to(gameID).emit("score", game.player1, game.player2, game.finished);
+  // }
 }
 
 
