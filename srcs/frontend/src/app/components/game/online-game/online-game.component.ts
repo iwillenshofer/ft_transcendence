@@ -54,12 +54,51 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   ngAfterViewInit() {
     this.canvas = this.gameCanvas.nativeElement.getContext("2d");
     this.canvas.fillStyle = "white";
+    if (this.mode != 'spec')
+      this.players();
+    else
+      this.specs();
+  }
+
+  players() {
     this.socket.on("players", (player1: any, player2: any, gameID: string) => {
       this.setPlayers(player1, player2, gameID)
       this.isWaiting = false;
       this.gameService.reset()
       this.update();
     })
+  }
+
+  specs() {
+    this.socket.on("specs", (player1: any, player2: any, gameID: string) => {
+      this.player1 = player1;
+      this.player2 = player2;
+      this.isWaiting = false;
+      this.watchGame(gameID);
+    })
+  }
+
+  watchGame(gameID: string) {
+    this.socket.emit("getPaddles", gameID)
+    this.socket.on("updatePaddle", (player1: any, player2: any) => {
+      this.player1 = player1;
+      this.player2 = player2;
+    });
+    let powerUp: any;
+    this.socket.on('updatePowerUp', (newPowerUp: any) => {
+      powerUp = newPowerUp;
+    })
+    this.socket.on("ball", (ball: any) => {
+      this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+      this.drawLines();
+      if (!this.finished)
+        this.drawBall(ball);
+      this.updatePaddles(this.player1, this.player2);
+      this.drawPowerUp(powerUp);
+    })
+    this.endGame();
+    this.updateScore();
+    this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
   }
 
   setPlayers(player1: any, player2: any, gameID: string) {

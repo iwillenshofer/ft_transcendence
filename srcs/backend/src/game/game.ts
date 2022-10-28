@@ -47,4 +47,6 @@ export class Game {
     finished: boolean = false;
     gameID: string;
     isCustom: string = '';
+    connected: number = 0;
+    index: number = 0;
 }

@@ -15,7 +15,7 @@ export class GameGateway {
   games: Game[] = [];
 
   @SubscribeMessage('liveGames')
-  liveGames(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+  async liveGames(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let liveGames: Game[] = [];
     this.games.forEach(game => {
       if (!game.finished)
@@ -26,12 +26,12 @@ export class GameGateway {
   }
 
   @SubscribeMessage('watchGame')
-  watchGame(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+  async watchGame(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     this.setPlayers(client, data, '');
   }
 
   @SubscribeMessage('joinGame')
-  joinGame(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+  async joinGame(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let customGame = data[0];
     let username = data[1];
     let gameIndex = this.checkGameArray(customGame);
@@ -63,23 +63,47 @@ export class GameGateway {
       game.player2.username = username;
     }
     client.join(game.gameID)
-    if (game.player1.socket && game.player2.socket)
-      this.server.to(game.gameID).emit("players", game.player1, game.player2, game.gameID);
+    game.connected += 1;
+    if (game.player1.socket && game.player2.socket) {
+      if (client.id == game.player1.socket || client.id == game.player2.socket)
+        this.server.to(game.gameID).emit("players", game.player1, game.player2, game.gameID);
+      else
+        this.server.to(game.gameID).emit("specs", game.player1, game.player2, game.gameID);
+    }
+  }
+
+  @SubscribeMessage('getPaddles')
+  async getPaddles(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
+    this.server.to(data).emit('updatePaddle', this.games[data].player1, this.games[data].player2)
+  }
+
+  @SubscribeMessage('setPaddles')
+  async setPaddles(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
+    let gameID = data[0];
+    this.games[gameID].player1 = data[1];
+    this.games[gameID].player2 = data[2];
+    this.server.to(gameID).emit('updatePaddle', this.games[gameID].player1, this.games[gameID].player2)
   }
 
   @SubscribeMessage('syncBall')
-  syncBall(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
+  async syncBall(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
     let gameID = data[0];
+    // console.log(data[1])
     if (this.isPlayer1(gameID, client.id)) {
       // console.log(client.id)
       this.games[gameID].ball = data[1];
+
+      // const clients = this.server.sockets.adapter.rooms['Room Name'].sockets;
+      // const numClients = clients ? Object.keys(clients).length : 0;
+      // console.log(this.games[gameID].connected);
+      // this.games[gameID].ball.velocity = this.games[gameID].ball.velocity / this.games[gameID].connected;
       this.server.to(gameID).emit("ball", this.games[gameID].ball);
     }
-    // if (client.id == this.games[gameID].player1.socket || client.id == this.games[gameID].player2.socket)
+    // client.broadcast.to(gameID).emit("ball", this.games[gameID].ball);
   }
 
   @SubscribeMessage('move')
-  move(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
+  async move(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
     let gameID = data[0];
     let game = this.games[gameID];
     game.player1 = data[1];
@@ -136,7 +160,7 @@ export class GameGateway {
   }
 
   @SubscribeMessage('syncScore')
-  syncScore(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+  async syncScore(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let gameID = data;
     let scoreP1 = this.games[gameID].player1.score;
     let scoreP2 = this.games[gameID].player2.score;
@@ -145,7 +169,7 @@ export class GameGateway {
   }
 
   @SubscribeMessage('score')
-  score(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+  async score(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let gameID = data[0];
     if (this.isPlayer1(gameID, client.id)) {
       let scoreP1 = data[1];
@@ -159,7 +183,7 @@ export class GameGateway {
   }
 
   @SubscribeMessage('powerUp')
-  powerUp(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+  async powerUp(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let gameID = data[0];
     if (this.isPlayer1(gameID, client.id)) {
       let powerUp = data[1];

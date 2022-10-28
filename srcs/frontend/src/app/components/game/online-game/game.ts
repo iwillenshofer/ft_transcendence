@@ -1,5 +1,5 @@
 export const INITIAL_VELOCITY = 3;
-export const MAX_SCORE = 10;
+export const MAX_SCORE = 9999;
 export const VELOCITY_INCREASE = 0.1;
 
 let table = {
@@ -66,22 +66,23 @@ export function gameStart() {
         resetScore();
         syncScore();
         started = true;
+        syncBall();
     }
 }
 
 export function update() {
     ballUpdate();
-    syncBall();
     syncPowerUp()
     paddleUpdate();
     if (isCustom)
         powerUpUpdate()
     if (isLose())
         handleLose();
+    syncBall();
 }
 
 function paddleUpdate() {
-    _socket.on('updatePaddle', (Player1: any, Player2: any) => {
+    _socket.once('updatePaddle', (Player1: any, Player2: any) => {
         player1 = Player1;
         player2 = Player2;
     })
@@ -183,7 +184,7 @@ function handleLose() {
         player1.score += 1;
         isGameFinished();
         _socket.emit('score', gameID, player1.score, player2.score, finished);
-        _socket.on("updateScore", (scoreP1: any, scoreP2: any, finish: any) => {
+        _socket.once("updateScore", (scoreP1: any, scoreP2: any, finish: any) => {
             player1.score = scoreP1;
             player2.score = scoreP2;
             finished = finish;
@@ -193,7 +194,7 @@ function handleLose() {
     if (rect.left <= 0) {
         player2.score += 1;
         _socket.emit('score', gameID, player1.score, player2.score, finished);
-        _socket.on("updateScore", (scoreP1: any, scoreP2: any, finish: any) => {
+        _socket.once("updateScore", (scoreP1: any, scoreP2: any, finish: any) => {
             player1.score = scoreP1;
             player2.score = scoreP2;
             finished = finish;
@@ -225,6 +226,7 @@ function resetBall() {
     ball.velocity = INITIAL_VELOCITY;
     ballRandomX();
     ballRandomY();
+    syncBall();
 }
 
 function resetScore() {
@@ -235,7 +237,7 @@ function resetScore() {
 
 function syncScore() {
     _socket.emit('syncScore', gameID);
-    _socket.on('updateScore', (scoreP1: any, scoreP2: any, finish: any) => {
+    _socket.once('updateScore', (scoreP1: any, scoreP2: any, finish: any) => {
         player1.score = scoreP1;
         player2.score = scoreP2;
         finished = finish;
@@ -246,27 +248,26 @@ function syncBall() {
     // if (_socket.id != player1.socket && _socket.id != player2.socket)
     //     _socket.removeListener('syncBall')
 
-    if (_socket.id == player1.socket)
-        _socket.emit('syncBall', gameID, ball);
+    _socket.emit('syncBall', gameID, ball);
     // }
     // console.log('other')
     // _socket.off('ball')
-    else {
-        _socket.on('ball', (newBall: any) => {
-            ball = newBall;
-        })
-    }
+    _socket.once('ball', (newBall: any) => {
+        ball = newBall;
+    })
     // }
 }
 
 function ballRandomX() {
     let num = Math.cos(randomNumberBetween(0.2, 0.9));
     ball.direction.x = Math.round(num * 10) / 10;
+    syncBall();
 }
 
 function ballRandomY() {
     let num = Math.sin(randomNumberBetween(0, 2 * Math.PI));
     ball.direction.y = Math.round(num * 10) / 10;
+    syncBall();
 }
 
 function randomNumberBetween(min: number, max: number) {
@@ -278,6 +279,7 @@ function resetPlayersPosition() {
     player1.y = (table.height / 2) - (player1.height / 2);
     player2.x = table.width - 30; // - 10 da margin
     player2.y = (table.height / 2) - (player2.height / 2);
+    _socket.emit('setPaddles', gameID, player1, player2);
 }
 
 function resetPlayerPosition(player: number) {
@@ -314,7 +316,7 @@ function resetPowerUp() {
 
 function syncPowerUp() {
     _socket.emit('powerUp', gameID, powerUp);
-    _socket.on('updatePowerUp', (newPowerUp: any) => {
+    _socket.once('updatePowerUp', (newPowerUp: any) => {
         powerUp = newPowerUp;
     })
 }
