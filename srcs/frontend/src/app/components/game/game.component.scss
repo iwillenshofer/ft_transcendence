@@ -12,7 +12,8 @@
     font-family: $game-font-family;
     color: white;
     position: absolute;
-    left: calc(20%);
+    left: calc(10%);
+    float: left;
     text-align: center;
     margin-top: 10vh;
 
@@ -23,28 +24,10 @@
         margin-right: 3vw;
     }
 
-    button {
-        text-align: left;
-        font-family: $game-font-family;
-        height: 10vh;
-        width: 200px;
-        cursor: pointer;
-        font-size: 3vh;
-        background-color: black;
-        color: white;
-        opacity: .75;
-        border: none;
-        display: block;
-    }
-
-    button:hover {
-        opacity: 1;
-        border-right: 2px solid white;
-        border-left: 2px solid white;
-    }
-
+    @include button(250px, 3vh);
 }
 
+.livegames,
 .instructions {
     margin-top: 20vh;
     font-family: $game-font-family;
@@ -53,4 +36,12 @@
     position: absolute;
     left: calc(60%);
     text-align: left;
+
+    @include button(300px, 2vh);
+}
+
+.livegames {
+    button {
+        text-align: center;
+    }
 }

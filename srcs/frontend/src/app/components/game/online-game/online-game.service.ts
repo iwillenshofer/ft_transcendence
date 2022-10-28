@@ -43,16 +43,8 @@ export class OnlineGameService {
     game.update();
   }
 
-  reset(socket: any) {
-    if (socket == game.player1.socket || socket == game.player2.socket)
-      game.gameStart();
-  }
-
-  isP1(socket: any) {
-    if (socket == game.player1.socket)
-      game.f_isP1(true);
-    else
-      game.f_isP1(false);
+  reset() {
+    game.gameStart();
   }
 
   setGameID(gameID: any) {
@@ -69,10 +61,6 @@ export class OnlineGameService {
 
   setCustom(custom: boolean) {
     game.setCustom(custom);
-  }
-
-  stopGame() {
-    game.stop();
   }
 
   getFinalMessage(disconnected: any): string {

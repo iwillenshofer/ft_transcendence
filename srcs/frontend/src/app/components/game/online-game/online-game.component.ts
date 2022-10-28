@@ -54,10 +54,11 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   ngAfterViewInit() {
     this.canvas = this.gameCanvas.nativeElement.getContext("2d");
     this.canvas.fillStyle = "white";
+    console.log(this.mode)
     this.socket.on("players", (player1: any, player2: any, gameID: string) => {
       this.setPlayers(player1, player2, gameID)
       this.isWaiting = false;
-      this.gameService.reset(this.socket.id)
+      this.gameService.reset()
       this.update();
     })
   }
@@ -75,7 +76,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     if (player1.socket && player2.socket) {
       this.gameService.setGameID(gameID);
       this.gameService.setGameSocket(this.socket);
-      this.gameService.isP1(this.socket.id);
       this.player1 = this.gameService.getPlayer1();
       this.player2 = this.gameService.getPlayer2();
     }
@@ -84,8 +84,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   update() {
     this.gameService.run();
     this.draw();
-    this.updateScore();
     this.endGame();
+    this.updateScore();
     this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
   }
 
@@ -117,7 +117,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
 
   finish(disconnected: any) {
     this.finishedMessage = this.gameService.getFinalMessage(disconnected);
-    this.gameService.stopGame();
     window.cancelAnimationFrame(this.currentAnimationFrameId as number);
     this.socket.disconnect();
   }

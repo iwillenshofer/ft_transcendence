@@ -34,6 +34,16 @@ export class Game {
         height: 150,
         username: ''
     };
+    ball = {
+        x: 0,
+        y: 0,
+        radius: 5,
+        velocity: 0,
+        direction: {
+            x: 0.0,
+            y: 0.0
+        }
+    }
     finished: boolean = false;
     gameID: string;
     isCustom: string = '';

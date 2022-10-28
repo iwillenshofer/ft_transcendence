@@ -67,12 +67,13 @@ export class GameGateway {
       this.server.to(game.gameID).emit("players", game.player1, game.player2, game.gameID);
   }
 
-  @SubscribeMessage('randomBall')
-  ballDirectionX(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
+  @SubscribeMessage('syncBall')
+  syncBall(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
     let gameID = data[0];
-    let ball = data[1];
-    let ballDir = data[2];
-    this.server.to(gameID).emit("ball", ball, ballDir);
+    if (this.isPlayer1(gameID, client.id)) {
+      this.games[gameID].ball = data[1];
+    }
+    this.server.to(gameID).emit("ball", this.games[gameID].ball);
   }
 
   @SubscribeMessage('move')
@@ -132,32 +133,43 @@ export class GameGateway {
     }
   }
 
+  @SubscribeMessage('syncScore')
+  syncScore(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+    let gameID = data;
+    let scoreP1 = this.games[gameID].player1.score;
+    let scoreP2 = this.games[gameID].player2.score;
+    let finished = this.games[gameID].finished;
+    this.server.to(gameID.toString()).emit("updateScore", scoreP1, scoreP2, finished);
+  }
+
   @SubscribeMessage('score')
   score(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let gameID = data[0];
-    let scoreP1 = data[1];
-    let scoreP2 = data[2];
-    let finished = data[3];
-    this.games[gameID].finished = finished;
-    this.games[gameID].player1.score = scoreP1;
-    this.games[gameID].player2.score = scoreP2;
-    this.server.to(gameID).emit("updateScore", scoreP1, scoreP2, finished);
+    if (this.isPlayer1(gameID, client.id)) {
+      let scoreP1 = data[1];
+      let scoreP2 = data[2];
+      let finished = data[3];
+      this.games[gameID].finished = finished;
+      this.games[gameID].player1.score = scoreP1;
+      this.games[gameID].player2.score = scoreP2;
+      this.server.to(gameID).emit("updateScore", scoreP1, scoreP2, finished);
+    }
   }
 
   @SubscribeMessage('powerUp')
   powerUp(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let gameID = data[0];
-    let powerUp = data[1];
-    this.server.to(gameID).emit("updatePowerUp", powerUp);
+    if (this.isPlayer1(gameID, client.id)) {
+      let powerUp = data[1];
+      this.server.to(gameID).emit("updatePowerUp", powerUp);
+    }
   }
 
-  // @SubscribeMessage('gameUpdate')
-  // update(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-  //   let gameID = data;
-  //   const game = this.games[gameID];
-  //   // this.server.to(gameID).emit("draw", game.ball, game.player1, game.player2, game.powerUp);
-  //   // this.server.to(gameID).emit("score", game.player1, game.player2, game.finished);
-  // }
+  isPlayer1(gameID: string, id: any) {
+    if (id == this.games[gameID].player1.socket)
+      return true;
+    return false;
+  }
 }
 
 

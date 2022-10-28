@@ -38,13 +38,34 @@ $game-font-family: "Lucida Console", "Courier New", monospace;
     color: white;
     position: absolute;
     z-index: 1;
-    top: 150px;
     left: 50%;
     transform: translateX(-50%);
-    display: inline-block;
+    // display: inline-block;
     justify-content: space-between;
     font-family: $game-font-family;
     font-size: $font-size;
-    width: $width;
+    min-width: $width;
     opacity: 0.75;
+}
+
+@mixin button($width, $font-size) {
+    button {
+        text-align: left;
+        font-family: $game-font-family;
+        height: 10vh;
+        width: $width;
+        cursor: pointer;
+        font-size: $font-size;
+        background-color: black;
+        color: white;
+        opacity: .75;
+        border: none;
+        display: block;
+    }
+
+    button:hover {
+        opacity: 1;
+        border-right: 2px solid white;
+        border-left: 2px solid white;
+    }
 }

@@ -1,6 +1,6 @@
-export const INITIAL_VELOCITY = 3;
+export const INITIAL_VELOCITY = 2;
 export const MAX_SCORE = 10;
-export const VELOCITY_INCREASE = 1;
+export const VELOCITY_INCREASE = 0.03;
 
 let table = {
     width: 1280,
@@ -31,8 +31,12 @@ export let player2 = {
 export let ball = {
     x: 0,
     y: 0,
-    radius: 5
-
+    radius: 5,
+    velocity: 0,
+    direction: {
+        x: 0.0,
+        y: 0.0
+    }
 }
 export let powerUp = {
     x: 0,
@@ -44,11 +48,8 @@ export let powerUp = {
 }
 
 export let gameID: any;
-
-let isP1 = false;
+let started = false;
 let mode = '';
-let ballDirection: { x: number; y: number } = { x: 0.0, y: 0.0 };
-let velocity: number = INITIAL_VELOCITY;
 let lastTouch: number = 0;
 let finished: boolean = false;
 export let isCustom: boolean;
@@ -59,10 +60,13 @@ export function setGameSocket(socket: any) {
 }
 
 export function gameStart() {
-    resetPlayersPosition();
-    resetBall();
-    resetScore();
-    update();
+    if (!started) {
+        resetPlayersPosition();
+        resetBall();
+        resetScore();
+        started = true;
+        syncScore();
+    }
 }
 
 export function update() {
@@ -98,29 +102,29 @@ window.onkeydown = function move(e) {
 }
 
 function ballUpdate() {
-    ball.x += ballDirection.x * velocity;
-    ball.y += ballDirection.y * velocity;
-    syncBall();
+    ball.x += ball.direction.x * ball.velocity;
+    ball.y += ball.direction.y * ball.velocity;
 
     const rect = ballRect()
 
     if (rect.bottom >= table.height || rect.top <= 0) {
-        ballDirection.y *= -1;
+        ball.direction.y *= -1;
     }
 
     if (isCollision(rectP1(), rect)) {
         lastTouch = 1;
-        ballDirection.x *= -1;
+        ball.direction.x *= -1;
         ballRandomY();
-        velocity += VELOCITY_INCREASE;
+        ball.velocity += VELOCITY_INCREASE;
     }
 
     if (isCollision(rectP2(), rect)) {
         lastTouch = 2;
-        ballDirection.x *= -1;
+        ball.direction.x *= -1;
         ballRandomY();
-        velocity += VELOCITY_INCREASE;
+        ball.velocity += VELOCITY_INCREASE;
     }
+    syncBall();
 }
 
 function rectP1() {
@@ -178,8 +182,7 @@ function handleLose() {
     if (rect.right >= table.width) {
         player1.score += 1;
         isGameFinished();
-        if (isP1)
-            _socket.emit('score', gameID, player1.score, player2.score, finished);
+        _socket.emit('score', gameID, player1.score, player2.score, finished);
         _socket.on("updateScore", (scoreP1: any, scoreP2: any, finish: any) => {
             player1.score = scoreP1;
             player2.score = scoreP2;
@@ -189,8 +192,7 @@ function handleLose() {
     }
     if (rect.left <= 0) {
         player2.score += 1;
-        if (isP1)
-            _socket.emit('score', gameID, player1.score, player2.score, finished);
+        _socket.emit('score', gameID, player1.score, player2.score, finished);
         _socket.on("updateScore", (scoreP1: any, scoreP2: any, finish: any) => {
             player1.score = scoreP1;
             player2.score = scoreP2;
@@ -201,7 +203,7 @@ function handleLose() {
     resetPowers();
     resetPlayersPosition()
     resetBall();
-    ballDirection.x *= ballSide;
+    ball.direction.x *= ballSide;
 }
 
 function isGameFinished() {
@@ -220,9 +222,10 @@ function isGameFinished() {
 function resetBall() {
     ball.x = table.width / 2;
     ball.y = table.height / 2;
-    velocity = INITIAL_VELOCITY;
+    ball.velocity = INITIAL_VELOCITY;
     ballRandomX();
     ballRandomY();
+    syncBall();
 }
 
 function resetScore() {
@@ -231,25 +234,30 @@ function resetScore() {
     _socket.emit('score', gameID, player1.score, player2.score, finished);
 }
 
+function syncScore() {
+    _socket.emit('syncScore', gameID);
+    _socket.on('updateScore', (scoreP1: any, scoreP2: any, finish: any) => {
+        player1.score = scoreP1;
+        player2.score = scoreP2;
+        finished = finish;
+    })
+}
+
 function syncBall() {
-    if (isP1)
-        _socket.emit('randomBall', gameID, ball, ballDirection);
-    if (!isP1) {
-        _socket.on('ball', (newBall: any, ballDir: any) => {
+    _socket.emit('syncBall', gameID, ball);
+    if (_socket.id != player1.socket) {
+        _socket.on('ball', (newBall: any) => {
             ball = newBall;
-            ballDirection = ballDir;
         })
     }
 }
 
 function ballRandomX() {
-    if (isP1)
-        ballDirection.x = Math.cos(randomNumberBetween(0.2, 0.9));
+    ball.direction.x = Math.cos(randomNumberBetween(0.2, 0.9));
 }
 
 function ballRandomY() {
-    if (isP1)
-        ballDirection.y = Math.sin(randomNumberBetween(0, 2 * Math.PI));
+    ball.direction.y = Math.sin(randomNumberBetween(0, 2 * Math.PI));
 }
 
 function randomNumberBetween(min: number, max: number) {
@@ -287,24 +295,19 @@ function powerUpUpdate() {
 }
 
 function resetPowerUp() {
-    if (isP1) {
-        powerUp.x = randomNumberBetween(30, table.width - 130); // powerup size = 100
-        powerUp.y = randomNumberBetween(0, table.height - 100);
-        powerUp.time = 0;
-        powerUp.show = false;
-        powerUp.active = false;
-    }
+    powerUp.x = randomNumberBetween(30, table.width - 130); // powerup size = 100
+    powerUp.y = randomNumberBetween(0, table.height - 100);
+    powerUp.time = 0;
+    powerUp.show = false;
+    powerUp.active = false;
     syncPowerUp();
 }
 
 function syncPowerUp() {
-    if (isP1)
-        _socket.emit('powerUp', gameID, powerUp);
-    else {
-        _socket.on('updatePowerUp', (newPowerUp: any) => {
-            powerUp = newPowerUp;
-        })
-    }
+    _socket.emit('powerUp', gameID, powerUp);
+    _socket.on('updatePowerUp', (newPowerUp: any) => {
+        powerUp = newPowerUp;
+    })
 }
 
 function resetPowers() {
@@ -345,10 +348,6 @@ export function setP2Socket(socket: any) {
     player2.socket = socket;
 }
 
-export function f_isP1(is: boolean) {
-    isP1 = is;
-}
-
 export function setGameID(id: any) {
     gameID = id
 }
@@ -359,10 +358,6 @@ export function setMode(mod: any) {
 
 export function setCustom(custom: boolean) {
     isCustom = custom;
-}
-
-export function stop() {
-    velocity = 0;
 }
 
 export function setP1Username(username: string) {

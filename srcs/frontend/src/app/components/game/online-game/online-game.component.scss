@@ -13,11 +13,13 @@
 }
 
 .score {
+    top: 150px;
     @include score(60px, 25%);
 }
 
 .usernames {
-    @include score(20px, 50%);
+    bottom: 50px;
+    @include score(20px, 75%);
 }
 
 .finished {
