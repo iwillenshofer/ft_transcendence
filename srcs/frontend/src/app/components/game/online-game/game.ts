@@ -245,17 +245,10 @@ function syncScore() {
 }
 
 function syncBall() {
-    // if (_socket.id != player1.socket && _socket.id != player2.socket)
-    //     _socket.removeListener('syncBall')
-
     _socket.emit('syncBall', gameID, ball);
-    // }
-    // console.log('other')
-    // _socket.off('ball')
     _socket.once('ball', (newBall: any) => {
         ball = newBall;
     })
-    // }
 }
 
 function ballRandomX() {

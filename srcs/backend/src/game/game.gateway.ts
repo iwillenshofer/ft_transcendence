@@ -88,18 +88,10 @@ export class GameGateway {
   @SubscribeMessage('syncBall')
   async syncBall(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
     let gameID = data[0];
-    // console.log(data[1])
     if (this.isPlayer1(gameID, client.id)) {
-      // console.log(client.id)
       this.games[gameID].ball = data[1];
-
-      // const clients = this.server.sockets.adapter.rooms['Room Name'].sockets;
-      // const numClients = clients ? Object.keys(clients).length : 0;
-      // console.log(this.games[gameID].connected);
-      // this.games[gameID].ball.velocity = this.games[gameID].ball.velocity / this.games[gameID].connected;
       this.server.to(gameID).emit("ball", this.games[gameID].ball);
     }
-    // client.broadcast.to(gameID).emit("ball", this.games[gameID].ball);
   }
 
   @SubscribeMessage('move')

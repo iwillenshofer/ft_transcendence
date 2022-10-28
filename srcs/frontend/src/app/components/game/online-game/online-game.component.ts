@@ -142,19 +142,23 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.scoreP2 = scoreP2;
       this.finished = finished;
       if (finished)
-        this.finish(0);
+        this.finish('score', 0);
     })
   }
 
   endGame() {
+    this.socket.on('connect_error', () => {
+      this.finished = true;
+      this.finish('down', 0)
+    })
     this.socket.on("endGame", (disconnected: any) => {
       this.finished = true;
-      this.finish(disconnected);
+      this.finish('disconnect', disconnected);
     })
   }
 
-  finish(disconnected: any) {
-    this.finishedMessage = this.gameService.getFinalMessage(disconnected);
+  finish(reason: any, disconnected: any) {
+    this.finishedMessage = this.gameService.getFinalMessage(reason, disconnected);
     window.cancelAnimationFrame(this.currentAnimationFrameId as number);
     this.socket.disconnect();
   }

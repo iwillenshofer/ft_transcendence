@@ -63,17 +63,19 @@ export class OnlineGameService {
     game.setCustom(custom);
   }
 
-  getFinalMessage(disconnected: any): string {
-    if (disconnected) {
+  getFinalMessage(reason: any, disconnected: any): string {
+    if (reason == 'down')
+      return 'Server is off'
+    if (reason == 'disconnect') {
       if (game.player1.socket == disconnected)
-        return 'Player2 won by abandonment'
-      else if (game.player1.socket == disconnected)
-        return 'Player1 won by abandonment'
+        return game.player2.username + 'won';
+      else if (game.player2.socket == disconnected)
+        return game.player1.username + 'won';
     }
     if (game.player1.score > game.player2.score)
-      return 'Player1 Won';
+      return game.player1.username + 'won';
     else
-      return 'Player2 Won';
+      return game.player2.username + 'won';
   }
 
   // getScore() {
