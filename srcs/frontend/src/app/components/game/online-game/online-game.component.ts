@@ -91,10 +91,10 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.socket.on("ball", (ball: any) => {
       this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
       this.drawLines();
+      this.drawPowerUp(powerUp);
       if (!this.finished)
         this.drawBall(ball);
       this.updatePaddles(this.player1, this.player2);
-      this.drawPowerUp(powerUp);
     })
     this.endGame();
     this.updateScore();

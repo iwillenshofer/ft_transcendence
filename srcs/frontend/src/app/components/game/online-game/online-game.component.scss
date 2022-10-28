@@ -36,7 +36,7 @@
 }
 
 .finished {
-    @include popUp(10vh);
+    @include popUp(5vh);
 
     &__title {
         margin-top: 10vh;

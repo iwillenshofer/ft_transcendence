@@ -68,14 +68,14 @@ export class OnlineGameService {
       return 'Server is off'
     if (reason == 'disconnect') {
       if (game.player1.socket == disconnected)
-        return game.player2.username + 'won';
+        return game.player2.username + '\nwon';
       else if (game.player2.socket == disconnected)
-        return game.player1.username + 'won';
+        return game.player1.username + '\nwon';
     }
     if (game.player1.score > game.player2.score)
-      return game.player1.username + 'won';
+      return game.player1.username + '\nwon';
     else
-      return game.player2.username + 'won';
+      return game.player2.username + '\nwon';
   }
 
   // getScore() {

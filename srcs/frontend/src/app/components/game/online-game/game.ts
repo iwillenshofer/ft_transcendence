@@ -1,6 +1,6 @@
 export const INITIAL_VELOCITY = 3;
-export const MAX_SCORE = 9999;
-export const VELOCITY_INCREASE = 0.1;
+export const MAX_SCORE = 1;
+export const VELOCITY_INCREASE = 0.3;
 
 let table = {
     width: 1280,
@@ -72,10 +72,10 @@ export function gameStart() {
 
 export function update() {
     ballUpdate();
-    syncPowerUp()
     paddleUpdate();
     if (isCustom)
         powerUpUpdate()
+    syncPowerUp()
     if (isLose())
         handleLose();
     syncBall();
