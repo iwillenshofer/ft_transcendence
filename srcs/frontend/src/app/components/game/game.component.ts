@@ -37,7 +37,6 @@ export class GameComponent implements OnInit {
       if (games.length > 0)
         this.liveGames = games;
     });
-    console.log(this.liveGames);
   }
 
   toggleInstructions() {

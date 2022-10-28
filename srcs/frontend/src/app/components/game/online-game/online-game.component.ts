@@ -54,7 +54,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   ngAfterViewInit() {
     this.canvas = this.gameCanvas.nativeElement.getContext("2d");
     this.canvas.fillStyle = "white";
-    console.log(this.mode)
     this.socket.on("players", (player1: any, player2: any, gameID: string) => {
       this.setPlayers(player1, player2, gameID)
       this.isWaiting = false;

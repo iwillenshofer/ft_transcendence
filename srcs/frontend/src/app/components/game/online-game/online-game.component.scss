@@ -18,8 +18,21 @@
 }
 
 .usernames {
-    bottom: 50px;
-    @include score(20px, 75%);
+    margin-top: 150px;
+    bottom: 5vh;
+    @include score(20px, 100%);
+
+    &__p1 {
+        float: left;
+        margin-left: 25%;
+        transform: translateX(-50%);
+    }
+
+    &__p2 {
+        float: right;
+        margin-right: 25%;
+        transform: translateX(50%);
+    }
 }
 
 .finished {

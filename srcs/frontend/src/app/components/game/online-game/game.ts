@@ -1,6 +1,6 @@
-export const INITIAL_VELOCITY = 2;
+export const INITIAL_VELOCITY = 3;
 export const MAX_SCORE = 10;
-export const VELOCITY_INCREASE = 0.03;
+export const VELOCITY_INCREASE = 0.1;
 
 let table = {
     width: 1280,
@@ -64,13 +64,14 @@ export function gameStart() {
         resetPlayersPosition();
         resetBall();
         resetScore();
-        started = true;
         syncScore();
+        started = true;
     }
 }
 
 export function update() {
     ballUpdate();
+    syncBall();
     syncPowerUp()
     paddleUpdate();
     if (isCustom)
@@ -95,7 +96,7 @@ window.onkeydown = function move(e) {
             _socket.emit("move", gameID, player1, player2, "down");
         }
     }
-    if (finished || mode == 'spec') {
+    if (!started || finished || mode == 'spec') {
         if (e.key == 'q' || e.key == 'Q' || e.key == 'Escape')
             location.reload();
     }
@@ -124,7 +125,6 @@ function ballUpdate() {
         ballRandomY();
         ball.velocity += VELOCITY_INCREASE;
     }
-    syncBall();
 }
 
 function rectP1() {
@@ -225,7 +225,6 @@ function resetBall() {
     ball.velocity = INITIAL_VELOCITY;
     ballRandomX();
     ballRandomY();
-    syncBall();
 }
 
 function resetScore() {
@@ -244,20 +243,30 @@ function syncScore() {
 }
 
 function syncBall() {
-    _socket.emit('syncBall', gameID, ball);
-    if (_socket.id != player1.socket) {
+    // if (_socket.id != player1.socket && _socket.id != player2.socket)
+    //     _socket.removeListener('syncBall')
+
+    if (_socket.id == player1.socket)
+        _socket.emit('syncBall', gameID, ball);
+    // }
+    // console.log('other')
+    // _socket.off('ball')
+    else {
         _socket.on('ball', (newBall: any) => {
             ball = newBall;
         })
     }
+    // }
 }
 
 function ballRandomX() {
-    ball.direction.x = Math.cos(randomNumberBetween(0.2, 0.9));
+    let num = Math.cos(randomNumberBetween(0.2, 0.9));
+    ball.direction.x = Math.round(num * 10) / 10;
 }
 
 function ballRandomY() {
-    ball.direction.y = Math.sin(randomNumberBetween(0, 2 * Math.PI));
+    let num = Math.sin(randomNumberBetween(0, 2 * Math.PI));
+    ball.direction.y = Math.round(num * 10) / 10;
 }
 
 function randomNumberBetween(min: number, max: number) {

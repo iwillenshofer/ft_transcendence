@@ -71,9 +71,11 @@ export class GameGateway {
   syncBall(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
     let gameID = data[0];
     if (this.isPlayer1(gameID, client.id)) {
+      // console.log(client.id)
       this.games[gameID].ball = data[1];
+      this.server.to(gameID).emit("ball", this.games[gameID].ball);
     }
-    this.server.to(gameID).emit("ball", this.games[gameID].ball);
+    // if (client.id == this.games[gameID].player1.socket || client.id == this.games[gameID].player2.socket)
   }
 
   @SubscribeMessage('move')
