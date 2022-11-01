@@ -1,5 +1,4 @@
 <app-navbar  *ngIf="tfa_fulfilled.value"></app-navbar>
-<app-sidebar *ngIf="tfa_fulfilled.value"></app-sidebar>
 <app-alerts  *ngIf="!(tfa_fulfilled.value)"></app-alerts>
 
 <div [ngClass]="qrCode.value ? 'rightnav' : 'twoFactor'">

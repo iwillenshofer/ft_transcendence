@@ -14,13 +14,11 @@ import { TwofactorComponent } from './components/login/twofactor/twofactor.compo
 import { ReactiveFormsModule } from '@angular/forms';
 import { AuthguardService } from './auth/guards/authguard.service';
 import { ChatModule } from './chat/chat.module';
-import { NavbarComponent } from './components/navigation/navbar/navbar.component';
-import { SidebarComponent } from './components/navigation/sidebar/sidebar.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
 import { GameComponent } from './components/game/game.component';
 import { ChatComponent } from './components/chat/chat.component';
 import { FriendsComponent } from './components/friends/friends.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { NavigationComponent } from './components/navigation/navigation.component';
 import { DialogAvatarComponent } from './components/dialogs/dialog-avatar/dialog-avatar.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -43,9 +41,7 @@ import { MatListModule } from '@angular/material/list';
     ButtonComponent,
     HomeComponent,
     TwofactorComponent,
-    NavigationComponent,
     NavbarComponent,
-    SidebarComponent,
     GameComponent,
     ChatComponent,
     FriendsComponent,
