@@ -1,6 +1,6 @@
-export const INITIAL_VELOCITY = 3;
-export const MAX_SCORE = 1;
-export const VELOCITY_INCREASE = 0.3;
+export const INITIAL_VELOCITY = 5;
+export const MAX_SCORE = 10;
+export const VELOCITY_INCREASE = 0.5;
 
 let table = {
     width: 1280,
@@ -172,39 +172,40 @@ function isCollision(rect1: { bottom: any; top: any; right: any; left: any; }, r
     return rect1.left <= rect2.right && rect1.right >= rect2.left && rect1.top <= rect2.bottom && rect1.bottom >= rect2.top;
 }
 
+let lastPoint = 0;
+
 function isLose() {
+    let newPoint = (new Date()).getTime();
     const rect = ballRect();
+    if (newPoint - lastPoint < 1000)
+        return false;
+    else
+        lastPoint = newPoint;
     return rect.right >= table.width || rect.left <= 0;
 }
 
 function handleLose() {
     let ballSide: any;
     const rect = ballRect();
-    if (rect.right >= table.width) {
-        player1.score += 1;
-        isGameFinished();
-        _socket.emit('score', gameID, player1.score, player2.score, finished);
-        _socket.once("updateScore", (scoreP1: any, scoreP2: any, finish: any) => {
-            player1.score = scoreP1;
-            player2.score = scoreP2;
-            finished = finish;
-        })
-        ballSide = -1;
-    }
     if (rect.left <= 0) {
         player2.score += 1;
-        _socket.emit('score', gameID, player1.score, player2.score, finished);
-        _socket.once("updateScore", (scoreP1: any, scoreP2: any, finish: any) => {
-            player1.score = scoreP1;
-            player2.score = scoreP2;
-            finished = finish;
-        })
         ballSide = 1;
     }
+    if (rect.right >= table.width) {
+        player1.score += 1;
+        ballSide = -1;
+    }
+    isGameFinished();
     resetPowers();
     resetPlayersPosition()
     resetBall();
     ball.direction.x *= ballSide;
+    _socket.emit('score', gameID, player1.score, player2.score, finished);
+    _socket.once("updateScore", (scoreP1: any, scoreP2: any, finish: any) => {
+        player1.score = scoreP1;
+        player2.score = scoreP2;
+        finished = finish;
+    })
 }
 
 function isGameFinished() {
