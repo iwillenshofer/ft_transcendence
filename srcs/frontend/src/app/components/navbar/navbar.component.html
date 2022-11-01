@@ -1,0 +1,53 @@
+<app-alerts></app-alerts>
+<nav class="navbar navbar-icon-top navbar-expand-lg navbar-dark bg-dark text-light">
+  
+  
+ 
+ 
+ 
+      <a class="navbar-brand" href="#">
+    <img id="logo" src="/assets/images/logo-p.svg" class="img-fluid" alt="logo">
+  </a>
+
+      <div class="collapse navbar-collapse" id="navbarToggler">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item" class="nav-item" routerLink="/home" routerLinkActive="link-active"><span class="nav-link"><fa-icon class="fa" [icon]="icons[0]"></fa-icon>HOME</span></li>
+
+            <li class="nav-item" routerLink="/pong" routerLinkActive="link-active"><span class="nav-link"><fa-icon class="nav-link" class="fa" [icon]="icons[1]"></fa-icon>PONG</span></li>
+
+            <li class=" nav-item" routerLink="/chat" href="#" routerLinkActive="link-active"><span class="nav-link"><fa-icon class="nav-link" class="fa" [icon]="icons[2]"></fa-icon>CHAT</span></li>
+
+            <li class="nav-item" routerLink="/friends" href="#" routerLinkActive="link-active"><span class="nav-link"><fa-icon class="nav-link" class="fa" [icon]="icons[3]"></fa-icon>FRIENDS</span></li>
+
+        </ul>
+    </div>
+
+
+
+
+         <div class="right-menu">
+
+            <div class="profile">
+              <div class="username">
+                <h4 class="mb-2"><strong>{{ this.username }}</strong></h4>
+              </div>
+              <div class="control-buttons">
+                <ul class="navbar-nav flex-row">
+                    <li routerLink="/profile" routerLinkActive="link-active"><fa-icon  [icon]="icons[4]"></fa-icon></li>
+                    <li (click)="logout()"><fa-icon  [icon]="icons[5]"></fa-icon></li>
+                  </ul>
+              </div>
+            </div>
+          <div class="right-controls">
+            <img src="{{ this.image }}" class="avatar rounded-circle" alt="Avatar">        
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+              </button>
+            </div>
+
+          </div>
+
+    
+      
+
+  </nav>
