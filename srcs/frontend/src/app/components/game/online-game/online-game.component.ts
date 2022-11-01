@@ -80,6 +80,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
 
   watchGame(gameID: string) {
     this.socket.emit("getPaddles", gameID)
+    this.socket.emit("powerUp", gameID)
     this.socket.on("updatePaddle", (player1: any, player2: any) => {
       this.player1 = player1;
       this.player2 = player2;

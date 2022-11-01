@@ -44,6 +44,14 @@ export class Game {
             y: 0.0
         }
     }
+    powerUp = {
+        x: 0,
+        y: 0,
+        time: 0,
+        show: false,
+        type: 0,
+        active: false,
+    }
     finished: boolean = false;
     gameID: string;
     isCustom: string = '';

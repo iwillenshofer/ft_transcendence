@@ -80,9 +80,25 @@ export class GameGateway {
   @SubscribeMessage('setPaddles')
   async setPaddles(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
     let gameID = data[0];
-    this.games[gameID].player1 = data[1];
-    this.games[gameID].player2 = data[2];
-    this.server.to(gameID).emit('updatePaddle', this.games[gameID].player1, this.games[gameID].player2)
+    if (this.isPlayer1(gameID, client.id)) {
+      this.games[gameID].player1 = data[1];
+      this.games[gameID].player2 = data[2];
+    }
+    this.server.to(data).emit('updatePaddle', this.games[gameID].player1, this.games[gameID].player2)
+  }
+
+  @SubscribeMessage('resetPaddles')
+  async resetPaddles(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
+    let gameID = data;
+    let player1 = this.games[gameID].player1;
+    let player2 = this.games[gameID].player2;
+    player1.y = 360 - (player1.height / 2);
+    player1.x = 20;
+    player2.y = 360 - (player2.height / 2);
+    player2.x = 1250;
+    player1.height = 150;
+    player2.height = 150;
+    this.server.to(gameID).emit('updatePaddle', player1, player2)
   }
 
   @SubscribeMessage('syncBall')
@@ -178,8 +194,8 @@ export class GameGateway {
   async powerUp(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let gameID = data[0];
     if (this.isPlayer1(gameID, client.id)) {
-      let powerUp = data[1];
-      this.server.to(gameID).emit("updatePowerUp", powerUp);
+      this.games[gameID].powerUp = data[1];
+      this.server.to(gameID).emit("updatePowerUp", this.games[gameID].powerUp);
     }
   }
 
