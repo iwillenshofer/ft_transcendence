@@ -36,7 +36,7 @@
     position: absolute;
     left: calc(60%);
     text-align: left;
-
+    border: 0;
     @include button(300px, 2vh);
 }
 
