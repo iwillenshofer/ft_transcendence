@@ -48,4 +48,9 @@ export class GameComponent implements OnInit {
     this.mode = 'spec';
     this.toWatch = gameID;
   }
+
+  quit(event: boolean) {
+    this.menu = true;
+    this.mode = 'quit';
+  }
 }

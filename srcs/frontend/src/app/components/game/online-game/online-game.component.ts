@@ -1,5 +1,5 @@
 import { AuthService } from 'src/app/auth/auth.service';
-import { Component, ViewChild, ElementRef, OnInit, HostListener, Input, OnDestroy } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit, HostListener, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
 import io from "socket.io-client";
 import { OnlineGameService } from './online-game.service';
 
@@ -17,6 +17,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   @Input() mode: any;
   @Input() powerUps: any;
   @Input() specGame: any;
+  @Output() quit: EventEmitter<boolean> = new EventEmitter();;
   socket: any;
   isWaiting: boolean = true;
   currentAnimationFrameId?: number;
@@ -31,6 +32,16 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
 
   constructor(public gameService: OnlineGameService, private auth: AuthService) {
     this.ball = gameService.getBall();
+  }
+
+  @HostListener('window:keyup', ['$event'])
+  keyEvent(event: KeyboardEvent) {
+    if (event.code == 'Escape') {
+      if (this.isWaiting || this.finished || this.mode == 'spec') {
+        this.socket.disconnect();
+        this.quit.emit(true);
+      }
+    }
   }
 
   ngOnInit(): void {
@@ -90,6 +101,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       powerUp = newPowerUp;
     })
     this.socket.on("ball", (ball: any) => {
+      console.log('a')
       this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
       this.drawLines();
       this.drawPowerUp(powerUp);
@@ -172,10 +184,12 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     window.cancelAnimationFrame(this.currentAnimationFrameId as number);
     this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
     this.updatePaddles(this.gameService.getPlayer1(), this.gameService.getPlayer2());
-    this.canvas.font = '10vh Lucida Console Courier New';
+    this.canvas.font = '10vh Lucida Console Courier New monospace';
     this.canvas.textBaseline = 'middle';
     this.canvas.textAlign = 'center';
     this.canvas.fillText(this.finishedMessage, 640, 360);
+    this.canvas.font = '3vh Lucida Console Courier New monospace';
+    this.canvas.fillText('[Esc] - Quit', 640, 420);
   }
 
   updatePaddles(P1: any, P2: any) {

@@ -38,7 +38,8 @@ $game-font-family: "Lucida Console", "Courier New", monospace;
     button {
         text-align: left;
         font-family: $game-font-family;
-        height: 10vh;
+        height: 11vh;
+        line-height: 2vh;
         width: $width;
         cursor: pointer;
         font-size: $font-size;

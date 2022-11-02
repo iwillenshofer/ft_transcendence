@@ -1,5 +1,5 @@
 export const INITIAL_VELOCITY = 5;
-export const MAX_SCORE = 1;
+export const MAX_SCORE = 9999;
 export const VELOCITY_INCREASE = 0.5;
 
 let table = {
@@ -96,10 +96,6 @@ window.onkeydown = function move(e) {
         if (e.key == 's' || e.key == 'S' || e.key == 'ArrowDown') {
             _socket.emit("move", gameID, player1, player2, "down");
         }
-    }
-    if (!started || finished || mode == 'spec') {
-        if (e.key == 'q' || e.key == 'Q' || e.key == 'Escape')
-            location.reload();
     }
 }
 
@@ -369,4 +365,8 @@ export function setP1Username(username: string) {
 
 export function setP2Username(username: string) {
     player2.username = username;
+}
+
+export function setFinished() {
+    finished = true;
 }

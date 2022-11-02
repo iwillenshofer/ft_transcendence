@@ -98,6 +98,7 @@ export class OnlineGameService {
       else
         res = 2;
     }
+    game.setFinished();
     return res;
   }
 

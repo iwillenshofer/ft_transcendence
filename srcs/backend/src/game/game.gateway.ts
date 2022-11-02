@@ -18,7 +18,7 @@ export class GameGateway {
   async liveGames(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let liveGames: Game[] = [];
     this.games.forEach(game => {
-      if (!game.finished)
+      if (game.connected >= 2)
         liveGames.push(game);
     });
     this.server.to(client.id).emit("games", liveGames);
@@ -27,7 +27,12 @@ export class GameGateway {
 
   @SubscribeMessage('watchGame')
   async watchGame(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    this.setPlayers(client, data, '');
+    const game = this.games[data]
+    if (game) {
+      game.connected += 1;
+      client.join(game.gameID)
+      this.server.to(game.gameID).emit("specs", game.player1, game.player2, game.gameID);
+    }
   }
 
   @SubscribeMessage('joinGame')
@@ -67,8 +72,6 @@ export class GameGateway {
     if (game.player1.socket && game.player2.socket) {
       if (client.id == game.player1.socket || client.id == game.player2.socket)
         this.server.to(game.gameID).emit("players", game.player1, game.player2, game.gameID);
-      else
-        this.server.to(game.gameID).emit("specs", game.player1, game.player2, game.gameID);
     }
   }
 
@@ -198,7 +201,6 @@ export class GameGateway {
       this.server.to(gameID).emit("updatePowerUp", this.games[gameID].powerUp);
     }
   }
-
 
   @SubscribeMessage('finishMessage')
   finishMessage(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
