@@ -4,6 +4,7 @@ import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { forbiddenNameValidator } from './forbidden-name.directive';
 import { UserService } from 'src/app/services/user.service';
 import { isUsernameTaken } from 'src/app/validators/async-username.validator';
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
   selector: 'app-dialog-username',
@@ -22,6 +23,7 @@ export class DialogUsernameComponent implements OnInit {
   ], [isUsernameTaken(this.userService)]);
 
   constructor(private userService: UserService,
+    private authService: AuthService,
     private formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
@@ -33,6 +35,7 @@ export class DialogUsernameComponent implements OnInit {
       (event: any) => {
         if (event.username != '') {
           this.userService.Username = event.username;
+          this.authService.updateUser();
         }
       }
     )

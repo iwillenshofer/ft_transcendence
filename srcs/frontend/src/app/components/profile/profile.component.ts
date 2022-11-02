@@ -1,13 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogUsernameComponent } from '../dialogs/dialog-username/dialog-username.component'
+import { DialogUsernameComponent } from './dialogs/dialog-username/dialog-username.component'
 import { UserService } from 'src/app/services/user.service';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import { DialogAvatarComponent } from '../dialogs/dialog-avatar/dialog-avatar.component';
+import { DialogAvatarComponent } from './dialogs/dialog-avatar/dialog-avatar.component';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/auth/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { AlertsService } from 'src/app/alerts/alerts.service';
+import { BehaviorSubject } from 'rxjs';
+import { User } from 'src/app/auth/user.model';
 
 @Component({
   selector: 'app-profile',
@@ -17,9 +19,9 @@ import { AlertsService } from 'src/app/alerts/alerts.service';
 export class ProfileComponent implements OnInit {
 
   tfa_enabled: boolean | undefined = false;
-  username: string = "";
   image: string = "";
   faEdit = faEdit;
+  public userSubject: BehaviorSubject<User | null>;
 
   constructor(
     public dialog: MatDialog,
@@ -28,20 +30,12 @@ export class ProfileComponent implements OnInit {
     private authService: AuthService,
     private http: HttpClient,
     private alertservice: AlertsService
-  ) { }
+  ) {
+    this.userSubject = this.authService.userSubject;
+  }
 
   ngOnInit(): void {
     this.tfa_enabled = this.authService.userSubject.value?.tfa_enabled;
-  }
-
-  openDialogUsername() {
-    const dialogRef = this.dialog.open(DialogUsernameComponent, {
-      data: { title: 'Change your username' }
-    });
-
-    dialogRef.afterClosed().subscribe(
-      () => this.username = this.userService.Username
-    );
   }
 
   openDialogAvatar() {
