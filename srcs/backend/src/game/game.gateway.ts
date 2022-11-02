@@ -161,7 +161,6 @@ export class GameGateway {
         this.games.splice(Number(game.gameID), 1);
       }
       else if (client.id == game.player1.socket) {
-        console.log('Game saved!')
         await this.gameService.addGame(this.games[gameID])
         delete this.games[gameID];
         this.games.splice(Number(gameID), 1);
