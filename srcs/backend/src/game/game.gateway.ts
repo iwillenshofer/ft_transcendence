@@ -113,6 +113,12 @@ export class GameGateway {
     }
   }
 
+  @SubscribeMessage('getBall')
+  async getBall(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
+    let gameID = data[0];
+    this.server.to(gameID).emit("ball", this.games[gameID].ball);
+  }
+
   @SubscribeMessage('move')
   async move(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
     let gameID = data[0];
@@ -193,6 +199,12 @@ export class GameGateway {
     }
   }
 
+  @SubscribeMessage('getPowerUp')
+  async getPowerUp(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+    let gameID = data[0];
+    this.server.to(gameID).emit("updatePowerUp", this.games[gameID].powerUp);
+  }
+
   @SubscribeMessage('powerUp')
   async powerUp(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let gameID = data[0];
@@ -204,18 +216,18 @@ export class GameGateway {
 
   @SubscribeMessage('finishMessage')
   finishMessage(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    let gameID = this.findGameBySocketId(client.id).toString();
+    let gameID = this.findGameBySocketId(client.id);
     if (data[1] == '1')
       this.games[gameID].winner = this.games[gameID].player1;
     else if (data[1] == '2')
       this.games[gameID].winner = this.games[gameID].player2;
     else
       this.games[gameID].winner = null;
-    this.server.to(gameID).emit("winner", data[0]);
+    this.server.to(gameID.toString()).emit("winner", data[0]);
   }
 
   isPlayer1(gameID: string, id: any) {
-    if (id == this.games[gameID].player1.socket)
+    if (this.games[gameID].player1 && id == this.games[gameID].player1.socket)
       return true;
     return false;
   }

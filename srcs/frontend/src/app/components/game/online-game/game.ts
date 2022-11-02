@@ -196,7 +196,8 @@ function handleLose() {
     resetPlayersPosition()
     resetBall();
     ball.direction.x *= ballSide;
-    _socket.emit('score', gameID, player1.score, player2.score, finished);
+    if (isPlayer())
+        _socket.emit('score', gameID, player1.score, player2.score, finished);
     _socket.on("updateScore", (scoreP1: any, scoreP2: any, finish: any) => {
         player1.score = scoreP1;
         player2.score = scoreP2;
@@ -229,11 +230,13 @@ function resetBall() {
 function resetScore() {
     player1.score = 0;
     player2.score = 0;
-    _socket.emit('score', gameID, player1.score, player2.score, finished);
+    if (isPlayer())
+        _socket.emit('score', gameID, player1.score, player2.score, finished);
 }
 
 function syncScore() {
-    _socket.emit('syncScore', gameID);
+    if (isPlayer())
+        _socket.emit('syncScore', gameID);
     _socket.on('updateScore', (scoreP1: any, scoreP2: any, finish: any) => {
         player1.score = scoreP1;
         player2.score = scoreP2;
@@ -242,7 +245,8 @@ function syncScore() {
 }
 
 function syncBall() {
-    _socket.emit('syncBall', gameID, ball);
+    if (isPlayer())
+        _socket.emit('syncBall', gameID, ball);
     _socket.on('ball', (newBall: any) => {
         ball = newBall;
     })
@@ -269,7 +273,8 @@ function resetPlayersPosition() {
     player1.y = (table.height / 2) - (player1.height / 2);
     player2.x = table.width - 30; // - 10 da margin
     player2.y = (table.height / 2) - (player2.height / 2);
-    _socket.emit('resetPaddles', gameID);
+    if (isPlayer())
+        _socket.emit('resetPaddles', gameID);
 }
 
 function resetPlayerPosition(player: number) {
@@ -303,7 +308,8 @@ function resetPowerUp(show: boolean) {
 }
 
 function syncPowerUp() {
-    _socket.emit('powerUp', gameID, powerUp);
+    if (isPlayer())
+        _socket.emit('powerUp', gameID, powerUp);
     _socket.on('updatePowerUp', (newPowerUp: any) => {
         powerUp = newPowerUp;
     })
@@ -330,13 +336,15 @@ function givePowerUp() {
         powerUp.type = power;
         player.height = 500;
         resetPlayerPosition(ball.lastTouch);
-        _socket.emit('setPaddles', gameID, player1, player2);
+        if (isPlayer())
+            _socket.emit('setPaddles', gameID, player1, player2);
 
     }
     else if (power == 3) {
         powerUp.type = power;
         player.height = 50;
-        _socket.emit('setPaddles', gameID, player1, player2);
+        if (isPlayer())
+            _socket.emit('setPaddles', gameID, player1, player2);
     }
 }
 
@@ -369,4 +377,10 @@ export function setP2Username(username: string) {
 
 export function setFinished() {
     finished = true;
+}
+
+function isPlayer() {
+    if (_socket.id == player1.socket || _socket.id == player2.socket)
+        return true;
+    return false;
 }

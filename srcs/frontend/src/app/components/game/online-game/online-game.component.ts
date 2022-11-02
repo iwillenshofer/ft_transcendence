@@ -81,6 +81,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   specs() {
+    this.gameService.setGameSocket(this.socket);
     this.socket.on("specs", (player1: any, player2: any, gameID: string) => {
       this.player1 = player1;
       this.player2 = player2;
@@ -91,7 +92,9 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
 
   watchGame(gameID: string) {
     this.socket.emit("getPaddles", gameID)
-    this.socket.emit("powerUp", gameID)
+    this.socket.emit("getPowerUp", gameID)
+    this.socket.emit("getBall", gameID)
+    this.socket.emit("syncScore", gameID)
     this.socket.on("updatePaddle", (player1: any, player2: any) => {
       this.player1 = player1;
       this.player2 = player2;
@@ -101,7 +104,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       powerUp = newPowerUp;
     })
     this.socket.on("ball", (ball: any) => {
-      console.log('a')
       this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
       this.drawLines();
       this.drawPowerUp(powerUp);
@@ -213,7 +215,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
 
   drawPowerUp(powerUp: any) {
     let ctx = this.gameCanvas.nativeElement.getContext("2d");
-    if (powerUp.show) {
+    if (powerUp && powerUp.show) {
       var img = document.getElementById("powerUp");
       ctx.drawImage(img, powerUp.x, powerUp.y, 100, 100);
     }
