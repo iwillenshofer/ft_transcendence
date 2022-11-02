@@ -1,5 +1,5 @@
 export const INITIAL_VELOCITY = 5;
-export const MAX_SCORE = 10;
+export const MAX_SCORE = 1;
 export const VELOCITY_INCREASE = 0.5;
 
 let table = {
@@ -222,7 +222,7 @@ function isGameFinished() {
 }
 
 function resetBall() {
-    ball.x = table.width / 2;
+    ball.x = table.width / 2 + 5;
     ball.y = table.height / 2;
     ball.velocity = INITIAL_VELOCITY;
     ballRandomX();

@@ -199,6 +199,19 @@ export class GameGateway {
     }
   }
 
+
+  @SubscribeMessage('finishMessage')
+  finishMessage(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+    let gameID = this.findGameBySocketId(client.id).toString();
+    if (data[1] == '1')
+      this.games[gameID].winner = this.games[gameID].player1;
+    else if (data[1] == '2')
+      this.games[gameID].winner = this.games[gameID].player2;
+    else
+      this.games[gameID].winner = null;
+    this.server.to(gameID).emit("winner", data[0]);
+  }
+
   isPlayer1(gameID: string, id: any) {
     if (id == this.games[gameID].player1.socket)
       return true;

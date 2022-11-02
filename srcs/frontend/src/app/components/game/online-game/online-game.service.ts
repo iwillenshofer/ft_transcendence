@@ -64,18 +64,41 @@ export class OnlineGameService {
   }
 
   getFinalMessage(reason: any, disconnected: any): string {
+    let res: string = '';
     if (reason == 'down')
       return 'Server is off'
     if (reason == 'disconnect') {
       if (game.player1.socket == disconnected)
-        return game.player2.username + '\nwon';
+        res = game.player1.username + ' disconnected!';
       else if (game.player2.socket == disconnected)
-        return game.player1.username + '\nwon';
+        res = game.player2.username + ' disconnected!';
     }
-    if (game.player1.score > game.player2.score)
-      return game.player1.username + '\nwon';
-    else
-      return game.player2.username + '\nwon';
+    else {
+      if (game.player1.score > game.player2.score)
+        res = game.player1.username + ' won!';
+      else
+        res = game.player2.username + ' won!';
+    }
+    return res;
+  }
+
+  getWinner(reason: any, disconnected: any): number {
+    let res: number = 0;
+    if (reason == 'down')
+      return 3;
+    if (reason == 'disconnect') {
+      if (game.player1.socket == disconnected)
+        res = 2;
+      else if (game.player2.socket == disconnected)
+        res = 1;
+    }
+    else {
+      if (game.player1.score > game.player2.score)
+        res = 1;
+      else
+        res = 2;
+    }
+    return res;
   }
 
   // getScore() {

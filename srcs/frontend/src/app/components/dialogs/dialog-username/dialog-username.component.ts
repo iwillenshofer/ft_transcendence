@@ -15,7 +15,7 @@ export class DialogUsernameComponent implements OnInit {
   form = new FormControl('', [
     Validators.required,
     Validators.minLength(3),
-    Validators.maxLength(20),
+    Validators.maxLength(15),
     Validators.pattern('^[a-z0-9]+$'),
     forbiddenNameValidator(this.userService.Username),
     forbiddenNameValidator('admin')

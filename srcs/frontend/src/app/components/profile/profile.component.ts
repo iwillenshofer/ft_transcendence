@@ -27,7 +27,7 @@ export class ProfileComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private http: HttpClient,
-	private alertservice: AlertsService
+    private alertservice: AlertsService
   ) { }
 
   ngOnInit(): void {
@@ -66,11 +66,11 @@ export class ProfileComponent implements OnInit {
         await this.authService.updateUser();
         this.tfa_enabled = this.authService.userSubject.value?.tfa_enabled;
       }
-	  if (!(this.tfa_enabled)) {
-		this.alertservice.success('TFA Successfully Disabled');
-	  } else {
-		this.alertservice.warning('Failed disabling TFA');
-	  }
+      if (!(this.tfa_enabled)) {
+        this.alertservice.success('TFA Successfully Disabled');
+      } else {
+        this.alertservice.warning('Failed disabling TFA');
+      }
     });
   }
 

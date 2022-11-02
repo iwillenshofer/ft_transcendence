@@ -57,4 +57,5 @@ export class Game {
     isCustom: string = '';
     connected: number = 0;
     index: number = 0;
+    winner: IPlayer;
 }

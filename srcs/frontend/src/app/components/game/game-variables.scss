@@ -19,21 +19,6 @@ $game-font-family: "Lucida Console", "Courier New", monospace;
     top: 110px;
 }
 
-@mixin popUp($font-size) {
-    color: white;
-    font-family: $game-font-family;
-    position: absolute;
-    margin-top: 100px;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: black;
-    z-index: 1;
-    height: calc(2 * $font-size);
-    font-size: $font-size;
-    text-align: center;
-}
-
 @mixin score($font-size, $width) {
     color: white;
     position: absolute;
@@ -41,6 +26,7 @@ $game-font-family: "Lucida Console", "Courier New", monospace;
     left: 50%;
     transform: translateX(-50%);
     // display: inline-block;
+    // text-align-last: justify;
     justify-content: space-between;
     font-family: $game-font-family;
     font-size: $font-size;

@@ -5,11 +5,17 @@
 }
 
 .waiting {
-    @include popUp(3vh);
-
-    // &__title {
-    //     margin-top: 50%;
-    // }
+    color: white;
+    font-family: $game-font-family;
+    position: absolute;
+    margin-top: 100px;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    font-size: 3vh;
+    text-align: center;
+    min-height: 50px;
 }
 
 .score {
@@ -20,7 +26,7 @@
 .usernames {
     margin-top: 150px;
     bottom: 5vh;
-    @include score(20px, 100%);
+    @include score(2vw, 100%);
 
     &__p1 {
         float: left;
@@ -35,16 +41,26 @@
     }
 }
 
-.finished {
-    @include popUp(5vh);
+// .finished {
+//     color: white;
+//     font-family: $game-font-family;
+//     position: absolute;
+//     top: calc(160px + 30%);
+//     left: 50%;
+//     transform: translate(-50%, -50%);
+//     z-index: 1;
+//     font-size: 5vh;
+//     text-align: center;
+//     background-color: black;
 
-    &__title {
-        margin-top: 10vh;
-        transform: translateY(-50%);
-    }
-}
+//     &__title {
+//         margin-top: 8vh;
+//         transform: translateY(-50%);
+//         margin-bottom: 0;
+//     }
+// }
 
 .quit {
     font-size: 2vh;
-    margin-top: 30px;
+    margin-top: 3vh;
 }
