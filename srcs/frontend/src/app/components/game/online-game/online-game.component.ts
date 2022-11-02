@@ -38,8 +38,9 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   keyEvent(event: KeyboardEvent) {
     if (event.code == 'Escape') {
       if (this.isWaiting || this.finished || this.mode == 'spec') {
-        this.socket.disconnect();
-        this.quit.emit(true);
+        window.location.reload();
+        // this.socket.disconnect();
+        // this.quit.emit(true);
       }
     }
   }
