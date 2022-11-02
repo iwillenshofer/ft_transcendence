@@ -1,8 +1,6 @@
 @import url('http://fonts.cdnfonts.com/css/old-computer-st');
 
-#logo { 
-    max-width: 150px;
-}
+
 #user {
     margin-left: auto;
     margin-right: 5px;
@@ -56,7 +54,12 @@
 
 }
 
-
+.left-menu {
+  flex-basis: auto;
+  display: flex!important;
+  flex-grow: 1;
+align-items: center;
+}
 
 
 .right-link { 
@@ -78,6 +81,8 @@
 
 .nav-item {
     cursor: pointer;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 .navbar-collapse {
   flex-basis: auto;
@@ -88,112 +93,54 @@
 .nav-item:hover,
 .nav-item:active,
 .link-active {
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    color: orange;
+    border-bottom-width: 2px;
+    border-bottom-color: orange;
+    border-bottom-style: solid;
 }
 
-
+.navbar-expand-lg .navbar-nav {
+    flex-direction: row;
+    }
 
 .navbar-icon-top .navbar-nav .nav-link > fa-icon {
     position: relative;
     width: 36px;
     font-size: 24px;
-  }
-  
-  .navbar-icon-top .navbar-nav .nav-link > fa-icon > .badge {
-    font-size: 0.75rem;
-    position: absolute;
-    right: 0;
-    font-family: sans-serif;
-  }
-  
-  .navbar-icon-top .navbar-nav .nav-link > fa-icon {
     top: 3px;
     line-height: 12px;
     margin-left:4px;
     margin-right: 4px;
   }
-  
-  @media (min-width: 576px) {
-    .navbar-icon-top.navbar-expand-sm .navbar-nav .nav-link {
-      text-align: center;
-      display: table-cell;
-      vertical-align: middle;
-      padding-top: 0;
-      padding-bottom: 0;
-    }
-  
-    .navbar-icon-top.navbar-expand-sm .navbar-nav .nav-link > fa-icon {
-      display: block;
-      width: 48px;
-      margin: 2px auto 4px auto;
-      top: 0;
-      line-height: 24px;
-    }
-  
-    .navbar-icon-top.navbar-expand-sm .navbar-nav .nav-link > fa-icon > .badge {
-      top: -7px;
-    }
+  .nav-link {
+    padding-right: .5rem;
+    padding-left: .5rem;
+  }
+  .nav-title {
+    display: none;
   }
   
-  @media (min-width: 768px) {
-    .navbar-icon-top.navbar-expand-md .navbar-nav .nav-link {
-      text-align: center;
-      display: table-cell;
+  #logo { 
+    width: 50px;
+    height: 50px;
+    margin-left: 10px;
+    margin-right: 20px;
+    background-image: url("/assets/images/logo-s.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
 
-      vertical-align: middle;
-      padding-top: 0;
-      padding-bottom: 0;
-    }
-  
-    .navbar-icon-top.navbar-expand-md .navbar-nav .nav-link > fa-icon {
-      display: block;
-      width: 48px;
-      margin: 2px auto 4px auto;
-      top: 0;
-      line-height: 24px;
+  @media (min-width: 800px) {
+    #logo { 
+      width: 170px;
+      height: 70px;
+      margin-right: 0px;
+      background-image: url("/assets/images/logo-p.svg");
     }
   }
-  
-  @media (min-width: 992px) {
-    .navbar-icon-top.navbar-expand-lg .navbar-nav .nav-link {
-      text-align: center;
-      display: table-cell;
 
-      vertical-align: middle;
-      padding-top: 0;
-      padding-bottom: 0;
-    }
-  
-    .navbar-icon-top.navbar-expand-lg .navbar-nav .nav-link > fa-icon {
-      display: block;
-      width: 48px;
-      margin: 2px auto 4px auto;
-      top: 0;
-      line-height: 24px;
+  @media (min-width: 1020px) {
+    .nav-title {
+      display: unset;
     }
   }
   
-  @media (min-width: 1200px) {
-    .navbar-icon-top.navbar-expand-xl .navbar-nav .nav-link {
-      text-align: center;
-      display: table-cell;
-
-      vertical-align: middle;
-      padding-top: 0;
-      padding-bottom: 0;
-    }
-  
-    .navbar-icon-top.navbar-expand-xl .navbar-nav .nav-link > fa-icon {
-      display: block;
-      width: 48px;
-      margin: 2px auto 4px auto;
-      top: 0;
-      line-height: 24px;
-    }
-  
-    .navbar-icon-top.navbar-expand-xl .navbar-nav .nav-link > fa-icon > .badge {
-      top: -7px;
-    }
-  }
