@@ -1,5 +1,5 @@
 export const INITIAL_VELOCITY = 5;
-export const MAX_SCORE = 9999;
+export const MAX_SCORE = 3;
 export const VELOCITY_INCREASE = 0.5;
 
 let table = {

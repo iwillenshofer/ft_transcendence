@@ -11,6 +11,7 @@ import { UserEntity } from './users/users.entity';
 import { RoomEntity } from './chat/models/room.entity';
 import { AuthEntity } from './auth/models/auth.entity';
 import { GameModule } from './game/game.module';
+import { GameEntity } from './game/game.entity';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { GameModule } from './game/game.module';
       username: process.env.POSTGRES_USER || 'postgres',
       password: process.env.POSTGRES_PASSWORD || 'postgress',
       database: process.env.POSTGRES_DB || 'postgres',
-      entities: [UserEntity, RoomEntity, AuthEntity],
+      entities: [UserEntity, RoomEntity, AuthEntity, GameEntity],
       synchronize: true,
     }),
     GameModule,

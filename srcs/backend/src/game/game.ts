@@ -1,20 +1,13 @@
-interface IPlayer {
-    socket: any,
-    x: number,
-    y: number,
-    score: number,
-    message: string,
-    width: number,
-    height: number,
-    username: string,
-}
+import { IPlayer } from "./game.interface";
 
 export class Game {
     constructor(gameId: string, custom: string) {
         this.gameID = gameId;
         this.isCustom = custom;
     }
+
     player1: IPlayer = {
+        id: 0,
         socket: '',
         x: 0,
         y: 0,
@@ -25,6 +18,7 @@ export class Game {
         username: ''
     };
     player2: IPlayer = {
+        id: 0,
         socket: '',
         x: 0,
         y: 0,

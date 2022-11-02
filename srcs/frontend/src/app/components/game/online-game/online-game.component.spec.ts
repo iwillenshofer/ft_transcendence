@@ -8,9 +8,9 @@ describe('OnlineGameComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ OnlineGameComponent ]
+      declarations: [OnlineGameComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(OnlineGameComponent);
     component = fixture.componentInstance;

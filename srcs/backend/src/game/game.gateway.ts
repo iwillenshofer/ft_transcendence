@@ -1,3 +1,5 @@
+import { GameService } from './game.service';
+import { UsersService } from 'src/users/users.service';
 import { Game } from './game';
 import { UseGuards } from '@nestjs/common';
 import { WebSocketGateway, SubscribeMessage, WebSocketServer, MessageBody, ConnectedSocket } from '@nestjs/websockets';
@@ -6,6 +8,8 @@ import { TfaGuard } from 'src/auth/tfa/tfa.guard';
 
 @WebSocketGateway({ cors: '*:*', namespace: 'game' })
 export class GameGateway {
+
+  constructor(private gameService: GameService) { }
 
   @WebSocketServer()
   server: Server;
@@ -147,21 +151,18 @@ export class GameGateway {
   }
 
   @UseGuards(TfaGuard)
-  handleDisconnect(client: Socket, ...args: any[]) {
+  async handleDisconnect(client: Socket, ...args: any[]) {
     const gameID = this.findGameBySocketId(client.id);
     const game = this.games[gameID]
     if (game && (client.id == game.player1.socket || client.id == game.player2.socket)) {
       this.server.to(gameID.toString()).emit("endGame", client.id);
       if (client.id == game.player1.socket && !game.player2.socket) {
-        game.player1.socket = null;
         delete this.games[game.gameID];
         this.games.splice(Number(game.gameID), 1);
       }
-      if (client.id == game.player1.socket)
-        game.player1.socket = null;
-      else
-        game.player2.socket = null;
-      if (!game.player1.socket && !game.player2.socket) {
+      else if (client.id == game.player1.socket) {
+        console.log('Game saved!')
+        await this.gameService.addGame(this.games[gameID])
         delete this.games[gameID];
         this.games.splice(Number(gameID), 1);
       }
@@ -215,7 +216,7 @@ export class GameGateway {
   }
 
   @SubscribeMessage('finishMessage')
-  finishMessage(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+  async finishMessage(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let gameID = this.findGameBySocketId(client.id);
     if (data[1] == '1')
       this.games[gameID].winner = this.games[gameID].player1;

@@ -1,4 +1,5 @@
 import { RoomEntity } from 'src/chat/models/room.entity';
+import { GameEntity } from 'src/game/game.entity';
 import { BaseEntity, Entity, Unique, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany } from 'typeorm';
 
 @Entity({ name: 'User' })

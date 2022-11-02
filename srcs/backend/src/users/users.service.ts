@@ -1,3 +1,4 @@
+import { IGame } from 'src/game/game.interface';
 import { Injectable } from '@nestjs/common';
 import { UserEntity } from './users.entity';
 import { UserDTO } from './users.dto';
@@ -9,6 +10,7 @@ import * as fs from 'fs';
 import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EncryptService } from 'src/services/encrypt.service';
+import { Game } from 'src/game/game';
 
 /*
 ** This is basically a the Database... We will implement TypeORM.
@@ -82,6 +84,11 @@ export class UsersService {
 		user.username = username;
 		const results = await this.userRepository.save(user);
 		return username;
+	}
+
+	async getIdByUsername(username: string) {
+		let user = await this.userRepository.findOneBy({ username: username });
+		return (user.id);
 	}
 
 	async getUsername(id: number) {
