@@ -2,15 +2,15 @@
 <em>
 
     <div *ngIf="form.errors?.['required']">
-        <small>Must be between 3 and 20 characters in length</small>
+        <small>Must be between 3 and 15 characters in length</small>
     </div>
 
     <div class="invalid" *ngIf="form.errors?.['minlength'] || form.errors?.['maxlength']">
-        <small>Must be between 3 and 20 characters in length</small>
+        <small>Must be between 3 and 15 characters in length</small>
     </div>
 
     <div class="valid" *ngIf="!form.errors?.['minlength'] && !form.errors?.['maxlength'] && !form.errors?.['required']">
-        <small>Must be between 3 and 20 characters in length</small>
+        <small>Must be between 3 and 15 characters in length</small>
     </div>
 
     <div *ngIf="form.errors?.['required']">
