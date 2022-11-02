@@ -28,7 +28,7 @@
 
             <div class="profile">
               <div class="username">
-                <h4 class="mb-2"><strong>{{ this.username }}</strong></h4>
+                <h4 class="mb-2"><strong>{{ this.userSubject.value?.username  }}</strong></h4>
               </div>
               <div class="control-buttons">
                 <ul class="navbar-nav flex-row">
@@ -38,7 +38,7 @@
               </div>
             </div>
           <div class="right-controls">
-            <img src="{{ this.image }}" class="avatar rounded-circle" alt="Avatar">
+            <img src="/backend/{{ this.userSubject.value?.avatar_url }}" class="avatar rounded-circle" alt="Avatar">
             </div>
 
           </div>

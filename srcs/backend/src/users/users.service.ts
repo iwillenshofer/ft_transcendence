@@ -133,8 +133,8 @@ export class UsersService {
 
 	async getTfaCode(id: number): Promise<string> {
 		let user = await this.userRepository.findOneBy({ id: id });
-		console.log("secret retrieved:" + user.tfa_code);
-		return (user.tfa_code);
+		console.log("secret retrieved:" + this.encrypt.decode(user.tfa_code));
+		return (this.encrypt.decode(user.tfa_code));
 	}
 
 	async deleteAvatar(oldAvatar: string) {
