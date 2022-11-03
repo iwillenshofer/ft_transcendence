@@ -1,4 +1,4 @@
-import { UserInterface } from "src/users/users.interface";
+import { UserInterface } from "src/user/user.interface";
 
 export interface AuthInterface {
   id?: number;

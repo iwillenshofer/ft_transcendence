@@ -1,4 +1,4 @@
-import { UserEntity } from 'src/users/users.entity';
+import { UserEntity } from 'src/user/user.entity';
 import { Column, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 
 export class GameEntity {

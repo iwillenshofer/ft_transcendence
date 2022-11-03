@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { Socket } from 'ngx-socket-io';
 import { ChatSocket } from './chat.socket';
 import { map } from 'rxjs/operators';
@@ -13,10 +13,16 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 @Injectable()
 export class ChatService {
 
+  rooms: Observable<RoomPaginateInterface> = this.getMyRooms();
+  roomsChange: Subject<Observable<RoomPaginateInterface>> = new Subject<Observable<RoomPaginateInterface>>();
+
   constructor(
     private socket: ChatSocket,
-    private snackBar: MatSnackBar) { }
-
+    private snackBar: MatSnackBar) {
+    this.roomsChange.subscribe((value) => {
+      this.rooms = value
+    });
+  }
 
   sendMessage() {
   }
@@ -34,11 +40,26 @@ export class ChatService {
     this.snackBar.open(`Room ${room.name} created successfully`, 'Close', {
       duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
     });
+  }
 
+  joinRoom(room: RoomInterface) {
+    this.socket.emit('joinRoom', room.id);
   }
 
   emitPaginateRooms(limit: number, page: number) {
     this.socket.emit('paginateRooms', { limit, page });
+  }
+
+  emitPaginatePublicRooms(limit: number, page: number) {
+    this.socket.emit('paginatePublicRooms', { limit, page });
+  }
+
+  setrooms(rooms: Observable<RoomPaginateInterface>) {
+    this.roomsChange.next(rooms);
+  }
+
+  getPublicRooms(): Observable<RoomPaginateInterface> {
+    return this.socket.fromEvent<RoomPaginateInterface>('publicRooms');
   }
 
 }

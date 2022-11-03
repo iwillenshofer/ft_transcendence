@@ -1,4 +1,4 @@
-import { RoomInterface } from "src/rooms/rooms.interface";
+import { RoomInterface } from "src/room/room.interface";
 
 export interface UserInterface {
   id?: number;

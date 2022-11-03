@@ -1,4 +1,4 @@
-import { UserEntity } from './users.entity';
+import { UserEntity } from './user.entity';
 
 export class UserDTO {
 	id: number;

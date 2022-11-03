@@ -1,5 +1,6 @@
-import { RoomEntity } from 'src/rooms/rooms.entity';
-import { BaseEntity, Entity, Unique, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany } from 'typeorm';
+
+import { RoomEntity } from 'src/room/room.entity';
+import { BaseEntity, Entity, Unique, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, OneToMany } from 'typeorm';
 
 @Entity({ name: 'User' })
 @Unique(['id'])

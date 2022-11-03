@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt'
 import { authenticator } from "otplib";
-import { UsersService } from 'src/users/users.service';
-import { UserDTO } from 'src/users/users.dto';
+import { UserService } from 'src/user/user.service';
+import { UserDTO } from 'src/user/user.dto';
 import { AuthInterface } from './models/auth.interface';
 import * as crypto from 'crypto';
 import { AuthEntity } from './models/auth.entity';
@@ -16,7 +16,7 @@ export class AuthService {
 		@InjectRepository(AuthEntity)
 		private readonly authRepository: Repository<AuthEntity>,
 		private jwtService: JwtService,
-		private userService: UsersService,
+		private userService: UserService,
 	) { };
 
 	async getOrCreateUser(data: any): Promise<UserDTO> {

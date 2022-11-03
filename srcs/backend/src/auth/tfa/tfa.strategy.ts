@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport'
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { Request } from 'express'
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from 'src/users/users.service';
+import { UserService } from 'src/user/user.service';
 
 /*
 ** strategy will always return User Object, retrieved using
@@ -12,7 +12,7 @@ import { UsersService } from 'src/users/users.service';
 @Injectable()
 export class TfaStrategy extends PassportStrategy(Strategy, 'tfa') {
 	constructor(
-		private userService: UsersService,
+		private userService: UserService,
 		private jwtService: JwtService
 	) {
 		super({

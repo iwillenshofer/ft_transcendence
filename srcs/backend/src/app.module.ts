@@ -2,21 +2,22 @@ import { Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
+import { UserModule } from './user/user.module';
 import { ChatModule } from './chat/chat.module';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { AuthEntity } from './auth/models/auth.entity';
 import { GameModule } from './game/game.module';
-import { UserEntity } from './users/users.entity';
-import { RoomEntity } from './rooms/rooms.entity';
-import { RoomsModule } from './rooms/rooms.module';
+import { UserEntity } from './user/user.entity';
+import { RoomEntity } from './room/room.entity';
+import { RoomModule } from './room/room.module';
+import { MessageEntity } from './chat/message/message.entity';
 
 @Module({
   imports: [
     AuthModule,
-    UsersModule,
+    UserModule,
     ChatModule,
     JwtModule.register({ secret: process.env.JWT_SECRET }),
     TypeOrmModule.forRoot({
@@ -26,11 +27,11 @@ import { RoomsModule } from './rooms/rooms.module';
       username: process.env.POSTGRES_USER || 'postgres',
       password: process.env.POSTGRES_PASSWORD || 'postgress',
       database: process.env.POSTGRES_DB || 'postgres',
-      entities: [UserEntity, RoomEntity, AuthEntity],
+      entities: [UserEntity, RoomEntity, AuthEntity, MessageEntity],
       synchronize: true,
     }),
     GameModule,
-    RoomsModule,
+    RoomModule,
   ],
   controllers: [AppController],
   providers: [AppService],

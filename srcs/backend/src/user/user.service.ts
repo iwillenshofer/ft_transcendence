@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { UserEntity } from './users.entity';
-import { UserDTO } from './users.dto';
+import { UserEntity } from './user.entity';
+import { UserDTO } from './user.dto';
 import { HttpService } from '@nestjs/axios';
 export { UserEntity }
 import { createWriteStream } from 'fs';
@@ -9,14 +9,14 @@ import * as fs from 'fs';
 import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EncryptService } from 'src/services/encrypt.service';
-import { UserInterface } from './users.interface';
+import { UserInterface } from './user.interface';
 
 /*
 ** This is basically a the Database... We will implement TypeORM.
 */
 
 @Injectable()
-export class UsersService {
+export class UserService {
 
 	constructor(
 		@InjectRepository(UserEntity)
@@ -36,10 +36,9 @@ export class UsersService {
 		return (results);
 	}
 
-	async getUser2(id: number): Promise<UserInterface | null> {
+	async getUser2(id: number): Promise<UserInterface> {
 
 		let user = await this.userRepository.findOneBy({ id: id });
-		console.log("getuser2" + user.username)
 		return (user);
 	}
 

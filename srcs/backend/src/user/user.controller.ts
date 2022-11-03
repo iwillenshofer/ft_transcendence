@@ -5,13 +5,13 @@ import { diskStorage } from 'multer';
 import { Observable, of } from 'rxjs';
 import { JwtGuard } from 'src/auth/jwt/jwt.guard';
 import { v4 as uuidv4 } from 'uuid';
-import { UsersService } from './users.service';
+import { UserService } from './user.service';
 
 @Controller('user')
-export class UsersController {
+export class UserController {
 
     constructor(
-        private userService: UsersService,
+        private userService: UserService,
         private readonly HttpService: HttpService
     ) { }
 

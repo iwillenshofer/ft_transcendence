@@ -1,13 +1,13 @@
 import { HttpService } from '@nestjs/axios';
 import { Controller, Get, Param, Request } from '@nestjs/common';
 import { of } from 'rxjs';
-import { RoomsService } from './rooms.service';
+import { RoomService } from './room.service';
 
 @Controller('rooms')
-export class RoomsController {
+export class RoomController {
 
     constructor(
-        private roomService: RoomsService,
+        private roomService: RoomService,
         private readonly HttpService: HttpService
     ) { }
 

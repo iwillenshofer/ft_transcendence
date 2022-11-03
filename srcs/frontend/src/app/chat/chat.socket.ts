@@ -7,7 +7,7 @@ import { getUserId } from "../auth/auth.module"
 export class ChatSocket extends Socket {
     constructor(private authService: AuthService) {
         super({
-            url: 'http://localhost:3000/chat', options: {
+            url: 'http://localhost:3000/', options: {
                 extraHeaders: {
                     Userid: getUserId()
                 }

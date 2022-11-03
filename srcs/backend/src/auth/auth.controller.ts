@@ -5,15 +5,15 @@ import { JwtRefreshGuard } from './jwt/jwtrefresh.guard';
 import { Intra42Guard } from './intra42/intra42.guard';
 import { FakeIntra42Guard } from './intra42/fakeintra42.guard';
 import { TfaGuard } from './tfa/tfa.guard';
-import { UsersService } from 'src/users/users.service';
-import { UserDTO } from 'src/users/users.dto';
+import { UserService } from 'src/user/user.service';
+import { UserDTO } from 'src/user/user.dto';
 
 @Controller("auth")
 export class AuthController {
 
 	constructor(
 		private authService: AuthService,
-		private userService: UsersService
+		private userService: UserService
 	) { }
 
 

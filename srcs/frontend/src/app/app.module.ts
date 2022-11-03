@@ -29,7 +29,6 @@ import { MatInputModule } from '@angular/material/input';
 import { ProfileComponent } from './components/profile/profile.component';
 import { OnlineGameComponent } from './components/game/online-game/online-game.component';
 import { AlertsModule } from './alerts/alerts.module';
-import { CreateRoomComponent } from './components/create-room/create-room.component';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -60,7 +59,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     DialogAvatarComponent,
     DialogUsernameComponent,
     ProfileComponent,
-    CreateRoomComponent,
     OnlineGameComponent,
     DialogNewRoomComponent,
   ],

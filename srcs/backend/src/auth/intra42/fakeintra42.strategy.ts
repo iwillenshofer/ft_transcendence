@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-strategy";
 import { AuthService } from "../auth.service";
-import { UserDTO } from "src/users/users.dto";
+import { UserDTO } from "src/user/user.dto";
 import { Request } from "express";
 import { ParsedQs } from "qs";
 

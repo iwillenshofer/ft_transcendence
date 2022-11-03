@@ -1,5 +1,6 @@
 import { Component, OnChanges, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { RoomService } from 'src/app/services/room/room.service';
 import { isRoomNameTaken } from 'src/app/validators/async-room-name.validator';
@@ -18,11 +19,11 @@ export class DialogNewRoomComponent implements OnInit {
     name: new FormControl(null, [Validators.required, Validators.minLength(3), Validators.maxLength(20), Validators.pattern('^[a-z-A-Z-0-9]+$'),], [isRoomNameTaken(this.roomService)]),
     description: new FormControl(null),
     type: new FormControl(null, [Validators.required]),
-    password: new FormControl(null, [Validators.required, Validators.minLength(8)]),
-    users: new FormArray([])
+    password: new FormControl(null, [Validators.required, Validators.minLength(8)])
   });
 
-  constructor(private roomService: RoomService) { }
+  constructor(private roomService: RoomService,
+    private dialogRef: MatDialogRef<DialogNewRoomComponent>) { }
 
   ngOnInit(): void {
     this.form.controls['password'].disable();
@@ -44,10 +45,6 @@ export class DialogNewRoomComponent implements OnInit {
     return this.form.get('password') as FormControl;
   }
 
-  get users(): FormArray {
-    return this.form.get('users') as FormArray;
-  }
-
   OnSelectChange(input: string) {
 
     switch (input) {
@@ -66,7 +63,14 @@ export class DialogNewRoomComponent implements OnInit {
   }
 
   createChatroom() {
+    if (this.form.valid) {
+      this.roomService.createRoom(this.form.getRawValue());
+    }
+    this.closeDialog();
+  }
 
+  closeDialog() {
+    this.dialogRef.close();
   }
 
 }

@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { UsersController } from './users.controller';
+import { UserService } from './user.service';
+import { UserController } from './user.controller';
 import { HttpModule } from '@nestjs/axios';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from './users.service';
+import { UserEntity } from './user.service';
 import { EncryptService } from 'src/services/encrypt.service';
 
 @Module({
@@ -11,9 +11,9 @@ import { EncryptService } from 'src/services/encrypt.service';
         HttpModule,
         TypeOrmModule.forFeature([UserEntity])
     ],
-    providers: [UsersService, EncryptService],
-    exports: [UsersService],
-    controllers: [UsersController]
+    providers: [UserService, EncryptService],
+    exports: [UserService],
+    controllers: [UserController]
 })
 
-export class UsersModule { }
+export class UserModule { }

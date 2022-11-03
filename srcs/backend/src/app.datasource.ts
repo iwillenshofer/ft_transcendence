@@ -2,7 +2,7 @@
 // import { DataSource, DataSourceOptions } from 'typeorm';
 // import { AuthEntity } from './auth/models/auth.entity';
 // import { RoomEntity } from './chat/models/room.entity';
-// import { UserEntity } from './users/users.entity';
+// import { UserEntity } from './user/user.entity';
 
 // const dbConfig: TypeOrmModuleOptions = {
 //   type: 'postgres',
