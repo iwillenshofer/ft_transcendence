@@ -107,6 +107,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.socket.on("ball", (ball: any) => {
       this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
       this.drawLines();
+      this.drawScore();
       this.drawPowerUp(powerUp);
       if (!this.finished)
         this.drawBall(ball);
@@ -146,6 +147,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   draw() {
     this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
     this.drawLines();
+    this.drawScore();
     if (!this.finished)
       this.drawBall(this.gameService.getBall());
     this.updatePaddles(this.gameService.getPlayer1(), this.gameService.getPlayer2());
@@ -187,6 +189,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     window.cancelAnimationFrame(this.currentAnimationFrameId as number);
     this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
     this.updatePaddles(this.gameService.getPlayer1(), this.gameService.getPlayer2());
+    this.drawScore();
     this.canvas.font = '10vh Lucida Console Courier New monospace';
     this.canvas.textBaseline = 'middle';
     this.canvas.textAlign = 'center';
@@ -220,5 +223,13 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       var img = document.getElementById("powerUp");
       ctx.drawImage(img, powerUp.x, powerUp.y, 100, 100);
     }
+  }
+
+  drawScore() {
+    this.canvas.font = '80px Lucida Console Courier New monospace';
+    this.canvas.textBaseline = 'middle';
+    this.canvas.textAlign = 'center';
+    this.canvas.fillText(this.scoreP1, 320, 50);
+    this.canvas.fillText(this.scoreP2, 960, 50);
   }
 }
