@@ -1,0 +1,13 @@
+<div *ngFor="let item of this.friendsService.history" class="row match-history d-flex align-items-center">
+    <div  class="col-3 player">
+        <img src="backend/{{item.user1.avatar_url}}" class="rounded-circle user-list-image">          
+        <span (click)="this.loadUser(item.user1.username)" class="align-middle align-self-center name">{{item.user1.username}}</span>
+    </div> 
+    <div class="col-6 align-middle score">
+        <span class="align-middle align-self-center" [ngClass]="getScoreClass(item.user1.username, item.user2.username, item.scoreP1, item.scoreP2)">{{item.scoreP1}} x {{item.scoreP2}}</span>
+    </div> 
+    <div class="col-3 player">
+        <img src="backend/{{item.user2.avatar_url}}" class="rounded-circle user-list-image">          
+        <span (click)="this.loadUser(item.user2.username)" class="align-middle align-self-center name">{{item.user2.username}}</span>
+    </div> 
+</div>

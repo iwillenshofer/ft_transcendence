@@ -12,6 +12,9 @@ import { RoomEntity } from './chat/models/room.entity';
 import { AuthEntity } from './auth/models/auth.entity';
 import { GameModule } from './game/game.module';
 import { GameEntity } from './game/game.entity';
+import { StatsController } from './stats/stats.controller';
+import { StatsService } from './stats/stats.service';
+import { StatsModule } from './stats/stats.module';
 
 @Module({
   imports: [
@@ -30,6 +33,7 @@ import { GameEntity } from './game/game.entity';
       synchronize: true,
     }),
     GameModule,
+    StatsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

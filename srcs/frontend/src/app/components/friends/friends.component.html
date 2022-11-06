@@ -1,5 +1,280 @@
 <app-navbar></app-navbar>
 
-<div class="main">
-    <p>friends works!</p>
+
+
+<div class="container-fluid mt--7">
+    <div class="row padding">
+      
+
+
+        <div class="col-xl-3 mb-3">
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <button class="nav-link active" id="nav-myfriends-tab" data-bs-toggle="tab" data-bs-target="#nav-myfriends" type="button" role="tab" aria-controls="nav-myfriends" aria-selected="true">My Friends</button>
+                    <button class="nav-link" id="nav-requests-tab" data-bs-toggle="tab" data-bs-target="#nav-requests" type="button" role="tab" aria-controls="nav-requests" aria-selected="false">Requests</button>
+                    <button class="nav-link" id="nav-search-tab" data-bs-toggle="tab" data-bs-target="#nav-search" type="button" role="tab" aria-controls="nav-search" aria-selected="false">Search</button>
+                </div>
+            </nav>
+            
+            <div class="card bg-secondary shadow">
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="nav-myfriends" role="tabpanel" aria-labelledby="nav-home-myfriends" tabindex="0">
+                        <div class="card-body user-list-card">
+                            <div class="row user-list d-flex align-items-center">
+                                <div class="col-3 online">
+                                    <img src="http://localhost:4200/backend/user/image/166f60ba-b781-4d5f-af99-690153580f1b.jpg" class="rounded-circle user-list-image">          
+                                </div> 
+                                <div class="col-6 align-middle">
+                                    <span class="align-middle align-self-center name">iwillens </span>
+                                </div> 
+                                <div class="col-3">
+                                    <button type="button" class="btn btn-success">play</button>
+                                </div> 
+                            </div>
+                            <div class="row user-list d-flex align-items-center" >
+                                <div class="col-3 busy">
+                                    <img src="http://localhost:4200/backend/user/image/166f60ba-b781-4d5f-af99-690153580f1b.jpg" class="rounded-circle user-list-image">
+                                </div> 
+                                <div class="col-6 align-middle">
+                                    <span class="align-middle align-self-center name">iwillens</span>
+                                </div> 
+                                <div class="col-3">
+
+                                </div> 
+                            </div>
+                            <div class="row user-list d-flex align-items-center" >
+                                <div class="col-3 offline">
+                                    <img src="http://localhost:4200/backend/user/image/166f60ba-b781-4d5f-af99-690153580f1b.jpg" class="rounded-circle user-list-image">
+                                </div> 
+                                <div class="col-6 align-middle">
+                                    <span class="align-middle align-self-center name">iwillens</span>
+                                </div> 
+                                <div class="col-3">
+                                    
+                                </div> 
+                            </div>
+                            <div class="row user-list d-flex align-items-center">
+                                <div class="col-3 online">
+                                    <img src="http://localhost:4200/backend/user/image/166f60ba-b781-4d5f-af99-690153580f1b.jpg" class="rounded-circle user-list-image">          
+                                </div> 
+                                <div class="col-6 align-middle">
+                                    <span class="align-middle align-self-center name">iwillens </span>
+                                </div> 
+                                <div class="col-3">
+                                    <button type="button" class="btn btn-success">play</button>
+                                </div> 
+                            </div>
+                            <div class="row user-list d-flex align-items-center" >
+                                <div class="col-3 busy">
+                                    <img src="http://localhost:4200/backend/user/image/166f60ba-b781-4d5f-af99-690153580f1b.jpg" class="rounded-circle user-list-image">
+                                </div> 
+                                <div class="col-6 align-middle">
+                                    <span class="align-middle align-self-center name">iwillens</span>
+                                </div> 
+                                <div class="col-3">
+
+                                </div> 
+                            </div>
+                            <div class="row user-list d-flex align-items-center" >
+                                <div class="col-3 offline">
+                                    <img src="http://localhost:4200/backend/user/image/166f60ba-b781-4d5f-af99-690153580f1b.jpg" class="rounded-circle user-list-image">
+                                </div> 
+                                <div class="col-6 align-middle">
+                                    <span class="align-middle align-self-center name">iwillens</span>
+                                </div> 
+                                <div class="col-3">
+                                    
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="nav-requests" role="tabpanel" aria-labelledby="nav-requests-tab" tabindex="0">
+                        <div class="card-body user-list-card">
+                                <div class="row user-list d-flex align-items-center" >
+                                    <div class="col-3">
+                                        <img src="http://localhost:4200/backend/user/image/166f60ba-b781-4d5f-af99-690153580f1b.jpg" class="rounded-circle user-list-image">
+                                    </div> 
+                                    <div class="col-6 align-middle">
+                                        <span class="align-middle align-self-center name">iwillens</span>
+                                    </div> 
+                                    <div class="col-3">
+                                        <button type="button" class="btn btn-success">Accept</button>
+                                    </div> 
+                                </div>
+                                <div class="row user-list d-flex align-items-center" >
+                                    <div class="col-3">
+                                        <img src="http://localhost:4200/backend/user/image/166f60ba-b781-4d5f-af99-690153580f1b.jpg" class="rounded-circle user-list-image">
+                                    </div> 
+                                    <div class="col-6 align-middle">
+                                        <span class="align-middle align-self-center name">iwillens</span>
+                                    </div> 
+                                    <div class="col-3">
+                                        <button type="button" class="btn btn-danger">Cancel Request</button>
+                                    </div> 
+                                </div>
+                                <div class="row user-list d-flex align-items-center" >
+                                    <div class="col-3">
+                                        <img src="http://localhost:4200/backend/user/image/166f60ba-b781-4d5f-af99-690153580f1b.jpg" class="rounded-circle user-list-image">
+                                    </div> 
+                                    <div class="col-6 align-middle">
+                                        <span class="align-middle align-self-center name">iwillens</span>
+                                    </div> 
+                                    <div class="col-3">
+                                        <button type="button" class="btn btn-success">Accept</button>
+                                    </div> 
+                                </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="nav-search" role="tabpanel" aria-labelledby="nav-search-tab" tabindex="0">
+                        <div class="card-header bg-white border-0">
+                            <div class="search-box">
+                                <input type="text" class="search-input" placeholder="Search users...">
+                                <fa-icon class="search-btn" [icon]="searchIcon"></fa-icon>
+                            </div>
+                        </div>
+                        <div class="card-body user-list-card">
+                            <div class="row user-list d-flex align-items-center" >
+                                <div class="col-3">
+                                    <img src="http://localhost:4200/backend/user/image/166f60ba-b781-4d5f-af99-690153580f1b.jpg" class="rounded-circle user-list-image">
+                                </div> 
+                                <div class="col-6 align-middle">
+                                    <span class="align-middle align-self-center name">iwillens</span>
+                                </div> 
+                                <div class="col-3">
+                                </div> 
+                            </div>
+                            <div class="row user-list d-flex align-items-center" >
+                                <div class="col-3">
+                                    <img src="http://localhost:4200/backend/user/image/166f60ba-b781-4d5f-af99-690153580f1b.jpg" class="rounded-circle user-list-image">
+                                </div> 
+                                <div class="col-6 align-middle">
+                                    <span class="align-middle align-self-center name">iwillens</span>
+                                </div> 
+                                <div class="col-3">
+                                </div> 
+                            </div>
+                            <div class="row user-list d-flex align-items-center" >
+                                <div class="col-3">
+                                        <img src="http://localhost:4200/backend/user/image/166f60ba-b781-4d5f-af99-690153580f1b.jpg" class="rounded-circle user-list-image">
+                                </div>
+                                <div class="col-6 align-middle">
+                                    <span class="align-middle align-self-center name">iwillens</span>
+                                </div> 
+                                <div class="col-3">
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> <!--div class="col-xl-3 ">-->
+
+
+
+
+        <div class="col-sm-3  mb-3">
+            <div class="card card-profile bg-secondary shadow">
+
+                <div class="row justify-content-center">
+                <div class="col order-lg-2 text-center">
+                <div class="card-profile-image">
+                    <img src="/backend/{{this.friendsService.userInfo.value?.avatar_url}}" class="rounded-circle">
+                </div>
+                </div>
+                </div>
+                <div class="card-body pt-0 pt-md-4">
+                    <div class="row ">
+                        <div class="col mt-4  text-center">
+                        <h1>{{this.friendsService.userInfo.value?.username}}</h1>
+                        </div>
+                    </div>
+                    <div class="row  text-center" >
+                        <div class="col">
+                        <h3>{{this.friendsService.userInfo.value?.fullname}}</h3>
+                        </div>
+                    </div>
+                    <div class="row  text-center mb-5 mt-2" >
+                        <div class="col">
+                            <button type="button" class="btn btn-info">Add Friend</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <i>player since: {{this.friendsService.userInfo.value?.created_at}}</i>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <i>friends: 3832</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> <!--div class="col-sm-3  mb-3"-->
+      
+        <div class="col-sm-3  mb-3 ">
+            <div class="row   mb-3 ">
+                <div class="col">
+                    <div class="card bg-secondary shadow">
+                        <div class="card-header bg-white border-0">
+                            Achievements
+                        </div>
+                        <div class="card-body userlist">
+
+                                
+                                <img class="achievement" src="/assets/images/achievements/3135724.png">
+                                <img class="achievement" src="/assets/images/achievements/3135724.png">
+                                <img class="achievement" src="/assets/images/achievements/3135724.png">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card bg-secondary shadow">
+                        <div class="card-header bg-white border-0">
+                            Stats
+                        </div>
+                        <div class="card-body userlist text-center stats ">
+                            <div class="row">
+                                <div class="col-4">
+                                    <img class="achievement" src="/assets/images/achievements/trophy.png">
+                                    <span class="subtitle">Winner</span>
+                                </div>
+                                <div class="col-4">
+                                    <span class="title">{{this.friendsService.gamesPlayed.value}}</span>
+                                    <span class="subtitle">Games Played</span>
+                                </div>
+                                <div class="col-4">
+                                    <span class="title">{{this.friendsService.gamesWon.value}}</span>
+                                    <span class="subtitle">Games Won</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!--div class="row"-->
+        </div> <!--div class="col-sm-6  mb-3 "-->
+      
+        <div class="col-sm-3  mb-3 ">
+            <div class="card bg-secondary shadow">
+                <div class="card-header bg-white border-0">
+                    Game History
+                </div>
+                <div class="card-body user-list-card ">
+                    <app-game-history></app-game-history>
+                   
+                </div>
+            </div>
+        </div>
+        
+  
+
+
+
+    </div><!--div class="row padding"-->
+
 </div>
+    

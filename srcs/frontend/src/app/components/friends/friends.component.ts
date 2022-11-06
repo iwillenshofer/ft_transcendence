@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { faMagnifyingGlass, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { AuthService } from 'src/app/auth/auth.service';
+import { FriendsService } from './friends.service';
+import { GameHistoryComponent } from './game-history/game-history.component';
 
 @Component({
   selector: 'app-friends',
@@ -7,9 +11,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FriendsComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    protected friendsService: FriendsService,
+    private authService: AuthService
+  ) { }
+  searchIcon: IconDefinition = faMagnifyingGlass;
 
   ngOnInit(): void {
+    if (!(this.friendsService.selectedUser.value)) {
+      this.friendsService.selectedUser.next( this.authService.userSubject.value?.username );
+    }
+    this.friendsService.selectedUser.subscribe(res => {
+      this.friendsService.update();
+    });
   }
 
 }

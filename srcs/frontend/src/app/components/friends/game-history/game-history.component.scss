@@ -1,0 +1,63 @@
+
+.match-history {
+    img {
+        height: 30px;
+        width: 30px;
+        aspect-ratio: 1;
+        object-fit: cover;
+    }
+  
+    .online {
+        border-left-width: 3px;
+        border-left-color: lightgreen;
+        border-left-style: solid;
+    }
+  
+    .busy {
+        border-left-width: 3px;
+        border-left-color: orange;
+        border-left-style: solid;
+    }
+  
+    .offline {
+        border-left-width: 3px;
+        border-left-color: darkred;
+        border-left-style: solid;
+    }
+    .name {
+        font-size: 12px;
+        color: white;
+    }
+    button {
+        font-size: 12px;
+    }
+    .player {
+      text-align: center;
+    }
+    .score {
+      font-weight: normal;
+      font-size: 22px;
+      text-align: center;
+      color: lightgray;
+      >span {
+        border-bottom-width: 3px;
+        border-bottom-style: solid;
+      }
+      .game-won {border-bottom-color: lightgreen; }
+      .game-lost {border-bottom-color: darkred; }
+    }
+  
+    font-weight: normal;
+    padding-bottom: 10px;;
+    margin-bottom: 10px;
+    border-bottom: 2px;
+    border-bottom-style: solid;
+    border-bottom-color: #9a9a9a;
+  }
+  
+  .match-history:last-child {
+        margin-bottom: 0px;
+        padding-bottom: 0px;
+        border-bottom-style: none;
+  }
+  
