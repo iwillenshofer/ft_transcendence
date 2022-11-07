@@ -47,10 +47,6 @@ export class OnlineGameService {
     game.gameStart();
   }
 
-  setGameID(gameID: any) {
-    game.setGameID(gameID)
-  }
-
   setGameSocket(socket: any) {
     game.setGameSocket(socket)
   }

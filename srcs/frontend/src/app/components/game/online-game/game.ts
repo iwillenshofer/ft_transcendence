@@ -47,7 +47,6 @@ export let powerUp = {
     active: false,
 }
 
-export let gameID: any;
 let started = false;
 let mode = '';
 let finished: boolean = false;
@@ -91,10 +90,10 @@ function paddleUpdate() {
 window.onkeydown = function move(e) {
     if (player1 && player2 && mode != 'spec') {
         if (e.key == 'w' || e.key == 'W' || e.key == 'ArrowUp') {
-            _socket.emit("move", gameID, player1, player2, "up");
+            _socket.emit("move", player1, player2, "up");
         }
         if (e.key == 's' || e.key == 'S' || e.key == 'ArrowDown') {
-            _socket.emit("move", gameID, player1, player2, "down");
+            _socket.emit("move", player1, player2, "down");
         }
     }
 }
@@ -197,7 +196,7 @@ function handleLose() {
     resetBall();
     ball.direction.x *= ballSide;
     if (isPlayer())
-        _socket.emit('score', gameID, player1.score, player2.score, finished);
+        _socket.emit('score', player1.score, player2.score, finished);
     _socket.on("updateScore", (scoreP1: any, scoreP2: any, finish: any) => {
         player1.score = scoreP1;
         player2.score = scoreP2;
@@ -231,12 +230,12 @@ function resetScore() {
     player1.score = 0;
     player2.score = 0;
     if (isPlayer())
-        _socket.emit('score', gameID, player1.score, player2.score, finished);
+        _socket.emit('score', player1.score, player2.score, finished);
 }
 
 function syncScore() {
     if (isPlayer())
-        _socket.emit('syncScore', gameID);
+        _socket.emit('syncScore');
     _socket.on('updateScore', (scoreP1: any, scoreP2: any, finish: any) => {
         player1.score = scoreP1;
         player2.score = scoreP2;
@@ -246,7 +245,7 @@ function syncScore() {
 
 function syncBall() {
     if (isPlayer())
-        _socket.emit('syncBall', gameID, ball);
+        _socket.emit('syncBall', ball);
     _socket.on('ball', (newBall: any) => {
         ball = newBall;
     })
@@ -274,7 +273,7 @@ function resetPlayersPosition() {
     player2.x = table.width - 30; // - 10 da margin
     player2.y = (table.height / 2) - (player2.height / 2);
     if (isPlayer())
-        _socket.emit('resetPaddles', gameID);
+        _socket.emit('resetPaddles');
 }
 
 function resetPlayerPosition(player: number) {
@@ -309,7 +308,7 @@ function resetPowerUp(show: boolean) {
 
 function syncPowerUp() {
     if (isPlayer())
-        _socket.emit('powerUp', gameID, powerUp);
+        _socket.emit('powerUp', powerUp);
     _socket.on('updatePowerUp', (newPowerUp: any) => {
         powerUp = newPowerUp;
     })
@@ -337,14 +336,14 @@ function givePowerUp() {
         player.height = 500;
         resetPlayerPosition(ball.lastTouch);
         if (isPlayer())
-            _socket.emit('setPaddles', gameID, player1, player2);
+            _socket.emit('setPaddles', player1, player2);
 
     }
     else if (power == 3) {
         powerUp.type = power;
         player.height = 50;
         if (isPlayer())
-            _socket.emit('setPaddles', gameID, player1, player2);
+            _socket.emit('setPaddles', player1, player2);
     }
 }
 
@@ -353,10 +352,6 @@ export function setP1Socket(socket: any) {
 }
 export function setP2Socket(socket: any) {
     player2.socket = socket;
-}
-
-export function setGameID(id: any) {
-    gameID = id
 }
 
 export function setMode(mod: any) {

@@ -34,7 +34,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.ball = gameService.getBall();
   }
 
-  @HostListener('window:keyup', ['$event'])
+  @HostListener('window:keydown', ['$event'])
   keyEvent(event: KeyboardEvent) {
     if (event.code == 'Escape') {
       if (this.isWaiting || this.finished || this.mode == 'spec') {
@@ -42,6 +42,23 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
         // this.socket.disconnect();
         // this.quit.emit(true);
       }
+    }
+  }
+
+  @HostListener('document:visibilitychange', ['$event'])
+  visibilitychange() {
+    if (document.hidden && this.mode != 'spec') {
+      this.socket.disconnect();
+      window.cancelAnimationFrame(this.currentAnimationFrameId as number);
+      this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+      this.canvas.font = '10vh Lucida Console Courier New monospace';
+      this.canvas.textBaseline = 'middle';
+      this.canvas.textAlign = 'center';
+      this.canvas.fillText("DISCONNECTED", 640, 360);
+      this.canvas.font = '3vh Lucida Console Courier New monospace';
+      this.canvas.fillText('You must stay in the game', 640, 420);
+      this.canvas.fillText('[Esc] - Quit', 640, 450);
+      this.finished = true;
     }
   }
 
@@ -73,8 +90,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   players() {
-    this.socket.on("players", (player1: any, player2: any, gameID: string) => {
-      this.setPlayers(player1, player2, gameID)
+    this.socket.on("players", (player1: any, player2: any) => {
+      this.setPlayers(player1, player2)
       this.isWaiting = false;
       this.gameService.reset()
       this.update();
@@ -83,19 +100,20 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
 
   specs() {
     this.gameService.setGameSocket(this.socket);
-    this.socket.on("specs", (player1: any, player2: any, gameID: string) => {
+    this.socket.on("specs", (player1: any, player2: any) => {
       this.player1 = player1;
       this.player2 = player2;
       this.isWaiting = false;
-      this.watchGame(gameID);
+      this.watchGame();
     })
   }
 
-  watchGame(gameID: string) {
-    this.socket.emit("getPaddles", gameID)
-    this.socket.emit("getPowerUp", gameID)
-    this.socket.emit("getBall", gameID)
-    this.socket.emit("syncScore", gameID)
+  watchGame() {
+    this.socket.emit("getPaddles")
+    this.socket.emit("getPowerUp")
+    this.socket.emit("getBall")
+    this.socket.emit("syncScore")
+    this.updateScore();
     this.socket.on("updatePaddle", (player1: any, player2: any) => {
       this.player1 = player1;
       this.player2 = player2;
@@ -113,11 +131,10 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.updatePaddles(this.player1, this.player2);
     })
     this.endGame();
-    this.updateScore();
     this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
   }
 
-  setPlayers(player1: any, player2: any, gameID: string) {
+  setPlayers(player1: any, player2: any) {
 
     if (player1.socket) {
       this.gameService.setP1Socket(player1.socket);
@@ -128,7 +145,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.gameService.setP2Username(player2.username)
     }
     if (player1.socket && player2.socket) {
-      this.gameService.setGameID(gameID);
       this.gameService.setGameSocket(this.socket);
       this.player1 = this.gameService.getPlayer1();
       this.player2 = this.gameService.getPlayer2();

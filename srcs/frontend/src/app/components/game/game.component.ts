@@ -43,10 +43,11 @@ export class GameComponent implements OnInit {
     this.showLiveGames = false;
   }
 
-  watchGame(gameID: any) {
+  watchGame(player1: any) {
     this.menu = false;
     this.mode = 'spec';
-    this.toWatch = gameID;
+    this.toWatch = player1;
+    console.log(player1);
   }
 
   quit(event: boolean) {

@@ -21,7 +21,8 @@
     <div *ngIf="showLiveGames" class="livegames">
         <p>LIVE GAMES:</p>
         <p *ngIf="!liveGames">No one is playing right now!</p>
-        <button *ngFor="let game of liveGames" (click)="watchGame(game.gameID)">{{game.player1.username}}<br>vs<br>
+        <button *ngFor="let game of liveGames"
+            (click)="watchGame(game.player1.socket)">{{game.player1.username}}<br>vs<br>
             {{game.player2.username}}</button>
     </div>
 </div>
