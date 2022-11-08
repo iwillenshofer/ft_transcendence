@@ -90,10 +90,10 @@ function paddleUpdate() {
 window.onkeydown = function move(e) {
     if (player1 && player2 && mode != 'spec' && started) {
         if (e.key == 'w' || e.key == 'W' || e.key == 'ArrowUp') {
-            _socket.emit("move", player1, player2, "up");
+            _socket.emit("move", "up");
         }
         if (e.key == 's' || e.key == 'S' || e.key == 'ArrowDown') {
-            _socket.emit("move", player1, player2, "down");
+            _socket.emit("move", "down");
         }
     }
 }
@@ -336,14 +336,14 @@ function givePowerUp() {
         player.height = 500;
         resetPlayerPosition(ball.lastTouch);
         if (isPlayer())
-            _socket.emit('setPaddles', player1, player2);
+            _socket.emit('setPaddles', player1.height, player2.height);
 
     }
     else if (power == 3) {
         powerUp.type = power;
         player.height = 50;
         if (isPlayer())
-            _socket.emit('setPaddles', player1, player2);
+            _socket.emit('setPaddles', player1.height, player2.height);
     }
 }
 

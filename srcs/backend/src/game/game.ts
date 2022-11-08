@@ -30,7 +30,7 @@ export class Game {
         username: '',
         disconnected: false
     };
-    ball = {
+    ball: any = {
         x: 0,
         y: 0,
         radius: 5,
@@ -40,7 +40,7 @@ export class Game {
             y: 0.0
         }
     }
-    powerUp = {
+    powerUp: any = {
         x: 0,
         y: 0,
         time: 0,
