@@ -176,7 +176,6 @@ export class GameGateway {
         this.server.in(game.gameID).disconnectSockets();
         delete this.games[this.getGameIndex(game.gameID)];
         this.games.splice(Number(this.getGameIndex(game.gameID)), 1);
-        // this.updateGameIDs(gameID)
       }
     }
   }
@@ -196,21 +195,6 @@ export class GameGateway {
         return index;
     }
   }
-
-  // updateGameIDs(gameID) {
-  //   console.log('ANTES')
-  //   console.log(this.games)
-
-  //   for (let index = gameID; index < this.games.length; index++) {
-  //     let game = this.games[index];
-  //     if (game)
-  //       game.gameID = (parseInt(game.gameID) - 1).toString();
-  //   }
-  //   console.log('DEPOIS')
-
-  //   console.log(this.games)
-
-  // }
 
   @SubscribeMessage('getScore')
   async getScore(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
