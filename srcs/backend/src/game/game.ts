@@ -15,7 +15,8 @@ export class Game {
         message: '',
         width: 15,
         height: 150,
-        username: ''
+        username: '',
+        disconnected: false
     };
     player2: IPlayer = {
         id: 0,
@@ -26,7 +27,8 @@ export class Game {
         message: '',
         width: 15,
         height: 150,
-        username: ''
+        username: '',
+        disconnected: false
     };
     ball = {
         x: 0,

@@ -106,6 +106,12 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.isWaiting = false;
       this.watchGame();
     })
+    this.socket.on('gameUnavailable', () => {
+      this.finished = true;
+      this.isWaiting = false;
+      this.finishedMessage = 'Game already finished';
+      this.finish('down', 0)
+    })
   }
 
   watchGame() {
@@ -181,6 +187,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   endGame() {
     this.socket.on('connect_error', () => {
       this.finished = true;
+      this.finishedMessage = 'Server is off';
       this.finish('down', 0)
     })
     this.socket.on("endGame", (disconnected: any) => {
@@ -190,6 +197,10 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   finish(reason: any, disconnected: any) {
+    if (reason == 'down') {
+      this.drawFinish();
+      this.socket.disconnect();
+    }
     if (this.mode != 'spec')
       this.socket.emit("finishMessage", this.gameService.getFinalMessage(reason, disconnected), this.gameService.getWinner(reason, disconnected));
     this.socket.on("winner", (message: any) => {

@@ -35,8 +35,11 @@ export class GameGateway {
     if (game) {
       game.connected += 1;
       client.join(game.gameID)
+      client.rooms.add(game.gameID)
       this.server.to(game.gameID).emit("specs", game.player1, game.player2);
     }
+    else
+      this.server.to(client.id).emit("gameUnavailable");
   }
 
   @SubscribeMessage('joinGame')
@@ -72,6 +75,7 @@ export class GameGateway {
       game.player2.username = username;
     }
     client.join(game.gameID)
+    client.rooms.add(game.gameID)
     game.connected += 1;
     if (game.player1.socket && game.player2.socket) {
       if (client.id == game.player1.socket || client.id == game.player2.socket)
@@ -155,7 +159,7 @@ export class GameGateway {
 
   @UseGuards(TfaGuard)
   async handleDisconnect(client: Socket, ...args: any[]) {
-    const gameID = this.findGameBySocketId(client.id);
+    let gameID = this.findGameBySocketId(client.id);
     const game = this.games[gameID]
     if (game) {
       game.connected -= 1;
@@ -166,13 +170,15 @@ export class GameGateway {
           this.games.splice(Number(game.gameID), 1);
         }
         else if (client.id == game.player1.socket) {
-          // this.server.in(gameID).disconnectSockets();
+          game.player1.disconnected = true;
           await this.gameService.addGame(this.games[gameID])
-
+        }
+        else if (client.id == game.player2.socket) {
+          game.player2.disconnected = true;
         }
       }
-      if (game.connected == 0) {
-        console.log(game.connected)
+      if (game.player1.disconnected && game.player2.disconnected) {
+        this.server.in(gameID).disconnectSockets();
         delete this.games[gameID];
         this.games.splice(Number(gameID), 1);
       }
