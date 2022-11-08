@@ -187,9 +187,9 @@ export class GameGateway {
     }
   }
 
-  @SubscribeMessage('syncScore')
-  async syncScore(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    let gameID = this.findGameBySocketId(client.id);
+  @SubscribeMessage('getScore')
+  async getScore(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+    let gameID = this.findGameBySocketId(data);
     if (this.games[gameID]) {
       let scoreP1 = this.games[gameID].player1.score;
       let scoreP2 = this.games[gameID].player2.score;

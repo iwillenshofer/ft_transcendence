@@ -112,8 +112,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.socket.emit("getPaddles")
     this.socket.emit("getPowerUp")
     this.socket.emit("getBall")
-    this.socket.emit("syncScore")
-    this.updateScore();
+    this.socket.emit("getScore", this.specGame)
     this.socket.on("updatePaddle", (player1: any, player2: any) => {
       this.player1 = player1;
       this.player2 = player2;
@@ -124,6 +123,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     })
     this.socket.on("ball", (ball: any) => {
       this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+      this.updateScore();
       this.drawLines();
       this.drawPowerUp(powerUp);
       if (!this.finished)

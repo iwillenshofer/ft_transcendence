@@ -88,7 +88,7 @@ function paddleUpdate() {
 }
 
 window.onkeydown = function move(e) {
-    if (player1 && player2 && mode != 'spec') {
+    if (player1 && player2 && mode != 'spec' && started) {
         if (e.key == 'w' || e.key == 'W' || e.key == 'ArrowUp') {
             _socket.emit("move", player1, player2, "up");
         }
