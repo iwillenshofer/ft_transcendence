@@ -47,7 +47,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
 
   @HostListener('document:visibilitychange', ['$event'])
   visibilitychange() {
-    if (document.hidden && this.mode != 'spec') {
+    if (document.hidden && this.mode != 'spec' && !this.isWaiting) {
       this.socket.disconnect();
       window.cancelAnimationFrame(this.currentAnimationFrameId as number);
       this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);

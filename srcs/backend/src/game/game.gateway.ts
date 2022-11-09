@@ -30,7 +30,7 @@ export class GameGateway {
 
   @SubscribeMessage('watchGame')
   async watchGame(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    let game = this.findGameBySocketId(data);
+    const game = this.findGameBySocketId(data);
     if (game) {
       game.connected += 1;
       client.join(game.gameID)
@@ -45,16 +45,17 @@ export class GameGateway {
   async joinGame(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let customGame = data[0];
     let username = data[1];
-    let gameIndex = this.checkGameArray(customGame);
-    this.setPlayers(client, gameIndex, username);
+    const gameID = this.checkGameArray(customGame);
+    this.setPlayers(client, gameID, username);
   }
 
   checkGameArray(customGame: string) {
     if (this.games.length > 0) {
       for (let index = 0; index < this.games.length; index++) {
-        if (this.games[index].isCustom === customGame) {
-          if (this.games[index].player1.socket == '' || this.games[index].player2.socket == '') {
-            return index;
+        let game = this.games[index];
+        if (game && game.isCustom === customGame) {
+          if (game.player1.socket == '' || game.player2.socket == '') {
+            return game.gameID;
           }
         }
       };
@@ -63,59 +64,65 @@ export class GameGateway {
     return this.games.length - 1;
   }
 
-  setPlayers(client, gameIndex, username) {
-    const game = this.games[gameIndex]
-    if (!game.player1.socket) {
-      game.player1.socket = client.id;
-      game.player1.username = username;
-    }
-    else if (!game.player2.socket) {
-      game.player2.socket = client.id;
-      game.player2.username = username;
-    }
-    client.join(game.gameID)
-    client.rooms.add(game.gameID)
-    game.connected += 1;
-    if (game.player1.socket && game.player2.socket) {
-      if (client.id == game.player1.socket || client.id == game.player2.socket)
-        this.server.to(game.gameID).emit("players", game.player1, game.player2);
+  setPlayers(client, gameID, username) {
+    const game = this.games[gameID]
+    if (game) {
+      if (!game.player1.socket) {
+        game.player1.socket = client.id;
+        game.player1.username = username;
+      }
+      else if (!game.player2.socket) {
+        game.player2.socket = client.id;
+        game.player2.username = username;
+      }
+      client.join(game.gameID)
+      client.rooms.add(game.gameID)
+      game.connected += 1;
+      if (game.player1.socket && game.player2.socket) {
+        if (client.id == game.player1.socket || client.id == game.player2.socket)
+          this.server.to(game.gameID).emit("players", game.player1, game.player2);
+      }
     }
   }
 
   @SubscribeMessage('getPaddles')
   async getPaddles(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
-    let game = this.findGameBySocketId(client.id);
+    const game = this.findGameBySocketId(client.id);
     if (game)
       this.server.to(game.gameID).emit('updatePaddle', game.player1, game.player2)
   }
 
   @SubscribeMessage('setPaddles')
   async setPaddles(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
-    let game = this.findGameBySocketId(client.id);
-    if (this.isPlayer1(game.gameID, client.id)) {
-      game.player1.height = Number(data[0]);
-      game.player2.height = Number(data[1]);
+    const game = this.findGameBySocketId(client.id);
+    if (game) {
+      if (this.isPlayer1(game.gameID, client.id)) {
+        game.player1.height = Number(data[0]);
+        game.player2.height = Number(data[1]);
+      }
+      this.server.to(game.gameID).emit('updatePaddle', game.player1, game.player2)
     }
-    this.server.to(game.gameID).emit('updatePaddle', game.player1, game.player2)
   }
 
   @SubscribeMessage('resetPaddles')
   async resetPaddles(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
-    let game = this.findGameBySocketId(client.id);
-    let player1 = game.player1;
-    let player2 = game.player2;
-    player1.y = 360 - (player1.height / 2);
-    player1.x = 20;
-    player2.y = 360 - (player2.height / 2);
-    player2.x = 1250;
-    player1.height = 150;
-    player2.height = 150;
-    this.server.to(game.gameID).emit('updatePaddle', player1, player2)
+    const game = this.findGameBySocketId(client.id);
+    if (game) {
+      let player1 = game.player1;
+      let player2 = game.player2;
+      player1.y = 360 - (player1.height / 2);
+      player1.x = 20;
+      player2.y = 360 - (player2.height / 2);
+      player2.x = 1250;
+      player1.height = 150;
+      player2.height = 150;
+      this.server.to(game.gameID).emit('updatePaddle', player1, player2)
+    }
   }
 
   @SubscribeMessage('syncBall')
   async syncBall(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
-    let game = this.findGameBySocketId(client.id);
+    const game = this.findGameBySocketId(client.id);
     if (game && this.isPlayer1(game.gameID, client.id)) {
       game.ball = data;
       this.server.to(game.gameID).emit("ball", game.ball);
@@ -124,45 +131,48 @@ export class GameGateway {
 
   @SubscribeMessage('getBall')
   async getBall(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
-    let game = this.findGameBySocketId(client.id);
+    const game = this.findGameBySocketId(client.id);
     if (game)
       this.server.to(game.gameID).emit("ball", game.ball);
   }
 
   @SubscribeMessage('move')
   async move(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
-    let game = this.findGameBySocketId(client.id);
-    let command = data;
-    let player: any;
-    if (client.id == game.player1.socket)
-      player = game.player1;
-    else if (client.id == game.player2.socket)
-      player = game.player2;
-    switch (command) {
-      case "up":
-        if (player.y > 0) {
-          player.y -= 30;
+    const game = this.findGameBySocketId(client.id);
+    if (game) {
+      let command = data;
+      let player: any;
+      if (client.id == game.player1.socket)
+        player = game.player1;
+      else if (client.id == game.player2.socket)
+        player = game.player2;
+      switch (command) {
+        case "up":
+          if (player.y > 0) {
+            player.y -= 30;
+            this.server.to(game.gameID).emit("updatePaddle", game.player1, game.player2);
+          }
+          break;
+        case "down":
+          if (player.y < (720 - player.height))
+            player.y += 30;
           this.server.to(game.gameID).emit("updatePaddle", game.player1, game.player2);
-        }
-        break;
-      case "down":
-        if (player.y < (720 - player.height))
-          player.y += 30;
-        this.server.to(game.gameID).emit("updatePaddle", game.player1, game.player2);
-        break;
+          break;
+      }
     }
   }
 
   @UseGuards(TfaGuard)
   async handleDisconnect(client: Socket, ...args: any[]) {
-    let game = this.findGameBySocketId(client.id);
+    const game = this.findGameBySocketId(client.id);
     if (game) {
+      let gameID = game.gameID;
       game.connected -= 1;
       if (client.id == game.player1.socket || client.id == game.player2.socket) {
-        this.server.to(game.gameID).emit("endGame", client.id);
+        this.server.to(gameID).emit("endGame", client.id);
         if (client.id == game.player1.socket && !game.player2.socket) {
-          delete this.games[this.getGameIndex(game.gameID)];
-          this.games.splice(Number(game.gameID), 1);
+          delete this.games[this.getGameIndex(gameID)];
+          this.games.splice(this.getGameIndex(gameID), 1);
         }
         else if (client.id == game.player1.socket) {
           game.player1.disconnected = true;
@@ -173,16 +183,18 @@ export class GameGateway {
         }
       }
       if (game.player1.disconnected && game.player2.disconnected) {
-        this.server.in(game.gameID).disconnectSockets();
-        delete this.games[this.getGameIndex(game.gameID)];
-        this.games.splice(Number(this.getGameIndex(game.gameID)), 1);
+        console.log('b', this.getGameIndex(gameID))
+        this.server.in(gameID).disconnectSockets();
+        delete this.games[this.getGameIndex(gameID)];
+        this.games.splice(this.getGameIndex(gameID), 1);
       }
     }
+    console.log(this.games)
   }
 
   findGameBySocketId(socketID: string) {
     for (let index = 0; index < this.games.length; index++) {
-      let game = this.games[index];
+      const game = this.games[index];
       if (game && (game.player1.socket == socketID || game.player2.socket == socketID))
         return (game);
     }
@@ -190,7 +202,7 @@ export class GameGateway {
 
   getGameIndex(gameID: string) {
     for (let index = 0; index < this.games.length; index++) {
-      let game = this.games[index];
+      const game = this.games[index];
       if (game && game.gameID == gameID)
         return index;
     }
@@ -198,7 +210,7 @@ export class GameGateway {
 
   @SubscribeMessage('getScore')
   async getScore(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    let game = this.findGameBySocketId(data);
+    const game = this.findGameBySocketId(data);
     if (game) {
       let scoreP1 = game.player1.score;
       let scoreP2 = game.player2.score;
@@ -209,8 +221,8 @@ export class GameGateway {
 
   @SubscribeMessage('score')
   async score(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    let game = this.findGameBySocketId(client.id);
-    if (this.isPlayer1(game.gameID, client.id)) {
+    const game = this.findGameBySocketId(client.id);
+    if (game && this.isPlayer1(game.gameID, client.id)) {
       let scoreP1 = data[0];
       let scoreP2 = data[1];
       let finished = data[2];
@@ -223,15 +235,15 @@ export class GameGateway {
 
   @SubscribeMessage('getPowerUp')
   async getPowerUp(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    let game = this.findGameBySocketId(client.id);
+    const game = this.findGameBySocketId(client.id);
     if (game)
       this.server.to(game.gameID).emit("updatePowerUp", game.powerUp);
   }
 
   @SubscribeMessage('powerUp')
   async powerUp(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    let game = this.findGameBySocketId(client.id);
-    if (this.isPlayer1(game.gameID, client.id)) {
+    const game = this.findGameBySocketId(client.id);
+    if (game && this.isPlayer1(game.gameID, client.id)) {
       game.powerUp = data;
       this.server.to(game.gameID).emit("updatePowerUp", game.powerUp);
     }
@@ -239,18 +251,20 @@ export class GameGateway {
 
   @SubscribeMessage('finishMessage')
   async finishMessage(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    let game = this.findGameBySocketId(client.id);
-    if (data[1] == '1')
-      game.winner = game.player1;
-    else if (data[1] == '2')
-      game.winner = game.player2;
-    else
-      game.winner = null;
-    this.server.to(game.gameID).emit("winner", data[0]);
+    const game = this.findGameBySocketId(client.id);
+    if (game) {
+      if (data[1] == '1')
+        game.winner = game.player1;
+      else if (data[1] == '2')
+        game.winner = game.player2;
+      else
+        game.winner = null;
+      this.server.to(game.gameID).emit("winner", data[0]);
+    }
   }
 
   isPlayer1(gameID: string, id: any) {
-    let game = this.findGameBySocketId(id);
+    const game = this.findGameBySocketId(id);
     if (game && game.player1 && id == game.player1.socket)
       return true;
     return false;
