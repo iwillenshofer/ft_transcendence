@@ -4,6 +4,7 @@ import { UseGuards } from '@nestjs/common';
 import { WebSocketGateway, SubscribeMessage, WebSocketServer, MessageBody, ConnectedSocket } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { TfaGuard } from 'src/auth/tfa/tfa.guard';
+import { randomInt } from 'crypto';
 
 @WebSocketGateway({ cors: '*:*', namespace: 'game' })
 export class GameGateway {
@@ -60,12 +61,24 @@ export class GameGateway {
         }
       };
     }
-    this.games.push(new Game(this.games.length.toString(), customGame));
-    return this.games.length - 1;
+    let gameID = this.checkGameID(randomInt(1024).toString());
+    this.games.push(new Game(gameID, customGame));
+    return gameID;
+  }
+
+  checkGameID(id: string) {
+    for (let index = 0; index < this.games.length; index++) {
+      let game = this.games[index];
+      if (game && game.gameID === id) {
+        id = (Number(id) + 1).toString();
+        index = 0;
+      }
+    }
+    return id;
   }
 
   setPlayers(client, gameID, username) {
-    const game = this.games[gameID]
+    const game = this.findGameByGameId(gameID);
     if (game) {
       if (!game.player1.socket) {
         game.player1.socket = client.id;
@@ -82,6 +95,14 @@ export class GameGateway {
         if (client.id == game.player1.socket || client.id == game.player2.socket)
           this.server.to(game.gameID).emit("players", game.player1, game.player2);
       }
+    }
+  }
+
+  findGameByGameId(gameID) {
+    for (let index = 0; index < this.games.length; index++) {
+      let game = this.games[index];
+      if (game && game.gameID === gameID)
+        return (game);
     }
   }
 
@@ -166,13 +187,12 @@ export class GameGateway {
   async handleDisconnect(client: Socket, ...args: any[]) {
     const game = this.findGameBySocketId(client.id);
     if (game) {
-      let gameID = game.gameID;
+      const gameID = game.gameID;
       game.connected -= 1;
       if (client.id == game.player1.socket || client.id == game.player2.socket) {
         this.server.to(gameID).emit("endGame", client.id);
         if (client.id == game.player1.socket && !game.player2.socket) {
-          delete this.games[this.getGameIndex(gameID)];
-          this.games.splice(this.getGameIndex(gameID), 1);
+          this.deleteGameById(gameID)
         }
         else if (client.id == game.player1.socket) {
           game.player1.disconnected = true;
@@ -183,30 +203,30 @@ export class GameGateway {
         }
       }
       if (game.player1.disconnected && game.player2.disconnected) {
-        console.log('b', this.getGameIndex(gameID))
         this.server.in(gameID).disconnectSockets();
-        delete this.games[this.getGameIndex(gameID)];
-        this.games.splice(this.getGameIndex(gameID), 1);
+        this.deleteGameById(gameID);
       }
     }
-    console.log(this.games)
+  }
+
+  deleteGameById(gameID: string) {
+    for (let index = 0; index < this.games.length; index++) {
+      let game = this.games[index];
+      if (game && game.gameID == gameID) {
+        delete this.games[index];
+        this.games.splice(index, 1);
+      }
+    }
   }
 
   findGameBySocketId(socketID: string) {
     for (let index = 0; index < this.games.length; index++) {
-      const game = this.games[index];
+      let game = this.games[index];
       if (game && (game.player1.socket == socketID || game.player2.socket == socketID))
         return (game);
     }
   }
 
-  getGameIndex(gameID: string) {
-    for (let index = 0; index < this.games.length; index++) {
-      const game = this.games[index];
-      if (game && game.gameID == gameID)
-        return index;
-    }
-  }
 
   @SubscribeMessage('getScore')
   async getScore(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
