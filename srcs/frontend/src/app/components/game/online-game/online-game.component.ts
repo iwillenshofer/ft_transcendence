@@ -47,7 +47,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
 
   @HostListener('document:visibilitychange', ['$event'])
   visibilitychange() {
-    if (document.hidden && this.mode != 'spec' && !this.isWaiting) {
+    if (document.hidden && !this.finished && this.mode != 'spec' && !this.isWaiting && !this.finishedMessage) {
       this.socket.disconnect();
       window.cancelAnimationFrame(this.currentAnimationFrameId as number);
       this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
@@ -215,7 +215,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
     this.updatePaddles(this.gameService.getPlayer1(), this.gameService.getPlayer2());
     this.drawScore();
-    this.drawNames();
+    if (this.player1 && this.player2)
+      this.drawNames();
     this.canvas.font = '10vh Lucida Console Courier New monospace';
     this.canvas.textBaseline = 'middle';
     this.canvas.textAlign = 'center';

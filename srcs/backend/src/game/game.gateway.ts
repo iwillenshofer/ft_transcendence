@@ -22,7 +22,7 @@ export class GameGateway {
   async liveGames(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let liveGames: Game[] = [];
     this.games.forEach(game => {
-      if (game.connected >= 2)
+      if (!game.finished && game.connected >= 2)
         liveGames.push(game);
     });
     this.server.to(client.id).emit("games", liveGames);
