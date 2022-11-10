@@ -18,6 +18,17 @@ export class GameGateway {
   player2: any;
   games: Game[] = [];
 
+  @SubscribeMessage('inGame')
+  async isInGame(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+    let username = data;
+    let res = false;
+    this.games.forEach(game => {
+      if (!game.finished && (game.player1.username === username || game.player2.username === username))
+        res = true;
+    });
+    this.server.to(client.id).emit("friends", res);
+  }
+
   @SubscribeMessage('liveGames')
   async liveGames(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let liveGames: Game[] = [];
