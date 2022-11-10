@@ -106,12 +106,12 @@ export class GameGateway {
     }
   }
 
-  @SubscribeMessage('getPaddles')
-  async getPaddles(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
-    const game = this.findGameBySocketId(client.id);
-    if (game)
-      this.server.to(game.gameID).emit('updatePaddle', game.player1, game.player2)
-  }
+  // @SubscribeMessage('getPaddles')
+  // async getPaddles(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
+  //   const game = this.findGameBySocketId(client.id);
+  //   if (game)
+  //     this.server.to(game.gameID).emit('updatePaddle', game.player1, game.player2)
+  // }
 
   @SubscribeMessage('setPaddles')
   async setPaddles(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
@@ -147,15 +147,17 @@ export class GameGateway {
     if (game && this.isPlayer1(game.gameID, client.id)) {
       game.ball = data;
       this.server.to(game.gameID).emit("ball", game.ball);
+      this.server.to(game.gameID).emit("updateScore", game.player1.score, game.player2.score, game.finished);
     }
   }
 
-  @SubscribeMessage('getBall')
-  async getBall(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
-    const game = this.findGameBySocketId(client.id);
-    if (game)
-      this.server.to(game.gameID).emit("ball", game.ball);
-  }
+  // @SubscribeMessage('getBall')
+  // async getBall(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
+  //   const game = this.findGameBySocketId(client.id);
+  //   if (game) {
+  //     this.server.to(game.gameID).emit("ball", game.ball);
+  //   }
+  // }
 
   @SubscribeMessage('move')
   async move(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
@@ -228,16 +230,16 @@ export class GameGateway {
   }
 
 
-  @SubscribeMessage('getScore')
-  async getScore(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    const game = this.findGameBySocketId(data);
-    if (game) {
-      let scoreP1 = game.player1.score;
-      let scoreP2 = game.player2.score;
-      let finished = game.finished;
-      this.server.to(game.gameID).emit("updateScore", scoreP1, scoreP2, finished);
-    }
-  }
+  // @SubscribeMessage('getScore')
+  // async getScore(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+  //   const game = this.findGameBySocketId(client.id);
+  //   if (game) {
+  //     let scoreP1 = game.player1.score;
+  //     let scoreP2 = game.player2.score;
+  //     let finished = game.finished;
+  //     this.server.to(game.gameID).emit("updateScore", scoreP1, scoreP2, finished);
+  //   }
+  // }
 
   @SubscribeMessage('score')
   async score(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
@@ -253,12 +255,12 @@ export class GameGateway {
     }
   }
 
-  @SubscribeMessage('getPowerUp')
-  async getPowerUp(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    const game = this.findGameBySocketId(client.id);
-    if (game)
-      this.server.to(game.gameID).emit("updatePowerUp", game.powerUp);
-  }
+  // @SubscribeMessage('getPowerUp')
+  // async getPowerUp(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+  //   const game = this.findGameBySocketId(client.id);
+  //   if (game)
+  //     this.server.to(game.gameID).emit("updatePowerUp", game.powerUp);
+  // }
 
   @SubscribeMessage('powerUp')
   async powerUp(@MessageBody() data: string, @ConnectedSocket() client: Socket) {

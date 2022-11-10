@@ -115,10 +115,10 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   watchGame() {
-    this.socket.emit("getPaddles")
-    this.socket.emit("getPowerUp")
-    this.socket.emit("getBall")
-    this.socket.emit("getScore", this.specGame)
+    // this.socket.emit("getScore", this.specGame)
+    // this.socket.emit("getBall")
+    // this.socket.emit("getPaddles")
+    // this.socket.emit("getPowerUp")
     this.socket.on("updatePaddle", (player1: any, player2: any) => {
       this.player1 = player1;
       this.player2 = player2;
@@ -131,6 +131,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
       this.updateScore();
       this.drawLines();
+      this.drawScore();
+      this.drawNames();
       this.drawPowerUp(powerUp);
       if (!this.finished)
         this.drawBall(ball);
@@ -168,14 +170,16 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   draw() {
     this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
     this.drawLines();
+    this.drawScore();
+    this.drawNames();
     if (!this.finished)
       this.drawBall(this.gameService.getBall());
     this.updatePaddles(this.gameService.getPlayer1(), this.gameService.getPlayer2());
     this.drawPowerUp(this.gameService.getPowerUp())
   }
 
-  updateScore() {
-    this.socket.on("updateScore", (scoreP1: any, scoreP2: any, finished: any) => {
+  async updateScore() {
+    await this.socket.on("updateScore", (scoreP1: any, scoreP2: any, finished: any) => {
       this.scoreP1 = scoreP1;
       this.scoreP2 = scoreP2;
       this.finished = finished;
@@ -214,6 +218,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     window.cancelAnimationFrame(this.currentAnimationFrameId as number);
     this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
     this.updatePaddles(this.gameService.getPlayer1(), this.gameService.getPlayer2());
+    this.drawScore();
+    this.drawNames();
     this.canvas.font = '10vh Lucida Console Courier New monospace';
     this.canvas.textBaseline = 'middle';
     this.canvas.textAlign = 'center';
@@ -247,5 +253,21 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       var img = document.getElementById("powerUp");
       ctx.drawImage(img, powerUp.x, powerUp.y, 100, 100);
     }
+  }
+
+  drawScore() {
+    this.canvas.font = '80px Lucida Console Courier New monospace';
+    this.canvas.textBaseline = 'middle';
+    this.canvas.textAlign = 'center';
+    this.canvas.fillText(this.scoreP1, 320, 50);
+    this.canvas.fillText(this.scoreP2, 960, 50);
+  }
+
+  drawNames() {
+    this.canvas.font = '30px Lucida Console Courier New monospace';
+    this.canvas.textBaseline = 'middle';
+    this.canvas.textAlign = 'center';
+    this.canvas.fillText(this.player1.username, 320, 680);
+    this.canvas.fillText(this.player2.username, 960, 680);
   }
 }
