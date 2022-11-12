@@ -15,6 +15,8 @@ import { GameEntity } from './game/game.entity';
 import { StatsController } from './stats/stats.controller';
 import { StatsService } from './stats/stats.service';
 import { StatsModule } from './stats/stats.module';
+import { FriendsModule } from './friends/friends.module';
+import { FriendsEntity } from './friends/friends.entity';
 
 @Module({
   imports: [
@@ -29,11 +31,12 @@ import { StatsModule } from './stats/stats.module';
       username: process.env.POSTGRES_USER || 'postgres',
       password: process.env.POSTGRES_PASSWORD || 'postgress',
       database: process.env.POSTGRES_DB || 'postgres',
-      entities: [UserEntity, RoomEntity, AuthEntity, GameEntity],
+      entities: [UserEntity, RoomEntity, AuthEntity, GameEntity, FriendsEntity],
       synchronize: true,
     }),
     GameModule,
     StatsModule,
+    FriendsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

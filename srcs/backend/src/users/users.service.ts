@@ -91,6 +91,13 @@ export class UsersService {
 		return (user.id);
 	}
 
+	async getUserByUsername(username: string) {
+		let user = await this.userRepository.findOneBy({ username: username });
+		console.log("FOUND:" + username + "\n\n" + user);
+		
+		return (user);
+	}
+
 	async getUsername(id: number) {
 		let user = await this.userRepository.findOneBy({ id: id });
 		return (user.username);

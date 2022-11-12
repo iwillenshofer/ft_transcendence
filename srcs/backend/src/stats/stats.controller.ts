@@ -19,6 +19,6 @@ export class StatsController {
 
     @Get('userinfo/:username')
     async userInfo(@Param('username') username, @Request() req) {
-		let history = await this.statsService.getUserinfo(username);
-		return (JSON.stringify(history));    }
+		let ret = await this.statsService.getUserinfo(username);
+		return (JSON.stringify(ret));    }
 }

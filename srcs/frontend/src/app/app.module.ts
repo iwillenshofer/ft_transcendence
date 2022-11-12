@@ -33,6 +33,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { FriendsComponent } from './components/friends/friends.component';
 import { GameHistoryComponent } from './components/friends/game-history/game-history.component';
+import { FriendsListComponent } from './components/friends/friends-list/friends-list.component';
 
 @NgModule({
   declarations: [
@@ -52,6 +53,7 @@ import { GameHistoryComponent } from './components/friends/game-history/game-his
     OnlineGameComponent,
     FriendsComponent,
     GameHistoryComponent,
+    FriendsListComponent,
   ],
   imports: [
     BrowserModule,
