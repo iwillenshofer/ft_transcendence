@@ -11,33 +11,33 @@ export class FriendsService {
   constructor(
     private http: HttpClient,
     private alertService: AlertsService
-    ) { 
-     this.selectedUser = new BehaviorSubject<string | undefined | null>(null);
-     this.gamesPlayed = new BehaviorSubject<number>(0);
-     this.gamesWon = new BehaviorSubject<number>(0);
-     this.userInfo = new BehaviorSubject<any | null>(null);
-     this.userList = new BehaviorSubject<any[]>([]);
-     this.friendsList = new BehaviorSubject<any[]>([]);
-     this.requestsList = new BehaviorSubject<any[]>([]);
-     this.friendStatus = new BehaviorSubject<number>(0);
-    }
-    public selectedUser: BehaviorSubject<string | undefined | null>;
-    public history: any[] = [];
-    public gamesPlayed: BehaviorSubject<number>;
-    public gamesWon: BehaviorSubject<number>;
-    public friendStatus: BehaviorSubject<number>;
-    public userInfo: BehaviorSubject<any | null>;
-    public userList: BehaviorSubject<any[]>;
-    public friendsList: BehaviorSubject<any[]>;
-    public requestsList: BehaviorSubject<any[]>;
+  ) {
+    this.selectedUser = new BehaviorSubject<string | undefined | null>(null);
+    this.gamesPlayed = new BehaviorSubject<number>(0);
+    this.gamesWon = new BehaviorSubject<number>(0);
+    this.userInfo = new BehaviorSubject<any | null>(null);
+    this.userList = new BehaviorSubject<any[]>([]);
+    this.friendsList = new BehaviorSubject<any[]>([]);
+    this.requestsList = new BehaviorSubject<any[]>([]);
+    this.friendStatus = new BehaviorSubject<number>(0);
+  }
+  public selectedUser: BehaviorSubject<string | undefined | null>;
+  public history: any[] = [];
+  public gamesPlayed: BehaviorSubject<number>;
+  public gamesWon: BehaviorSubject<number>;
+  public friendStatus: BehaviorSubject<number>;
+  public userInfo: BehaviorSubject<any | null>;
+  public userList: BehaviorSubject<any[]>;
+  public friendsList: BehaviorSubject<any[]>;
+  public requestsList: BehaviorSubject<any[]>;
 
-    ngOnInit(): void { }
+  ngOnInit(): void { }
 
   loadUser(username: string) {
-      this.selectedUser.next(username);
+    this.selectedUser.next(username);
   }
 
-    
+
   getHistory(): Observable<any> {
     return this.http.get('/backend/stats/history/' + this.selectedUser.value, { withCredentials: true });
   }
@@ -75,30 +75,30 @@ export class FriendsService {
   }
 
   async acceptFriendship(username: string = '') {
-    if (username == '') {username = this.selectedUser.value || ''};
+    if (username == '') { username = this.selectedUser.value || '' };
     this.confirmFriendship(username).subscribe((res) => {
-      console.log(res);
-      if ((res.status == 3)) {this.alertService.success(res.message); }
-      else {this.alertService.warning("friendship could not be accepted");}
+      // console.log(res);
+      if ((res.status == 3)) { this.alertService.success(res.message); }
+      else { this.alertService.warning("friendship could not be accepted"); }
       this.update();
     });
   }
 
   async addFriendship() {
     this.requestFriendship(this.selectedUser.value || '').subscribe((res) => {
-      console.log(res);
-      if ((res.status == 4)) {this.alertService.success(res.message); }
-      else {this.alertService.warning(res.message);}
+      // console.log(res);
+      if ((res.status == 4)) { this.alertService.success(res.message); }
+      else { this.alertService.warning(res.message); }
       this.update();
     });
   }
 
   async delFriendship(username: string = '') {
-    if (username == '') {username = this.selectedUser.value || ''};
+    if (username == '') { username = this.selectedUser.value || '' };
     this.cancelFriendship(username).subscribe((res) => {
-      console.log(res);
-      if ((res.status == 0)) {this.alertService.success(res.message); }
-      else {this.alertService.warning('friendship could not be cancelled');}
+      // console.log(res);
+      if ((res.status == 0)) { this.alertService.success(res.message); }
+      else { this.alertService.warning('friendship could not be cancelled'); }
       this.update();
     });
   }
@@ -112,51 +112,49 @@ export class FriendsService {
   }
 
   async updateFriendshipStatus() {
-    this.getFriendshipStatus(this.selectedUser.value).subscribe((res: any ) => {
+    this.getFriendshipStatus(this.selectedUser.value).subscribe((res: any) => {
       this.friendStatus.next(res.status);
     })
   }
 
   async updateUserInfo() {
-    console.log("Selected User: " + this.selectedUser.value);
-   await this.getUserInfo().subscribe((res: any ) => {
+    // console.log("Selected User: " + this.selectedUser.value);
+    await this.getUserInfo().subscribe((res: any) => {
       this.userInfo.next(res);
     })
   }
 
   async filterUserList(filter: string) {
-    if (filter.length < 3)
-    {
+    if (filter.length < 3) {
       this.userList.next([]);
       return;
     }
-    this.getUserList(filter).subscribe((res: any[] ) => {
+    this.getUserList(filter).subscribe((res: any[]) => {
       this.userList.next(res);
     })
   }
 
   async updateFriendsList() {
-    this.getFriendsList().subscribe((res: any[] ) => {
+    this.getFriendsList().subscribe((res: any[]) => {
       this.friendsList.next(res);
     })
   }
 
   async updateRequestsList() {
-    this.getRequestsList().subscribe((res: any[] ) => {
+    this.getRequestsList().subscribe((res: any[]) => {
       this.requestsList.next(res);
     })
   }
 
   async updateHistory() {
-    this.getHistory().subscribe((res: any[] )=> {
+    this.getHistory().subscribe((res: any[]) => {
       this.history = res;
       let gamesPlayed = 0;
       let gamesWon = 0;
       for (var h of this.history) {
         gamesPlayed++;
         if ((h.user1.username == this.selectedUser.value && h.scoreP1 > h.scoreP2) ||
-        (h.user2.username == this.selectedUser.value && h.scoreP2 > h.scoreP1))
-        { gamesWon++; };
+          (h.user2.username == this.selectedUser.value && h.scoreP2 > h.scoreP1)) { gamesWon++; };
         this.gamesPlayed.next(gamesPlayed);
         this.gamesWon.next(gamesWon);
       };

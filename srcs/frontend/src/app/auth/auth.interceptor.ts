@@ -36,10 +36,10 @@ export class AuthInterceptor implements HttpInterceptor {
 	}
 
 	private handleError(req: HttpRequest<any>, next: HttpHandler, originalError: any) {
-		console.log('handling 401 error');
+		// console.log('handling 401 error');
 		return this.http.get<any>('/backend/auth/refreshtoken', { withCredentials: true }).pipe(
 			switchMap((data: any) => {
-				console.log(JSON.stringify(data));
+				// console.log(JSON.stringify(data));
 				localStorage.removeItem('token');
 				localStorage.setItem('token', data.token);
 				const new_req = req.clone({
@@ -50,7 +50,7 @@ export class AuthInterceptor implements HttpInterceptor {
 				return next.handle(new_req);
 			}),
 			catchError((error) => {
-				console.log('');
+				// console.log('');
 				this.alertservice.danger("Is your token that old or are you trying something fancy? Let's login again")
 				this.authService.logout();
 				return this.router.navigate(['/']);

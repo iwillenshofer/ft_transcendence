@@ -11,22 +11,24 @@ import { AlertsService } from './alerts.service';
 export class AlertsComponent implements OnInit {
 
   constructor(
-	private alertsService: AlertsService
+    private alertsService: AlertsService
   ) { }
   alerts: AlertModel[] = [];
 
   ngOnInit(): void {
-	this.alertsService.getAlerts().subscribe(messages => {
-		this.alerts = messages;
-	});
-}
+    this.acceptable = this.alertsService.acceptable;
+    this.alertsService.getAlerts().subscribe(messages => {
+      this.alerts = messages;
+    });
+  }
 
+  acceptable!: boolean;
   timeout: number = 5000;
   dismissible: boolean = true;
   dismissOnTimeout: number = 5000;
 
   onClosed(dismissedAlert: any): void {
-	this.alertsService.remove(dismissedAlert);
+    this.alertsService.remove(dismissedAlert);
   }
 
 }
