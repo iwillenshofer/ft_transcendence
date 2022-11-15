@@ -1,3 +1,4 @@
+import { OnlineGameService } from './online-game.service';
 import { Component, OnInit } from '@angular/core';
 import io from "socket.io-client";
 
@@ -10,14 +11,26 @@ export class GameComponent implements OnInit {
 
   private socket: any;
   menu: boolean = true;
+  cmenu: boolean = false;
   paused: boolean = false;
   mode: string = '';
   powerUps: boolean = false;
   showLiveGames: boolean = false;
   liveGames: any;
   toWatch: any;
+  challenged: string = "";
+
+  constructor(protected gameService: OnlineGameService) { }
+
+  ngOnDestroy() {
+    this.gameService.challenged = null;
+  }
 
   public ngOnInit() {
+    if (this.gameService.challenged) {
+      this.cmenu = true;
+      this.challenged = this.gameService.challenged;
+    }
   }
 
   startGame(mode: string) {

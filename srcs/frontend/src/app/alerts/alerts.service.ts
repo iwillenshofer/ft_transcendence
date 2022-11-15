@@ -8,44 +8,57 @@ import { AlertModel } from './alerts.model';
 export class AlertsService {
 
   constructor() { }
-  
+
   alertsSubject: BehaviorSubject<AlertModel[]> = new BehaviorSubject<AlertModel[]>([]);
-  alerts: AlertModel[] = [];
 
   private alert(newAlert: AlertModel): void {
-	this.alertsSubject.next([...this.alertsSubject.getValue(), newAlert]);
-	this.alerts = [...this.alerts, newAlert];
+    this.alertsSubject.next([...this.alertsSubject.getValue(), newAlert]);
   }
 
   getAlerts(): Observable<AlertModel[]> {
-	return this.alertsSubject;
+    return this.alertsSubject;
   }
 
   danger(message: string) {
-	this.clear();
-	this.alert({ type: "danger", msg: message });
+    this.clear();
+    this.alert(new AlertModel({ type: 'danger', msg: message }));
   }
 
   info(message: string) {
-	this.alert({ type: "info", msg: message });
+    this.alert(new AlertModel({ type: 'info', msg: message }));
   }
 
   warning(message: string) {
-	this.alert({ type: "warning", msg: message });
+    this.alert(new AlertModel({ type: 'warning', msg: message }));
   }
-  
+
   success(message: string) {
-	this.alert({ type: "success", msg: message });
+    this.alert(new AlertModel({ type: 'success', msg: message }));
   }
 
   clear() {
-	this.alertsSubject.next([]);
-  	this.alerts = [];
+    this.alertsSubject.next([]);
   }
 
   remove(removedAlert: any): void {
-	console.log('removed alert');
-	this.alerts = this.alerts.filter(alert => alert !== removedAlert);
-	this.alertsSubject.next(this.alerts);
+    let alerts: AlertModel[] = this.alertsSubject.value;
+    alerts = alerts.filter(alert => alert !== removedAlert);
+    this.alertsSubject.next(alerts);
   }
+
+  challenge(challenger: any, username: any) {
+    let msg = challenger + ' challenged you';
+    this.alert(AlertModel.fromChallenge(challenger, username, msg));
+  }
+
+  cancelchallenge(challenger: any, username: any) {
+    let alerts: AlertModel[] = this.alertsSubject.value;
+      alerts.forEach( (item, index) => {
+        if(item.challenger === challenger && item.username === username) {
+          alerts.splice(index,1);
+        };
+      });
+      this.alertsSubject.next(alerts);
+  }
+
 }

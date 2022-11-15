@@ -30,8 +30,8 @@ export class ChatComponent implements OnInit, AfterViewInit {
   }
 
   onPaginateRooms(pageEvent: PageEvent) {
-    console.log(pageEvent.pageSize);
-    console.log(pageEvent.pageIndex);
+    // console.log(pageEvent.pageSize);
+    // console.log(pageEvent.pageIndex);
     this.chatService.emitPaginateRooms(pageEvent.pageSize, pageEvent.pageIndex);
   }
 
