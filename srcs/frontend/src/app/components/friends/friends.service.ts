@@ -166,9 +166,9 @@ export class FriendsService {
         if ((h.user1.username == this.selectedUser.value && h.scoreP1 > h.scoreP2) ||
         (h.user2.username == this.selectedUser.value && h.scoreP2 > h.scoreP1))
         { gamesWon++; };
-        this.gamesPlayed.next(gamesPlayed);
-        this.gamesWon.next(gamesWon);
       };
+      this.gamesPlayed.next(gamesPlayed);
+      this.gamesWon.next(gamesWon);
     });
   }
 }
