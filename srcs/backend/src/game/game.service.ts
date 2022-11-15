@@ -5,12 +5,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Game } from './game';
 import { IGame } from './game.interface';
 import { Repository } from 'typeorm';
+import { StatsService } from 'src/stats/stats.service';
 
 @Injectable()
 export class GameService {
 
     constructor(
         private usersService: UsersService,
+        private statsService: StatsService,
         @InjectRepository(GameEntity) private gameRepository: Repository<GameEntity>,
     ) { }
 
@@ -27,6 +29,7 @@ export class GameService {
         gameEntity.idP1 = await this.usersService.getIdByUsername(gameEntity.usernameP1);
         gameEntity.idP2 = await this.usersService.getIdByUsername(gameEntity.usernameP2);
         this.gameRepository.save(gameEntity);
+        this.statsService.updateRating(gameEntity);
     }
 
     async getGamesByUsername(username: string) {

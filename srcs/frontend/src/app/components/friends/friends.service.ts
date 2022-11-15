@@ -111,6 +111,14 @@ export class FriendsService {
     await this.updateRequestsList();
   }
 
+  getRankingImage(rating: number = 0): string {
+    if(!rating) { rating = this.userInfo.value?.rating}
+    if (rating <= 100) { rating = 0 };
+    if (rating >= 2200) { rating = 2000 };
+    rating = Math.floor((24 * rating) / 2000);
+    return ('/assets/images/ranking/' + rating + '.png');
+  }
+
   async updateFriendshipStatus() {
     this.getFriendshipStatus(this.selectedUser.value).subscribe((res: any ) => {
       this.friendStatus.next(res.status);
@@ -120,6 +128,7 @@ export class FriendsService {
   async updateUserInfo() {
     console.log("Selected User: " + this.selectedUser.value);
    await this.getUserInfo().subscribe((res: any ) => {
+      res.rating_image = this.getRankingImage(800);
       this.userInfo.next(res);
     })
   }

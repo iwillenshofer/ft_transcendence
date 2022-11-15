@@ -59,6 +59,11 @@
                     </div>
                     <div class="row">
                         <div class="col">
+                            <i>rating: {{this.friendsService.userInfo.value?.rating}}</i>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
                             <i>player since: {{this.friendsService.userInfo.value?.created_at}}</i>
                         </div>
                     </div>
@@ -99,7 +104,7 @@
                         <div class="card-body userlist text-center stats ">
                             <div class="row">
                                 <div class="col-4">
-                                    <img class="achievement" src="/assets/images/achievements/trophy.png">
+                                    <img class="achievement" src="{{this.friendsService.userInfo.value?.rating_image}}">
                                     <span class="subtitle">Winner</span>
                                 </div>
                                 <div class="col-4">

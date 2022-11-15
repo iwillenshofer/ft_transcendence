@@ -29,6 +29,9 @@ export class UserEntity extends BaseEntity {
   @ManyToMany(() => RoomEntity, room => room.users)
   rooms: RoomEntity[];
 
+  @Column({ type: 'int', default: 800 })
+  rating: number;
+
   @CreateDateColumn()
   created_at: Date;
 

@@ -45,10 +45,30 @@ export class StatsService {
             'username': username,
             'fullname': user.fullname,
             'avatar_url': user.avatar_url,
-            'created_at': user.created_at
+            'created_at': user.created_at,
+            'rating': user.rating
         });
 	}
 
+
+    _expectedProbability(ratingA: number, ratingB: number): number {
+        return (1.0 / (1.0 + Math.pow(10,((ratingB - ratingA) / 400) ) ));
+    }
+
+    _newRating(ratingA: number, ratingB: number, scoreA: number): number {
+        return  Math.round(ratingA + (32 * ( scoreA - this._expectedProbability(ratingA, ratingB) )));
+    }
+
+    async updateRating(game: GameEntity) {
+		let user1 = await this.userRepository.findOneBy({ id: game.idP1 });
+        let user2 = await this.userRepository.findOneBy({ id: game.idP2 });
+        let tmpU1 = this._newRating(user1.rating, user2.rating, (game.winner == user1.id ? 1 : 0));
+        let tmpU2 = this._newRating(user2.rating, user1.rating, (game.winner == user2.id ? 1 : 0));
+        user1.rating = (tmpU1 > 100) ? tmpU1 : 100;
+        user2.rating = (tmpU2 > 100) ? tmpU1 : 100;
+        user1.save();
+        user2.save();
+	}
 }
 
 
