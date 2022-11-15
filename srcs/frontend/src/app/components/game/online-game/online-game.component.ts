@@ -230,4 +230,11 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       ctx.drawImage(img, powerUp.x, powerUp.y, 100, 100);
     }
   }
+
+  cancelChallenge() {
+    this.auth.getUser().then(data => {
+      this.alert.cancelchallenge(data.username, this.challenged);
+    });
+  }
+
 }

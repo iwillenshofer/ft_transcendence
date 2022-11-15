@@ -16,16 +16,10 @@ export class AlertsComponent implements OnInit {
   alerts: AlertModel[] = [];
 
   ngOnInit(): void {
-    this.acceptable = this.alertsService.acceptable;
     this.alertsService.getAlerts().subscribe(messages => {
       this.alerts = messages;
     });
   }
-
-  acceptable!: boolean;
-  timeout: number = 5000;
-  dismissible: boolean = true;
-  dismissOnTimeout: number = 5000;
 
   onClosed(dismissedAlert: any): void {
     this.alertsService.remove(dismissedAlert);
