@@ -1,5 +1,5 @@
 import { IPlayer } from './game.interface';
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from "typeorm";
 
 @Entity({ name: "Games" })
 @Unique(['id'])
@@ -30,4 +30,10 @@ export class GameEntity {
 
     @Column()
     winner: number;
+
+    @CreateDateColumn()
+    created_at: Date;
+  
+    @UpdateDateColumn()
+    updated_at: Date;
 }

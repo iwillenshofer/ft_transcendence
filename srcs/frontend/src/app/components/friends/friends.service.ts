@@ -126,14 +126,9 @@ export class FriendsService {
   }
 
   async updateUserInfo() {
-<<<<<<< HEAD
     console.log("Selected User: " + this.selectedUser.value);
    await this.getUserInfo().subscribe((res: any ) => {
       res.rating_image = this.getRankingImage(800);
-=======
-    // console.log("Selected User: " + this.selectedUser.value);
-    await this.getUserInfo().subscribe((res: any) => {
->>>>>>> challenge
       this.userInfo.next(res);
     })
   }

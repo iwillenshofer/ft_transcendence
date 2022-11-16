@@ -32,6 +32,9 @@ export class UserEntity extends BaseEntity {
   @Column({ type: 'int', default: 800 })
   rating: number;
 
+  @Column({ type: 'int', default: 0 })
+  login_count: number;
+
   @CreateDateColumn()
   created_at: Date;
 

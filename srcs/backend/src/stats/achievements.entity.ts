@@ -2,22 +2,21 @@ import { Column, Entity, PrimaryGeneratedColumn, Unique, CreateDateColumn, Updat
 import { UserEntity } from "src/users/users.entity";
 
 
-@Entity({ name: "Friends" })
+@Entity({ name: "Achievements" })
 @Unique(['id'])
-export class FriendsEntity {
+export class AchievementsEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @ManyToOne(() => UserEntity, user1 => user1.id)
+    @ManyToOne(() => UserEntity, user => user.id)
     @JoinColumn()
-    user1: UserEntity;
-
-    @ManyToOne(() => UserEntity, user2 => user2.id)
-    @JoinColumn()
-    user2: UserEntity;
+    user: UserEntity;
 
     @Column()
-    accepted: boolean;
+    achievement: string;
+
+    @Column()
+    description: string;
 
     @CreateDateColumn()
     created_at: Date;

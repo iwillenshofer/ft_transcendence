@@ -5,6 +5,7 @@ import { Brackets, Equal, Repository } from 'typeorm';
 import { UserEntity } from 'src/users/users.entity';
 import { UsersService } from 'src/users/users.service';
 import { FriendsStatusDTO } from './friendsStatus.dto';
+import { StatsService } from 'src/stats/stats.service';
 
 @Injectable()
 export class FriendsService {
@@ -14,7 +15,8 @@ export class FriendsService {
         private friendsRepository: Repository<FriendsEntity>,
         @InjectRepository(UserEntity)
         private usersRepository: Repository<UserEntity>,
-        private usersService: UsersService
+        private usersService: UsersService,
+        private statsService: StatsService
     ) {}
 
     async getFriendshipStatus(username: string, me: string): Promise<FriendsStatusDTO>
@@ -151,7 +153,8 @@ export class FriendsService {
         if (friendship) {
             friendship.accepted = true;
             const res = await this.friendsRepository.save(friendship);
-            console.log(res);
+            await this.statsService.friendsAchievements(u1.id);
+            await this.statsService.friendsAchievements(u2.id);
             return res;
         }
         return (this.getFriendshipStatus(username, me));

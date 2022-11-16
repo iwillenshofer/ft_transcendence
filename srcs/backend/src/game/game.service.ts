@@ -30,6 +30,8 @@ export class GameService {
         gameEntity.idP2 = await this.usersService.getIdByUsername(gameEntity.usernameP2);
         this.gameRepository.save(gameEntity);
         this.statsService.updateRating(gameEntity);
+        this.statsService.gameAchievements(gameEntity.idP1);
+        this.statsService.gameAchievements(gameEntity.idP2);
     }
 
     async getGamesByUsername(username: string) {
