@@ -4,6 +4,7 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { UserService } from 'src/app/services/user.service';
 import { BehaviorSubject } from 'rxjs';
 import { User } from 'src/app/auth/user.model';
+import { AlertsService } from 'src/app/alerts/alerts.service';
 
 @Component({
   selector: 'app-navbar',
@@ -16,7 +17,8 @@ export class NavbarComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private userService: UserService
+    private userService: UserService,
+    private alertService: AlertsService
     ) { 
       this.userSubject = this.authService.userSubject;
     }
@@ -29,6 +31,27 @@ export class NavbarComponent implements OnInit {
     faGears,
     faRightFromBracket,
   ];
+
+  tryAccept() {
+    console.log('accepting');
+  }
+
+  tryDeny() {
+    console.log('denying');
+  }
+
+  tryAlert() {
+    this.alertService.challenge('hello',
+      {
+        accept_click: () => {
+          this.tryAccept();
+        },
+        deny_click: () => {
+          this.tryDeny();
+        }
+      }
+    );
+  }
 
   logout() {
     this.authService.logout();

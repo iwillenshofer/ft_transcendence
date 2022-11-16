@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { AlertModel } from './alerts.model';
+import { AcceptableButton, AlertModel } from './alerts.model';
 
 @Injectable({
   providedIn: 'root'
@@ -46,9 +46,9 @@ export class AlertsService {
     this.alertsSubject.next(alerts);
   }
 
-  challenge(challenger: any) {
+  challenge(challenger: any, buttons: AcceptableButton = new AcceptableButton()) {
     let msg = challenger + ' challenged you';
-    this.alert(AlertModel.fromChallenge(challenger, msg));
+    this.alert(AlertModel.fromChallenge(challenger, msg, buttons));
   }
 
   cancelchallenge(challenger: any) {

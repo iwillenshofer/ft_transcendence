@@ -41,6 +41,7 @@ export class UsersService {
 
 		const ext = '.' + image_url.split('.').pop();
 		const filename = uuidv4() + ext;
+		try {
 		const writer = createWriteStream('uploads/profileimages/' + filename)
 		const response = await this.httpService.axiosRef({
 			url: image_url,
@@ -49,6 +50,9 @@ export class UsersService {
 		});
 
 		response.data.pipe(writer);
+		} catch {
+			console.log('fileerror');
+		}
 		image_url = 'user/image/' + filename;
 
 		const user: UserEntity = await this.userRepository.create({
