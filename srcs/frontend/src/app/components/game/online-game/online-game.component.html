@@ -1,7 +1,6 @@
 <canvas #game class="table" width="1280" height="720"></canvas>
 <div class="waiting" *ngIf="isWaiting">
     <p class="waiting__title">Waiting for another player</p>
-    <button (click)="cancelChallenge()">Cancel</button>
     <p class="quit">[Esc] - Quit</p>
 </div>
 <div *ngIf="!isWaiting" class="score">
@@ -19,6 +18,5 @@
     <div class="usernames__p2">
         {{player2.username}}
     </div>
-
 </div>
 <img id="powerUp" width="100" height="100" src="/assets/images/powerUp.png" alt="power up">

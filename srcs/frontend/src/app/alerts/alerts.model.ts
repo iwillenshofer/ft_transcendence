@@ -1,16 +1,16 @@
 interface IAlert {
-	type? : string;
-	msg? : string;
-	acceptable? : boolean;
-	dismissible? : boolean;
-	timeout? : number;
-	challenger? : any;
-	username? : any;
+	type?: string;
+	msg?: string;
+	acceptable?: boolean;
+	dismissible?: boolean;
+	timeout?: number;
+	challenger?: any;
+	username?: any;
 }
 
 export class AlertModel {
 
-	constructor (alert?: IAlert) {		
+	constructor(alert?: IAlert) {
 		this.type = alert?.type ?? 'success';
 		this.msg = alert?.msg ?? '';
 		this.acceptable = alert?.acceptable ?? false;
@@ -21,27 +21,26 @@ export class AlertModel {
 	};
 
 	static fromAlert(type: string, message: string): AlertModel {
-        return new this(
+		return new this(
 			{
-					type: type,
-					msg: message,
+				type: type,
+				msg: message,
 			}
-        );
-    }
+		);
+	}
 
-	static fromChallenge(challenger: any, username: any, message: string): AlertModel {
-        return new this(
+	static fromChallenge(challenger: any, message: string): AlertModel {
+		return new this(
 			{
-					type: 'success',
-					msg: message,
-					timeout: 0,
-					dismissible: false,
-					acceptable: true,
-					challenger: challenger,
-					username: username
+				type: 'success',
+				msg: message,
+				timeout: 0,
+				dismissible: false,
+				acceptable: true,
+				challenger: challenger,
 			}
-        );
-    }
+		);
+	}
 	public type: string;
 	public msg: string;
 	public acceptable: boolean;

@@ -39,7 +39,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   keyEvent(event: KeyboardEvent) {
     if (event.code == 'Escape') {
       if (this.isWaiting || this.finished || this.mode == 'spec') {
-        window.location.reload();
+        this.cancelChallenge()
         // this.socket.disconnect();
         // this.quit.emit(true);
       }
@@ -49,17 +49,14 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.socket = io("http://localhost:3000/game");
     if (this.mode == 'spec') {
-      console.log(this.mode)
       this.socket.emit("watchGame", this.specGame);
     }
     else if (this.mode == 'friend') {
       this.auth.getUser().then(data => {
-        this.alert.challenge(data.username, this.challenged);
-        this.socket.emit("challenge")
+        this.socket.emit("challenge", data.username, this.challenged)
       });
     }
     else {
-      console.log(this.mode)
       this.auth.getUser().then(data => {
         this.socket.emit("joinGame", this.powerUps, data.username);
       });
@@ -233,8 +230,9 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
 
   cancelChallenge() {
     this.auth.getUser().then(data => {
-      this.alert.cancelchallenge(data.username, this.challenged);
-    });
+      this.socket.emit("cancelChallenge", data.username, this.challenged)
+      window.location.reload();
+    })
   }
 
 }

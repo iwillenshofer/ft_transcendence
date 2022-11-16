@@ -46,19 +46,20 @@ export class AlertsService {
     this.alertsSubject.next(alerts);
   }
 
-  challenge(challenger: any, username: any) {
+  challenge(challenger: any) {
     let msg = challenger + ' challenged you';
-    this.alert(AlertModel.fromChallenge(challenger, username, msg));
+    this.alert(AlertModel.fromChallenge(challenger, msg));
   }
 
-  cancelchallenge(challenger: any, username: any) {
+  cancelchallenge(challenger: any) {
     let alerts: AlertModel[] = this.alertsSubject.value;
-      alerts.forEach( (item, index) => {
-        if(item.challenger === challenger && item.username === username) {
-          alerts.splice(index,1);
-        };
-      });
-      this.alertsSubject.next(alerts);
+    alerts.forEach((item, index) => {
+      console.log(item.challenger)
+      if (item.challenger === challenger) {
+        alerts.splice(index, 1);
+      };
+    });
+    this.alertsSubject.next(alerts);
   }
 
 }
