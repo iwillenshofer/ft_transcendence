@@ -54,7 +54,6 @@ export class AlertsService {
   cancelchallenge(challenger: any) {
     let alerts: AlertModel[] = this.alertsSubject.value;
     alerts.forEach((item, index) => {
-      console.log(item.challenger)
       if (item.challenger === challenger) {
         alerts.splice(index, 1);
       };

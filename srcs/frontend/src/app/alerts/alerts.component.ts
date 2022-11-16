@@ -31,7 +31,17 @@ export class AlertsComponent implements OnInit {
     this.socket = io("http://localhost:3000/game");
     this.socket.on("notifyChallenge", (challenger: any, challenged: any) => {
       if (challenged == username) {
-        this.alertsService.challenge(challenger);
+        this.alertsService.challenge(challenger,
+          {
+            accept_click: () => {
+              console.log('accept')
+            },
+            deny_click: () => {
+              this.alertsService.cancelchallenge(challenger);
+              console.log('send response to challenger')
+            }
+          }
+        );
       }
     });
     this.socket.on("removeChallenge", (challenger: any, challenged: any) => {
