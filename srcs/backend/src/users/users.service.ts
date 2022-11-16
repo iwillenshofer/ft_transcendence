@@ -93,8 +93,8 @@ export class UsersService {
 
 	async getUserByUsername(username: string) {
 		let user = await this.userRepository.findOneBy({ username: username });
-		console.log("FOUND:" + username + "\n\n" + user);
-		
+		// console.log("FOUND:" + username + "\n\n" + user);
+
 		return (user);
 	}
 
@@ -128,7 +128,7 @@ export class UsersService {
 	async set2FASecret(id: number, secret: string): Promise<void> {
 		let user = await this.userRepository.findOneBy({ id: id });
 		user.tfa_code = this.encrypt.encode(secret);
-		console.log("secret saved:" + secret);
+		// console.log("secret saved:" + secret);
 		const results = await this.userRepository.save(user);
 		return;
 	}
@@ -147,7 +147,7 @@ export class UsersService {
 
 	async getTfaCode(id: number): Promise<string> {
 		let user = await this.userRepository.findOneBy({ id: id });
-		console.log("secret retrieved:" + this.encrypt.decode(user.tfa_code));
+		// console.log("secret retrieved:" + this.encrypt.decode(user.tfa_code));
 		return (this.encrypt.decode(user.tfa_code));
 	}
 

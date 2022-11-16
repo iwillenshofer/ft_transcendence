@@ -10,7 +10,7 @@ export class AppMiddleware implements NestMiddleware {
       const decodedToken = await this.jwtService.verify(data.token, { secret: process.env.JWT_SECRET });
     }
     catch (err) {
-      console.log(err);
+      // console.log(err);
       throw new UnauthorizedException;
     }
     next();

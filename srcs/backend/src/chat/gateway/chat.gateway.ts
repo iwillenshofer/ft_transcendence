@@ -22,7 +22,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   //@UseGuards(TfaGuard)
   @SubscribeMessage('message')
   handleMessage(client: any, payload: any) {
-    console.log('message : ' + JSON.stringify(payload));
+    // console.log('message : ' + JSON.stringify(payload));
     this.messages.push('Value ' + Math.random().toString());
     this.server.emit('message', this.messages);
   }
@@ -32,7 +32,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @UseGuards(TfaGuard)
   async handleConnection(socket: Socket, ...args: any[]) {
-    console.log('chat', socket.id);
+    // console.log('chat', socket.id);
     // const user: UserInterface = await this.userService.getUser(+socket.handshake.headers.userid);
     // const rooms = await this.roomService.getRoomsForUsers(user.id, { page: 1, limit: 10 });
     // rooms.meta.currentPage -= 1;

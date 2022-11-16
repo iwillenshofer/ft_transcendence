@@ -93,7 +93,7 @@ export class AuthService {
 
 	async verifyTwoFactor(user_id: number, code: string) {
 		const user_info: UserDTO = await this.userService.getUser(user_id);
-		console.log("secret sent:" + code);
+		// console.log("secret sent:" + code);
 		if (authenticator.verify({ token: code, secret: await this.userService.getTfaCode(user_id) })) {
 			if (!(await this.userService.getTfaEnabled(user_id))) {
 				await this.userService.enable2FASecret(user_id, true);

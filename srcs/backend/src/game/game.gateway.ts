@@ -231,6 +231,20 @@ export class GameGateway {
       return true;
     return false;
   }
+
+  @SubscribeMessage('challenge')
+  async challenge(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+    let challenger = data[0];
+    let challenged = data[1];
+    this.server.emit("notifyChallenge", challenger, challenged);
+  }
+
+  @SubscribeMessage('cancelChallenge')
+  async cancelChallenge(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+    let challenger = data[0];
+    let challenged = data[1];
+    this.server.emit("removeChallenge", challenger, challenged);
+  }
 }
 
 
