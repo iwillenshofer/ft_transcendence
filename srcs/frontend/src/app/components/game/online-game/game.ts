@@ -337,7 +337,6 @@ function givePowerUp() {
         resetPlayerPosition(ball.lastTouch);
         if (isPlayer())
             _socket.emit('setPaddles', player1.height, player1.y, player2.height, player2.y);
-
     }
     else if (power == 3) {
         powerUp.type = power;

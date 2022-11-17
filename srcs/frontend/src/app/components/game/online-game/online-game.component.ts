@@ -84,6 +84,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     else {
       this.auth.getUser().then(data => {
         this.username = data.username;
+
         this.socket.emit("joinGame", this.powerUps, data.username, this.challenged);
       });
     }
@@ -93,7 +94,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   async ngOnDestroy() {
-    console.log('b')
     await this.socket.emit("cancelChallenge", this.username, this.challenged)
     this.socket.disconnect();
   }

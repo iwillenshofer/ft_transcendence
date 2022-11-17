@@ -67,6 +67,7 @@ export class GameGateway {
   }
 
   checkChallengeArray(customGame: string, challenge: boolean, challenged: string, username: string) {
+    console.log(customGame)
     if (this.games.length > 0) {
       for (let index = 0; index < this.games.length; index++) {
         let game = this.games[index];
