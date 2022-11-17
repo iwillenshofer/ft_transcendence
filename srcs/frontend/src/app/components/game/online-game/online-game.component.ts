@@ -128,10 +128,10 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   gameUnavailable() {
-    this.socket.on('gameUnavailable', () => {
+    this.socket.on('gameUnavailable', (msg: any) => {
       this.finished = true;
       this.isWaiting = false;
-      this.finishedMessage = 'Game already finished';
+      this.finishedMessage = msg;
       this.finish('down', 0)
     })
   }

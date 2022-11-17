@@ -55,14 +55,9 @@ export class AlertsComponent implements OnInit {
       }
       this.socket.off('notifyChallenge', this.socket);
     });
-    this.socket.on("removeChallenge", (challenger: any, challenged: any, notify: any) => {
-      console.log('a')
+    this.socket.on("removeChallenge", (challenger: any, challenged: any) => {
       if (challenged == username) {
         this.alertsService.cancelChallenge(challenger);
-      }
-      if (notify && challenger == username) {
-        this.router.navigate(['/']);
-        this.alertsService.warning(challenged + ' refused your challenge')
       }
     });
   }

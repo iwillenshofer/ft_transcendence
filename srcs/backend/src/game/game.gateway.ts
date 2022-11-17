@@ -50,7 +50,7 @@ export class GameGateway {
       this.server.to(game.gameID).emit("specs", game.player1, game.player2);
     }
     else
-      this.server.to(client.id).emit("gameUnavailable");
+      this.server.to(client.id).emit("gameUnavailable", 'Game already finished');
   }
 
   @SubscribeMessage('joinGame')
@@ -124,7 +124,7 @@ export class GameGateway {
       client.rooms.add(game.gameID)
       game.connected += 1;
       if (game.challenge && game.player1.username == game.challenged) {
-        this.server.to(game.gameID).emit("gameUnavailable")
+        this.server.to(game.gameID).emit("gameUnavailable", "Game already finished")
       }
       if (game.player1.socket && game.player2.socket) {
         if (client.id == game.player1.socket || client.id == game.player2.socket)
@@ -307,7 +307,19 @@ export class GameGateway {
   async cancelChallenge(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let challenger = data[0];
     let challenged = data[1];
-    this.server.emit("removeChallenge", challenger, challenged, data[2]);
+    const game = this.findGameByChallenged(challenged);
+    if (game && data[2])
+      this.server.to(game.gameID).emit("gameUnavailable", challenged + " refused your challenge!")
+    else
+      this.server.emit("removeChallenge", challenger, challenged, data[2]);
+  }
+
+  findGameByChallenged(challenged: string) {
+    for (let index = 0; index < this.games.length; index++) {
+      let game = this.games[index];
+      if (game && game.challenged == challenged)
+        return (game);
+    }
   }
 }
 
