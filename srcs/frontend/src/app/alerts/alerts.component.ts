@@ -1,4 +1,5 @@
-import { Router } from '@angular/router';
+import { OnlineGameService } from './../components/game/online-game.service';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Component, Input, OnInit } from '@angular/core';
 import { AlertModel } from './alerts.model';
 import { AlertsService } from './alerts.service';
@@ -19,6 +20,8 @@ export class AlertsComponent implements OnInit {
     private alertsService: AlertsService,
     private auth: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
+    private gameService: OnlineGameService
   ) { }
   alerts: AlertModel[] = [];
 
@@ -36,21 +39,26 @@ export class AlertsComponent implements OnInit {
         this.alertsService.challenge(challenger,
           {
             accept_click: () => {
-              console.log('accept')
+              this.router.navigateByUrl('/friends', { skipLocationChange: true }).then(() => {
+                this.gameService.challenge(username)
+                // this.alertsService.cancelChallenge(challenger);
+                this.router.navigate(['/pong']);
+              });
             },
             deny_click: () => {
-              this.alertsService.cancelchallenge(challenger);
-              this.socket.emit("cancelChallenge", challenger, username)
+              this.alertsService.cancelChallenge(challenger);
+              this.socket.emit("cancelChallenge", challenger, username, true)
             }
           }
         );
       }
+      this.socket.off('notifyChallenge', this.socket);
     });
-    this.socket.on("removeChallenge", (challenger: any, challenged: any) => {
+    this.socket.on("removeChallenge", (challenger: any, challenged: any, notify: any) => {
       if (challenged == username) {
-        this.alertsService.cancelchallenge(challenger);
+        this.alertsService.cancelChallenge(challenger);
       }
-      if (challenger == username) {
+      if (notify && challenger == username) {
         this.router.navigate(['/']);
         this.alertsService.warning(challenged + ' refused your challenge')
       }

@@ -62,7 +62,7 @@ export class AlertsService {
     this.alert(AlertModel.fromChallenge(challenger, msg, buttons));
   }
 
-  cancelchallenge(challenger: any) {
+  cancelChallenge(challenger: any) {
     let alerts: AlertModel[] = this.alertsSubject.value;
     alerts.forEach((item, index) => {
       if (item.challenger === challenger) {

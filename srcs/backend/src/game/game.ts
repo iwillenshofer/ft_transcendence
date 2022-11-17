@@ -1,9 +1,12 @@
 import { IPlayer } from "./game.interface";
 
 export class Game {
-    constructor(gameId: string, custom: string) {
+    constructor(gameId: string, custom: string, challenge: boolean, challenged: string) {
         this.gameID = gameId;
         this.isCustom = custom;
+        this.challenge = challenge
+        this.challenged = challenged
+
     }
 
     player1: IPlayer = {
@@ -54,4 +57,6 @@ export class Game {
     connected: number = 0;
     index: number = 0;
     winner: IPlayer;
+    challenge: boolean = false;
+    challenged: string = '';
 }

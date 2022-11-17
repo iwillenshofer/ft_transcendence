@@ -1,6 +1,8 @@
 import { OnlineGameService } from './online-game.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnChanges, OnInit } from '@angular/core';
 import io from "socket.io-client";
+import { AuthService } from 'src/app/auth/auth.service';
+import { AlertsService } from 'src/app/alerts/alerts.service';
 
 @Component({
   selector: 'app-game',
@@ -20,16 +22,24 @@ export class GameComponent implements OnInit {
   toWatch: any;
   challenged: string = "";
 
-  constructor(protected gameService: OnlineGameService) { }
+  constructor(protected gameService: OnlineGameService, private auth: AuthService, private alert: AlertsService) { }
 
   ngOnDestroy() {
     this.gameService.challenged = null;
   }
 
-  public ngOnInit() {
+  public async ngOnInit() {
     if (this.gameService.challenged) {
       this.cmenu = true;
       this.challenged = this.gameService.challenged;
+      let username;
+      await this.auth.getUser().then(data => {
+        username = data.username;
+      });
+      if (username == this.challenged) {
+        this.startGame('friend')
+        this.alert.clear()
+      }
     }
   }
 

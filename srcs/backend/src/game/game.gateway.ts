@@ -58,16 +58,19 @@ export class GameGateway {
     let customGame = data[0];
     let username = data[1];
     let challenged = data[2];
-    console.log(challenged)
-    let gameIndex = this.checkGameArray(customGame);
+    let gameIndex = '';
+    if (!challenged)
+      gameIndex = this.checkGameArray(customGame, false);
+    else
+      gameIndex = this.checkChallengeArray(customGame, true, challenged, username);
     this.setPlayers(client, gameIndex, username);
   }
 
-  checkGameArray(customGame: string) {
+  checkChallengeArray(customGame: string, challenge: boolean, challenged: string, username: string) {
     if (this.games.length > 0) {
       for (let index = 0; index < this.games.length; index++) {
         let game = this.games[index];
-        if (game && game.isCustom === customGame) {
+        if (game && game.challenged === username) {
           if (game.player1.socket == '' || game.player2.socket == '') {
             return game.gameID;
           }
@@ -75,7 +78,23 @@ export class GameGateway {
       };
     }
     let gameID = this.checkGameID(randomInt(1024).toString());
-    this.games.push(new Game(gameID, customGame));
+    this.games.push(new Game(gameID, customGame, challenge, challenged));
+    return gameID;
+  }
+
+  checkGameArray(customGame: string, challenge: boolean) {
+    if (this.games.length > 0) {
+      for (let index = 0; index < this.games.length; index++) {
+        let game = this.games[index];
+        if (game && game.isCustom === customGame && !game.challenge) {
+          if (game.player1.socket == '' || game.player2.socket == '') {
+            return game.gameID;
+          }
+        }
+      };
+    }
+    let gameID = this.checkGameID(randomInt(1024).toString());
+    this.games.push(new Game(gameID, customGame, challenge, ''));
     return gameID;
   }
 
@@ -282,7 +301,7 @@ export class GameGateway {
   async cancelChallenge(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let challenger = data[0];
     let challenged = data[1];
-    this.server.emit("removeChallenge", challenger, challenged);
+    this.server.emit("removeChallenge", challenger, challenged, data[2]);
   }
 }
 

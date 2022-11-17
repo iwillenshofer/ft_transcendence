@@ -61,7 +61,6 @@ export class OnlineGameService {
 
   getFinalMessage(reason: any, disconnected: any): string {
     let res: string = '';
-    console.log(reason)
     if (reason == 'disconnect') {
       if (game.player1.socket == disconnected)
         res = game.player1.username + ' disconnected!';

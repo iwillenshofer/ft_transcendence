@@ -1,4 +1,3 @@
-import { AlertsService } from 'src/app/alerts/alerts.service';
 import { AuthService } from 'src/app/auth/auth.service';
 import { Component, ViewChild, ElementRef, OnInit, HostListener, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
 import io from "socket.io-client";
@@ -30,8 +29,9 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   player1: any;
   player2: any;
   ball: any;
+  username: string = "";
 
-  constructor(public gameService: OnlineGameService, private auth: AuthService, private alert: AlertsService) {
+  constructor(public gameService: OnlineGameService, private auth: AuthService) {
     this.ball = gameService.getBall();
   }
 
@@ -39,7 +39,10 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   keyEvent(event: KeyboardEvent) {
     if (event.code == 'Escape') {
       if (this.isWaiting || this.finished || this.mode == 'spec') {
-        this.cancelChallenge()
+        if (this.challenged)
+          this.cancelChallenge()
+        else
+          window.location.reload();
         // this.socket.disconnect();
         // this.quit.emit(true);
       }
@@ -70,13 +73,16 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     }
     else if (this.mode == 'friend') {
       this.auth.getUser().then(data => {
-        this.socket.emit("challenge", data.username, this.challenged)
+        this.username = data.username;
+        if (data.username != this.challenged) {
+          this.socket.emit("challenge", data.username, this.challenged)
+        }
         this.socket.emit("joinGame", this.powerUps, data.username, this.challenged);
-
       });
     }
     else {
       this.auth.getUser().then(data => {
+        this.username = data.username;
         this.socket.emit("joinGame", this.powerUps, data.username, this.challenged);
       });
     }
@@ -84,7 +90,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.gameService.setCustom(this.powerUps)
   }
 
-  ngOnDestroy() {
+  async ngOnDestroy() {
+    await this.socket.emit("cancelChallenge", this.username, this.challenged)
     this.socket.disconnect();
   }
 
@@ -277,10 +284,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   cancelChallenge() {
-    this.auth.getUser().then(data => {
-      this.socket.emit("cancelChallenge", data.username, this.challenged)
-      window.location.reload();
-    })
+    this.socket.emit("cancelChallenge", this.username, this.challenged)
+    window.location.reload();
     this.socket.on("removeChallenge", () => {
       window.location.reload();
     })
