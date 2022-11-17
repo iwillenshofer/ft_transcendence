@@ -71,5 +71,4 @@ export class AlertsService {
     });
     this.alertsSubject.next(alerts);
   }
-
 }

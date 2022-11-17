@@ -34,13 +34,14 @@ export class AlertsComponent implements OnInit {
     this.auth.getUser().then(data => {
       username = data.username;
     });
-    this.socket.on("notifyChallenge", (challenger: any, challenged: any) => {
+    this.socket.on("notifyChallenge", (challenger: any, challenged: any, powerUps: any) => {
       if (challenged == username) {
         this.alertsService.challenge(challenger,
           {
             accept_click: () => {
               this.router.navigateByUrl('/friends', { skipLocationChange: true }).then(() => {
                 this.gameService.challenge(username)
+                this.gameService.togglePowerUps(powerUps);
                 // this.alertsService.cancelChallenge(challenger);
                 this.router.navigate(['/pong']);
               });
@@ -55,6 +56,7 @@ export class AlertsComponent implements OnInit {
       this.socket.off('notifyChallenge', this.socket);
     });
     this.socket.on("removeChallenge", (challenger: any, challenged: any, notify: any) => {
+      console.log('a')
       if (challenged == username) {
         this.alertsService.cancelChallenge(challenger);
       }

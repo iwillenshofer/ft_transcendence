@@ -123,6 +123,9 @@ export class GameGateway {
       client.join(game.gameID)
       client.rooms.add(game.gameID)
       game.connected += 1;
+      if (game.challenge && game.player1.username == game.challenged) {
+        this.server.to(game.gameID).emit("gameUnavailable")
+      }
       if (game.player1.socket && game.player2.socket) {
         if (client.id == game.player1.socket || client.id == game.player2.socket)
           this.server.to(game.gameID).emit("players", game.player1, game.player2);
@@ -144,7 +147,9 @@ export class GameGateway {
     if (game) {
       if (this.isPlayer1(game.gameID, client.id)) {
         game.player1.height = Number(data[0]);
-        game.player2.height = Number(data[1]);
+        game.player1.y = Number(data[1]);
+        game.player2.height = Number(data[2]);
+        game.player2.y = Number(data[3]);
       }
       this.server.to(game.gameID).emit('updatePaddle', game.player1, game.player2)
     }
@@ -294,7 +299,8 @@ export class GameGateway {
   async challenge(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let challenger = data[0];
     let challenged = data[1];
-    this.server.emit("notifyChallenge", challenger, challenged);
+    let powerUps = data[2];
+    this.server.emit("notifyChallenge", challenger, challenged, powerUps);
   }
 
   @SubscribeMessage('cancelChallenge')

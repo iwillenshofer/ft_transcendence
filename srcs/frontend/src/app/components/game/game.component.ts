@@ -32,6 +32,7 @@ export class GameComponent implements OnInit {
     if (this.gameService.challenged) {
       this.cmenu = true;
       this.challenged = this.gameService.challenged;
+      this.powerUps = this.gameService.powerUps;
       let username;
       await this.auth.getUser().then(data => {
         username = data.username;

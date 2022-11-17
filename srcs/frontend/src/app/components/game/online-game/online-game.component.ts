@@ -75,9 +75,10 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.auth.getUser().then(data => {
         this.username = data.username;
         if (data.username != this.challenged) {
-          this.socket.emit("challenge", data.username, this.challenged)
+          this.socket.emit("challenge", data.username, this.challenged, this.powerUps)
         }
         this.socket.emit("joinGame", this.powerUps, data.username, this.challenged);
+        this.gameUnavailable()
       });
     }
     else {
@@ -88,9 +89,11 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     }
     this.gameService.setMode(this.mode)
     this.gameService.setCustom(this.powerUps)
+    window.onbeforeunload = () => this.ngOnDestroy();
   }
 
   async ngOnDestroy() {
+    console.log('b')
     await this.socket.emit("cancelChallenge", this.username, this.challenged)
     this.socket.disconnect();
   }
@@ -120,7 +123,11 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.player2 = player2;
       this.isWaiting = false;
       this.watchGame();
+      this.gameUnavailable()
     })
+  }
+
+  gameUnavailable() {
     this.socket.on('gameUnavailable', () => {
       this.finished = true;
       this.isWaiting = false;
