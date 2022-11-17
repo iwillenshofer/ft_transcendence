@@ -43,6 +43,8 @@ export class GameGateway {
   async joinGame(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let customGame = data[0];
     let username = data[1];
+    let challenged = data[2];
+    console.log(challenged)
     let gameIndex = this.checkGameArray(customGame);
     this.setPlayers(client, gameIndex, username);
   }

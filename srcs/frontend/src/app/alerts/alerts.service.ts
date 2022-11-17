@@ -11,8 +11,19 @@ export class AlertsService {
 
   alertsSubject: BehaviorSubject<AlertModel[]> = new BehaviorSubject<AlertModel[]>([]);
 
-  private alert(newAlert: AlertModel): void {
-    this.alertsSubject.next([...this.alertsSubject.getValue(), newAlert]);
+  private async alert(newAlert: AlertModel) {
+    let add = await this.canAdd(newAlert)
+    if (add)
+      this.alertsSubject.next([...this.alertsSubject.getValue(), newAlert]);
+  }
+
+  async canAdd(newAlert: AlertModel) {
+    let alerts$ = this.alertsSubject.getValue();
+    for (let index = 0; index < alerts$.length; index++) {
+      if (newAlert.challenger == alerts$[index].challenger)
+        return false;
+    }
+    return true;
   }
 
   getAlerts(): Observable<AlertModel[]> {

@@ -54,11 +54,13 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     else if (this.mode == 'friend') {
       this.auth.getUser().then(data => {
         this.socket.emit("challenge", data.username, this.challenged)
+        this.socket.emit("joinGame", this.powerUps, data.username, this.challenged);
+
       });
     }
     else {
       this.auth.getUser().then(data => {
-        this.socket.emit("joinGame", this.powerUps, data.username);
+        this.socket.emit("joinGame", this.powerUps, data.username, this.challenged);
       });
     }
     this.gameService.setMode(this.mode)
@@ -231,6 +233,9 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   cancelChallenge() {
     this.auth.getUser().then(data => {
       this.socket.emit("cancelChallenge", data.username, this.challenged)
+      window.location.reload();
+    })
+    this.socket.on("removeChallenge", () => {
       window.location.reload();
     })
   }

@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { Component, Input, OnInit } from '@angular/core';
 import { AlertModel } from './alerts.model';
 import { AlertsService } from './alerts.service';
@@ -17,6 +18,7 @@ export class AlertsComponent implements OnInit {
   constructor(
     private alertsService: AlertsService,
     private auth: AuthService,
+    private router: Router,
   ) { }
   alerts: AlertModel[] = [];
 
@@ -24,11 +26,11 @@ export class AlertsComponent implements OnInit {
     this.alertsService.getAlerts().subscribe(messages => {
       this.alerts = messages;
     });
+    this.socket = io("http://localhost:3000/game");
     let username: any;
     this.auth.getUser().then(data => {
       username = data.username;
     });
-    this.socket = io("http://localhost:3000/game");
     this.socket.on("notifyChallenge", (challenger: any, challenged: any) => {
       if (challenged == username) {
         this.alertsService.challenge(challenger,
@@ -38,7 +40,7 @@ export class AlertsComponent implements OnInit {
             },
             deny_click: () => {
               this.alertsService.cancelchallenge(challenger);
-              console.log('send response to challenger')
+              this.socket.emit("cancelChallenge", challenger, username)
             }
           }
         );
@@ -47,6 +49,10 @@ export class AlertsComponent implements OnInit {
     this.socket.on("removeChallenge", (challenger: any, challenged: any) => {
       if (challenged == username) {
         this.alertsService.cancelchallenge(challenger);
+      }
+      if (challenger == username) {
+        this.router.navigate(['/']);
+        this.alertsService.warning(challenged + ' refused your challenge')
       }
     });
   }
