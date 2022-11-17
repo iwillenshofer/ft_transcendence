@@ -8,6 +8,7 @@ export interface IPlayer {
     width?: number,
     height?: number,
     username?: string,
+    disconnected: boolean
 }
 
 export interface IGame {

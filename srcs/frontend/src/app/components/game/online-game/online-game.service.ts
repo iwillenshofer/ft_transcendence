@@ -47,10 +47,6 @@ export class OnlineGameService {
     game.gameStart();
   }
 
-  setGameID(gameID: any) {
-    game.setGameID(gameID)
-  }
-
   setGameSocket(socket: any) {
     game.setGameSocket(socket)
   }
@@ -65,15 +61,14 @@ export class OnlineGameService {
 
   getFinalMessage(reason: any, disconnected: any): string {
     let res: string = '';
-    if (reason == 'down')
-      return 'Server is off'
+    console.log(reason)
     if (reason == 'disconnect') {
       if (game.player1.socket == disconnected)
         res = game.player1.username + ' disconnected!';
       else if (game.player2.socket == disconnected)
         res = game.player2.username + ' disconnected!';
     }
-    else {
+    else if (reason == 'score') {
       if (game.player1.score > game.player2.score)
         res = game.player1.username + ' won!';
       else

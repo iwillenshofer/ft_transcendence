@@ -35,7 +35,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.ball = gameService.getBall();
   }
 
-  @HostListener('window:keyup', ['$event'])
+  @HostListener('window:keydown', ['$event'])
   keyEvent(event: KeyboardEvent) {
     if (event.code == 'Escape') {
       if (this.isWaiting || this.finished || this.mode == 'spec') {
@@ -43,6 +43,23 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
         // this.socket.disconnect();
         // this.quit.emit(true);
       }
+    }
+  }
+
+  @HostListener('document:visibilitychange', ['$event'])
+  visibilitychange() {
+    if (document.hidden && !this.finished && this.mode != 'spec' && !this.isWaiting && !this.finishedMessage) {
+      this.socket.disconnect();
+      window.cancelAnimationFrame(this.currentAnimationFrameId as number);
+      this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+      this.canvas.font = '10vh Lucida Console Courier New monospace';
+      this.canvas.textBaseline = 'middle';
+      this.canvas.textAlign = 'center';
+      this.canvas.fillText("DISCONNECTED", 640, 360);
+      this.canvas.font = '3vh Lucida Console Courier New monospace';
+      this.canvas.fillText('You must stay in the game', 640, 420);
+      this.canvas.fillText('[Esc] - Quit', 640, 450);
+      this.finished = true;
     }
   }
 
@@ -81,8 +98,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   players() {
-    this.socket.on("players", (player1: any, player2: any, gameID: string) => {
-      this.setPlayers(player1, player2, gameID)
+    this.socket.on("players", (player1: any, player2: any) => {
+      this.setPlayers(player1, player2)
       this.isWaiting = false;
       this.gameService.reset()
       this.update();
@@ -91,19 +108,21 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
 
   specs() {
     this.gameService.setGameSocket(this.socket);
-    this.socket.on("specs", (player1: any, player2: any, gameID: string) => {
+    this.socket.on("specs", (player1: any, player2: any) => {
       this.player1 = player1;
       this.player2 = player2;
       this.isWaiting = false;
-      this.watchGame(gameID);
+      this.watchGame();
+    })
+    this.socket.on('gameUnavailable', () => {
+      this.finished = true;
+      this.isWaiting = false;
+      this.finishedMessage = 'Game already finished';
+      this.finish('down', 0)
     })
   }
 
-  watchGame(gameID: string) {
-    this.socket.emit("getPaddles", gameID)
-    this.socket.emit("getPowerUp", gameID)
-    this.socket.emit("getBall", gameID)
-    this.socket.emit("syncScore", gameID)
+  watchGame() {
     this.socket.on("updatePaddle", (player1: any, player2: any) => {
       this.player1 = player1;
       this.player2 = player2;
@@ -114,18 +133,20 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     })
     this.socket.on("ball", (ball: any) => {
       this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+      this.updateScore();
       this.drawLines();
+      this.drawScore();
+      this.drawNames();
       this.drawPowerUp(powerUp);
       if (!this.finished)
         this.drawBall(ball);
       this.updatePaddles(this.player1, this.player2);
     })
     this.endGame();
-    this.updateScore();
     this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
   }
 
-  setPlayers(player1: any, player2: any, gameID: string) {
+  setPlayers(player1: any, player2: any) {
 
     if (player1.socket) {
       this.gameService.setP1Socket(player1.socket);
@@ -136,7 +157,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.gameService.setP2Username(player2.username)
     }
     if (player1.socket && player2.socket) {
-      this.gameService.setGameID(gameID);
       this.gameService.setGameSocket(this.socket);
       this.player1 = this.gameService.getPlayer1();
       this.player2 = this.gameService.getPlayer2();
@@ -154,14 +174,16 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   draw() {
     this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
     this.drawLines();
+    this.drawScore();
+    this.drawNames();
     if (!this.finished)
       this.drawBall(this.gameService.getBall());
     this.updatePaddles(this.gameService.getPlayer1(), this.gameService.getPlayer2());
     this.drawPowerUp(this.gameService.getPowerUp())
   }
 
-  updateScore() {
-    this.socket.on("updateScore", (scoreP1: any, scoreP2: any, finished: any) => {
+  async updateScore() {
+    await this.socket.on("updateScore", (scoreP1: any, scoreP2: any, finished: any) => {
       this.scoreP1 = scoreP1;
       this.scoreP2 = scoreP2;
       this.finished = finished;
@@ -173,6 +195,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   endGame() {
     this.socket.on('connect_error', () => {
       this.finished = true;
+      this.finishedMessage = 'Server is off';
       this.finish('down', 0)
     })
     this.socket.on("endGame", (disconnected: any) => {
@@ -182,6 +205,10 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   finish(reason: any, disconnected: any) {
+    if (reason == 'down') {
+      this.drawFinish();
+      this.socket.disconnect();
+    }
     if (this.mode != 'spec')
       this.socket.emit("finishMessage", this.gameService.getFinalMessage(reason, disconnected), this.gameService.getWinner(reason, disconnected));
     this.socket.on("winner", (message: any) => {
@@ -195,6 +222,9 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     window.cancelAnimationFrame(this.currentAnimationFrameId as number);
     this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
     this.updatePaddles(this.gameService.getPlayer1(), this.gameService.getPlayer2());
+    this.drawScore();
+    if (this.player1 && this.player2)
+      this.drawNames();
     this.canvas.font = '10vh Lucida Console Courier New monospace';
     this.canvas.textBaseline = 'middle';
     this.canvas.textAlign = 'center';
@@ -230,6 +260,22 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     }
   }
 
+  drawScore() {
+    this.canvas.font = '80px Lucida Console Courier New monospace';
+    this.canvas.textBaseline = 'middle';
+    this.canvas.textAlign = 'center';
+    this.canvas.fillText(this.scoreP1, 320, 50);
+    this.canvas.fillText(this.scoreP2, 960, 50);
+  }
+
+  drawNames() {
+    this.canvas.font = '30px Lucida Console Courier New monospace';
+    this.canvas.textBaseline = 'middle';
+    this.canvas.textAlign = 'center';
+    this.canvas.fillText(this.player1.username, 320, 680);
+    this.canvas.fillText(this.player2.username, 960, 680);
+  }
+
   cancelChallenge() {
     this.auth.getUser().then(data => {
       this.socket.emit("cancelChallenge", data.username, this.challenged)
@@ -239,5 +285,4 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       window.location.reload();
     })
   }
-
 }

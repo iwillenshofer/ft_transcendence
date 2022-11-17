@@ -44,6 +44,7 @@ export class GameComponent implements OnInit {
 
   toggleLiveGames() {
     this.showLiveGames = true;
+    this.liveGames = undefined;
     this.socket = io("http://localhost:3000/game");
     this.socket.emit("liveGames");
     this.socket.on("games", (games: any) => {
@@ -56,10 +57,10 @@ export class GameComponent implements OnInit {
     this.showLiveGames = false;
   }
 
-  watchGame(gameID: any) {
+  watchGame(player1: any) {
     this.menu = false;
     this.mode = 'spec';
-    this.toWatch = gameID;
+    this.toWatch = player1;
   }
 
   quit(event: boolean) {

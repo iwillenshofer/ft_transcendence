@@ -15,7 +15,8 @@ export class Game {
         message: '',
         width: 15,
         height: 150,
-        username: ''
+        username: '',
+        disconnected: false
     };
     player2: IPlayer = {
         id: 0,
@@ -26,9 +27,10 @@ export class Game {
         message: '',
         width: 15,
         height: 150,
-        username: ''
+        username: '',
+        disconnected: false
     };
-    ball = {
+    ball: any = {
         x: 0,
         y: 0,
         radius: 5,
@@ -38,7 +40,7 @@ export class Game {
             y: 0.0
         }
     }
-    powerUp = {
+    powerUp: any = {
         x: 0,
         y: 0,
         time: 0,

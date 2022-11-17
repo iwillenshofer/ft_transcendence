@@ -3,20 +3,4 @@
     <p class="waiting__title">Waiting for another player</p>
     <p class="quit">[Esc] - Quit</p>
 </div>
-<div *ngIf="!isWaiting" class="score">
-    <div style="float: left;">
-        {{scoreP1}}
-    </div>
-    <div style="float: right;">
-        {{scoreP2}}
-    </div>
-</div>
-<div *ngIf="!isWaiting" class="usernames">
-    <div class="usernames__p1">
-        {{player1.username}}
-    </div>
-    <div class="usernames__p2">
-        {{player2.username}}
-    </div>
-</div>
 <img id="powerUp" width="100" height="100" src="/assets/images/powerUp.png" alt="power up">
