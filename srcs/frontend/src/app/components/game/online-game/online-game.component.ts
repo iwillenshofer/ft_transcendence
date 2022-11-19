@@ -277,4 +277,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.canvas.fillText(this.player2.username, 960, 680);
   }
 
+  cancelChallenge() {
+
+  }
 }
