@@ -113,7 +113,7 @@ export class GameGateway {
       client.rooms.add(game.gameID)
       game.connected += 1;
       if (game.challenge && game.player1.username == game.challenged) {
-        this.server.to(game.gameID).emit("gameUnavailable", "Game already finished")
+        this.server.to(game.gameID).emit("gameUnavailable", "You are too late")
       }
       if (game.player1.socket && game.player2.socket) {
         if (client.id == game.player1.socket || client.id == game.player2.socket)
