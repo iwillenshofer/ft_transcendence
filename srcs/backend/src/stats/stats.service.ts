@@ -81,6 +81,20 @@ export class StatsService {
 	}
 
 
+
+
+
+	/*
+	** Achievements, History, Stats, Info
+	*/
+	async getUserStats(username:string) { 
+		let user = await this.userRepository.findOneBy({ username: username });
+		if (!user)
+			return (null);
+		
+
+	}
+
     _expectedProbability(ratingA: number, ratingB: number): number {
         return (1.0 / (1.0 + Math.pow(10,((ratingB - ratingA) / 400) ) ));
     }
