@@ -25,14 +25,14 @@ export class HomeComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.getPlayer();
+    // this.getPlayer();
   }
 
-  status = 'false';
-  player = 'login2'
-  async getPlayer() {
-    // this.friendsService.setStatus(this.player, 'online')
-    this.friendsService.getStatus(this.player).subscribe(x => { this.status = x.status })
-  }
+  // status = 'false';
+  // player = 'login2'
+  // async getPlayer() {
+  //   // this.friendsService.setStatus(this.player, 'online')
+  //   this.friendsService.getStatus(this.player).subscribe(x => { this.status = x.status })
+  // }
 
 }
