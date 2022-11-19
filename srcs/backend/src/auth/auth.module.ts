@@ -23,7 +23,9 @@ import { AuthEntity } from './models/auth.entity';
         TypeOrmModule.forFeature([AuthEntity])
     ],
     controllers: [AuthController],
-    providers: [AuthService, Intra42Strategy, JwtStrategy, JwtRefreshStrategy, TfaStrategy, FakeIntra42Strategy,]
+    providers: [AuthService, Intra42Strategy, JwtStrategy, JwtRefreshStrategy, TfaStrategy, FakeIntra42Strategy,],
+    exports: [AuthService, Intra42Strategy, JwtStrategy, JwtRefreshStrategy, TfaStrategy, FakeIntra42Strategy,]
+
 })
 
 export class AuthModule { }

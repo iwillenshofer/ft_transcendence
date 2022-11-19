@@ -1,3 +1,4 @@
+import { AlertsService } from 'src/app/alerts/alerts.service';
 import { AuthService } from 'src/app/auth/auth.service';
 import { Component, ViewChild, ElementRef, OnInit, HostListener, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
 import io from "socket.io-client";
@@ -17,6 +18,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   @Input() mode: any;
   @Input() powerUps: any;
   @Input() specGame: any;
+  @Input() challenged!: string;
   @Output() quit: EventEmitter<boolean> = new EventEmitter();;
   socket: any;
   isWaiting: boolean = true;
@@ -25,12 +27,11 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   scoreP1: number = 0;
   scoreP2: number = 0;
   finished: boolean = false;
-
   player1: any;
   player2: any;
   ball: any;
 
-  constructor(public gameService: OnlineGameService, private auth: AuthService) {
+  constructor(public gameService: OnlineGameService, private auth: AuthService, private alert: AlertsService) {
     this.ball = gameService.getBall();
   }
 
@@ -65,9 +66,17 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.socket = io("http://localhost:3000/game");
     if (this.mode == 'spec') {
+      console.log(this.mode)
       this.socket.emit("watchGame", this.specGame);
     }
+    else if (this.mode == 'friend') {
+      this.auth.getUser().then(data => {
+        this.alert.challenge(data.username, this.challenged);
+        this.socket.emit("challenge")
+      });
+    }
     else {
+      console.log(this.mode)
       this.auth.getUser().then(data => {
         this.socket.emit("joinGame", this.powerUps, data.username);
       });
@@ -267,4 +276,5 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.canvas.fillText(this.player1.username, 320, 680);
     this.canvas.fillText(this.player2.username, 960, 680);
   }
+
 }

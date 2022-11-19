@@ -1,5 +1,6 @@
 import { IPlayer } from './game.interface';
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from "typeorm";
+import { UserEntity } from 'src/users/users.entity';
 
 @Entity({ name: "Games" })
 @Unique(['id'])
@@ -13,11 +14,13 @@ export class GameEntity {
     @Column()
     usernameP2: string;
 
-    @Column()
-    idP1: number;
+    @ManyToOne(() => UserEntity)
+    @JoinColumn({ name: 'idP1', referencedColumnName: 'id' })
+    idP1: UserEntity;
 
-    @Column()
-    idP2: number;
+    @ManyToOne(() => UserEntity)
+    @JoinColumn({ name: 'idP2', referencedColumnName: 'id' })
+    idP2: UserEntity;
 
     @Column()
     scoreP1: number;
@@ -28,6 +31,13 @@ export class GameEntity {
     // @Column()
     // isCustom: string;
 
-    @Column()
-    winner: number;
+    @ManyToOne(() => UserEntity)
+    @JoinColumn({ name: 'winner', referencedColumnName: 'id' })
+    winner: UserEntity;
+
+    @CreateDateColumn()
+    created_at: Date;
+  
+    @UpdateDateColumn()
+    updated_at: Date;
 }

@@ -54,6 +54,7 @@ export class AuthService {
 			return (null);
 		new_code.hash = crypto.pbkdf2Sync(hexstring, process.env.JWT_SECRET, 1000, 64, `sha512`).toString(`hex`);
 		this.authRepository.save(new_code);
+		this.userService.updateLoginCount(user_id);
 		return hexstring;
 	}
 

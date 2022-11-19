@@ -17,7 +17,6 @@ import { ChatModule } from './chat/chat.module';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { GameComponent } from './components/game/game.component';
 import { ChatComponent } from './components/chat/chat.component';
-import { FriendsComponent } from './components/friends/friends.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DialogAvatarComponent } from './components/profile/dialogs/dialog-avatar/dialog-avatar.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -32,6 +31,9 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
+import { FriendsComponent } from './components/friends/friends.component';
+import { GameHistoryComponent } from './components/friends/game-history/game-history.component';
+import { FriendsListComponent } from './components/friends/friends-list/friends-list.component';
 
 @NgModule({
   declarations: [
@@ -44,12 +46,14 @@ import { MatListModule } from '@angular/material/list';
     NavbarComponent,
     GameComponent,
     ChatComponent,
-    FriendsComponent,
     DialogAvatarComponent,
     DialogUsernameComponent,
     ProfileComponent,
     CreateRoomComponent,
     OnlineGameComponent,
+    FriendsComponent,
+    GameHistoryComponent,
+    FriendsListComponent,
   ],
   imports: [
     BrowserModule,
