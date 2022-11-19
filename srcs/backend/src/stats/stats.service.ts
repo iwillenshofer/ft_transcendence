@@ -30,7 +30,7 @@ export class StatsService {
         'u2',
         'u2.id= games.idP2'
       )
-      .select(['u.username', 'u2.username', 'u.avatar_url', 'u2.avatar_url', 'games.scoreP1', 'games.scoreP2', 'games.winner', 'games.isCustom'])
+      .select(['u.username', 'u2.username', 'u.avatar_url', 'u2.avatar_url', 'games.scoreP1', 'games.scoreP2', 'games.winner'])
       .where("u.username = :username", { username: username })
       .orWhere("u2.username = :username", { username: username })
       .getMany();
