@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Body, Controller, Get, Param, Post, Request, Response, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Request, Response, UseGuards } from '@nestjs/common';
 import { JwtGuard } from 'src/auth/jwt/jwt.guard';
 import { StatsService } from './stats.service';
 
@@ -7,18 +7,32 @@ import { StatsService } from './stats.service';
 export class StatsController {
 
 
-    constructor(
-        private statsService: StatsService
-    ) {};
+  constructor(
+    private statsService: StatsService
+  ) { };
 
 
-    @Get('history/:username')
-    async matchHistory(@Param('username') username, @Request() req) {
-		let history = await this.statsService.getHistory(username);
-		return (JSON.stringify(history));    }
+  @Get('history/:username')
+  async matchHistory(@Param('username') username, @Request() req) {
+    let history = await this.statsService.getHistory(username);
+    return (JSON.stringify(history));
+  }
 
-    @Get('userinfo/:username')
-    async userInfo(@Param('username') username, @Request() req) {
-		let ret = await this.statsService.getUserinfo(username);
-		return (JSON.stringify(ret));    }
+  @Get('userinfo/:username')
+  async userInfo(@Param('username') username, @Request() req) {
+    let ret = await this.statsService.getUserinfo(username);
+    return (JSON.stringify(ret));
+  }
+
+  @Get('status/:username')
+  async getStatus(@Param('username') username, @Response() res) {
+    let status = await this.statsService.getStatusByUsername(username);
+    res.status(200).send({ status: status });
+  }
+
+  @Put('status/:username')
+  async setStatus(@Param('username') username: string, @Body() body: any, @Response() res) {
+    let status = await this.statsService.setStatusByUsername(username, body.status);
+    res.status(200).send({ status: status });
+  }
 }

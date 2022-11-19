@@ -2,6 +2,7 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { Component, ViewChild, ElementRef, OnInit, HostListener, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
 import io from "socket.io-client";
 import { OnlineGameService } from './online-game.service';
+import { FriendsService } from '../../friends/friends.service';
 
 
 @Component({
@@ -31,7 +32,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   ball: any;
   username: string = "";
 
-  constructor(public gameService: OnlineGameService, private auth: AuthService) {
+  constructor(public gameService: OnlineGameService, private auth: AuthService, private friendsService: FriendsService) {
     this.ball = gameService.getBall();
   }
 
@@ -69,9 +70,11 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.socket = io("http://localhost:3000/game");
     if (this.mode == 'spec') {
+      this.friendsService.setStatus('player6', 'watching')
       this.socket.emit("watchGame", this.specGame);
     }
     else if (this.mode == 'friend') {
+      this.friendsService.setStatus('player6', 'inChallenge')
       this.auth.getUser().then(data => {
         this.username = data.username;
         if (data.username != this.challenged) {
@@ -83,8 +86,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     }
     else {
       this.auth.getUser().then(data => {
+        this.friendsService.setStatus('player6', 'searchingGame')
         this.username = data.username;
-
         this.socket.emit("joinGame", this.powerUps, data.username, this.challenged);
       });
     }
@@ -94,6 +97,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   async ngOnDestroy() {
+    this.friendsService.setStatus('player6', 'online')
     await this.socket.emit("cancelChallenge", this.username, this.challenged)
     this.socket.disconnect();
   }
@@ -110,6 +114,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   players() {
     this.socket.on("players", (player1: any, player2: any) => {
       this.setPlayers(player1, player2)
+      this.friendsService.setStatus('player6', 'inGame')
       this.isWaiting = false;
       this.gameService.reset()
       this.update();

@@ -18,17 +18,6 @@ export class GameGateway {
   player2: any;
   games: Game[] = [];
 
-  @SubscribeMessage('inGame')
-  async isInGame(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    let username = data;
-    let res = false;
-    this.games.forEach(game => {
-      if (!game.finished && (game.player1.username === username || game.player2.username === username))
-        res = true;
-    });
-    this.server.to(client.id).emit("friends", res);
-  }
-
   @SubscribeMessage('liveGames')
   async liveGames(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     let liveGames: Game[] = [];
@@ -67,7 +56,6 @@ export class GameGateway {
   }
 
   checkChallengeArray(customGame: string, challenge: boolean, challenged: string, username: string) {
-    console.log(customGame)
     if (this.games.length > 0) {
       for (let index = 0; index < this.games.length; index++) {
         let game = this.games[index];

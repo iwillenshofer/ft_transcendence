@@ -1,3 +1,4 @@
+import { FriendsService } from './../friends/friends.service';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/auth/auth.service';
@@ -18,34 +19,20 @@ export class HomeComponent implements OnInit {
   title = this.chatService.getMessage();
 
   constructor(
-    private authService: AuthService,
     private http: HttpClient,
-    private chatService: ChatService
+    private chatService: ChatService,
+    private friendsService: FriendsService
   ) { }
 
-  socket: any;
   ngOnInit(): void {
-    this.http.get('/backend/auth/data', { withCredentials: true }).subscribe((result) => {
-      this.data = result;
-    });
-    this.socket = io("http://localhost:3000/game");
     this.getPlayer();
-  }
-
-  async getData() {
-    this.http.get('/backend/auth/data', { withCredentials: true }).subscribe((result) => {
-      this.data = result;
-    });
   }
 
   status = 'false';
   player = 'player6'
   async getPlayer() {
-    this.socket.emit("inGame", this.player);
-    this.socket.on("friends", (isInGame: any) => {
-      this.status = isInGame;
-      this.socket.emit("inGame", this.player);
-    });
+    // this.friendsService.setStatus(this.player, 'online')
+    this.friendsService.getStatus(this.player).subscribe(x => { this.status = x.status })
   }
 
 }

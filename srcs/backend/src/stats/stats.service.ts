@@ -45,10 +45,21 @@ export class StatsService {
       'username': username,
       'fullname': user.fullname,
       'avatar_url': user.avatar_url,
-      'created_at': user.created_at
+      'created_at': user.created_at,
     });
   }
 
+  async getStatusByUsername(username: string) {
+    let user = await this.userRepository.findOneBy({ username: username });
+    return user.status;
+  }
+
+  async setStatusByUsername(username: string, status: string) {
+    let user = await this.userRepository.findOneBy({ username: username });
+    user.status = status;
+    await this.userRepository.save(user);
+    return user.status;
+  }
 }
 
 
