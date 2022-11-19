@@ -25,13 +25,13 @@ export class GameService {
         gameEntity.scoreP1 = game.player1.score;
         gameEntity.scoreP2 = game.player2.score;
         gameEntity.isCustom = game.isCustom;
-        gameEntity.winner = await this.usersService.getIdByUsername(game.winner.username);
-        gameEntity.idP1 = await this.usersService.getIdByUsername(gameEntity.usernameP1);
-        gameEntity.idP2 = await this.usersService.getIdByUsername(gameEntity.usernameP2);
+        gameEntity.winner = await this.usersService.getUserByUsername(game.winner.username);
+        gameEntity.idP1 = await this.usersService.getUserByUsername(gameEntity.usernameP1);
+        gameEntity.idP2 = await this.usersService.getUserByUsername(gameEntity.usernameP2);
         this.gameRepository.save(gameEntity);
         this.statsService.updateRating(gameEntity);
-        this.statsService.gameAchievements(gameEntity.idP1);
-        this.statsService.gameAchievements(gameEntity.idP2);
+        this.statsService.gameAchievements(gameEntity.idP1.id);
+        this.statsService.gameAchievements(gameEntity.idP2.id);
     }
 
     async getGamesByUsername(username: string) {

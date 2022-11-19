@@ -30,6 +30,7 @@ import { AchievementsEntity } from './stats/achievements.entity';
       password: process.env.POSTGRES_PASSWORD || 'postgress',
       database: process.env.POSTGRES_DB || 'postgres',
       entities: [UserEntity, RoomEntity, AuthEntity, GameEntity, FriendsEntity, AchievementsEntity],
+      dropSchema: true,
       synchronize: true,
     }),
     AuthModule,

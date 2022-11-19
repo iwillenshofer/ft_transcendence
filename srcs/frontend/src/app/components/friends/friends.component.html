@@ -85,10 +85,10 @@
                         </div>
                         <div class="card-body userlist">
 
-                                
-                                <img class="achievement" src="/assets/images/achievements/3135724.png">
-                                <img class="achievement" src="/assets/images/achievements/3135724.png">
-                                <img class="achievement" src="/assets/images/achievements/3135724.png">
+                            <div *ngFor="let item of this.friendsService.achievements.value">
+                             <img class="achievement" src="/assets/images/achievements/{{item.achievement}}.png">
+                            </div>
+                           
 
                         </div>
                     </div>

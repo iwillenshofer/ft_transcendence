@@ -20,6 +20,8 @@ export class FriendsService {
     this.friendsList = new BehaviorSubject<any[]>([]);
     this.requestsList = new BehaviorSubject<any[]>([]);
     this.friendStatus = new BehaviorSubject<number>(0);
+    this.achievements = new BehaviorSubject<any[]>([]);
+
   }
   public selectedUser: BehaviorSubject<string | undefined | null>;
   public history: any[] = [];
@@ -30,7 +32,8 @@ export class FriendsService {
   public userList: BehaviorSubject<any[]>;
   public friendsList: BehaviorSubject<any[]>;
   public requestsList: BehaviorSubject<any[]>;
-
+  public achievements: BehaviorSubject<any[]>;
+  
   ngOnInit(): void { }
 
   loadUser(username: string) {
@@ -42,6 +45,9 @@ export class FriendsService {
     return this.http.get('/backend/stats/history/' + this.selectedUser.value, { withCredentials: true });
   }
 
+  getAchievements(): Observable<any> {
+    return this.http.get('/backend/stats/achievements/' + this.selectedUser.value, { withCredentials: true });
+  }
   getUserInfo(): Observable<any> {
     return this.http.get('/backend/stats/userinfo/' + this.selectedUser.value, { withCredentials: true });
   }
@@ -109,6 +115,8 @@ export class FriendsService {
     await this.updateFriendshipStatus();
     await this.updateFriendsList();
     await this.updateRequestsList();
+    await this.updateAchievements();
+
   }
 
   getRankingImage(rating: number = 0): string {
@@ -117,6 +125,12 @@ export class FriendsService {
     if (rating >= 2200) { rating = 2000 };
     rating = Math.floor((24 * rating) / 2000);
     return ('/assets/images/ranking/' + rating + '.png');
+  }
+
+  async updateAchievements() {
+    this.getAchievements().subscribe((res: any) => {
+      this.achievements.next(res);
+    })
   }
 
   async updateFriendshipStatus() {

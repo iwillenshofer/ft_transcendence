@@ -8,12 +8,12 @@ export class FriendsEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @ManyToOne(() => UserEntity, user1 => user1.id)
-    @JoinColumn()
+    @ManyToOne(() => UserEntity)
+    @JoinColumn({ name: 'user1', referencedColumnName: 'id' })
     user1: UserEntity;
 
-    @ManyToOne(() => UserEntity, user2 => user2.id)
-    @JoinColumn()
+    @ManyToOne(() => UserEntity)
+    @JoinColumn({ name: 'user2', referencedColumnName: 'id' })
     user2: UserEntity;
 
     @Column()

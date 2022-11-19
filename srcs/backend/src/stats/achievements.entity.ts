@@ -8,8 +8,8 @@ export class AchievementsEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @ManyToOne(() => UserEntity, user => user.id)
-    @JoinColumn()
+    @ManyToOne(() => UserEntity)
+    @JoinColumn({ name: 'user', referencedColumnName: 'id' })
     user: UserEntity;
 
     @Column()

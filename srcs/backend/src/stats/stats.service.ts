@@ -37,8 +37,9 @@ export class StatsService {
         this.achievements["l1"] =  "login 3 times";
         this.achievements["l2"] =  "login 10 times";
         this.achievements["l3"] =  "login 50 times";
-        this.achievements["r1"] =  "achieve gold rating";
-        this.achievements["r2"] =  "achieve platinum rating";
+        this.achievements["r1"] =  "reach rating 1000";
+        this.achievements["r2"] =  "reach rating 1200";
+        this.achievements["r2"] =  "reach rating 1500";
     }
 
     private achievements: { [name: string] : string; } = {};
@@ -89,26 +90,40 @@ export class StatsService {
     }
 
     async updateRating(game: GameEntity) {
-		let user1 = await this.userRepository.findOneBy({ id: game.idP1 });
-        let user2 = await this.userRepository.findOneBy({ id: game.idP2 });
-        let tmpU1 = this._newRating(user1.rating, user2.rating, (game.winner == user1.id ? 1 : 0));
-        let tmpU2 = this._newRating(user2.rating, user1.rating, (game.winner == user2.id ? 1 : 0));
+		let user1 = game.idP1;
+        let user2 = game.idP2;
+        let tmpU1 = this._newRating(user1.rating, user2.rating, (game.winner.id == game.idP1.id ? 1 : 0));
+        let tmpU2 = this._newRating(user2.rating, user1.rating, (game.winner.id == game.idP2.id ? 1 : 0));
         user1.rating = (tmpU1 > 100) ? tmpU1 : 100;
-        user2.rating = (tmpU2 > 100) ? tmpU1 : 100;
+        user2.rating = (tmpU2 > 100) ? tmpU2 : 100;
         await user1.save();
         await user2.save();
         await this.ratingAchievements(user1.id);
         await this.ratingAchievements(user2.id);
 	}
 
+    async getAchievements(username: string)
+    {
+        const user_id: number = await this.userService.getIdByUsername(username);
+        console.log("getting achievements for user " + username + " " + user_id);
+        const achievements = await this.achievementsRepository
+        .createQueryBuilder('f')
+        .leftJoinAndSelect("f.user", "user")
+        .where('user.id = :v1', {v1: user_id})
+        .getMany();
+        return (achievements);   
+    }
+
     async addAchievement(user_id: number, achievement: string) {
         const exists = await this.achievementsRepository
         .createQueryBuilder('f')
+        .leftJoinAndSelect("f.user", "user")
         .where(new Brackets(qb => {
-            qb.where('user = :v1', {v1: user_id})
+            qb.where('user.id = :v1', {v1: user_id})
             qb.andWhere('achievement = :v2', {v2: achievement})
           }))
         .getOne();
+        console.log("adding achievement:" + user_id);
         if (exists) {
             return null;
         } else {
@@ -146,7 +161,7 @@ export class StatsService {
         .where('user = :v1', {v1: user_id})
         .orderBy('created_at', 'DESC')
         .getMany();
-        for(let i=0;(i < winsRow.length && winsRow.at(i).winner == user_id); i++) {winRowCount++};
+        for(let i=0;(i < winsRow.length && winsRow.at(i).winner.id == user_id); i++) {winRowCount++};
         if (winRowCount >= 3) {this.addAchievement(user_id, "g7")};
         if (winRowCount >= 5) {this.addAchievement(user_id, "g8")};
         if (winRowCount >= 10) {this.addAchievement(user_id, "g9")};
@@ -170,16 +185,17 @@ export class StatsService {
     {
         const user: UserEntity = await this.userService.getUserByID(user_id);
         if (user) {
-            if (user.rating >= 123) {this.addAchievement(user_id, "r1")};
-            if (user.rating >= 123) {this.addAchievement(user_id, "r2")};
+            if (user.rating >= 1000) {this.addAchievement(user_id, "r1")};
+            if (user.rating >= 1200) {this.addAchievement(user_id, "r2")};
         }
     }
 
     //ok
     async loginAchievements(user_id: number)
-    { 
+    {
         const user: UserEntity = await this.userService.getUserByID(user_id);
         if (user) {
+            console.log("checking login acchievements for user " + user.username + ": " + user_id);
             if (user.login_count >= 3) {this.addAchievement(user_id, "l1")};
             if (user.login_count >= 10) {this.addAchievement(user_id, "l2")};
             if (user.login_count >= 50) {this.addAchievement(user_id, "l3")};
