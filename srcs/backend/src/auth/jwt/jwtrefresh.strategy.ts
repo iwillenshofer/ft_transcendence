@@ -15,7 +15,7 @@ import { JwtService } from '@nestjs/jwt'
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
 	constructor(
-		private userService: UsersService,
+		private UsersService: UsersService,
 		private jwtService: JwtService
 	) {
 		super({
@@ -36,7 +36,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
 		} catch (err) {
 			throw new UnauthorizedException;
 		}
-		const user_refreshtoken = await this.userService.getRefreshToken(payload.id);
+		const user_refreshtoken = await this.UsersService.getRefreshToken(payload.id);
 		if (!user_refreshtoken || user_refreshtoken != refreshtoken)
 			throw new UnauthorizedException;
 		return payload;

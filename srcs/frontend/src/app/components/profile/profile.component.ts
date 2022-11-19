@@ -43,7 +43,7 @@ export class ProfileComponent implements OnInit {
       data: { title: 'Change your profile picture' }
     });
     dialogRef.afterClosed().subscribe(
-      () => this.image = this.userService.ImageUrl
+      () => this.image = this.userService.avatar
     );
   }
 

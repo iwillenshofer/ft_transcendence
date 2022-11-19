@@ -4,7 +4,6 @@ import { FriendsController } from './friends.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FriendsEntity } from './friends.entity';
 import { UserEntity } from 'src/users/users.entity';
-import { UsersService } from 'src/users/users.service';
 import { HttpModule } from '@nestjs/axios';
 import { UsersModule } from 'src/users/users.module';
 import { EncryptService } from 'src/services/encrypt.service';
@@ -22,4 +21,4 @@ import { StatsModule } from 'src/stats/stats.module';
   controllers: [FriendsController],
   exports: [FriendsService]
 })
-export class FriendsModule {}
+export class FriendsModule { }

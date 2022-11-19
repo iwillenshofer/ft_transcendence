@@ -5,9 +5,9 @@ import { getUserId } from "../auth/auth.module"
 
 @Injectable()
 export class ChatSocket extends Socket {
-    constructor(private authService: AuthService) {
+    constructor() {
         super({
-            url: 'http://localhost:3000', options: {
+            url: 'http://localhost:3000/chat', options: {
                 extraHeaders: {
                     Userid: getUserId()
                 }

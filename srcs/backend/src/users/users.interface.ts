@@ -1,4 +1,4 @@
-import { RoomInterface } from "src/chat/models/room.interface";
+import { RoomEntity } from "src/chat/entities/room.entity";
 
 export interface UserInterface {
   id?: number;
@@ -8,7 +8,7 @@ export interface UserInterface {
   refreshtoken?: string;
   tfa_enabled?: boolean;
   tfa_code?: string;
-  rooms?: RoomInterface[];
+  rooms?: RoomEntity[];
   created_at?: Date;
   updated_at?: Date;
 }

@@ -49,7 +49,8 @@
     "rimraf": "latest",
     "rxjs": "latest",
     "socket.io": "latest",
-    "typeorm": "latest"
+    "typeorm": "latest",
+    "webpack": "latest"
   },
   "devDependencies": {
     "@nestjs/cli": "latest",
@@ -72,7 +73,7 @@
     "ts-loader": "latest",
     "ts-node": "latest",
     "tsconfig-paths": "latest",
-    "typescript": "latest"
+    "typescript": "4.8.4"
   },
   "jest": {
     "moduleFileExtensions": [

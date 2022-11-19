@@ -13,7 +13,6 @@ import { AuthInterceptor } from './auth/auth.interceptor';
 import { TwofactorComponent } from './components/login/twofactor/twofactor.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AuthguardService } from './auth/guards/authguard.service';
-import { ChatModule } from './chat/chat.module';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { GameComponent } from './components/game/game.component';
 import { ChatComponent } from './components/chat/chat.component';
@@ -26,7 +25,6 @@ import { MatInputModule } from '@angular/material/input';
 import { ProfileComponent } from './components/profile/profile.component';
 import { OnlineGameComponent } from './components/game/online-game/online-game.component';
 import { AlertsModule } from './alerts/alerts.module';
-import { CreateRoomComponent } from './components/create-room/create-room.component';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -34,6 +32,20 @@ import { MatListModule } from '@angular/material/list';
 import { FriendsComponent } from './components/friends/friends.component';
 import { GameHistoryComponent } from './components/friends/game-history/game-history.component';
 import { FriendsListComponent } from './components/friends/friends-list/friends-list.component';
+import { DialogNewRoomComponent } from './components/dialogs/dialog-new-room/dialog-new-room.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { DialogPasswordComponent } from './components/dialogs/dialog-password/dialog-password.component';
+import { DialogSearchUserComponent } from './components/dialogs/dialog-search-user/dialog-search-user.component';
+import { ChatRoomComponent } from './components/chat/chat-room/chat-room.component';
+import { ChatMessageComponent } from './components/chat/chat-message/chat-message.component';
+import { ChatModule } from './chat/chat.module';
+
 
 @NgModule({
   declarations: [
@@ -49,11 +61,15 @@ import { FriendsListComponent } from './components/friends/friends-list/friends-
     DialogAvatarComponent,
     DialogUsernameComponent,
     ProfileComponent,
-    CreateRoomComponent,
     OnlineGameComponent,
     FriendsComponent,
     GameHistoryComponent,
     FriendsListComponent,
+    DialogNewRoomComponent,
+    DialogPasswordComponent,
+    DialogSearchUserComponent,
+    ChatRoomComponent,
+    ChatMessageComponent,
   ],
   imports: [
     BrowserModule,
@@ -71,6 +87,13 @@ import { FriendsListComponent } from './components/friends/friends-list/friends-
     MatCardModule,
     MatButtonModule,
     MatListModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatIconModule,
+    MatSnackBarModule,
+    MatChipsModule,
+    MatAutocompleteModule,
+    MatToolbarModule
   ],
   providers: [
     {

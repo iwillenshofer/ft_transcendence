@@ -7,13 +7,15 @@ import { FakeIntra42Guard } from './intra42/fakeintra42.guard';
 import { TfaGuard } from './tfa/tfa.guard';
 import { UsersService } from 'src/users/users.service';
 import { UserDTO } from 'src/users/users.dto';
+import { ConnectedUsersService } from 'src/services/connected-user/connected-user.service';
 
 @Controller("auth")
 export class AuthController {
 
 	constructor(
 		private authService: AuthService,
-		private userService: UsersService
+		private UsersService: UsersService,
+		private connectedUsersService: ConnectedUsersService
 	) { }
 
 
@@ -49,8 +51,8 @@ export class AuthController {
 	@UseGuards(JwtGuard)
 	@Get('profile')
 	async profile(@Request() req) {
-		let user: UserDTO = UserDTO.from(await this.userService.getUser(req.user.id));
-		user.tfa_fulfilled = (!(await this.userService.getTfaEnabled(req.user.id)) || req.user.tfa_fulfilled);
+		let user: UserDTO = UserDTO.from(await this.UsersService.getUser(req.user.id));
+		user.tfa_fulfilled = (!(await this.UsersService.getTfaEnabled(req.user.id)) || req.user.tfa_fulfilled);
 		return (JSON.stringify(user));
 	}
 
@@ -64,15 +66,18 @@ export class AuthController {
 		const refreshtoken = await this.authService.getRefreshToken({ username: callback_code.username, id: callback_code.id });
 		const callback_token: string = await this.authService.getAccessToken({ username: callback_code.username, id: callback_code.id });
 		res.cookie('refresh_token', refreshtoken, { httpOnly: true });
-		await this.userService.updateRefreshToken(callback_code.id, refreshtoken);
+		await this.UsersService.updateRefreshToken(callback_code.id, refreshtoken);
 		return { token: callback_token };
 	}
 
 	/*
 	**
 	*/
+	@UseGuards(JwtGuard)
 	@Get('logout')
-	async logout(@Res({ passthrough: true }) res) {
+	async logout(@Res({ passthrough: true }) res, @Request() req) {
+		let user: UserDTO = UserDTO.from(await this.UsersService.getUser(req.user.id));
+		this.connectedUsersService.deleteByUserId(user.id);
 		res.clearCookie('refresh_token', { httpOnly: true });
 		return { msg: "success" };
 	}

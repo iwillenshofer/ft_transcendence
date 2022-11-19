@@ -20,7 +20,7 @@ export class StatsService {
     @InjectRepository(AchievementsEntity)
     private achievementsRepository: Repository<AchievementsEntity>,
     @Inject(forwardRef(() => UsersService))
-    private userService: UsersService
+    private UsersService: UsersService
   ) {
     this.achievements["g1"] = "play 10 games";
     this.achievements["g2"] = "play 20 games";
@@ -117,7 +117,7 @@ export class StatsService {
   }
 
   async getAchievements(username: string) {
-    const user_id: number = await this.userService.getIdByUsername(username);
+    const user_id: number = await this.UsersService.getIdByUsername(username);
     console.log("getting achievements for user " + username + " " + user_id);
     const achievements = await this.achievementsRepository
       .createQueryBuilder('f')
@@ -141,7 +141,7 @@ export class StatsService {
       return null;
     } else {
       let friendship: AchievementsEntity = this.achievementsRepository.create({
-        user: await this.userService.getUserByID(user_id),
+        user: await this.UsersService.getUserByID(user_id),
         achievement: achievement,
         description: this.achievements[achievement]
       });
@@ -193,7 +193,7 @@ export class StatsService {
 
   //ok
   async ratingAchievements(user_id: number) {
-    const user: UserEntity = await this.userService.getUserByID(user_id);
+    const user: UserEntity = await this.UsersService.getUserByID(user_id);
     if (user) {
       if (user.rating >= 1000) { this.addAchievement(user_id, "r1") };
       if (user.rating >= 1200) { this.addAchievement(user_id, "r2") };
@@ -202,7 +202,7 @@ export class StatsService {
 
   //ok
   async loginAchievements(user_id: number) {
-    const user: UserEntity = await this.userService.getUserByID(user_id);
+    const user: UserEntity = await this.UsersService.getUserByID(user_id);
     if (user) {
       console.log("checking login acchievements for user " + user.username + ": " + user_id);
       if (user.login_count >= 3) { this.addAchievement(user_id, "l1") };

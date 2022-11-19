@@ -4,6 +4,7 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { UserService } from 'src/app/services/user.service';
 import { BehaviorSubject } from 'rxjs';
 import { User } from 'src/app/auth/user.model';
+import { ChatService } from 'src/app/chat/chat.service';
 
 @Component({
   selector: 'app-navbar',
@@ -17,6 +18,7 @@ export class NavbarComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private userService: UserService,
+    private chatService: ChatService
   ) {
     this.userSubject = this.authService.userSubject;
   }
@@ -31,6 +33,7 @@ export class NavbarComponent implements OnInit {
   ];
 
   logout() {
+    this.chatService.disconnectChatSocket();
     this.authService.logout();
   }
 

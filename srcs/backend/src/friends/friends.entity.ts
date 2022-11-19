@@ -1,5 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn, Unique, CreateDateColumn, UpdateDateColumn, OneToOne, JoinTable, JoinColumn, OneToMany, ManyToOne} from "typeorm";
-import { UserEntity } from "src/users/users.entity";
+import { Column, Entity, PrimaryGeneratedColumn, Unique, CreateDateColumn, UpdateDateColumn, OneToOne, JoinTable, JoinColumn, OneToMany, ManyToOne } from "typeorm";
+import { UserEntity } from "src/users/users.service";
 
 
 @Entity({ name: "Friends" })
@@ -21,7 +21,7 @@ export class FriendsEntity {
 
     @CreateDateColumn()
     created_at: Date;
-  
+
     @UpdateDateColumn()
     updated_at: Date;
 }

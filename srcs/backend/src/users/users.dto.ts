@@ -1,3 +1,4 @@
+import { RoomEntity } from 'src/chat/entities/room.entity';
 import { UserEntity } from './users.entity';
 
 export class UserDTO {

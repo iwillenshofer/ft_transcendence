@@ -12,7 +12,7 @@ import { UsersService } from 'src/users/users.service';
 @Injectable()
 export class TfaStrategy extends PassportStrategy(Strategy, 'tfa') {
 	constructor(
-		private userService: UsersService,
+		private UsersService: UsersService,
 		private jwtService: JwtService
 	) {
 		super({

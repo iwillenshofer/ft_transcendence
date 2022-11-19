@@ -12,6 +12,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EncryptService } from 'src/services/encrypt.service';
 import { Game } from 'src/game/game';
 import { StatsService } from 'src/stats/stats.service';
+import { UserInterface } from './users.interface';
+import { ChatService } from 'src/chat/chat.service';
+
+/*
+** This is basically a the Database... We will implement TypeORM.
+*/
 
 @Injectable()
 export class UsersService {
@@ -23,7 +29,7 @@ export class UsersService {
 		private readonly encrypt: EncryptService,
 		@Inject(forwardRef(() => StatsService))
 		private statsService: StatsService
-		) { }
+	) { }
 
 	async getUser(intra_id: number): Promise<UserDTO | null> {
 
@@ -35,6 +41,10 @@ export class UsersService {
 			return (UserDTO.fromEntity(ret));
 		});
 		return (results);
+	}
+
+	async getUserById(id: number): Promise<UserEntity> {
+		return await this.userRepository.findOneBy({ id: id });
 	}
 
 	async createUser(intra_id: number, login: string, displayname: string, image_url: string): Promise<UserDTO> {
@@ -84,8 +94,10 @@ export class UsersService {
 		if (alreadyExist)
 			return "";
 		let user = await this.userRepository.findOneBy({ id: id });
+		let oldUsername = user.username;
 		user.username = username;
 		const results = await this.userRepository.save(user);
+		//this.chatService.updateNameDirectRooms(oldUsername, username);
 		return username;
 	}
 
@@ -164,10 +176,28 @@ export class UsersService {
 		return (this.encrypt.decode(user.tfa_code));
 	}
 
+	async getAllUSername(): Promise<string[]> {
+		let users = await this.userRepository.find();
+		let username: string[] = [];
+		users.forEach(user => username.push(user.username));
+		username.sort();
+		return username;
+	}
+
 	async deleteAvatar(oldAvatar: string) {
 		await fs.unlink('./uploads/profileimages/' + oldAvatar, (err) => {
 			if (err)
 				throw err;
+		})
+	}
+
+	async getAllUsers(): Promise<UserEntity[]> {
+		return await this.userRepository.find();
+	}
+
+	async getUserByMemberId(memberId: number): Promise<UserEntity> {
+		return this.userRepository.findOne({
+			where: { 'members': { 'id': memberId } }
 		})
 	}
 }

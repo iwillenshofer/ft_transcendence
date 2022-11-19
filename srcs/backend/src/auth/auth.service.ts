@@ -16,7 +16,7 @@ export class AuthService {
 		@InjectRepository(AuthEntity)
 		private readonly authRepository: Repository<AuthEntity>,
 		private jwtService: JwtService,
-		private userService: UsersService,
+		private UsersService: UsersService,
 	) { };
 
 	async getOrCreateUser(data: any): Promise<UserDTO> {
@@ -24,15 +24,15 @@ export class AuthService {
 
 		if (!data || !(data?.id) || !(data?.login) || !(data?.displayname))
 			return (null);
-		user = await this.userService.getUser(data.id);
+		user = await this.UsersService.getUser(data.id);
 		if (!user)
-			user = await this.userService.createUser(data.id, data.login, data.displayname, data.image_url);
+			user = await this.UsersService.createUser(data.id, data.login, data.displayname, data.image_url);
 		return (user);
 	}
 
 	async getAccessToken(user: any, tfa_fulfilled: boolean = false) {
 		if (!(tfa_fulfilled)) {
-			tfa_fulfilled = !(await this.userService.getTfaEnabled(user.id));
+			tfa_fulfilled = !(await this.UsersService.getTfaEnabled(user.id));
 		}
 		const payload = { username: user.username, id: user.id, tfa_fulfilled: tfa_fulfilled };
 		return (this.jwtService.sign(payload, { secret: process.env.JWT_SECRET, expiresIn: 300 }));
@@ -49,12 +49,12 @@ export class AuthService {
 	async generateCallbackCode(user_id: number): Promise<string> {
 		let new_code: AuthInterface = new AuthEntity;
 		var hexstring = crypto.randomBytes(64).toString('hex');
-		new_code.user = await this.userService.getUser(user_id);
+		new_code.user = await this.UsersService.getUser(user_id);
 		if (!(new_code.user))
 			return (null);
 		new_code.hash = crypto.pbkdf2Sync(hexstring, process.env.JWT_SECRET, 1000, 64, `sha512`).toString(`hex`);
 		this.authRepository.save(new_code);
-		this.userService.updateLoginCount(user_id);
+		this.UsersService.updateLoginCount(user_id);
 		return hexstring;
 	}
 
@@ -76,16 +76,16 @@ export class AuthService {
 	** 2fa Services
 	*/
 	async disableTwoFactor(user_id: number) {
-		await this.userService.enable2FASecret(user_id, false);
+		await this.UsersService.enable2FASecret(user_id, false);
 		return true;
 	}
 
 	async disableTwoFactor2(user_id: number, code: string) {
-		const user_info: UserDTO = await this.userService.getUser(user_id);
-		if (authenticator.verify({ token: code, secret: await this.userService.getTfaCode(user_id) })) {
-			if (this.userService.getTfaEnabled(user_id)) {
-				await this.userService.enable2FASecret(user_id, false);
-				await this.userService.set2FASecret(user_id, '');
+		const user_info: UserDTO = await this.UsersService.getUser(user_id);
+		if (authenticator.verify({ token: code, secret: await this.UsersService.getTfaCode(user_id) })) {
+			if (this.UsersService.getTfaEnabled(user_id)) {
+				await this.UsersService.enable2FASecret(user_id, false);
+				await this.UsersService.set2FASecret(user_id, '');
 			}
 			return true;
 		}
@@ -93,11 +93,11 @@ export class AuthService {
 	}
 
 	async verifyTwoFactor(user_id: number, code: string) {
-		const user_info: UserDTO = await this.userService.getUser(user_id);
+		const user_info: UserDTO = await this.UsersService.getUser(user_id);
 		// console.log("secret sent:" + code);
-		if (authenticator.verify({ token: code, secret: await this.userService.getTfaCode(user_id) })) {
-			if (!(await this.userService.getTfaEnabled(user_id))) {
-				await this.userService.enable2FASecret(user_id, true);
+		if (authenticator.verify({ token: code, secret: await this.UsersService.getTfaCode(user_id) })) {
+			if (!(await this.UsersService.getTfaEnabled(user_id))) {
+				await this.UsersService.enable2FASecret(user_id, true);
 			}
 			return true;
 		}
@@ -105,9 +105,9 @@ export class AuthService {
 	}
 
 	public async generateTFA(user_id: number) {
-		let user_info: UserDTO = await this.userService.getUser(user_id);
+		let user_info: UserDTO = await this.UsersService.getUser(user_id);
 		const secret = authenticator.generateSecret();
-		await this.userService.set2FASecret(user_id, secret);
+		await this.UsersService.set2FASecret(user_id, secret);
 		const otp_url = authenticator.keyuri(String(user_id), 'ft_transcendence', secret);
 		return ({ key_code: secret, qr_code: await toDataURL(otp_url) });
 	}

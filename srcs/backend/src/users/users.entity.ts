@@ -1,10 +1,15 @@
-import { RoomEntity } from 'src/chat/models/room.entity';
+
+
 import { GameEntity } from 'src/game/game.entity';
-import { BaseEntity, Entity, Unique, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany } from 'typeorm';
+import { BaseEntity, Entity, Unique, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, OneToMany } from 'typeorm';
+import { MessageEntity } from 'src/chat/entities/message.entity';
+import { RoomEntity } from 'src/chat/entities/room.entity';
+import { MemberEntity } from 'src/chat/entities/member.entity';
 
 @Entity({ name: 'User' })
 @Unique(['id'])
 export class UserEntity extends BaseEntity {
+
   @PrimaryColumn({ nullable: false, type: 'integer' })
   id: number;
 
@@ -26,8 +31,14 @@ export class UserEntity extends BaseEntity {
   @Column({ nullable: true, type: 'varchar', length: 200 })
   tfa_code: string;
 
-  @ManyToMany(() => RoomEntity, room => room.users)
-  rooms: RoomEntity[];
+  // @ManyToMany(() => RoomEntity, room => room.users)
+  // rooms: RoomEntity[];
+
+  // @OneToMany(() => MessageEntity, message => message.user)
+  // messages: MessageEntity[];
+
+  @OneToMany(() => MemberEntity, member => member.user)
+  members: MemberEntity[];
 
   @Column({ type: 'int', default: 800 })
   rating: number;

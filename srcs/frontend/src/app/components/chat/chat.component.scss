@@ -1,15 +1,87 @@
-.main {
-    display: flex;
-    text-align: center;
-    position: relative;
+@media (max-width: 1200px) {
+    body {
+        overflow-y: scroll;
+        /* Show vertical scrollbar */
+    }
+
+    .chat {
+        border-radius: 15px 15px 0px 0px;
+        border-top: 4px solid #f3f3f3;
+        border-right: 4px solid #f3f3f3;
+        border-left: 4px solid #f3f3f3;
+    }
+
+    .my-rooms {
+        border-radius: 0px 0px 0px 15px;
+        border-right: 1px solid white;
+        min-height: 300px;
+    }
+
+    .av-rooms {
+        border-radius: 0px 0px 15px 0px;
+        border-left: 1px solid white;
+    }
 }
 
-.send-container {
+@media (min-width: 1200px) {
+    .chat {
+        border-radius: 0px 15px 15px 0px;
+        border-top: 4px solid #f3f3f3;
+        border-right: 4px solid #f3f3f3;
+        border-bottom: 4px solid #f3f3f3;
+    }
+
+    .my-rooms {
+        border-radius: 15px 0px 0px 0px;
+        border-bottom: 1px solid white;
+    }
+
+    .av-rooms {
+        border-radius: 0px 0px 0px 15px;
+        border-top: 1px solid white;
+    }
+}
+
+
+mat-paginator {
+    background-color: #f3f3f3;
     position: absolute;
-    bottom: 30px;
-    width: 100%;
+    left: 10px;
 }
 
-.message-container {
-    width: 70%;
+.bg-c-lite-green {
+    background-color: #f3f3f3;
+}
+
+.btn-join,
+.btn-create {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+.btn-leave {
+    position: absolute;
+    bottom: 10px;
+    right: 130px;
+}
+
+.btn-search {
+    position: absolute;
+    bottom: 10px;
+    right: 116px;
+}
+
+.av-rooms,
+.my-rooms {
+    position: relative;
+    text-align: center;
+    min-height: 44.4vh;
+    background-color: #f3f3f3;
+    height: 320px;
+}
+
+.chat {
+    background-color: #fff;
+    min-height: 88vh;
 }

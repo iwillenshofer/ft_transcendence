@@ -17,7 +17,7 @@ export class FriendsService {
         private usersRepository: Repository<UserEntity>,
         private usersService: UsersService,
         private statsService: StatsService
-    ) {}
+    ) { }
 
     async getFriendshipStatus(username: string, me: string): Promise<FriendsStatusDTO> {
         // console.log("getting status for: " + username);

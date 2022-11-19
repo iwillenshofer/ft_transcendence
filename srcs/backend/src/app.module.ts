@@ -7,20 +7,24 @@ import { ChatModule } from './chat/chat.module';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { UserEntity } from './users/users.entity';
-import { RoomEntity } from './chat/models/room.entity';
 import { AuthEntity } from './auth/models/auth.entity';
 import { GameModule } from './game/game.module';
+import { UserEntity } from './users/users.entity';
 import { GameEntity } from './game/game.entity';
-import { StatsController } from './stats/stats.controller';
-import { StatsService } from './stats/stats.service';
-import { StatsModule } from './stats/stats.module';
-import { FriendsModule } from './friends/friends.module';
+import { ConnectedUserEntity } from './chat/entities/connected-user.entity';
+import { MessageEntity } from './chat/entities/message.entity';
+import { RoomEntity } from './chat/entities/room.entity';
+import { MemberEntity } from './chat/entities/member.entity';
 import { FriendsEntity } from './friends/friends.entity';
 import { AchievementsEntity } from './stats/achievements.entity';
+import { StatsModule } from './stats/stats.module';
+import { FriendsModule } from './friends/friends.module';
 
 @Module({
   imports: [
+    AuthModule,
+    UsersModule,
+    ChatModule,
     JwtModule.register({ secret: process.env.JWT_SECRET }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -29,7 +33,7 @@ import { AchievementsEntity } from './stats/achievements.entity';
       username: process.env.POSTGRES_USER || 'postgres',
       password: process.env.POSTGRES_PASSWORD || 'postgress',
       database: process.env.POSTGRES_DB || 'postgres',
-      entities: [UserEntity, RoomEntity, AuthEntity, GameEntity, FriendsEntity, AchievementsEntity],
+      entities: [UserEntity, RoomEntity, AuthEntity, MessageEntity, GameEntity, ConnectedUserEntity, MemberEntity, FriendsEntity, AchievementsEntity],
       dropSchema: true,
       synchronize: true,
     }),

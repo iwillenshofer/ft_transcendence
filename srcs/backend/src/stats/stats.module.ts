@@ -23,4 +23,4 @@ import { EncryptService } from 'src/services/encrypt.service';
     controllers: [StatsController]
 })
 
-export class StatsModule {}
+export class StatsModule { }

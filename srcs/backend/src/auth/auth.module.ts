@@ -11,6 +11,8 @@ import { TfaStrategy } from './tfa/tfa.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthEntity } from './models/auth.entity';
+import { ConnectedUsersService } from 'src/services/connected-user/connected-user.service';
+import { ConnectedUserEntity } from 'src/chat/entities/connected-user.entity';
 
 @Module({
     imports: [
@@ -20,11 +22,12 @@ import { AuthEntity } from './models/auth.entity';
             secret: process.env.JWT_SECRET,
             signOptions: { expiresIn: '60s' },
         }),
-        TypeOrmModule.forFeature([AuthEntity])
+        TypeOrmModule.forFeature([AuthEntity, ConnectedUserEntity])
     ],
     controllers: [AuthController],
-    providers: [AuthService, Intra42Strategy, JwtStrategy, JwtRefreshStrategy, TfaStrategy, FakeIntra42Strategy,],
+    providers: [AuthService, Intra42Strategy, JwtStrategy, JwtRefreshStrategy, TfaStrategy, FakeIntra42Strategy, ConnectedUsersService],
     exports: [AuthService, Intra42Strategy, JwtStrategy, JwtRefreshStrategy, TfaStrategy, FakeIntra42Strategy,]
+
 
 })
 

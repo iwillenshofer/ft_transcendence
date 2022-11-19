@@ -27,6 +27,7 @@
     "ngx-bootstrap": "latest",
     "ngx-cookie-service": "latest",
     "ngx-socket-io": "latest",
+    "onetime": "^6.0.0",
     "rxjs": "latest",
     "tslib": "latest",
     "zone.js": "latest"

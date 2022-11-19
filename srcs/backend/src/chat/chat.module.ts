@@ -1,14 +1,32 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthModule } from 'src/auth/auth.module';
+import { EncryptService } from 'src/services/encrypt.service';
+import { UserEntity } from 'src/users/users.entity';
 import { UsersModule } from 'src/users/users.module';
-import { ChatGateway } from './gateway/chat.gateway';
-import { RoomEntity } from './models/room.entity';
-import { RoomService } from './services/room/room.service';
+import { RoomEntity } from './entities/room.entity';
+import { ChatService } from './chat.service';
+import { ChatController } from './chat.controller';
+import { MessageEntity } from './entities/message.entity';
+import { AuthModule } from 'src/auth/auth.module';
+import { ChatGateway } from './chat.gateway';
+import { ConnectedUsersService } from 'src/services/connected-user/connected-user.service';
+import { ConnectedUserEntity } from './entities/connected-user.entity';
+import { MemberEntity } from './entities/member.entity';
+import { UsersService } from 'src/users/users.service';
+import { HttpModule } from '@nestjs/axios';
+import { StatsService } from 'src/stats/stats.service';
+import { GameEntity } from 'src/game/game.entity';
+import { FriendsEntity } from 'src/friends/friends.entity';
+import { AchievementsEntity } from 'src/stats/achievements.entity';
 
 @Module({
-    imports: [UsersModule, AuthModule, TypeOrmModule.forFeature([RoomEntity])],
-    providers: [ChatGateway, RoomService]
+    imports: [
+        UsersModule,
+        HttpModule,
+        TypeOrmModule.forFeature([UserEntity, RoomEntity, MessageEntity, ConnectedUserEntity, MemberEntity, GameEntity, FriendsEntity, AchievementsEntity])],
+    providers: [ChatGateway, ChatService, EncryptService, ConnectedUsersService, UsersService, StatsService],
+    exports: [ChatService],
+    controllers: [ChatController]
 })
 
 export class ChatModule { }

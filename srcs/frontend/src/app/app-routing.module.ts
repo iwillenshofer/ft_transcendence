@@ -11,7 +11,6 @@ import { GameComponent } from './components/game/game.component';
 import { ChatComponent } from './components/chat/chat.component';
 import { FriendsComponent } from './components/friends/friends.component';
 import { ProfileComponent } from './components/profile/profile.component';
-import { CreateRoomComponent } from './components/create-room/create-room.component';
 
 const routes: Routes = [
 	{ path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -23,8 +22,6 @@ const routes: Routes = [
 	{ path: 'chat', component: ChatComponent, pathMatch: 'full' },
 	{ path: 'friends', component: FriendsComponent, pathMatch: 'full' },
 	{ path: 'profile', component: ProfileComponent, pathMatch: 'full' },
-	{ path: 'create-room', component: CreateRoomComponent, pathMatch: 'full' }
-
 
 ];
 
