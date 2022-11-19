@@ -1,7 +1,6 @@
-import { Component, OnChanges, OnInit } from '@angular/core';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { BehaviorSubject, Subject } from 'rxjs';
 import { RoomService } from 'src/app/services/room/room.service';
 import { isRoomNameTaken } from 'src/app/validators/async-room-name.validator';
 
@@ -58,8 +57,6 @@ export class DialogNewRoomComponent implements OnInit {
         break;
       }
     }
-
-    console.log(this.IsProtected)
   }
 
   createChatroom() {

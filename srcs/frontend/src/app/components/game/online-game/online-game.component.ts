@@ -1,123 +1,224 @@
-import { Component, ViewChild, ElementRef, OnInit, HostListener } from '@angular/core';
+import { AuthService } from 'src/app/auth/auth.service';
+import { Component, ViewChild, ElementRef, OnInit, HostListener, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
 import io from "socket.io-client";
+import { OnlineGameService } from './online-game.service';
+
 
 @Component({
   selector: 'app-online-game',
   templateUrl: './online-game.component.html',
   styleUrls: ['./online-game.component.scss']
 })
-export class OnlineGameComponent implements OnInit {
+export class OnlineGameComponent implements OnInit, OnDestroy {
 
   @ViewChild("game")
   private gameCanvas!: ElementRef;
-  private socket: any;
-  private player1: any;
-  private player2: any;
+  private canvas: any;
+  @Input() mode: any;
+  @Input() powerUps: any;
+  @Input() specGame: any;
+  @Output() quit: EventEmitter<boolean> = new EventEmitter();;
+  socket: any;
   isWaiting: boolean = true;
+  currentAnimationFrameId?: number;
+  finishedMessage: string = '';
   scoreP1: number = 0;
   scoreP2: number = 0;
-  private ball: any;
-  currentAnimationFrameId?: number;
   finished: boolean = false;
-  finishedMessage: string = '';
 
-  @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
-    switch (event.key) {
-      case 'w':
-      case 'W':
-      case 'ArrowUp':
-        this.socket.emit("move", "up");
-        break;
+  player1: any;
+  player2: any;
+  ball: any;
 
-      case 's':
-      case 'S':
-      case 'ArrowDown':
-        this.socket.emit("move", "down");
-        break;
+  constructor(public gameService: OnlineGameService, private auth: AuthService) {
+    this.ball = gameService.getBall();
+  }
 
-      default:
-        break;
+  @HostListener('window:keyup', ['$event'])
+  keyEvent(event: KeyboardEvent) {
+    if (event.code == 'Escape') {
+      if (this.isWaiting || this.finished || this.mode == 'spec') {
+        window.location.reload();
+        // this.socket.disconnect();
+        // this.quit.emit(true);
+      }
     }
   }
 
   ngOnInit(): void {
-    this.socket = io("http://localhost:3000");
-    this.socket.emit("joinGame");
+    this.socket = io("http://localhost:3000/game");
+    if (this.mode == 'spec') {
+      this.socket.emit("watchGame", this.specGame);
+    }
+    else {
+      this.auth.getUser().then(data => {
+        this.socket.emit("joinGame", this.powerUps, data.username);
+      });
+    }
+    this.gameService.setMode(this.mode)
+    this.gameService.setCustom(this.powerUps)
   }
 
-  public ngAfterViewInit() {
-    this.drawLines();
-    this.socket.on("players", (player1: any, player2: any) => {
-      if (player1) {
-        this.player1 = this.gameCanvas.nativeElement.getContext("2d");
-        this.player1.fillStyle = "white";
-        this.player1.fillRect(20, 200, 10, 100);
-      }
-      if (player2) {
-        this.player2 = this.gameCanvas.nativeElement.getContext("2d");
-        this.player2.fillStyle = "white";
-        this.player2.fillRect(535, 200, 10, 100);
-      }
-      this.drawLines();
-      if (this.player1 && this.player2) {
-        this.isWaiting = false;
-        this.ball = this.gameCanvas.nativeElement.getContext("2d");
-        this.update();
-      }
+  ngOnDestroy() {
+    this.socket.disconnect();
+  }
+
+  ngAfterViewInit() {
+    this.canvas = this.gameCanvas.nativeElement.getContext("2d");
+    this.canvas.fillStyle = "white";
+    if (this.mode != 'spec')
+      this.players();
+    else
+      this.specs();
+  }
+
+  players() {
+    this.socket.on("players", (player1: any, player2: any, gameID: string) => {
+      this.setPlayers(player1, player2, gameID)
+      this.isWaiting = false;
+      this.gameService.reset()
+      this.update();
     })
-
   }
 
-  lastTime!: number;
-  update() {
-    this.socket.emit("gameUpdate", 1);
-    this.draw()
+  specs() {
+    this.gameService.setGameSocket(this.socket);
+    this.socket.on("specs", (player1: any, player2: any, gameID: string) => {
+      this.player1 = player1;
+      this.player2 = player2;
+      this.isWaiting = false;
+      this.watchGame(gameID);
+    })
+  }
+
+  watchGame(gameID: string) {
+    this.socket.emit("getPaddles", gameID)
+    this.socket.emit("getPowerUp", gameID)
+    this.socket.emit("getBall", gameID)
+    this.socket.emit("syncScore", gameID)
+    this.socket.on("updatePaddle", (player1: any, player2: any) => {
+      this.player1 = player1;
+      this.player2 = player2;
+    });
+    let powerUp: any;
+    this.socket.on('updatePowerUp', (newPowerUp: any) => {
+      powerUp = newPowerUp;
+    })
+    this.socket.on("ball", (ball: any) => {
+      this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+      this.drawLines();
+      this.drawPowerUp(powerUp);
+      if (!this.finished)
+        this.drawBall(ball);
+      this.updatePaddles(this.player1, this.player2);
+    })
+    this.endGame();
     this.updateScore();
     this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
   }
 
-  updateScore() {
-    this.socket.on("score", (scoreP1: number, scoreP2: number, finished: boolean, finishedMessage: string) => {
-      this.scoreP1 = scoreP1;
-      this.scoreP2 = scoreP2;
-      this.finished = finished;
-      if (this.finished) {
-        this.draw();
-        this.finishedMessage = finishedMessage;
-        this.finish();
-      }
-    })
+  setPlayers(player1: any, player2: any, gameID: string) {
+
+    if (player1.socket) {
+      this.gameService.setP1Socket(player1.socket);
+      this.gameService.setP1Username(player1.username)
+    }
+    if (player2.socket) {
+      this.gameService.setP2Socket(player2.socket);
+      this.gameService.setP2Username(player2.username)
+    }
+    if (player1.socket && player2.socket) {
+      this.gameService.setGameID(gameID);
+      this.gameService.setGameSocket(this.socket);
+      this.player1 = this.gameService.getPlayer1();
+      this.player2 = this.gameService.getPlayer2();
+    }
   }
 
-  finish() {
-    window.cancelAnimationFrame(this.currentAnimationFrameId as number);
+  update() {
+    this.gameService.run();
+    this.draw();
+    this.endGame();
+    this.updateScore();
+    this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
   }
 
   draw() {
-    this.socket.on("draw", (ball: any, positionP1: any, positionP2: any) => {
-      this.ball.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
-      this.drawLines();
-      this.drawBall(ball.x, ball.y);
-      this.updatePaddles(positionP1, positionP2);
-    });
+    this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+    this.drawLines();
+    if (!this.finished)
+      this.drawBall(this.gameService.getBall());
+    this.updatePaddles(this.gameService.getPlayer1(), this.gameService.getPlayer2());
+    this.drawPowerUp(this.gameService.getPowerUp())
   }
 
-  updatePaddles(positionP1: { x: any; y: any; }, positionP2: { x: any; y: any; }) {
-    this.player1.fillRect(positionP1.x, positionP1.y, 10, 100);
-    this.player2.fillRect(positionP2.x, positionP2.y, 10, 100);
+  updateScore() {
+    this.socket.on("updateScore", (scoreP1: any, scoreP2: any, finished: any) => {
+      this.scoreP1 = scoreP1;
+      this.scoreP2 = scoreP2;
+      this.finished = finished;
+      if (finished)
+        this.finish('score', 0);
+    })
   }
 
-  drawBall(x: any, y: any) {
-    this.ball.beginPath();
-    this.ball.arc(x, y, 10, 0, Math.PI * 2, true);
-    this.ball.closePath();
-    this.ball.fill();
+  endGame() {
+    this.socket.on('connect_error', () => {
+      this.finished = true;
+      this.finish('down', 0)
+    })
+    this.socket.on("endGame", (disconnected: any) => {
+      this.finished = true;
+      this.finish('disconnect', disconnected);
+    })
+  }
+
+  finish(reason: any, disconnected: any) {
+    if (this.mode != 'spec')
+      this.socket.emit("finishMessage", this.gameService.getFinalMessage(reason, disconnected), this.gameService.getWinner(reason, disconnected));
+    this.socket.on("winner", (message: any) => {
+      this.finishedMessage = message;
+      this.drawFinish();
+      this.socket.disconnect();
+    })
+  }
+
+  drawFinish() {
+    window.cancelAnimationFrame(this.currentAnimationFrameId as number);
+    this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+    this.updatePaddles(this.gameService.getPlayer1(), this.gameService.getPlayer2());
+    this.canvas.font = '10vh Lucida Console Courier New monospace';
+    this.canvas.textBaseline = 'middle';
+    this.canvas.textAlign = 'center';
+    this.canvas.fillText(this.finishedMessage, 640, 360);
+    this.canvas.font = '3vh Lucida Console Courier New monospace';
+    this.canvas.fillText('[Esc] - Quit', 640, 420);
+  }
+
+  updatePaddles(P1: any, P2: any) {
+    this.canvas.fillRect(P1.x, P1.y, P1.width, P1.height);
+    this.canvas.fillRect(P2.x, P2.y, P2.width, P2.height);
+  }
+
+  drawBall(ball: any) {
+    this.canvas.beginPath();
+    this.canvas.arc(ball.x, ball.y, ball.radius * 2, 0, Math.PI * 2, true);
+    this.canvas.closePath();
+    this.canvas.fill();
   }
 
   drawLines() {
-    for (let x = 3; x < 500;) {
-      this.gameCanvas.nativeElement.getContext("2d").fillRect(275, x, 12, 10);
+    for (let x = 3; x < 720;) {
+      this.gameCanvas.nativeElement.getContext("2d").fillRect(640, x, 12, 10);
       x += 20;
+    }
+  }
+
+  drawPowerUp(powerUp: any) {
+    let ctx = this.gameCanvas.nativeElement.getContext("2d");
+    if (powerUp && powerUp.show) {
+      var img = document.getElementById("powerUp");
+      ctx.drawImage(img, powerUp.x, powerUp.y, 100, 100);
     }
   }
 }

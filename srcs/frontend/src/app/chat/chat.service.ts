@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, Observable, Subject } from 'rxjs';
 import { Socket } from 'ngx-socket-io';
 import { ChatSocket } from './chat.socket';
 import { map } from 'rxjs/operators';
@@ -8,27 +8,30 @@ import { RoomInterface } from '../model/room.interface';
 import { getSupportedInputTypes } from '@angular/cdk/platform';
 import { RoomPaginateInterface } from '../model/room.interface';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { HttpClient } from '@angular/common/http';
+import { MessagePaginateInterface } from '../model/message.interface';
+import { MessageInterface } from '../components/chat/models/message.interface';
 
 
 @Injectable()
 export class ChatService {
 
-  rooms: Observable<RoomPaginateInterface> = this.getMyRooms();
-  roomsChange: Subject<Observable<RoomPaginateInterface>> = new Subject<Observable<RoomPaginateInterface>>();
-
   constructor(
     private socket: ChatSocket,
-    private snackBar: MatSnackBar) {
-    this.roomsChange.subscribe((value) => {
-      this.rooms = value
-    });
+    private snackBar: MatSnackBar,
+    private http: HttpClient) {
   }
 
-  sendMessage() {
+  disconnectChatSocket() {
+    this.socket.disconnect();
   }
 
-  getMessage(): Observable<string[]> {
-    return this.socket.fromEvent('message');
+  sendMessage(message: string, room: RoomInterface) {
+    this.socket.emit('add_message', { message: message, room: room });
+  }
+
+  getMessages(): Observable<MessagePaginateInterface> {
+    return this.socket.fromEvent<MessagePaginateInterface>('messages');
   }
 
   getMyRooms(): Observable<RoomPaginateInterface> {
@@ -36,30 +39,53 @@ export class ChatService {
   }
 
   createRoom(room: RoomInterface) {
-    this.socket.emit('createRoom', room);
+    this.socket.emit('create_room', room);
     this.snackBar.open(`Room ${room.name} created successfully`, 'Close', {
       duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
     });
   }
 
   joinRoom(room: RoomInterface) {
-    this.socket.emit('joinRoom', room.id);
+    this.socket.emit('join_room', { roomId: room.id });
   }
 
   emitPaginateRooms(limit: number, page: number) {
-    this.socket.emit('paginateRooms', { limit, page });
+    this.socket.emit('paginate_rooms', { limit, page });
   }
 
   emitPaginatePublicRooms(limit: number, page: number) {
-    this.socket.emit('paginatePublicRooms', { limit, page });
-  }
-
-  setrooms(rooms: Observable<RoomPaginateInterface>) {
-    this.roomsChange.next(rooms);
+    this.socket.emit('paginate_public_and_protected_rooms', { limit, page });
   }
 
   getPublicRooms(): Observable<RoomPaginateInterface> {
     return this.socket.fromEvent<RoomPaginateInterface>('publicRooms');
   }
 
+  leaveRoom(room: RoomInterface) {
+    this.socket.emit('leave_room', room.id);
+  }
+
+  getAllMyRoomsAsText() {
+    return this.http.get<string[]>('/backend/chat/get_all_my_rooms_as_text/', { withCredentials: true });
+  }
+
+  requestMessages(roomId: number) {
+    this.socket.emit('messages', roomId);
+  }
+
+  IsUserOnline(userId: number) {
+    return this.http.get('/backend/chat/is_user_online/' + userId, { withCredentials: true });
+  }
+
+  getAddedMessage(): Observable<MessageInterface> {
+    return this.socket.fromEvent<MessageInterface>('message_added')
+  }
+
+  getAllUsers(): Observable<UserInterface[]> {
+    return this.socket.fromEvent<UserInterface[]>('all_users');
+  }
+
+  getNonAddedUsers(): Observable<UserInterface[]> {
+    return this.http.get<UserInterface[]>('/backend/chat/get_non_added_users/', { withCredentials: true });
+  }
 }

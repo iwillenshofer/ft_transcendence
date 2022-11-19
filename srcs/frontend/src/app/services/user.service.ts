@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, Observable, Subject } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
+import { User } from '../auth/user.model';
 import { UserInterface } from '../model/user.interface';
 
 @Injectable({
@@ -62,8 +63,24 @@ export class UserService {
     return this.http.get<UserInterface[]>(`/backend/user/find-by-username?username=${username}`);
   }
 
-  getUser() {
-    return this.http.get('/backend/user/getuser/', { withCredentials: true });
+  getUserById(id: number) {
+    return this.http.get('/backend/user/get_user_by_id/' + id, { withCredentials: true });
+  }
+
+  getUserByUsername(username: number) {
+    return firstValueFrom(this.http.get<User>('/backend/user/get_user_by_username/' + username, { withCredentials: true }));
+  }
+
+  getMyUser() {
+    return firstValueFrom(this.http.get<User>('/backend/user/get_my_user/', { withCredentials: true }));
+  }
+
+  getAllUsername(): Observable<any> {
+    return this.http.get('/backend/user/get_all_users/', { withCredentials: true });
+  }
+
+  getAvatarOfUser(avatar: string) {
+    return this.http.get('/backend/user/image/' + avatar, { withCredentials: true });
   }
 
 }

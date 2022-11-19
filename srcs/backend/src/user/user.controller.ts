@@ -4,7 +4,9 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Observable, of } from 'rxjs';
 import { JwtGuard } from 'src/auth/jwt/jwt.guard';
+import { ConnectedUserService } from 'src/services/connected-user/connected-user.service';
 import { v4 as uuidv4 } from 'uuid';
+import { UserDTO } from './user.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -12,7 +14,7 @@ export class UserController {
 
     constructor(
         private userService: UserService,
-        private readonly HttpService: HttpService
+        private connectedUserService: ConnectedUserService
     ) { }
 
     @UseGuards(JwtGuard)
@@ -28,9 +30,30 @@ export class UserController {
     }
 
     @UseGuards(JwtGuard)
-    @Get('getuser')
-    async getUser(@Request() req) {
-        return of({ username: await this.userService.getUser2(req.user.id) })
+    @Get('getAllConnectedUser')
+    async getAllConnectedUSer(@Request() req) {
+        return of({ user: await this.connectedUserService.getAllConnectedUser() })
+    }
+
+    @UseGuards(JwtGuard)
+    @Get('get_user_by_id/:id')
+    async getUserById(@Param('id') id) {
+        let user: UserDTO = UserDTO.from(await this.userService.getUser(id));
+        return (JSON.stringify(user));
+    }
+
+
+    @UseGuards(JwtGuard)
+    @Get('get_my_user')
+    async getMyUser(@Request() req) {
+        let user: UserDTO = UserDTO.from(await this.userService.getUser(req.user.id));
+        return (JSON.stringify(user));
+    }
+
+    @UseGuards(JwtGuard)
+    @Get('get_user_by_username/:username')
+    async getUserByUsername(@Param('username') username, @Request() req) {
+        return of(await this.userService.getUserByUsername(username))
     }
 
     @Get('is-username-taken/:username')
@@ -52,13 +75,16 @@ export class UserController {
     }))
     uploadFile(@Request() req, @UploadedFile() file): Observable<Object> {
         const oldAvatar = req.body.oldAvatar.split('/').pop();
-        this.userService.deleteAvatar(oldAvatar);
-        this.userService.updateUrlAvatar(req.user.id, 'user/image/' + file.filename)
+        if (oldAvatar) {
+            this.userService.deleteAvatar(oldAvatar);
+        }
+        this.userService.updateUrlAvatar(req.user.id, 'user/image/' + file.filename);
         return of({ imagePath: 'user/image/' + file.filename })
     }
 
     @Get('image/:imgpath')
     seeUploadedFile(@Param('imgpath') image, @Response() res) {
+        console.log("HERE")
         return res.sendFile(image, { root: './uploads/profileimages/' });
     }
 
@@ -68,4 +94,11 @@ export class UserController {
         const path: string = await this.userService.getUrlAvatar(req.user.id);
         res.status(200).send({ url: path });
     }
+
+    @UseGuards(JwtGuard)
+    @Get('get_all_users')
+    async getAllUsername(@Request() req, @Response() res) {
+        res.status(200).send(await this.userService.getAllUSername());
+    }
+
 }

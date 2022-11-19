@@ -7,13 +7,15 @@ import { FakeIntra42Guard } from './intra42/fakeintra42.guard';
 import { TfaGuard } from './tfa/tfa.guard';
 import { UserService } from 'src/user/user.service';
 import { UserDTO } from 'src/user/user.dto';
+import { ConnectedUserService } from 'src/services/connected-user/connected-user.service';
 
 @Controller("auth")
 export class AuthController {
 
 	constructor(
 		private authService: AuthService,
-		private userService: UserService
+		private userService: UserService,
+		private connectedUserService: ConnectedUserService
 	) { }
 
 
@@ -71,8 +73,11 @@ export class AuthController {
 	/*
 	**
 	*/
+	@UseGuards(JwtGuard)
 	@Get('logout')
-	async logout(@Res({ passthrough: true }) res) {
+	async logout(@Res({ passthrough: true }) res, @Request() req) {
+		let user: UserDTO = UserDTO.from(await this.userService.getUser(req.user.id));
+		this.connectedUserService.deleteByUserId(user.id);
 		res.clearCookie('refresh_token', { httpOnly: true });
 		return { msg: "success" };
 	}

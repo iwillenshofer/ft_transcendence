@@ -1,10 +1,10 @@
 import { RoomInterface } from "./room.interface";
 
 export interface UserInterface {
-    id?: number;
-    username?: string;
-    fullname?: string;
-    avatar_url?: string;
+    id: number;
+    username: string;
+    fullname: string;
+    avatar_url: string;
     refreshtoken?: string;
     tfa_enabled?: boolean;
     tfa_code?: string;

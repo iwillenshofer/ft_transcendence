@@ -10,9 +10,11 @@ import { DataSource } from 'typeorm';
 import { AuthEntity } from './auth/models/auth.entity';
 import { GameModule } from './game/game.module';
 import { UserEntity } from './user/user.entity';
-import { RoomEntity } from './room/room.entity';
-import { RoomModule } from './room/room.module';
-import { MessageEntity } from './chat/message/message.entity';
+import { GameEntity } from './game/game.entity';
+import { ConnectedUserEntity } from './chat/entities/connected-user.entity';
+import { MessageEntity } from './chat/entities/message.entity';
+import { RoomEntity } from './chat/entities/room.entity';
+import { MemberEntity } from './chat/entities/member.entity';
 
 @Module({
   imports: [
@@ -27,11 +29,10 @@ import { MessageEntity } from './chat/message/message.entity';
       username: process.env.POSTGRES_USER || 'postgres',
       password: process.env.POSTGRES_PASSWORD || 'postgress',
       database: process.env.POSTGRES_DB || 'postgres',
-      entities: [UserEntity, RoomEntity, AuthEntity, MessageEntity],
+      entities: [UserEntity, RoomEntity, AuthEntity, MessageEntity, GameEntity, ConnectedUserEntity, MemberEntity],
       synchronize: true,
     }),
     GameModule,
-    RoomModule,
   ],
   controllers: [AppController],
   providers: [AppService],

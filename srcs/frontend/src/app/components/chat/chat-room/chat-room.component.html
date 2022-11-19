@@ -1,0 +1,52 @@
+<div *ngIf="chatRoom; else no_chatroom_selected">
+    <div class="container text-center">
+        <div class="row">
+            <div class="col">
+                <div style="height: 75x;">
+                    <span
+                        style="display: flex; flex-direction: row; align-items: center; justify-content: space-between">
+                        <h2 *ngIf="isConversation(chatRoom) && chatRoom.name == this.myUsername; else elseBlock2">
+                            <h2>{{chatRoom.name2}}</h2>
+                        </h2>
+                        <ng-template #elseBlock2>
+                            <h2>{{chatRoom.name}}</h2>
+                            <h3>{{chatRoom.description}}</h3>
+                        </ng-template>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col message">
+                <span *ngFor="let message of (messagesPaginate$ | async)?.items">
+                    <app-chat-message [message]="message" [myUsername]="this.myUsername"></app-chat-message>
+                </span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div style="display: flex; align-items: center;">
+                    <mat-form-field style="width: 100%;">
+                        <input matInput [formControl]="chatMessage" type="text" autoComplete='off'
+                            (keydown.enter)="sendMessage()">
+                    </mat-form-field>
+                    <button mat-icon-button [disabled]="!chatMessage.valid" (click)="sendMessage()">
+                        <span style="display: flex;; flex-direction: row; align-items: center; margin-left: 10px;">
+                            <mat-icon>send</mat-icon>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                Column
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #no_chatroom_selected>
+    <mat-error>No Chatroom Selected</mat-error>
+</ng-template>

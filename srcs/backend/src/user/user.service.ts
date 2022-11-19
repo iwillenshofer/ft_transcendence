@@ -1,3 +1,4 @@
+import { IGame } from 'src/game/game.interface';
 import { Injectable } from '@nestjs/common';
 import { UserEntity } from './user.entity';
 import { UserDTO } from './user.dto';
@@ -9,7 +10,9 @@ import * as fs from 'fs';
 import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EncryptService } from 'src/services/encrypt.service';
+import { Game } from 'src/game/game';
 import { UserInterface } from './user.interface';
+import { ChatService } from 'src/chat/chat.service';
 
 /*
 ** This is basically a the Database... We will implement TypeORM.
@@ -36,10 +39,20 @@ export class UserService {
 		return (results);
 	}
 
-	async getUser2(id: number): Promise<UserInterface> {
+	async getUserById(id: number): Promise<UserEntity> {
+		return await this.userRepository.findOneBy({ id: id });
+	}
 
-		let user = await this.userRepository.findOneBy({ id: id });
-		return (user);
+	async getUserByUsername(username: string): Promise<UserDTO | null> {
+
+		const results = await this.userRepository.findOneBy({
+			username: username,
+		}).then((ret) => {
+			if (!ret)
+				return (null);
+			return (UserDTO.fromEntity(ret));
+		});
+		return (results);
 	}
 
 	async createUser(intra_id: number, login: string, displayname: string, image_url: string): Promise<UserDTO> {
@@ -86,9 +99,16 @@ export class UserService {
 		if (alreadyExist)
 			return "";
 		let user = await this.userRepository.findOneBy({ id: id });
+		let oldUsername = user.username;
 		user.username = username;
 		const results = await this.userRepository.save(user);
+		//this.chatService.updateNameDirectRooms(oldUsername, username);
 		return username;
+	}
+
+	async getIdByUsername(username: string) {
+		let user = await this.userRepository.findOneBy({ username: username });
+		return (user.id);
 	}
 
 	async getUsername(id: number) {
@@ -140,14 +160,32 @@ export class UserService {
 
 	async getTfaCode(id: number): Promise<string> {
 		let user = await this.userRepository.findOneBy({ id: id });
-		console.log("secret retrieved:" + user.tfa_code);
-		return (user.tfa_code);
+		console.log("secret retrieved:" + this.encrypt.decode(user.tfa_code));
+		return (this.encrypt.decode(user.tfa_code));
+	}
+
+	async getAllUSername(): Promise<string[]> {
+		let users = await this.userRepository.find();
+		let username: string[] = [];
+		users.forEach(user => username.push(user.username));
+		username.sort();
+		return username;
 	}
 
 	async deleteAvatar(oldAvatar: string) {
 		await fs.unlink('./uploads/profileimages/' + oldAvatar, (err) => {
 			if (err)
 				throw err;
+		})
+	}
+
+	async getAllUsers(): Promise<UserEntity[]> {
+		return await this.userRepository.find();
+	}
+
+	async getUserByMemberId(memberId: number): Promise<UserEntity> {
+		return this.userRepository.findOne({
+			where: { 'members': { 'id': memberId } }
 		})
 	}
 }

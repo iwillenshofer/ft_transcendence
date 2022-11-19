@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { ChatSocket } from 'src/app/chat/chat.socket';
 import { RoomInterface } from 'src/app/model/room.interface';
 
@@ -19,13 +19,22 @@ export class RoomService {
   }
 
   checkRoomNameNotTaken(roomName: string) {
-    return this.http.get('/backend/rooms/is-room-name-taken/' + roomName);
+    return this.http.get('/backend/chat/is-room-name-taken/' + roomName);
   }
 
-  createRoom(room: RoomInterface) {
-    this.socket.emit('createRoom', room);
-    this.snackBar.open(`Room ${room.name} created successfully`, 'Close', {
-      duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
-    });
+  async createRoom(room: RoomInterface) {
+    this.socket.emit('create_room', room);
+  }
+
+  async createDirectRoom(room: RoomInterface, user_id: number) {
+    this.socket.emit('create_direct_room', { room: room, user_id: user_id });
+  }
+
+  verifyPassword(room: RoomInterface, password: string): Observable<any> {
+    let body = {
+      roomId: room.id,
+      password: password
+    }
+    return this.http.post("/backend/chat/verify_password/", body, { withCredentials: true });
   }
 }

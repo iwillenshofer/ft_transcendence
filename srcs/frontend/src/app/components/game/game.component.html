@@ -2,19 +2,31 @@
 <div #table class="table" *ngIf="menu">
     <div class="menu">
         <p class="menu__title">Play</p>
-        <button (click)="startGame('on-random')">Online random</button>
-        <button (click)="startGame('on-friend')">Online friend</button>
-        <button>Offline friend</button>
-        <button>Offline computer</button>
-
+        <button (click)="startGame('random')">vs Random</button>
+        <!-- <button>vs Friend</button> -->
+        <button (click)="toggleLiveGames()">Live Games</button>
+        <button (click)="toggleInstructions()">Instructions</button>
+        <label class="container">
+            Power-ups
+            <input type="checkbox" (change)="togglePowerUps()">
+            <span class="checkmark"></span>
+        </label>
     </div>
-    <div class="instructions">
-        <p>INSTRUCTIONS</p>
-        <p>Player 1: Keys [W] [S]</p>
-        <p>Player 2: Arrows [Up] [Down]</p>
-        <p>[P] Pause</p>
+    <div *ngIf="!showLiveGames" class="instructions">
+        <p>INSTRUCTIONS:</p>
+        <p>[W] or [Up] - Move up</p>
+        <p>[S] or [Down] - Move down</p>
+        <!-- <p>[P] - Pause</p> -->
+    </div>
+    <div *ngIf="showLiveGames" class="livegames">
+        <p>LIVE GAMES:</p>
+        <p *ngIf="!liveGames">No one is playing right now!</p>
+        <button *ngFor="let game of liveGames" (click)="watchGame(game.gameID)">{{game.player1.username}}<br>vs<br>
+            {{game.player2.username}}</button>
     </div>
 </div>
-<app-online-game *ngIf="mode == 'on-random' || mode == 'on-friend'"></app-online-game>
+<app-online-game *ngIf="mode == 'random' || mode == 'spec'" [specGame]="toWatch" [mode]="mode" [powerUps]="powerUps"
+    (quit)="quit($event)">
+</app-online-game>
 <!-- <app-offline-game *ngIf="mode == 'off' || mode == 'computer'"></app-offline-game> -->
-<div class="lines" *ngIf="mode != 'on-random' && mode != 'on-friend)'"></div>
+<div class="lines" *ngIf="mode != 'random' && mode != 'friend' && mode != 'spec'"></div>

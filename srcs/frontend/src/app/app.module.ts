@@ -13,18 +13,15 @@ import { AuthInterceptor } from './auth/auth.interceptor';
 import { TwofactorComponent } from './components/login/twofactor/twofactor.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AuthguardService } from './auth/guards/authguard.service';
-import { ChatModule } from './chat/chat.module';
-import { NavbarComponent } from './components/navigation/navbar/navbar.component';
-import { SidebarComponent } from './components/navigation/sidebar/sidebar.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
 import { GameComponent } from './components/game/game.component';
 import { ChatComponent } from './components/chat/chat.component';
 import { FriendsComponent } from './components/friends/friends.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { NavigationComponent } from './components/navigation/navigation.component';
-import { DialogAvatarComponent } from './components/dialogs/dialog-avatar/dialog-avatar.component';
+import { DialogAvatarComponent } from './components/profile/dialogs/dialog-avatar/dialog-avatar.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material/dialog';
-import { DialogUsernameComponent } from './components/dialogs/dialog-username/dialog-username.component';
+import { DialogUsernameComponent } from './components/profile/dialogs/dialog-username/dialog-username.component';
 import { MatInputModule } from '@angular/material/input';
 import { ProfileComponent } from './components/profile/profile.component';
 import { OnlineGameComponent } from './components/game/online-game/online-game.component';
@@ -41,6 +38,12 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { DialogPasswordComponent } from './components/dialogs/dialog-password/dialog-password.component';
+import { DialogSearchUserComponent } from './components/dialogs/dialog-search-user/dialog-search-user.component';
+import { ChatRoomComponent } from './components/chat/chat-room/chat-room.component';
+import { ChatMessageComponent } from './components/chat/chat-message/chat-message.component';
+import { ChatModule } from './chat/chat.module';
+
 
 @NgModule({
   declarations: [
@@ -50,9 +53,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     ButtonComponent,
     HomeComponent,
     TwofactorComponent,
-    NavigationComponent,
     NavbarComponent,
-    SidebarComponent,
     GameComponent,
     ChatComponent,
     FriendsComponent,
@@ -61,6 +62,10 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     ProfileComponent,
     OnlineGameComponent,
     DialogNewRoomComponent,
+    DialogPasswordComponent,
+    DialogSearchUserComponent,
+    ChatRoomComponent,
+    ChatMessageComponent,
   ],
   imports: [
     BrowserModule,

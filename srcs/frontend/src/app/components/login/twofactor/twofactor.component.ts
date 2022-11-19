@@ -42,7 +42,7 @@ export class TwofactorComponent {
 
   ngOnInit(): void {
     this.tfa_fulfilled.next(this.authService.isAuthenticated());
-    if (this.router.url == '/enable2fa') {
+    if (this.router.url == '/profile') {
       this.getQRCode();
     }
   }
@@ -57,7 +57,9 @@ export class TwofactorComponent {
           this.authService.userSubject.next(result);
           localStorage.setItem('user', JSON.stringify(result));
 		  this.alertservice.success('Code successfuly validated');
-          this.router.navigate(['/']);
+      if (this.router.url != '/profile') {
+        this.router.navigate(['/']);
+      }
         });
       } else {
 		this.alertservice.warning('Invalid Code');

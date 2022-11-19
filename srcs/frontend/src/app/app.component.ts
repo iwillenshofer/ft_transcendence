@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { AuthService } from './auth/auth.service';
+import { ChatService } from './chat/chat.service';
 
 @Component({
   selector: 'app-root',
@@ -9,6 +10,6 @@ import { AuthService } from './auth/auth.service';
 export class AppComponent {
   title = 'frontend';
 
-  constructor () { }
+  constructor() { }
 
 }

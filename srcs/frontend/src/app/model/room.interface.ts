@@ -4,10 +4,11 @@ import { UserInterface } from "./user.interface";
 export interface RoomInterface {
     id?: number;
     name?: string;
+    name2?: string;
     description?: string;
     type: RoomType;
-    creator: string;
-    password: string;
+    creator?: string;
+    password?: string;
     users?: UserInterface[];
     created_at?: Date;
     updated_at?: Date;
@@ -19,7 +20,8 @@ export interface RoomPaginateInterface {
 }
 
 export enum RoomType {
-    Public,
-    Private,
-    Protected,
+    Public = 1,
+    Private = 2,
+    Protected = 3,
+    Direct = 4
 }
