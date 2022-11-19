@@ -15,15 +15,15 @@ import { CreateRoomComponent } from './components/create-room/create-room.compon
 
 const routes: Routes = [
 	{ path: '', redirectTo: 'home', pathMatch: 'full' },
-	{ path: 'home', component: HomeComponent, canActivate: [AuthguardService] },
-	{ path: 'login', component: LoginpageComponent },
-	{ path: 'login/callback', component: LoginCallbackComponent },
-	{ path: 'enable2fa', component: TwofactorComponent, canActivate: [AuthguardService] },
-	{ path: 'pong', component: GameComponent },
-	{ path: 'chat', component: ChatComponent },
-	{ path: 'friends', component: FriendsComponent },
-	{ path: 'profile', component: ProfileComponent },
-	{ path: 'create-room', component: CreateRoomComponent }
+	{ path: 'home', component: HomeComponent, canActivate: [AuthguardService], pathMatch: 'full' },
+	{ path: 'login', component: LoginpageComponent, pathMatch: 'full' },
+	{ path: 'login/callback', component: LoginCallbackComponent, pathMatch: 'full' },
+	{ path: 'enable2fa', component: TwofactorComponent, canActivate: [AuthguardService], pathMatch: 'full' },
+	{ path: 'pong', component: GameComponent, pathMatch: 'full' },
+	{ path: 'chat', component: ChatComponent, pathMatch: 'full' },
+	{ path: 'friends', component: FriendsComponent, pathMatch: 'full' },
+	{ path: 'profile', component: ProfileComponent, pathMatch: 'full' },
+	{ path: 'create-room', component: CreateRoomComponent, pathMatch: 'full' }
 
 
 ];

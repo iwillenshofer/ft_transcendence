@@ -22,7 +22,7 @@ export class GameService {
         gameEntity.usernameP2 = game.player2.username;
         gameEntity.scoreP1 = game.player1.score;
         gameEntity.scoreP2 = game.player2.score;
-        // gameEntity.isCustom = game.isCustom;
+        gameEntity.isChallenge = game.challenge;
         gameEntity.winner = await this.usersService.getIdByUsername(game.winner.username);
         gameEntity.idP1 = await this.usersService.getIdByUsername(gameEntity.usernameP1);
         gameEntity.idP2 = await this.usersService.getIdByUsername(gameEntity.usernameP2);

@@ -25,8 +25,8 @@ export class GameEntity {
     @Column()
     scoreP2: number;
 
-    // @Column()
-    // isCustom: string;
+    @Column()
+    isChallenge: boolean;
 
     @Column()
     winner: number;

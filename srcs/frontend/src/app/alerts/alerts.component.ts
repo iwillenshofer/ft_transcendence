@@ -42,7 +42,6 @@ export class AlertsComponent implements OnInit {
               this.router.navigateByUrl('/friends', { skipLocationChange: true }).then(() => {
                 this.gameService.challenge(username)
                 this.gameService.togglePowerUps(powerUps);
-                // this.alertsService.cancelChallenge(challenger);
                 this.router.navigate(['/pong']);
               });
             },

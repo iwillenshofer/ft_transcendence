@@ -93,7 +93,10 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     }
     this.gameService.setMode(this.mode)
     this.gameService.setCustom(this.powerUps)
-    window.onbeforeunload = () => this.ngOnDestroy();
+
+    window.onbeforeunload = async () => {
+      await this.socket.emit("cancelChallenge", this.username, this.challenged)
+    };
   }
 
   async ngOnDestroy() {
