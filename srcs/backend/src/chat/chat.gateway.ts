@@ -39,6 +39,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @UseGuards(TfaGuard)
   async handleConnection(socket: Socket, ...args: any[]) {
     const user = await this.UsersService.getUserById(+socket.handshake.headers.userid);
+    if (!user)
+      return;
     let member = await this.chatService.getMemberByUserId(user.id);
     if (member == null) {
       member = await this.chatService.createMember(user, socket.id);
