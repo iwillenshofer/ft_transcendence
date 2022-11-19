@@ -1,5 +1,5 @@
 import { IGame } from 'src/game/game.interface';
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { UserEntity } from './users.entity';
 import { UserDTO } from './users.dto';
 import { HttpService } from '@nestjs/axios';
@@ -11,10 +11,7 @@ import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EncryptService } from 'src/services/encrypt.service';
 import { Game } from 'src/game/game';
-
-/*
-** This is basically a the Database... We will implement TypeORM.
-*/
+import { StatsService } from 'src/stats/stats.service';
 
 @Injectable()
 export class UsersService {
@@ -23,7 +20,10 @@ export class UsersService {
 		@InjectRepository(UserEntity)
 		private userRepository: Repository<UserEntity>,
 		private readonly httpService: HttpService,
-		private readonly encrypt: EncryptService) { }
+		private readonly encrypt: EncryptService,
+		@Inject(forwardRef(() => StatsService))
+		private statsService: StatsService
+		) { }
 
 	async getUser(intra_id: number): Promise<UserDTO | null> {
 
@@ -42,16 +42,15 @@ export class UsersService {
 		const ext = '.' + image_url.split('.').pop();
 		const filename = uuidv4() + ext;
 		try {
-		const writer = createWriteStream('uploads/profileimages/' + filename)
-		const response = await this.httpService.axiosRef({
-			url: image_url,
-			method: 'GET',
-			responseType: 'stream',
-		});
-
-		response.data.pipe(writer);
+			const writer = createWriteStream('uploads/profileimages/' + filename)
+			const response = await this.httpService.axiosRef({
+				url: image_url,
+				method: 'GET',
+				responseType: 'stream',
+			});
+			response.data.pipe(writer);
 		} catch {
-			console.log('fileerror');
+			console.log('error downloading picture');
 		}
 		image_url = 'user/image/' + filename;
 
@@ -90,6 +89,13 @@ export class UsersService {
 		return username;
 	}
 
+	async updateLoginCount(id: number) {
+		let user = await this.userRepository.findOneBy({ id: id });
+		user.login_count++;
+		const results = await this.userRepository.save(user);
+		await this.statsService.loginAchievements(id);
+	}
+
 	async getIdByUsername(username: string) {
 		let user = await this.userRepository.findOneBy({ username: username });
 		return (user.id);
@@ -97,8 +103,11 @@ export class UsersService {
 
 	async getUserByUsername(username: string) {
 		let user = await this.userRepository.findOneBy({ username: username });
-		// console.log("FOUND:" + username + "\n\n" + user);
+		return (user);
+	}
 
+	async getUserByID(id: number): Promise<UserEntity> {
+		let user = await this.userRepository.findOneBy({ id: id });
 		return (user);
 	}
 

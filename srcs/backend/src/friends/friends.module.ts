@@ -8,13 +8,18 @@ import { UsersService } from 'src/users/users.service';
 import { HttpModule } from '@nestjs/axios';
 import { UsersModule } from 'src/users/users.module';
 import { EncryptService } from 'src/services/encrypt.service';
+import { StatsService } from 'src/stats/stats.service';
+import { StatsModule } from 'src/stats/stats.module';
 
 @Module({
   imports: [
     HttpModule,
-    TypeOrmModule.forFeature([FriendsEntity, UserEntity])
+    TypeOrmModule.forFeature([FriendsEntity, UserEntity]),
+    UsersModule,
+    StatsModule
   ],
-  providers: [FriendsService, UsersService, EncryptService],
+  providers: [FriendsService],
   controllers: [FriendsController],
+  exports: [FriendsService]
 })
 export class FriendsModule {}

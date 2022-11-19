@@ -29,7 +29,7 @@ export class HomeComponent implements OnInit {
   }
 
   status = 'false';
-  player = 'player6'
+  player = 'login2'
   async getPlayer() {
     // this.friendsService.setStatus(this.player, 'online')
     this.friendsService.getStatus(this.player).subscribe(x => { this.status = x.status })

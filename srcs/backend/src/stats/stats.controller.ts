@@ -35,4 +35,11 @@ export class StatsController {
     let status = await this.statsService.setStatusByUsername(username, body.status);
     res.status(200).send({ status: status });
   }
+
+  @Get('achievements/:username')
+  async getAchievements(@Param('username') username, @Request() req) {
+    let ret = await this.statsService.getAchievements(username);
+    console.log('achievement' + JSON.stringify(ret));
+    return (JSON.stringify(ret));
+  }
 }

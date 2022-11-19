@@ -70,11 +70,11 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.socket = io("http://localhost:3000/game");
     if (this.mode == 'spec') {
-      this.friendsService.setStatus('player6', 'watching')
+      this.friendsService.setStatus('login2', 'watching')
       this.socket.emit("watchGame", this.specGame);
     }
     else if (this.mode == 'friend') {
-      this.friendsService.setStatus('player6', 'inChallenge')
+      this.friendsService.setStatus('login2', 'inChallenge')
       this.auth.getUser().then(data => {
         this.username = data.username;
         if (data.username != this.challenged) {
@@ -86,7 +86,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     }
     else {
       this.auth.getUser().then(data => {
-        this.friendsService.setStatus('player6', 'searchingGame')
+        this.friendsService.setStatus('login2', 'searchingGame')
         this.username = data.username;
         this.socket.emit("joinGame", this.powerUps, data.username, this.challenged);
       });
@@ -100,7 +100,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   async ngOnDestroy() {
-    this.friendsService.setStatus('player6', 'online')
+    this.friendsService.setStatus('login2', 'online')
     await this.socket.emit("cancelChallenge", this.username, this.challenged)
     this.socket.disconnect();
   }
@@ -117,7 +117,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   players() {
     this.socket.on("players", (player1: any, player2: any) => {
       this.setPlayers(player1, player2)
-      this.friendsService.setStatus('player6', 'inGame')
+      this.friendsService.setStatus('login2', 'inGame')
       this.isWaiting = false;
       this.gameService.reset()
       this.update();

@@ -17,12 +17,10 @@ import { StatsService } from './stats/stats.service';
 import { StatsModule } from './stats/stats.module';
 import { FriendsModule } from './friends/friends.module';
 import { FriendsEntity } from './friends/friends.entity';
+import { AchievementsEntity } from './stats/achievements.entity';
 
 @Module({
   imports: [
-    AuthModule,
-    UsersModule,
-    ChatModule,
     JwtModule.register({ secret: process.env.JWT_SECRET }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -31,9 +29,13 @@ import { FriendsEntity } from './friends/friends.entity';
       username: process.env.POSTGRES_USER || 'postgres',
       password: process.env.POSTGRES_PASSWORD || 'postgress',
       database: process.env.POSTGRES_DB || 'postgres',
-      entities: [UserEntity, RoomEntity, AuthEntity, GameEntity, FriendsEntity],
+      entities: [UserEntity, RoomEntity, AuthEntity, GameEntity, FriendsEntity, AchievementsEntity],
+      dropSchema: true,
       synchronize: true,
     }),
+    AuthModule,
+    UsersModule,
+    ChatModule,
     GameModule,
     StatsModule,
     FriendsModule,

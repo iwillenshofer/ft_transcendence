@@ -59,6 +59,11 @@
                     </div>
                     <div class="row">
                         <div class="col">
+                            <i>rating: {{this.friendsService.userInfo.value?.rating}}</i>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
                             <i>player since: {{this.friendsService.userInfo.value?.created_at}}</i>
                         </div>
                     </div>
@@ -80,10 +85,10 @@
                         </div>
                         <div class="card-body userlist">
 
-                                
-                                <img class="achievement" src="/assets/images/achievements/3135724.png">
-                                <img class="achievement" src="/assets/images/achievements/3135724.png">
-                                <img class="achievement" src="/assets/images/achievements/3135724.png">
+                            <div *ngFor="let item of this.friendsService.achievements.value">
+                             <img class="achievement" src="/assets/images/achievements/{{item.achievement}}.png">
+                            </div>
+                           
 
                         </div>
                     </div>
@@ -99,8 +104,7 @@
                         <div class="card-body userlist text-center stats ">
                             <div class="row">
                                 <div class="col-4">
-                                    <img class="achievement" src="/assets/images/achievements/trophy.png">
-                                    <span class="subtitle">Winner</span>
+                                    <img class="achievement" src="{{this.friendsService.userInfo.value?.rating_image}}">
                                 </div>
                                 <div class="col-4">
                                     <span class="title">{{this.friendsService.gamesPlayed.value}}</span>
