@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AlertsService } from 'src/app/alerts/alerts.service';
+import { StatsDTO } from './stats.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +22,9 @@ export class FriendsService {
     this.requestsList = new BehaviorSubject<any[]>([]);
     this.friendStatus = new BehaviorSubject<number>(0);
     this.achievements = new BehaviorSubject<any[]>([]);
-
+	this.stats = new BehaviorSubject<StatsDTO | null>(null);
   }
+
   public selectedUser: BehaviorSubject<string | undefined | null>;
   public history: any[] = [];
   public gamesPlayed: BehaviorSubject<number>;
@@ -33,13 +35,17 @@ export class FriendsService {
   public friendsList: BehaviorSubject<any[]>;
   public requestsList: BehaviorSubject<any[]>;
   public achievements: BehaviorSubject<any[]>;
-  
+  public stats: BehaviorSubject<StatsDTO | null>;
+
   ngOnInit(): void { }
 
   loadUser(username: string) {
     this.selectedUser.next(username);
   }
 
+  getUserStats(): Observable<StatsDTO> {
+    return this.http.get<StatsDTO>('/backend/stats/' + this.selectedUser.value, { withCredentials: true });
+  }
 
   getHistory(): Observable<any> {
     return this.http.get('/backend/stats/history/' + this.selectedUser.value, { withCredentials: true });
@@ -120,40 +126,27 @@ export class FriendsService {
   }
 
   async update() {
-    await this.updateHistory();
-    await this.updateUserInfo();
+//    await this.updateHistory();
+//    await this.updateUserInfo();
     await this.updateFriendshipStatus();
     await this.updateFriendsList();
     await this.updateRequestsList();
-    await this.updateAchievements();
-
+//    await this.updateAchievements();
+	await this.updateUserStats();
   }
 
-  getRankingImage(rating: number = 0): string {
-    if(!rating) { rating = this.userInfo.value?.rating}
-    if (rating <= 100) { rating = 0 };
-    if (rating >= 2200) { rating = 2000 };
-    rating = Math.floor((24 * rating) / 2000);
-    return ('/assets/images/ranking/' + rating + '.png');
-  }
 
-  async updateAchievements() {
-    this.getAchievements().subscribe((res: any) => {
-      this.achievements.next(res);
+
+  async updateUserStats() {
+    this.getUserStats().subscribe((res: StatsDTO) => {
+      this.stats.next(res);
+	  console.log(JSON.stringify(this.stats.value));
     })
   }
 
   async updateFriendshipStatus() {
     this.getFriendshipStatus(this.selectedUser.value).subscribe((res: any) => {
       this.friendStatus.next(res.status);
-    })
-  }
-
-  async updateUserInfo() {
-    console.log("Selected User: " + this.selectedUser.value);
-   await this.getUserInfo().subscribe((res: any ) => {
-      res.rating_image = this.getRankingImage(800);
-      this.userInfo.next(res);
     })
   }
 
@@ -179,19 +172,4 @@ export class FriendsService {
     })
   }
 
-  async updateHistory() {
-    this.getHistory().subscribe((res: any[]) => {
-      this.history = res;
-      let gamesPlayed = 0;
-      let gamesWon = 0;
-      for (var h of this.history) {
-        gamesPlayed++;
-        if ((h.user1.username == this.selectedUser.value && h.scoreP1 > h.scoreP2) ||
-        (h.user2.username == this.selectedUser.value && h.scoreP2 > h.scoreP1))
-        { gamesWon++; };
-      };
-      this.gamesPlayed.next(gamesPlayed);
-      this.gamesWon.next(gamesWon);
-    });
-  }
 }

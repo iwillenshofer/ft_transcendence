@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import {MatTooltipModule} from '@angular/material/tooltip';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginpageComponent } from './components/login/loginpage/loginpage.component';
@@ -45,6 +45,10 @@ import { DialogSearchUserComponent } from './components/dialogs/dialog-search-us
 import { ChatRoomComponent } from './components/chat/chat-room/chat-room.component';
 import { ChatMessageComponent } from './components/chat/chat-message/chat-message.component';
 import { ChatModule } from './chat/chat.module';
+import { AchievementsComponent } from './components/friends/achievements/achievements.component';
+import { FriendProfileComponent } from './components/friends/friend-profile/friend-profile.component';
+import { GameStatsComponent } from './components/friends/game-stats/game-stats.component';
+import { FriendStatsComponent } from './components/friends/friend-stats/friend-stats.component';
 
 
 @NgModule({
@@ -70,6 +74,10 @@ import { ChatModule } from './chat/chat.module';
     DialogSearchUserComponent,
     ChatRoomComponent,
     ChatMessageComponent,
+    AchievementsComponent,
+    FriendProfileComponent,
+    GameStatsComponent,
+    FriendStatsComponent,
   ],
   imports: [
     BrowserModule,
@@ -93,7 +101,8 @@ import { ChatModule } from './chat/chat.module';
     MatSnackBarModule,
     MatChipsModule,
     MatAutocompleteModule,
-    MatToolbarModule
+    MatToolbarModule,
+	MatTooltipModule
   ],
   providers: [
     {

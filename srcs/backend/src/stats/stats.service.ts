@@ -48,7 +48,7 @@ export class StatsService {
   async getHistory(username: string): Promise<HistoryDTO[]> {
 
     let res = await this.gameRepository.find({
-		relations: ['idP1', 'idP2'],
+		relations: ['idP1', 'idP2', 'winner'],
 		where: [{ idP1: {	username: username}	},
 				{ idP2: {	username: username}	}],
 	})
@@ -65,7 +65,10 @@ export class StatsService {
 		dto.achievements = await this.getAchievements(user.username);
 		dto.history = await this.getHistory(user.username);
 		dto.games_played = dto.history.length;
-		dto.games_won = (dto.history.filter(e => typeof e.winner == user.username)).length
+		dto.games_won = 0;
+		for(let i=0; i < dto.history.length; i++){
+			if (dto.history[i].winner == user.username) {dto.games_won++;}
+		}
 	}
 	return (dto);
   }
@@ -93,12 +96,15 @@ export class StatsService {
 
   async getAchievements(username: string): Promise<AchievementsDTO[]> {
     const user_id: number = await this.UsersService.getIdByUsername(username);
-    const achievements = await this.achievementsRepository
-      .createQueryBuilder('f')
-      .leftJoinAndSelect("f.user", "user")
-      .where('user.id = :v1', { v1: user_id })
-      .getMany();
-    return (AchievementsDTO.fromEntities(achievements));
+	if (user_id) {
+		const achievements = await this.achievementsRepository
+		.createQueryBuilder('f')
+		.leftJoinAndSelect("f.user", "user")
+		.where('user.id = :v1', { v1: user_id })
+		.getMany();
+    	return (AchievementsDTO.fromEntities(achievements));
+	}
+	return [];
   }
 
   async addAchievement(user_id: number, achievement: string) {

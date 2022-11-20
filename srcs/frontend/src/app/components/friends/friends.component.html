@@ -7,7 +7,7 @@
       
 
 
-        <div class="col-xl-3 mb-3">
+        <div class="col-xl-3 mb-3" *ngIf="router.url === '/friends'">
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
                     <button class="nav-link active" id="nav-myfriends-tab" data-bs-toggle="tab" data-bs-target="#nav-myfriends" type="button" role="tab" aria-controls="nav-myfriends" aria-selected="true">My Friends</button>
@@ -29,50 +29,8 @@
         <div class="col-sm-3  mb-3">
             <div class="card card-profile bg-secondary shadow">
 
-                <div class="row justify-content-center">
-                <div class="col order-lg-2 text-center">
-                <div class="card-profile-image">
-                    <img src="/backend/{{this.friendsService.userInfo.value?.avatar_url}}" class="rounded-circle">
-                </div>
-                </div>
-                </div>
-                <div class="card-body pt-0 pt-md-4">
-                    <div class="row ">
-                        <div class="col mt-4  text-center">
-                        <h1>{{this.friendsService.userInfo.value?.username}}</h1>
-                        </div>
-                    </div>
-                    <div class="row  text-center" >
-                        <div class="col">
-                        <h3>{{this.friendsService.userInfo.value?.fullname}}</h3>
-                        </div>
-                    </div>
-                    <div class="row  text-center mb-5 mt-2" >
-                        <div class="col">
-                            <button *ngIf="this.friendsService.friendStatus.value == 0" (click)="this.friendsService.addFriendship()" type="button" class="btn btn-info">Add Friend</button>
-                            <button *ngIf="this.friendsService.friendStatus.value == 1" (click)="this.friendsService.delFriendship()" type="button" class="btn btn-danger">Cancel Request</button>
-                            <button *ngIf="this.friendsService.friendStatus.value == 2" (click)="this.friendsService.acceptFriendship()" type="button" class="btn btn-success">Accept Friend</button>
-                            <button *ngIf="this.friendsService.friendStatus.value == 2" (click)="this.friendsService.delFriendship()" type="button" class="btn btn-danger">Deny Friendship</button>
-                            <button *ngIf="this.friendsService.friendStatus.value == 3" (click)="this.friendsService.delFriendship()" type="button" class="btn btn-danger">Remove Friend</button>
+				<app-friend-profile></app-friend-profile>
 
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <i>rating: {{this.friendsService.userInfo.value?.rating}}</i>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <i>player since: {{this.friendsService.userInfo.value?.created_at}}</i>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <i>friends: 3832</i>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div> <!--div class="col-sm-3  mb-3"-->
       
@@ -85,10 +43,7 @@
                         </div>
                         <div class="card-body userlist">
 
-                            <div *ngFor="let item of this.friendsService.achievements.value">
-                             <img class="achievement" src="/assets/images/achievements/{{item.achievement}}.png">
-                            </div>
-                           
+							<app-achievements></app-achievements>
 
                         </div>
                     </div>
@@ -102,19 +57,9 @@
                             Stats
                         </div>
                         <div class="card-body userlist text-center stats ">
-                            <div class="row">
-                                <div class="col-4">
-                                    <img class="achievement" src="{{this.friendsService.userInfo.value?.rating_image}}">
-                                </div>
-                                <div class="col-4">
-                                    <span class="title">{{this.friendsService.gamesPlayed.value}}</span>
-                                    <span class="subtitle">Games Played</span>
-                                </div>
-                                <div class="col-4">
-                                    <span class="title">{{this.friendsService.gamesWon.value}}</span>
-                                    <span class="subtitle">Games Won</span>
-                                </div>
-                            </div>
+                                
+								<app-friend-stats></app-friend-stats>
+
                         </div>
                     </div>
                 </div>
@@ -134,6 +79,18 @@
         </div>
         
   
+		<div class="col-sm-3  mb-3 " *ngIf="router.url === '/home'">
+            <div class="card bg-secondary shadow">
+                <div class="card-header bg-white border-0">
+                    Game Stats
+                </div>
+                <div class="card-body user-list-card ">
+
+					<app-game-stats></app-game-stats>
+					
+                </div>
+            </div>
+        </div>
 
 
 

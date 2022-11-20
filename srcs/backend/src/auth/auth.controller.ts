@@ -50,9 +50,15 @@ export class AuthController {
 
 	@UseGuards(JwtGuard)
 	@Get('profile')
-	async profile(@Request() req) {
-		let user: UserDTO = UserDTO.from(await this.UsersService.getUser(req.user.id));
-		user.tfa_fulfilled = (!(await this.UsersService.getTfaEnabled(req.user.id)) || req.user.tfa_fulfilled);
+	async profile(@Request() req, @Res({ passthrough: true }) res) {
+		let user: UserDTO;
+		try {
+			user = UserDTO.from(await this.UsersService.getUser(req.user.id));
+			user.tfa_fulfilled = (!(await this.UsersService.getTfaEnabled(req.user.id)) || req.user.tfa_fulfilled);
+		} catch {
+			res.sendStatus(401);
+			return;
+		}
 		return (JSON.stringify(user));
 	}
 
@@ -76,8 +82,13 @@ export class AuthController {
 	@UseGuards(JwtGuard)
 	@Get('logout')
 	async logout(@Res({ passthrough: true }) res, @Request() req) {
-		let user: UserDTO = UserDTO.from(await this.UsersService.getUser(req.user.id));
-		this.connectedUsersService.deleteByUserId(user.id);
+		let user: UserDTO;
+		try {
+			user = UserDTO.from(await this.UsersService.getUser(req.user.id));
+			this.connectedUsersService.deleteByUserId(user.id);
+		} catch {
+			return ;
+		}
 		res.clearCookie('refresh_token', { httpOnly: true });
 		return { msg: "success" };
 	}

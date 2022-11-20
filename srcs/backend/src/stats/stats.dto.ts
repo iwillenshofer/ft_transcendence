@@ -1,5 +1,6 @@
 import { GameEntity } from "src/game/game.entity";
 import { UserEntity } from "src/users/users.entity";
+import { Entity } from "typeorm";
 import { AchievementsEntity } from "./achievements.entity";
 
 export class HistoryDTO {
