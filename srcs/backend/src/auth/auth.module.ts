@@ -20,15 +20,12 @@ import { ConnectedUserEntity } from 'src/chat/entities/connected-user.entity';
         PassportModule,
         JwtModule.register({
             secret: process.env.JWT_SECRET,
-            signOptions: { expiresIn: '60s' },
         }),
         TypeOrmModule.forFeature([AuthEntity, ConnectedUserEntity])
     ],
     controllers: [AuthController],
     providers: [AuthService, Intra42Strategy, JwtStrategy, JwtRefreshStrategy, TfaStrategy, FakeIntra42Strategy, ConnectedUsersService],
     exports: [AuthService, Intra42Strategy, JwtStrategy, JwtRefreshStrategy, TfaStrategy, FakeIntra42Strategy,]
-
-
 })
 
 export class AuthModule { }
