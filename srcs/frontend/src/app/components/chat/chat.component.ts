@@ -52,8 +52,8 @@ export class ChatComponent implements OnInit {
     this.myUsername = this.myUser.username;
     this.chatService.emitPaginateRooms(3, 0);
     this.chatService.emitPaginatePublicRooms(3, 0);
-    this.myRooms$.subscribe();
-    this.publicRooms$.subscribe();
+    // this.myRooms$.subscribe();
+    // this.publicRooms$.subscribe();
     this.myRoomsNameObsv$.subscribe(roomsName => {
       roomsName.forEach(name => {
         this.myRoomsName.push(name);

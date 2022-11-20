@@ -27,12 +27,13 @@ export class DialogSearchUserComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any[],
     private userService: UserService,
     private roomService: RoomService,
-    private dialogRef: MatDialogRef<DialogSearchUserComponent>,
     private snackBar: MatSnackBar,
-    private chatService: ChatService) {
+    private chatService: ChatService,
+    private authService: AuthService,
+    private dialogRef: MatDialogRef<DialogSearchUserComponent>,) {
 
   }
-
+  filteredOptions!: Observable<any[]>;
   form: FormGroup = new FormGroup({
     username: new FormControl(null, null)
   });
@@ -41,9 +42,12 @@ export class DialogSearchUserComponent implements OnInit {
     return this.form.get('username') as FormControl;
   }
 
-  filteredOptions!: Observable<any[]>;
-
   async ngOnInit() {
+    this.authService.getLogoutStatus.subscribe((data) => {
+      if (data === true) {
+        this.dialogRef.close();
+      }
+    });
 
     this.users$.subscribe(users => {
       users.forEach(user => {
