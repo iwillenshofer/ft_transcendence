@@ -65,14 +65,9 @@ export class AuthService {
 	}
 	
 	logout(): void {
-		this.serverLogout().subscribe({
-			next: () => {
-				this.performLogout();
-			},
-			error: () => {
-				this.performLogout();
-			},
-		});
+		console.log('loggin out');
+		this.serverLogout();
+		this.performLogout();
 	}
 
 	/*
