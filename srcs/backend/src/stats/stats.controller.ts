@@ -20,7 +20,7 @@ export class StatsController {
 
   @Get('userinfo/:username')
   async userInfo(@Param('username') username, @Request() req) {
-    let ret = await this.statsService.getUserinfo(username);
+    let ret = await this.statsService.getUserStats(username);
     return (JSON.stringify(ret));
   }
 
