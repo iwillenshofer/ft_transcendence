@@ -5,6 +5,7 @@ import { UserService } from 'src/app/services/user.service';
 import { BehaviorSubject } from 'rxjs';
 import { User } from 'src/app/auth/user.model';
 import { ChatService } from 'src/app/chat/chat.service';
+import { AlertsService } from 'src/app/alerts/alerts.service';
 
 @Component({
   selector: 'app-navbar',
@@ -18,6 +19,7 @@ export class NavbarComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private userService: UserService,
+	private alertService: AlertsService,
     private chatService: ChatService
   ) {
     this.userSubject = this.authService.userSubject;
@@ -38,6 +40,7 @@ export class NavbarComponent implements OnInit {
   }
 
   ngOnInit(): void {
+	
   }
 
 };

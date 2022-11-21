@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, Subject } from 'rxjs';
+import { AlertsService } from 'src/app/alerts/alerts.service';
 import { ChatSocket } from 'src/app/chat/chat.socket';
 import { RoomInterface } from 'src/app/model/room.interface';
 
@@ -16,7 +17,7 @@ export class RoomService {
     private http: HttpClient,
     private socket: ChatSocket,
     private snackBar: MatSnackBar) {
-  }
+	}
 
   checkRoomNameNotTaken(roomName: string) {
     return this.http.get('/backend/chat/is-room-name-taken/' + roomName);

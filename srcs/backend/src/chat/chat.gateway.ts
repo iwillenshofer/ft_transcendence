@@ -12,7 +12,9 @@ import { RoomEntity } from './entities/room.entity';
 import { CreateMessageDto } from './dto/createMessage.dto';
 import { MemberEntity } from './entities/member.entity';
 import { CreateMemberDto } from './dto/createMember.dto';
-import { UsersService } from 'src/users/users.service';
+import { UserEntity, UsersService } from 'src/users/users.service';
+import { ConnectedUserEntity } from './entities/connected-user.entity';
+import { connected } from 'process';
 
 @WebSocketGateway({ cors: '*:*', namespace: 'chat' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -36,11 +38,23 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // afterInit(server: Server) {
   // }
 
+  async checkSingleConnection(user: UserEntity)
+  {
+	let connected_users: ConnectedUserEntity[] = await this.connectedUsersService.getUsersById(user.id);
+	for (var item of connected_users){
+		console.log('disconnecting sockets' + JSON.stringify(connected_users));
+		this.server.to(item.socketId).emit('double_login');
+		this.server.in(item.socketId).disconnectSockets();
+  	}
+  }
+
   @UseGuards(TfaGuard)
   async handleConnection(socket: Socket, ...args: any[]) {
-    const user = await this.UsersService.getUserById(+socket.handshake.headers.userid);
-    if (!user)
-      return;
+	const user = await this.UsersService.getUserById(+socket.handshake.headers.userid);
+	if (!user)
+		return;
+	console.log('connecting sockets');
+	this.checkSingleConnection(user);
     let member = await this.chatService.getMemberByUserId(user.id);
     if (member == null) {
       member = await this.chatService.createMember(user, socket.id);

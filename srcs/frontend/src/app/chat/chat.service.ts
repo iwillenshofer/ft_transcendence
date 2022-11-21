@@ -11,6 +11,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
 import { MessagePaginateInterface } from '../model/message.interface';
 import { MessageInterface } from '../components/chat/models/message.interface';
+import { AlertsService } from '../alerts/alerts.service';
+import { Router } from '@angular/router';
 
 
 @Injectable()
@@ -19,8 +21,14 @@ export class ChatService {
   constructor(
     private socket: ChatSocket,
     private snackBar: MatSnackBar,
+	private alert: AlertsService,
+	private router: Router,
     private http: HttpClient) {
-  }
+		this.socket.on("double_login", () => {
+			this.alert.info("Double Login!!!");
+			this.router.navigate(['doublelogin']);
+		}); 
+	}
 
   disconnectChatSocket() {
     this.socket.disconnect();
