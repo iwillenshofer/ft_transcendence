@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, Subject } from 'rxjs';
-import { ChatSocket } from 'src/app/chat/chat.socket';
+import { ChatSocket } from 'src/app/components/chat/chat-socket.service';
 import { RoomInterface } from 'src/app/model/room.interface';
 
 @Injectable({
@@ -10,12 +9,9 @@ import { RoomInterface } from 'src/app/model/room.interface';
 })
 export class RoomService {
 
-
-
   constructor(
     private http: HttpClient,
-    private socket: ChatSocket,
-    private snackBar: MatSnackBar) {
+    private socket: ChatSocket) {
   }
 
   checkRoomNameNotTaken(roomName: string) {

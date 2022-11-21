@@ -3,7 +3,6 @@ import { FormControl, Validators } from '@angular/forms';
 import { MatSelectionListChange } from '@angular/material/list';
 import { PageEvent } from '@angular/material/paginator';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { ChatService } from 'src/app/chat/chat.service';
 import { RoomInterface, RoomPaginateInterface, RoomType } from 'src/app/model/room.interface';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogNewRoomComponent } from '../dialogs/dialog-new-room/dialog-new-room.component';
@@ -14,6 +13,7 @@ import { DialogSearchUserComponent } from '../dialogs/dialog-search-user/dialog-
 import { User } from 'src/app/auth/user.model';
 import { UserService } from 'src/app/services/user.service';
 import { UserInterface } from 'src/app/model/user.interface';
+import { ChatService } from './chat.service';
 
 
 @Component({

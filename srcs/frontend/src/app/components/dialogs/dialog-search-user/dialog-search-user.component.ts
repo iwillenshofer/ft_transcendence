@@ -9,7 +9,7 @@ import { UserService } from 'src/app/services/user.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserInterface } from 'src/app/model/user.interface';
-import { ChatService } from 'src/app/chat/chat.service';
+import { ChatService } from '../../chat/chat.service';
 
 @Component({
   selector: 'app-dialog-search-user',

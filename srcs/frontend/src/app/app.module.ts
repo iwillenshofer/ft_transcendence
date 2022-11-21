@@ -44,7 +44,7 @@ import { DialogPasswordComponent } from './components/dialogs/dialog-password/di
 import { DialogSearchUserComponent } from './components/dialogs/dialog-search-user/dialog-search-user.component';
 import { ChatRoomComponent } from './components/chat/chat-room/chat-room.component';
 import { ChatMessageComponent } from './components/chat/chat-message/chat-message.component';
-import { ChatModule } from './chat/chat.module';
+import { ChatModule } from './components/chat/chat.module';
 
 
 @NgModule({

@@ -5,6 +5,7 @@ import { Router } from '@angular/router'
 import { Observable, BehaviorSubject, firstValueFrom, catchError } from 'rxjs';
 import { switchMap } from 'rxjs';
 import { User } from './user.model';
+import { ChatSocket } from '../components/chat/chat-socket.service';
 
 @Injectable({
 	providedIn: 'root'
@@ -21,7 +22,8 @@ export class AuthService {
 	constructor(
 		private cookieService: CookieService,
 		private router: Router,
-		private http: HttpClient
+		private http: HttpClient,
+		private chatSocket: ChatSocket
 	) {
 		this.userSubject = new BehaviorSubject<User | null>(this.getUserFromLocalStorage());
 		this.user = this.userSubject.asObservable();
@@ -33,6 +35,7 @@ export class AuthService {
 	isAuthenticated(): boolean {
 		if (!(this.userSubject.value) || !(this.userSubject.value.tfa_fulfilled))
 			return false;
+		this.chatSocket.connect();
 		return (true);
 	}
 
@@ -61,9 +64,10 @@ export class AuthService {
 		this.userSubject.next(null);
 		localStorage.removeItem('user');
 		localStorage.removeItem('token');
+		this.chatSocket.disconnect();
 		return this.router.navigate(['/login']);
 	}
-	
+
 	logout(): void {
 		console.log('loggin out');
 		this.serverLogout();
