@@ -4,7 +4,7 @@
             <div class="col">
                 <div style="height: 75x;">
                     <span
-                        style="display: flex; flex-direction: row; align-items: center; justify-content: space-between">
+                        style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
                         <h2 *ngIf="isConversation(chatRoom) && chatRoom.name == this.myUsername; else elseBlock2">
                             <h2>{{chatRoom.name2}}</h2>
                         </h2>
@@ -27,12 +27,12 @@
         <div class="row">
             <div class="col">
                 <div style="display: flex; align-items: center;">
-                    <mat-form-field style="width: 100%;">
+                    <mat-form-field style="width: 100%; margin-right: 10px;">
                         <input matInput [formControl]="chatMessage" type="text" autoComplete='off'
                             (keydown.enter)="sendMessage()">
                     </mat-form-field>
                     <button mat-icon-button [disabled]="!chatMessage.valid" (click)="sendMessage()">
-                        <span style="display: flex;; flex-direction: row; align-items: center; margin-left: 10px;">
+                        <span style="display: flex; flex-direction: row; align-items: center;">
                             <mat-icon>send</mat-icon>
                         </span>
                     </button>

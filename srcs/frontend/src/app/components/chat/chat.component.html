@@ -48,7 +48,8 @@
                                 (page)="onPaginatePublicRooms($event)" [pageSizeOptions]="[3]"></mat-paginator>
                         </span>
                         <br>
-                        <button class="btn-join" mat-raised-button (click)="onJoinRoom(selectedPublicRoom)">Join
+                        <button class="btn-join" mat-raised-button (click)="onJoinRoom(selectedPublicRoom)"
+                            [disabled]="!selectedPublicRoom">Join
                             room</button>
                         <button class="btn-search" mat-raised-button (click)="onSearchUser()">Search
                             user</button>

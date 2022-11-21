@@ -1,6 +1,8 @@
 .message {
     background-color: rgb(236, 236, 236);
-    height: 500px;
+    height: 60vh;
+    min-height: 300px;
+    margin-bottom: 20px;
     overflow-y: scroll;
     scrollbar-color: lightgrey darkgrey;
     scrollbar-width: thin;

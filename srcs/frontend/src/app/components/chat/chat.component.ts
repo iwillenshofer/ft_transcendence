@@ -52,8 +52,6 @@ export class ChatComponent implements OnInit {
     this.myUsername = this.myUser.username;
     this.chatService.emitPaginateRooms(3, 0);
     this.chatService.emitPaginatePublicRooms(3, 0);
-    // this.myRooms$.subscribe();
-    // this.publicRooms$.subscribe();
     this.myRoomsNameObsv$.subscribe(roomsName => {
       roomsName.forEach(name => {
         this.myRoomsName.push(name);
@@ -78,9 +76,7 @@ export class ChatComponent implements OnInit {
   }
 
   openDialogNewRoom() {
-    this.dialog.open(DialogNewRoomComponent, {
-      data: { title: 'Create a new room' }
-    });
+    this.dialog.open(DialogNewRoomComponent);
   }
 
   openDialogPassword() {
@@ -108,6 +104,7 @@ export class ChatComponent implements OnInit {
         });
         this.myRoomsName.push(roomName);
       }
+      this.nulledSelectedRoom();
     }
   }
 
@@ -119,7 +116,7 @@ export class ChatComponent implements OnInit {
       if (index > -1) {
         this.myRoomsName.splice(index, 1);
       }
-      this.selectedRoom = null;
+      this.nulledSelectedRoom();
     }
   }
 
@@ -133,5 +130,10 @@ export class ChatComponent implements OnInit {
 
   async onSearchUser() {
     const dialogRef = this.dialog.open(DialogSearchUserComponent);
+  }
+
+  nulledSelectedRoom() {
+    this.selectedRoom = null;
+    this.selectedPublicRoom = null;
   }
 }
