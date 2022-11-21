@@ -1,7 +1,7 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpClient } from "@angular/common/http"
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpClient, HttpResponse } from "@angular/common/http"
 import { Router } from "@angular/router";
 import { AuthService } from "./auth.service";
-import { catchError, Observable, throwError, switchMap, map } from "rxjs";
+import { catchError, Observable, throwError, switchMap, map, of } from "rxjs";
 import { Injectable } from "@angular/core";
 import { AlertsService } from "../alerts/alerts.service";
 
@@ -29,17 +29,15 @@ export class AuthInterceptor implements HttpInterceptor {
 				} else {
 					this.alertservice.danger("Something bad happened and you'll have to login again!")
 					this.authService.logout();
-					return this.router.navigate(['/']);
+					return of(new HttpResponse({ body: {}, status: 200 }));
 				}
 			})
 		)
 	}
 
 	private handleError(req: HttpRequest<any>, next: HttpHandler, originalError: any) {
-		// console.log('handling 401 error');
 		return this.http.get<any>('/backend/auth/refreshtoken', { withCredentials: true }).pipe(
 			switchMap((data: any) => {
-				// console.log(JSON.stringify(data));
 				localStorage.removeItem('token');
 				localStorage.setItem('token', data.token);
 				const new_req = req.clone({
@@ -50,12 +48,10 @@ export class AuthInterceptor implements HttpInterceptor {
 				return next.handle(new_req);
 			}),
 			catchError((error) => {
-				// console.log('');
 				this.alertservice.danger("Is your token that old or are you trying something fancy? Let's login again")
 				this.authService.logout();
-				return this.router.navigate(['/']);
+				return of(new HttpResponse({ body: {}, status: 200 }));
 			})
 		)
 	}
-
 }
