@@ -13,8 +13,22 @@
     </span>
     <ng-template #elseBlock>
         <p>
-            <img src=" backend/{{ this.avatar }}" class="avatar rounded-circle">
-            <img src="../../../../assets/images/{{this.status}}" class="status">
+            <span (mouseenter)="onMouseEnter()" class="test">
+                <img src=" backend/{{ this.avatar }}" class="avatar rounded-circle">
+                <img src="../../../../assets/images/{{this.status}}" class="status">
+                <span (mouseenter)="onMouseEnterIcons()" (mouseleave)="onMouseOut()">
+                    <a>
+                        <fa-icon *ngIf=" this.onHover" [icon]="faProfile" (click)="profile()" routerLink="/friends"
+                            [ngClass]="{'onHoverProfileUserOn': this.isOn, 'onHoverProfileUserOff': !this.isOn}">
+                        </fa-icon>
+                    </a>
+                    <a>
+                        <fa-icon *ngIf=" this.onHover && this.isOn" [icon]="faPaddle" class="onHoverPaddle"
+                            (click)="challenge()" routerLink="/pong"></fa-icon>
+                    </a>
+                </span>
+            </span>
+
             <strong style="font-size:small; margin-right: 5px;">{{username}}</strong>
             <span *ngIf="(this.created_at | date: 'M/d/yy') == (this.today | date: 'M/d/yy') else elseBlock2">
                 <em style="font-size:smaller;">{{message.created_at | date :'h:mm a'}}</em>

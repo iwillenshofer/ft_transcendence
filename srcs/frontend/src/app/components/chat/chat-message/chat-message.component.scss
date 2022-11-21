@@ -35,3 +35,27 @@ p {
     height: 12px;
     width: 12x;
 }
+
+.onHoverProfileUserOn {
+    position: absolute;
+    top: 65px;
+    left: 5px;
+    cursor: pointer;
+    padding-right: 5px;
+    height: 40px;
+}
+
+.onHoverProfileUserOff {
+    position: absolute;
+    top: 65px;
+    left: 19px;
+    cursor: pointer;
+}
+
+.onHoverPaddle {
+    position: absolute;
+    top: 65px;
+    left: 25px;
+    cursor: pointer;
+    padding-left: 5px;
+}

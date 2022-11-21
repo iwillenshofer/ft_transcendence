@@ -2,7 +2,9 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ChatService } from 'src/app/chat/chat.service';
 import { UserService } from 'src/app/services/user.service';
 import { MessageInterface } from '../models/message.interface';
-
+import { faTableTennisPaddleBall, faAddressCard } from '@fortawesome/free-solid-svg-icons';
+import { OnlineGameService } from '../../game/online-game.service';
+import { FriendsService } from '../../friends/friends.service';
 
 
 @Component({
@@ -23,9 +25,18 @@ export class ChatMessageComponent implements OnInit {
   created_at!: Date;
   today = new Date();
   status!: string;
+  onHover!: boolean;
+  isOnHoverIcon: boolean = false;
+  isOn!: boolean;
+  faPaddle = faTableTennisPaddleBall;
+  faProfile = faAddressCard;
 
-  constructor(private chatService: ChatService) {
 
+  constructor(
+    private chatService: ChatService,
+    private gameService: OnlineGameService,
+    private friensService: FriendsService) {
+    this.onHover = false;
   }
 
   ngOnInit(): void {
@@ -34,10 +45,14 @@ export class ChatMessageComponent implements OnInit {
     this.avatar = this.message.member.user.avatar_url;
     this.created_at = this.message.created_at ?? new Date();
     this.chatService.IsUserOnline(this.message.member.user.id).subscribe(result => {
-      if (result == true)
+      if (result == true) {
+        this.isOn = true;
         this.status = "circle-green-16.png";
-      else
+      }
+      else {
+        this.isOn = false;
         this.status = "circle-red-16.png";
+      }
     })
   }
 
@@ -46,5 +61,33 @@ export class ChatMessageComponent implements OnInit {
       return true;
     }
     return false;
+  }
+
+  onMouseEnter() {
+    this.onHover = true;
+    setTimeout(() => {
+      if (this.isOnHoverIcon == true)
+        this.onMouseEnter();
+      else
+        this.onMouseOut();
+    },
+      15000);
+  }
+
+  onMouseEnterIcons() {
+    this.isOnHoverIcon = true;
+  }
+
+  onMouseOut() {
+    this.onHover = false;
+    this.isOnHoverIcon = false;
+  }
+
+  challenge() {
+    this.gameService.challenge(this.username);
+  }
+
+  profile() {
+    this.friensService.loadUser(this.username);
   }
 }
