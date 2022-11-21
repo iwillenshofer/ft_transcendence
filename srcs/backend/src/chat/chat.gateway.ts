@@ -25,13 +25,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private connectedUsersService: ConnectedUsersService,
     private readonly encrypt: EncryptService) { }
 
-  @SubscribeMessage('messages')
-  async getMessages(socket: any, roomId: number) {
-    const room: RoomEntity = await this.chatService.getRoomById(roomId);
-    const messages = await this.chatService.findMessagesForRoom(room, { page: 1, limit: 25 });
-    this.server.to(socket.id).emit('messages', messages);
 
-  }
 
   // afterInit(server: Server) {
   // }
@@ -63,9 +57,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleDisconnect(socket: Socket) {
-    console.log("on disconnect")
     await this.connectedUsersService.deleteBySocketId(socket.id);
     socket.disconnect();
+  }
+
+  @SubscribeMessage('messages')
+  async getMessages(socket: any, roomId: number) {
+    const room: RoomEntity = await this.chatService.getRoomById(roomId);
+    const messages = await this.chatService.findMessagesForRoom(room, { page: 1, limit: 25 });
+    this.server.to(socket.id).emit('messages', messages);
+
   }
 
   @SubscribeMessage('create_room')

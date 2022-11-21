@@ -15,7 +15,6 @@ import { User } from 'src/app/auth/user.model';
 import { UserService } from 'src/app/services/user.service';
 import { UserInterface } from 'src/app/model/user.interface';
 
-
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
