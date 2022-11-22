@@ -32,14 +32,15 @@ export class GameGateway {
   @SubscribeMessage('watchGame')
   async watchGame(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     const game = this.findGameBySocketId(data);
-    if (game) {
+    if (game && !game.finished) {
       game.connected += 1;
       client.join(game.gameID)
       client.rooms.add(game.gameID)
       this.server.to(game.gameID).emit("specs", game.player1, game.player2);
     }
-    else
-      this.server.to(client.id).emit("gameUnavailable", 'Game already finished');
+    else {
+      this.server.to(client.id).emit("gameUnavailable", 'You are too late');
+    }
   }
 
   @SubscribeMessage('joinGame')
@@ -204,6 +205,7 @@ export class GameGateway {
       game.connected -= 1;
       if (client.id == game.player1.socket || client.id == game.player2.socket) {
         this.server.to(gameID).emit("endGame", client.id);
+        game.finished = true;
         if (client.id == game.player1.socket && !game.player2.socket) {
           this.deleteGameById(gameID)
         }
@@ -267,6 +269,7 @@ export class GameGateway {
   async finishMessage(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
     const game = this.findGameBySocketId(client.id);
     if (game) {
+      game.finished = true;
       if (data[1] == '1')
         game.winner = game.player1;
       else if (data[1] == '2')

@@ -72,6 +72,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     if (this.mode == 'spec') {
       this.friendsService.setStatus('login2', 'watching')
       this.socket.emit("watchGame", this.specGame);
+      this.gameUnavailable()
     }
     else if (this.mode == 'friend') {
       this.friendsService.setStatus('login2', 'inChallenge')
@@ -131,7 +132,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.player2 = player2;
       this.isWaiting = false;
       this.watchGame();
-      this.gameUnavailable()
     })
   }
 
