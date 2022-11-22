@@ -76,6 +76,7 @@ export class ChatMessageComponent implements OnInit {
 
   onMouseEnterIcons() {
     this.isOnHoverIcon = true;
+    this.onHover = true;
   }
 
   onMouseOut() {
