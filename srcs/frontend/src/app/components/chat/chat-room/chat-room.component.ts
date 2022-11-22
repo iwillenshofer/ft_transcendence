@@ -1,11 +1,11 @@
 import { AfterViewInit, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { combineLatest, forkJoin, map, Observable, startWith } from 'rxjs';
-import { ChatService } from 'src/app/chat/chat.service';
 import { MessagePaginateInterface } from 'src/app/model/message.interface';
 import { RoomInterface, RoomType } from 'src/app/model/room.interface';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { MessageInterface } from '../models/message.interface';
+import { ChatService } from '../chat.service';
 
 @Component({
   selector: 'app-chat-room',

@@ -37,7 +37,7 @@ export class GameEntity {
 
     @CreateDateColumn()
     created_at: Date;
-  
+
     @UpdateDateColumn()
     updated_at: Date;
 }

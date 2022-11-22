@@ -4,7 +4,6 @@ import { AuthService } from './auth.service';
 import { HttpClientModule } from '@angular/common/http';
 import { User } from "./user.model"
 
-
 @NgModule({
 	declarations: [],
 	imports: [
@@ -28,7 +27,8 @@ export function getUserId(): string {
 	let user: string | null = localStorage.getItem('user');
 	if (user) {
 		let result: User = JSON.parse(user);
-		return result.id.toString();
+		let ret = result.id?.toString();
+		return ret;
 	}
-	return ""
+	return "-1"
 }

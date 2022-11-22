@@ -5,6 +5,8 @@ import { Router } from '@angular/router'
 import { Observable, BehaviorSubject, firstValueFrom, catchError } from 'rxjs';
 import { switchMap } from 'rxjs';
 import { User } from './user.model';
+import { ChatSocket } from '../components/chat/chat-socket';
+import { ChatService } from '../components/chat/chat.service';
 
 @Injectable({
 	providedIn: 'root'
@@ -63,7 +65,7 @@ export class AuthService {
 		localStorage.removeItem('token');
 		return this.router.navigate(['/login']);
 	}
-	
+
 	logout(): void {
 		console.log('loggin out');
 		this.serverLogout();
