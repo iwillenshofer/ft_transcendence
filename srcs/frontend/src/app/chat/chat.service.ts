@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, firstValueFrom, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, Observable, of, Subject } from 'rxjs';
 import { Socket } from 'ngx-socket-io';
 import { ChatSocket } from './chat.socket';
 import { map } from 'rxjs/operators';
@@ -73,6 +73,10 @@ export class ChatService {
     return this.http.get<string[]>('/backend/chat/get_all_my_rooms_as_text/', { withCredentials: true });
   }
 
+  getMyRoomsRequest() {
+    return this.http.get<RoomInterface[]>('/backend/chat/get_my_rooms/', { withCredentials: true });
+  }
+
   requestMessages(roomId: number) {
     this.socket.emit('messages', roomId);
   }
@@ -92,4 +96,11 @@ export class ChatService {
   getNonAddedUsers(): Observable<UserInterface[]> {
     return this.http.get<UserInterface[]>('/backend/chat/get_non_added_users/', { withCredentials: true });
   }
+
+  getUserList(filter: string): Observable<any> {
+    if (filter.length >= 3)
+      return this.http.get('/backend/chat/searchusers/' + filter, { withCredentials: true });
+    return of([]);
+  }
+
 }

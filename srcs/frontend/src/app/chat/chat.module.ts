@@ -15,4 +15,5 @@ import { ChatSocket } from './chat.socket';
     ChatSocket
   ]
 })
-export class ChatModule { }
+export class ChatModule {
+}

@@ -74,7 +74,7 @@ export class DialogNewRoomComponent implements OnInit {
     if (this.form.valid) {
       this.roomService.createRoom(this.form.getRawValue());
     }
-    this.dialogRef.close();
+    this.dialogRef.close({ data: this.form.getRawValue() });
   }
 }
 

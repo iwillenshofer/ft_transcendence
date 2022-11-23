@@ -1,15 +1,17 @@
+import { MessageInterface } from "../components/chat/models/message.interface";
+import { MemberInterface } from "./member.interface";
 import { Meta } from "./meta.interface";
 import { UserInterface } from "./user.interface";
 
 export interface RoomInterface {
     id?: number;
-    name?: string;
+    name: string;
     name2?: string;
     description?: string;
     type: RoomType;
-    creator?: string;
     password?: string;
-    users?: UserInterface[];
+    messages?: MessageInterface[];
+    members?: MemberInterface[];
     created_at?: Date;
     updated_at?: Date;
 }

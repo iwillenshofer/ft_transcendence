@@ -11,7 +11,6 @@ import { DialogPasswordComponent } from '../dialogs/dialog-password/dialog-passw
 import { faKey, faUserGroup, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DialogSearchUserComponent } from '../dialogs/dialog-search-user/dialog-search-user.component';
-import { User } from 'src/app/auth/user.model';
 import { UserService } from 'src/app/services/user.service';
 import { UserInterface } from 'src/app/model/user.interface';
 
@@ -23,6 +22,8 @@ import { UserInterface } from 'src/app/model/user.interface';
 export class ChatComponent implements OnInit {
 
   myRooms$ = this.chatService.getMyRooms();
+  allMyRooms$ = this.chatService.getMyRoomsRequest();
+  allMyRooms!: RoomInterface[];
   publicRooms$ = this.chatService.getPublicRooms();
   myRoomsNameObsv$ = this.chatService.getAllMyRoomsAsText();
 
@@ -30,7 +31,7 @@ export class ChatComponent implements OnInit {
   myUsername!: string;
 
   myRoomsName: string[] = []
-  selectedRoom = null;
+  selectedRoom: RoomInterface | null = null;
   selectedPublicRoom = null;
 
   Isrooms: boolean = false;
@@ -56,6 +57,10 @@ export class ChatComponent implements OnInit {
         this.myRoomsName.push(name);
       });
     });
+
+    this.allMyRooms$.subscribe(rooms => {
+      this.allMyRooms = rooms;
+    });
   }
 
   onSelectRoom(event: MatSelectionListChange) {
@@ -75,7 +80,16 @@ export class ChatComponent implements OnInit {
   }
 
   openDialogNewRoom() {
-    this.dialog.open(DialogNewRoomComponent);
+    const dialogRef = this.dialog.open(DialogNewRoomComponent);
+
+    dialogRef.afterClosed().subscribe(ret => {
+      this.allMyRooms$.subscribe(rooms => {
+        let selectedRoom: RoomInterface | undefined;
+        if (selectedRoom = rooms.find(room => room.name == ret.data.name)) {
+          this.selectedRoom = selectedRoom;
+        }
+      })
+    })
   }
 
   openDialogPassword() {
@@ -88,7 +102,8 @@ export class ChatComponent implements OnInit {
     if (selectedPublicRoom != null) {
       let roomName = selectedPublicRoom.name ?? '';
       if (this.myRoomsName.includes(roomName)) {
-        this.snackBar.open(`You are already a member of the chat room.`, 'Close', {
+        this.selectedRoom = this.selectedPublicRoom;
+        this.snackBar.open(`You are already a member of this chat room.`, 'Close', {
           duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
         });
         return;
@@ -103,7 +118,8 @@ export class ChatComponent implements OnInit {
         });
         this.myRoomsName.push(roomName);
       }
-      this.nulledSelectedRoom();
+      this.selectedRoom = this.selectedPublicRoom;
+      this.selectedPublicRoom = null;
     }
   }
 
@@ -128,7 +144,17 @@ export class ChatComponent implements OnInit {
   }
 
   async onSearchUser() {
+    console.log(this.myRoomsName)
     const dialogRef = this.dialog.open(DialogSearchUserComponent);
+
+    dialogRef.afterClosed().subscribe(ret => {
+      this.allMyRooms$.subscribe(rooms => {
+        let selectedRoom: RoomInterface | undefined;
+        if (selectedRoom = rooms.find(room => room.id == ret.data.id || room.name == ret.data.name)) {
+          this.selectedRoom = selectedRoom;
+        }
+      })
+    })
   }
 
   nulledSelectedRoom() {

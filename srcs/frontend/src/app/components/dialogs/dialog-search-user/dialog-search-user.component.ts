@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { map, Observable, startWith, throwError } from 'rxjs';
+import { debounceTime, finalize, map, Observable, startWith, switchMap, tap, throwError } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { User } from 'src/app/auth/user.model';
 import { RoomInterface, RoomType } from 'src/app/model/room.interface';
@@ -19,81 +19,109 @@ import { ChatService } from 'src/app/chat/chat.service';
 export class DialogSearchUserComponent implements OnInit {
 
   myUser!: User;
-  usersToBeAdded: UserInterface[] = [];
   users$ = this.chatService.getNonAddedUsers();
-  toDisplay: string[] = [];
+  myRooms$ = this.chatService.getMyRoomsRequest();
+  myRooms!: RoomInterface[];
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any[],
+    @Inject(MAT_DIALOG_DATA) public data: any,
     private userService: UserService,
     private roomService: RoomService,
     private snackBar: MatSnackBar,
-    private chatService: ChatService,
+    protected chatService: ChatService,
     private authService: AuthService,
     private dialogRef: MatDialogRef<DialogSearchUserComponent>,) {
 
   }
-  filteredOptions!: Observable<any[]>;
-  form: FormGroup = new FormGroup({
-    username: new FormControl(null, null)
-  });
 
-  get username(): FormControl {
-    return this.form.get('username') as FormControl;
-  }
+  searchUsersCtrl = new FormControl();
+  filteredUsers!: any;
+  isLoading = false;
+  errorMsg: string = "";
 
   async ngOnInit() {
-    this.authService.getLogoutStatus.subscribe((data) => {
-      if (data === true) {
+    this.authService.getLogoutStatus.subscribe((res) => {
+      if (res === true) {
         this.dialogRef.close();
       }
     });
 
-    this.users$.subscribe(users => {
-      users.forEach(user => {
-        this.usersToBeAdded.push(user);
-        this.toDisplay.push(user.username);
-      });
+    this.myRooms$.subscribe(rooms => {
+      this.myRooms = rooms;
     });
-    this.filteredOptions = this.form.controls['username'].valueChanges.pipe(
-      startWith(''),
-      map(value => this._filter(value ?? '')),
-    );
+
+    this.searchUsersCtrl.valueChanges
+      .pipe(
+        debounceTime(500),
+        tap(() => {
+          this.errorMsg = "";
+          this.filteredUsers = [];
+          this.isLoading = true;
+        }),
+        switchMap(value => this.chatService.getUserList(value)
+          .pipe(
+            finalize(() => {
+              this.isLoading = false;
+            }),
+          )
+        )
+      )
+      .subscribe(res => {
+        if (res == undefined) {
+          this.errorMsg = "The user couldn't be found.";
+          this.filteredUsers = [];
+        }
+        else {
+          this.errorMsg = "";
+          this.filteredUsers = res;
+        }
+      })
   }
 
-  private _filter(value: string): any[] {
-    const filterValue = value.toLowerCase();
-    return this.toDisplay.filter(user => user.toLowerCase().includes(filterValue));
+  checkIfAlreadyExist() {
+    let user = this.searchUsersCtrl.value;
+    if (user) {
+
+      let room = this.myRooms.find(room => room.name == user.username || room.name2 == user.username)
+      if (room) {
+        this.dialogRef.close({ data: room })
+      }
+      else
+        this.createPrivateChat();
+    }
   }
 
   async createPrivateChat() {
-    let username = this.form.getRawValue().username;
-    if (this.toDisplay.includes(username)) {
-      const user = this.usersToBeAdded.find(element => element.username == username);
-      const myUser = await this.userService.getMyUser();
-      if (!user || !myUser)
-        return;
-      let user_username = user.username;
+    let username = this.searchUsersCtrl.value;
+    const myUser = await this.userService.getMyUser();
+    if (username && myUser) {
+      let user_username = username.username;
       let myUser_username = myUser.username;
-      let user_id = user.id;
+      let user_id = username.id;
       let room: RoomInterface = {
         name: myUser_username,
         name2: user_username,
         description: "Conversation between " + myUser_username + " and " + user_username,
-        creator: myUser_username,
         type: RoomType.Direct
       };
       await this.roomService.createDirectRoom(room, user_id);
       this.snackBar.open(`The chat room has been successfully created.`, 'Close', {
         duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
       });
+      this.dialogRef.close({ data: room });
+      return;
     }
     else {
-      this.snackBar.open(`Sorry, this user does not exist.`, 'Close', {
+      this.snackBar.open(`An error occurs. Please try again later.`, 'Close', {
         duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
       });
     }
     this.dialogRef.close();
+  }
+
+  getUsername(value: any) {
+    if (value)
+      return value.username;
   }
 
 }

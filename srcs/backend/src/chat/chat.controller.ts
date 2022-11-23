@@ -25,9 +25,22 @@ export class ChatController {
     // }
 
     @UseGuards(JwtGuard)
+    @Get('searchusers/:username')
+    async getUsers(@Param('username') username, @Request() req) {
+        let ret = await this.chatService.searchUsers(username, req.user.username);
+        return (JSON.stringify(ret));
+    }
+
+    @UseGuards(JwtGuard)
     @Get('get_all_my_rooms_as_text')
     async getAllMyRoomsAsText(@Request() req) {
         return of(await this.chatService.getAllMyRoomsAsText(req.user.id));
+    }
+
+    @UseGuards(JwtGuard)
+    @Get('get_my_rooms')
+    async getMyRooms(@Request() req) {
+        return of(await this.chatService.getMyRooms(req.user.id));
     }
 
     @Post('verify_password')

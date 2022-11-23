@@ -5,6 +5,8 @@ import { MessageInterface } from '../models/message.interface';
 import { faTableTennisPaddleBall, faAddressCard } from '@fortawesome/free-solid-svg-icons';
 import { OnlineGameService } from '../../game/online-game.service';
 import { FriendsService } from '../../friends/friends.service';
+import { User } from 'src/app/auth/user.model';
+import { UserInterface } from 'src/app/model/user.interface';
 
 
 @Component({
@@ -18,7 +20,7 @@ export class ChatMessageComponent implements OnInit {
   message!: MessageInterface;
 
   @Input()
-  myUsername!: string;
+  myUser!: UserInterface;
 
   username!: string;
   avatar!: string;
@@ -57,7 +59,7 @@ export class ChatMessageComponent implements OnInit {
   }
 
   isMyUser() {
-    if (this.message.member.user.username && this.message.member.user.username === this.myUsername) {
+    if (this.message.member.user.username && this.message.member.user.username === this.myUser.username) {
       return true;
     }
     return false;

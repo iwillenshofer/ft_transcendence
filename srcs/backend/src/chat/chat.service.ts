@@ -10,6 +10,7 @@ import { CreateMessageDto } from './dto/createMessage.dto';
 import { MemberEntity } from './entities/member.entity';
 import { MessageEntity } from './entities/message.entity';
 import { RoomEntity } from './entities/room.entity';
+import { MemberRole } from './models/memberRole.model';
 import { RoomType } from './models/typeRoom.model';
 
 @Injectable()
@@ -22,6 +23,8 @@ export class ChatService {
         private messageRepository: Repository<MessageEntity>,
         @InjectRepository(MemberEntity)
         private memberRepository: Repository<MemberEntity>,
+        @InjectRepository(UserEntity)
+        private userRepository: Repository<UserEntity>,
         private readonly encrypt: EncryptService,
         private UsersService: UsersService) { }
 
@@ -32,7 +35,8 @@ export class ChatService {
 
     async createRoom(room: RoomEntity, members: MemberEntity[]): Promise<RoomEntity> {
         room.members = [];
-        room.creatorId = members[0].user.id;
+        //room.creatorId = members[0].user.id;
+        members[0].role = MemberRole.Owner;
         members.forEach(member => {
             room.members.push(member);
         })
@@ -100,6 +104,15 @@ export class ChatService {
             myRooms.push(room.name);
         })
         return (myRooms);
+    }
+
+    async getMyRooms(userId: number): Promise<RoomEntity[]> {
+        return await this.roomRepository
+            .createQueryBuilder('room')
+            .leftJoinAndSelect('room.members', 'member')
+            .leftJoinAndSelect('member.user', 'user')
+            .where('user.id = :userId', { userId })
+            .getMany();
     }
 
     async getPublicAndProtectedRooms(options: IPaginationOptions): Promise<Pagination<RoomEntity>> {
@@ -295,5 +308,15 @@ export class ChatService {
         });
 
         return (nonAddedUsers);
+    }
+
+    async searchUsers(search: string, me: string) {
+        let res = await this.userRepository
+            .createQueryBuilder("user")
+            .select(['user.username', 'user.avatar_url', 'user.id'])
+            .where('user.username != :me', { me: me })
+            .andWhere("user.username like :name", { name: `%${search}%` })
+            .getMany();
+        return res;
     }
 }

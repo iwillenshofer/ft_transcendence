@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/auth/auth.service';
 import { User } from 'src/app/auth/user.model';
-import { ChatService } from 'src/app/chat/chat.service';
 import io from "socket.io-client";
 
 @Component({
@@ -18,7 +17,6 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private chatService: ChatService,
     private friendsService: FriendsService,
     private authService: AuthService,
   ) { }

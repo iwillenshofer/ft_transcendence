@@ -5,22 +5,28 @@
                 <div style="height: 75x;">
                     <span
                         style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
-                        <h2 *ngIf="isConversation(chatRoom) && chatRoom.name == this.myUsername; else elseBlock2">
-                            <h2>{{chatRoom.name2}}</h2>
-                        </h2>
-                        <ng-template #elseBlock2>
+                        <span *ngIf="isConversation(chatRoom); else group_conversation">
+                            <h2 *ngIf="chatRoom.name == this.myUser.username; else other_user">
+                                {{chatRoom.name2}}
+                            </h2>
+                            <ng-template #other_user>
+                                <h2>{{chatRoom.name}}</h2>
+                            </ng-template>
+                        </span>
+                        <ng-template #group_conversation>
                             <h2>{{chatRoom.name}}</h2>
                             <h3>{{chatRoom.description}}</h3>
+                            <h4>{{this.ownerUsername}}</h4>
                         </ng-template>
                     </span>
                 </div>
             </div>
         </div>
 
-        <div class="row">
+        <div class=" row">
             <div class="col message">
                 <span *ngFor="let message of (messagesPaginate$ | async)?.items">
-                    <app-chat-message [message]="message" [myUsername]="this.myUsername"></app-chat-message>
+                    <app-chat-message [message]="message" [myUser]="this.myUser"></app-chat-message>
                 </span>
             </div>
         </div>
