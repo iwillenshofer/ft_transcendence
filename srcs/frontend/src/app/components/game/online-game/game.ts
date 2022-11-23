@@ -70,7 +70,6 @@ export function gameStart() {
 }
 
 export function update() {
-    console.log('g', finished)
     ballUpdate();
     syncBall();
     paddleUpdate();

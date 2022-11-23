@@ -113,9 +113,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   ngAfterViewInit() {
     this.canvas = this.gameCanvas.nativeElement.getContext("2d");
     this.canvas.fillStyle = "white";
-    if (this.mode != 'spec') {
+    if (this.mode != 'spec')
       this.players();
-    }
     else
       this.specs();
   }
@@ -191,7 +190,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   update() {
-    console.log('c', this.finished)
     this.gameService.run();
     this.draw();
     this.endGame();
@@ -216,7 +214,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.scoreP2 = scoreP2;
       this.finished = finished;
       if (finished) {
-        console.log('score')
         this.finish('score', 0);
       }
     })
@@ -230,7 +227,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     })
     this.socket.once("endGame", (disconnected: any) => {
       this.finished = true;
-      console.log('endgame')
       this.finish('disconnect', disconnected);
     })
   }
