@@ -16,10 +16,13 @@ import { MessageInterface } from '../components/chat/models/message.interface';
 @Injectable()
 export class ChatService {
 
+  public connectedUsers: BehaviorSubject<any[]>;
+
   constructor(
     private socket: ChatSocket,
     private snackBar: MatSnackBar,
     private http: HttpClient) {
+    this.connectedUsers = new BehaviorSubject<any[]>([]);
   }
 
   disconnectChatSocket() {
@@ -82,7 +85,7 @@ export class ChatService {
   }
 
   IsUserOnline(userId: number) {
-    return this.http.get('/backend/chat/is_user_online/' + userId, { withCredentials: true });
+    return this.http.get<boolean>('/backend/chat/is_user_online/' + userId, { withCredentials: true });
   }
 
   getAddedMessage(): Observable<MessageInterface> {

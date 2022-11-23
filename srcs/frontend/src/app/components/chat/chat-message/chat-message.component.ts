@@ -7,6 +7,7 @@ import { OnlineGameService } from '../../game/online-game.service';
 import { FriendsService } from '../../friends/friends.service';
 import { User } from 'src/app/auth/user.model';
 import { UserInterface } from 'src/app/model/user.interface';
+import { Observable } from 'rxjs';
 
 
 @Component({
@@ -32,6 +33,9 @@ export class ChatMessageComponent implements OnInit {
   isOn!: boolean;
   faPaddle = faTableTennisPaddleBall;
   faProfile = faAddressCard;
+  isUserOnline$ = this.chatService.IsUserOnline(this.message.member.user.id);
+  isUserOnline: boolean = false;
+
 
 
   constructor(
@@ -46,16 +50,23 @@ export class ChatMessageComponent implements OnInit {
     this.username = this.message.member.user.username;
     this.avatar = this.message.member.user.avatar_url;
     this.created_at = this.message.created_at ?? new Date();
-    this.chatService.IsUserOnline(this.message.member.user.id).subscribe(result => {
-      if (result == true) {
-        this.isOn = true;
+    this.isUserOnline$.subscribe(res => {
+      this.isUserOnline = res;
+      if (this.isUserOnline == true)
         this.status = "circle-green-16.png";
-      }
-      else {
-        this.isOn = false;
+      else
         this.status = "circle-red-16.png";
-      }
-    })
+    });
+    // this.chatService.IsUserOnline(this.message.member.user.id).subscribe(result => {
+    //   if (result == true) {
+    //     this.isOn = true;
+    //     this.status = "circle-green-16.png";
+    //   }
+    //   else {
+    //     this.isOn = false;
+    //     this.status = "circle-red-16.png";
+    //   }
+    // })
   }
 
   isMyUser() {
