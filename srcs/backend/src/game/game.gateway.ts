@@ -154,7 +154,7 @@ export class GameGateway {
       player1.y = 360 - (player1.height / 2);
       player1.x = 20;
       player2.y = 360 - (player2.height / 2);
-      player2.x = 1250;
+      player2.x = 1280 - player2.width - 20;
       player1.height = 150;
       player2.height = 150;
       this.server.to(game.gameID).emit('updatePaddle', player1, player2)
@@ -218,6 +218,7 @@ export class GameGateway {
         }
       }
       if (game.player1.disconnected && game.player2.disconnected) {
+        this.server.in(gameID).socketsLeave(gameID);
         this.server.in(gameID).disconnectSockets();
         this.deleteGameById(gameID);
       }
@@ -228,6 +229,7 @@ export class GameGateway {
     for (let index = 0; index < this.games.length; index++) {
       let game = this.games[index];
       if (game && game.gameID == gameID) {
+        console.log('delete')
         delete this.games[index];
         this.games.splice(index, 1);
       }

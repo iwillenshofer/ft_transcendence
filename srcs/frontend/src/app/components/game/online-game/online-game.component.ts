@@ -101,33 +101,38 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   async ngOnDestroy() {
+    this.gameService.setFinished();
+    this.finished = true;
+    window.cancelAnimationFrame(this.currentAnimationFrameId as number);
+    this.gameService.reset();
     this.friendsService.setStatus('login2', 'online')
     await this.socket.emit("cancelChallenge", this.username, this.challenged)
-    this.socket.disconnect();
+    await this.socket.disconnect();
   }
 
   ngAfterViewInit() {
     this.canvas = this.gameCanvas.nativeElement.getContext("2d");
     this.canvas.fillStyle = "white";
-    if (this.mode != 'spec')
+    if (this.mode != 'spec') {
       this.players();
+    }
     else
       this.specs();
   }
 
   players() {
-    this.socket.on("players", (player1: any, player2: any) => {
+    this.socket.once("players", (player1: any, player2: any) => {
       this.setPlayers(player1, player2)
       this.friendsService.setStatus('login2', 'inGame')
       this.isWaiting = false;
-      this.gameService.reset()
+      this.gameService.start()
       this.update();
     })
   }
 
   specs() {
     this.gameService.setGameSocket(this.socket);
-    this.socket.on("specs", (player1: any, player2: any) => {
+    this.socket.once("specs", (player1: any, player2: any) => {
       this.player1 = player1;
       this.player2 = player2;
       this.isWaiting = false;
@@ -136,7 +141,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   gameUnavailable() {
-    this.socket.on('gameUnavailable', (msg: any) => {
+    this.socket.once('gameUnavailable', (msg: any) => {
       this.finished = true;
       this.isWaiting = false;
       this.finishedMessage = msg;
@@ -145,15 +150,15 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   watchGame() {
-    this.socket.on("updatePaddle", (player1: any, player2: any) => {
+    this.socket.once("updatePaddle", (player1: any, player2: any) => {
       this.player1 = player1;
       this.player2 = player2;
     });
     let powerUp: any;
-    this.socket.on('updatePowerUp', (newPowerUp: any) => {
+    this.socket.once('updatePowerUp', (newPowerUp: any) => {
       powerUp = newPowerUp;
     })
-    this.socket.on("ball", (ball: any) => {
+    this.socket.once("ball", (ball: any) => {
       this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
       this.updateScore();
       this.drawLines();
@@ -186,6 +191,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   update() {
+    console.log('c', this.finished)
     this.gameService.run();
     this.draw();
     this.endGame();
@@ -205,23 +211,26 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   async updateScore() {
-    await this.socket.on("updateScore", (scoreP1: any, scoreP2: any, finished: any) => {
+    await this.socket.once("updateScore", (scoreP1: any, scoreP2: any, finished: any) => {
       this.scoreP1 = scoreP1;
       this.scoreP2 = scoreP2;
       this.finished = finished;
-      if (finished)
+      if (finished) {
+        console.log('score')
         this.finish('score', 0);
+      }
     })
   }
 
   endGame() {
-    this.socket.on('connect_error', () => {
+    this.socket.once('connect_error', () => {
       this.finished = true;
       this.finishedMessage = 'Server is off';
       this.finish('down', 0)
     })
-    this.socket.on("endGame", (disconnected: any) => {
+    this.socket.once("endGame", (disconnected: any) => {
       this.finished = true;
+      console.log('endgame')
       this.finish('disconnect', disconnected);
     })
   }
@@ -233,9 +242,10 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     }
     if (this.mode != 'spec')
       this.socket.emit("finishMessage", this.gameService.getFinalMessage(reason, disconnected), this.gameService.getWinner(reason, disconnected));
-    this.socket.on("winner", (message: any) => {
+    this.socket.once("winner", (message: any) => {
       this.finishedMessage = message;
       this.drawFinish();
+      this.socket.removeAllListeners();
       this.socket.disconnect();
     })
   }
@@ -301,7 +311,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   cancelChallenge() {
     this.socket.emit("cancelChallenge", this.username, this.challenged)
     window.location.reload();
-    this.socket.on("removeChallenge", () => {
+    this.socket.once("removeChallenge", () => {
       window.location.reload();
     })
   }

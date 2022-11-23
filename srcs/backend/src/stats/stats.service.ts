@@ -64,13 +64,13 @@ export class StatsService {
       .where("u.username = :username", { username: username })
       .orWhere("u2.username = :username", { username: username })
       .getMany();
-    console.log(res);
+    // console.log(res);
     return res;
   }
 
   async getUserinfo(username: string) {
     let user = await this.userRepository.findOneBy({ username: username });
-    console.log(user);
+    // console.log(user);
     return ({
       'username': username,
       'fullname': user.fullname,
@@ -118,7 +118,7 @@ export class StatsService {
 
   async getAchievements(username: string) {
     const user_id: number = await this.UsersService.getIdByUsername(username);
-    console.log("getting achievements for user " + username + " " + user_id);
+    // console.log("getting achievements for user " + username + " " + user_id);
     const achievements = await this.achievementsRepository
       .createQueryBuilder('f')
       .leftJoinAndSelect("f.user", "user")
@@ -136,7 +136,7 @@ export class StatsService {
         qb.andWhere('achievement = :v2', { v2: achievement })
       }))
       .getOne();
-    console.log("adding achievement:" + user_id);
+    // console.log("adding achievement:" + user_id);
     if (exists) {
       return null;
     } else {
@@ -204,7 +204,7 @@ export class StatsService {
   async loginAchievements(user_id: number) {
     const user: UserEntity = await this.UsersService.getUserByID(user_id);
     if (user) {
-      console.log("checking login acchievements for user " + user.username + ": " + user_id);
+      // console.log("checking login acchievements for user " + user.username + ": " + user_id);
       if (user.login_count >= 3) { this.addAchievement(user_id, "l1") };
       if (user.login_count >= 10) { this.addAchievement(user_id, "l2") };
       if (user.login_count >= 50) { this.addAchievement(user_id, "l3") };

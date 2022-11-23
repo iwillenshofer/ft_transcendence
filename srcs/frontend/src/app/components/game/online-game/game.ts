@@ -1,6 +1,6 @@
-export const INITIAL_VELOCITY = 5;
-export const MAX_SCORE = 10;
-export const VELOCITY_INCREASE = 0.5;
+export const INITIAL_VELOCITY = 3;
+export const MAX_SCORE = 1;
+export const VELOCITY_INCREASE = 0.2;
 
 let table = {
     width: 1280,
@@ -47,7 +47,7 @@ export let powerUp = {
     active: false,
 }
 
-let started = false;
+export let started = false;
 let mode = '';
 let finished: boolean = false;
 export let isCustom: boolean;
@@ -58,18 +58,21 @@ export function setGameSocket(socket: any) {
 }
 
 export function gameStart() {
+    console.log(started)
     if (!started) {
+        console.log('a')
         resetPlayersPosition();
         resetBall();
         resetScore();
         syncScore();
         started = true;
-        syncBall();
     }
 }
 
 export function update() {
+    console.log('g', finished)
     ballUpdate();
+    syncBall();
     paddleUpdate();
     if (isCustom)
         powerUpUpdate()
@@ -77,7 +80,6 @@ export function update() {
         handleLose();
         ball.lastTouch = 0;
     }
-    syncBall();
 }
 
 function paddleUpdate() {
@@ -229,6 +231,7 @@ function resetBall() {
 function resetScore() {
     player1.score = 0;
     player2.score = 0;
+    finished = false;
     if (isPlayer())
         _socket.emit('score', player1.score, player2.score, finished);
 }
@@ -270,7 +273,7 @@ function randomNumberBetween(min: number, max: number) {
 function resetPlayersPosition() {
     player1.x = 20;
     player1.y = (table.height / 2) - (player1.height / 2);
-    player2.x = table.width - 30; // - 10 da margin
+    player2.x = table.width - player2.width - 20; // - 10 da margin
     player2.y = (table.height / 2) - (player2.height / 2);
     if (isPlayer())
         _socket.emit('resetPaddles');
@@ -377,4 +380,8 @@ function isPlayer() {
     if (_socket.id == player1.socket || _socket.id == player2.socket)
         return true;
     return false;
+}
+
+export function setStarted(b: boolean) {
+    started = b;
 }

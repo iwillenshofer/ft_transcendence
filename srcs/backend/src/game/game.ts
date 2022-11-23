@@ -37,7 +37,7 @@ export class Game {
         x: 0,
         y: 0,
         radius: 5,
-        velocity: 0,
+        velocity: 3,
         direction: {
             x: 0.0,
             y: 0.0
