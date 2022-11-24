@@ -29,11 +29,11 @@ export class UsersController {
         return of({ username: await this.UsersService.getUsername(req.user.id) })
     }
 
-    @UseGuards(JwtGuard)
-    @Get('getAllConnectedUser')
-    async getAllConnectedUSer(@Request() req) {
-        return of({ user: await this.connectedUsersService.getAllConnectedUser() })
-    }
+    // @UseGuards(JwtGuard)
+    // @Get('getAllConnectedUser')
+    // async getAllConnectedUSer(@Request() req) {
+    //     return of({ user: await this.connectedUsersService.getAllUserOnline() })
+    // }
 
     @UseGuards(JwtGuard)
     @Get('get_user_by_id/:id')

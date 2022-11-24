@@ -77,7 +77,6 @@ export class AuthController {
 	@Get('logout')
 	async logout(@Res({ passthrough: true }) res, @Request() req) {
 		let user: UserDTO = UserDTO.from(await this.UsersService.getUser(req.user.id));
-		this.connectedUsersService.deleteByUserId(user.id);
 		res.clearCookie('refresh_token', { httpOnly: true });
 		return { msg: "success" };
 	}

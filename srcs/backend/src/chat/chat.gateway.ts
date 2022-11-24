@@ -30,6 +30,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // afterInit(server: Server) {
   // }
 
+
+
   @UseGuards(TfaGuard)
   async handleConnection(socket: Socket, ...args: any[]) {
     const user = await this.UsersService.getUserById(+socket.handshake.headers.userid);
@@ -49,6 +51,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     else
       await this.connectedUsersService.updateSocketIdConnectedUSer(socket.id, connectedUser);
 
+    let usersOnline = await this.connectedUsersService.getAllUserOnline();
+    const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
+    connectedUsers.forEach(user => {
+      this.server.to(user.socketId).emit('users_online', usersOnline);
+    });
+
     const rooms = await this.chatService.getRoomsOfMember(member, { page: 1, limit: 3 });
     const allUsers = await this.UsersService.getAllUsers();
     this.server.to(socket.id).emit('rooms', rooms);
@@ -56,7 +64,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleDisconnect(socket: Socket) {
+    const user = await this.UsersService.getUserById(+socket.handshake.headers.userid);
     await this.connectedUsersService.deleteBySocketId(socket.id);
+    if (user) {
+      let usersOnline = await this.connectedUsersService.getAllUserOnline();
+      const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
+      connectedUsers.forEach(user => {
+        this.server.to(user.socketId).emit('users_online', usersOnline);
+      });
+    }
     socket.disconnect();
   }
 
@@ -84,7 +100,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     this.server.to(socket.id).emit('rooms', rooms);
 
-    const connectedUsers = await this.connectedUsersService.getAllConnectedUser();
+    const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
     connectedUsers.forEach(user => {
       this.server.to(user.socketId).emit('publicRooms', publicRooms);
     })
@@ -158,7 +174,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       let rooms = await this.chatService.getRoomsOfMember(member, { page: 1, limit: 3 });
       this.server.to(socket.id).emit('rooms', rooms);
       const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 3 });
-      const connectedUsers = await this.connectedUsersService.getAllConnectedUser();
+      const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
       connectedUsers.forEach(user => {
         this.server.to(user.socketId).emit('publicRooms', publicRooms);
       })
@@ -177,6 +193,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.server.to(member.socketId).emit('message_added', createdMessage);
     }
   }
+
+  @SubscribeMessage("users_online")
+  async requestUsersOnline(socket: Socket) {
+    const user = await this.UsersService.getUserById(+socket.handshake.headers.userid);
+    if (user) {
+      let usersOnline = await this.connectedUsersService.getAllUserOnline();
+      const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
+      connectedUsers.forEach(user => {
+        this.server.to(user.socketId).emit('users_online', usersOnline);
+      });
+    }
+
+  }
+
 
   private onPrePaginate(page: PageInterface) {
     page.limit = page.limit > 100 ? 100 : page.limit;

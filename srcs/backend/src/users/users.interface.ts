@@ -1,3 +1,4 @@
+import { ConnectedUserEntity } from "src/chat/entities/connected-user.entity";
 import { RoomEntity } from "src/chat/entities/room.entity";
 
 export interface UserInterface {

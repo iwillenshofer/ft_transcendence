@@ -13,6 +13,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthEntity } from './models/auth.entity';
 import { ConnectedUsersService } from 'src/services/connected-user/connected-user.service';
 import { ConnectedUserEntity } from 'src/chat/entities/connected-user.entity';
+import { UserEntity } from 'src/users/users.entity';
 
 @Module({
     imports: [
@@ -22,7 +23,7 @@ import { ConnectedUserEntity } from 'src/chat/entities/connected-user.entity';
             secret: process.env.JWT_SECRET,
             signOptions: { expiresIn: '60s' },
         }),
-        TypeOrmModule.forFeature([AuthEntity, ConnectedUserEntity])
+        TypeOrmModule.forFeature([AuthEntity, ConnectedUserEntity, UserEntity])
     ],
     controllers: [AuthController],
     providers: [AuthService, Intra42Strategy, JwtStrategy, JwtRefreshStrategy, TfaStrategy, FakeIntra42Strategy, ConnectedUsersService],

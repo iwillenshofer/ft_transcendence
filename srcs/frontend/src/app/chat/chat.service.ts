@@ -106,4 +106,12 @@ export class ChatService {
     return of([]);
   }
 
+  getUsersOnline(): Observable<UserInterface[]> {
+    return this.socket.fromEvent<UserInterface[]>('users_online');
+  }
+
+  requestUsersOnline() {
+    this.socket.emit('users_online');
+  }
+
 }
