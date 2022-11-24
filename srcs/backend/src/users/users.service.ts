@@ -200,8 +200,4 @@ export class UsersService {
 			where: { 'members': { 'id': memberId } }
 		})
 	}
-
-	async getConnectedUsers() {
-
-	}
 }

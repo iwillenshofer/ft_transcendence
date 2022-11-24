@@ -46,9 +46,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     let connectedUser = await this.connectedUsersService.getByUserId(user.id);
     if (connectedUser == null)
       await this.connectedUsersService.createConnectedUser(socket.id, user);
-    else {
+    else
       await this.connectedUsersService.updateSocketIdConnectedUSer(socket.id, connectedUser);
-    }
 
     const rooms = await this.chatService.getRoomsOfMember(member, { page: 1, limit: 3 });
     const allUsers = await this.UsersService.getAllUsers();
