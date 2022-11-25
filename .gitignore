@@ -2,6 +2,7 @@
 sandbox/volume/
 srcs/frontend/.angular
 srcs/frontend/node_modules
+srcs/frontend/package-lock.json
 srcs/backend/node_modules
 srcs/backend/dist
 srcs/backend/uploads
