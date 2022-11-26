@@ -212,15 +212,15 @@ export class StatsService {
   }
 
   async getStatusByUsername(username: string) {
-    let user = await this.userRepository.findOneBy({ username: username });
-    return user.status;
+    //let user = await this.userRepository.findOneBy({ username: username });
+    //return user.status;
   }
 
   async setStatusByUsername(username: string, status: string) {
-    let user = await this.userRepository.findOneBy({ username: username });
-    user.status = status;
-    await this.userRepository.save(user);
-    return user.status;
+    //let user = await this.userRepository.findOneBy({ username: username });
+    //user.status = status;
+    //await this.userRepository.save(user);
+    //return user.status;
   }
 }
 
