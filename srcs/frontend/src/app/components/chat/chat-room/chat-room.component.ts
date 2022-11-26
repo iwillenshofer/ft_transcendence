@@ -1,14 +1,12 @@
-import { AfterViewInit, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { combineLatest, forkJoin, map, Observable, startWith } from 'rxjs';
-import { User } from 'src/app/auth/user.model';
+import { combineLatest, map, Observable, startWith, tap } from 'rxjs';
 import { ChatService } from 'src/app/chat/chat.service';
 import { MemberRole } from 'src/app/model/member.interface';
 import { MessagePaginateInterface } from 'src/app/model/message.interface';
 import { RoomInterface, RoomType } from 'src/app/model/room.interface';
 import { UserInterface } from 'src/app/model/user.interface';
 import { MemberInterface } from '../models/member.interface';
-import { MessageInterface } from '../models/message.interface';
 
 @Component({
   selector: 'app-chat-room',
@@ -23,18 +21,21 @@ export class ChatRoomComponent implements OnInit, OnChanges {
   @Input()
   myUser!: UserInterface;
 
+  @ViewChild('messagesScroller')
+  private messagesScroller!: ElementRef;
+
   ownerUsername!: string;
   members$!: Observable<MemberInterface[]>
   messagesPaginate$: Observable<MessagePaginateInterface> = combineLatest([this.chatService.getMessages(), this.chatService.getAddedMessage().pipe(startWith(null))]).pipe(
     map(([messagePaginate, message]) => {
       if (message && message.room.id === this.chatRoom?.id && !messagePaginate.items.some(m => m.id === message.id)) {
-        console.log("here")
         messagePaginate.items.push(message);
       }
       const items = messagePaginate.items.sort((a, b) => new Date(a.created_at ?? 0).getTime() - new Date(b.created_at ?? 0).getTime());
       messagePaginate.items = items;
       return messagePaginate;
-    })
+    }),
+    tap(() => this.scrollToBottom())
   );
 
   chatMessage: FormControl = new FormControl(null, [Validators.required]);
@@ -80,6 +81,10 @@ export class ChatRoomComponent implements OnInit, OnChanges {
     if (owner)
       return (owner.user.username);
     return ("");
+  }
+
+  scrollToBottom(): void {
+    this.messagesScroller.nativeElement.scrollTop = this.messagesScroller.nativeElement.scrollHeight;
   }
 
 
