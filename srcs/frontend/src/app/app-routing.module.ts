@@ -23,7 +23,7 @@ const routes: Routes = [
 	{ path: 'chat', component: ChatComponent, pathMatch: 'full' },
 	{ path: 'friends', component: FriendsComponent, pathMatch: 'full' },
 	{ path: 'profile', component: ProfileComponent, pathMatch: 'full' },
-	{ path: 'doublelogin', component: DoubleLoginComponent, pathMatch: 'full' }
+	{ path: 'doublelogin', component: DoubleLoginComponent, pathMatch: 'full' },
 ];
 
 @NgModule({

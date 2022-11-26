@@ -1,6 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { AuthService } from './auth/auth.service';
-import { ChatService } from './components/chat/chat.service';
+
 
 @Component({
   selector: 'app-root',

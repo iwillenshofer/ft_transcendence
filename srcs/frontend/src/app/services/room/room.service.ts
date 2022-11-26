@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { ChatSocket } from 'src/app/components/chat/chat-socket.service';
+import { Observable } from 'rxjs';
+import { ChatSocket } from 'src/app/components/chat/chat-socket';
 import { RoomInterface } from 'src/app/model/room.interface';
 
 @Injectable({

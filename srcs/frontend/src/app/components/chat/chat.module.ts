@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChatService } from './chat.service';
-import { ChatSocket } from './chat-socket.service';
+import { ChatSocket } from './chat-socket';
 
 
 @NgModule({

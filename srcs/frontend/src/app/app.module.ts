@@ -45,6 +45,7 @@ import { DialogSearchUserComponent } from './components/dialogs/dialog-search-us
 import { ChatRoomComponent } from './components/chat/chat-room/chat-room.component';
 import { ChatMessageComponent } from './components/chat/chat-message/chat-message.component';
 import { ChatModule } from './components/chat/chat.module';
+import { DoubleLoginComponent } from './components/login/double-login/double-login.component';
 
 
 @NgModule({
@@ -70,6 +71,7 @@ import { ChatModule } from './components/chat/chat.module';
     DialogSearchUserComponent,
     ChatRoomComponent,
     ChatMessageComponent,
+    DoubleLoginComponent,
   ],
   imports: [
     BrowserModule,

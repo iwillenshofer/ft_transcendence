@@ -33,12 +33,12 @@ export class ConnectedUsersService {
     }
 
 	async getUsersById(userId: number): Promise<ConnectedUserEntity[]> {
-		return await this.connectedUserRepository.find({
-			where: { user: { id: userId } },
-			relations: { user: true },
-		});
-	}
-	
+        return await this.connectedUserRepository.find({
+            where: { user: { id: userId } },
+            relations: { user: true },
+        });
+    }
+
     async isUserOnline(userId: number): Promise<Boolean> {
         let connectedUser = await this.getByUserId(userId);
         if (connectedUser != null)
