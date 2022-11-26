@@ -33,7 +33,7 @@ export class ChatMessageComponent implements OnInit {
   isOn!: boolean;
   faPaddle = faTableTennisPaddleBall;
   faProfile = faAddressCard;
-  isUserOnline$ = this.chatService.IsUserOnline(this.message.member.user.id);
+  isUserOnline$!: Observable<boolean>;
   isUserOnline: boolean = false;
 
 
@@ -46,27 +46,21 @@ export class ChatMessageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+    this.isUserOnline$ = this.chatService.IsUserOnline(this.message.member.user.id);
     this.username = this.message.member.user.username;
     this.avatar = this.message.member.user.avatar_url;
     this.created_at = this.message.created_at ?? new Date();
     this.isUserOnline$.subscribe(res => {
       this.isUserOnline = res;
-      if (this.isUserOnline == true)
+      if (this.isUserOnline == true) {
+        this.isOn = true;
         this.status = "circle-green-16.png";
-      else
+      }
+      else {
+        this.isOn = false;
         this.status = "circle-red-16.png";
+      }
     });
-    // this.chatService.IsUserOnline(this.message.member.user.id).subscribe(result => {
-    //   if (result == true) {
-    //     this.isOn = true;
-    //     this.status = "circle-green-16.png";
-    //   }
-    //   else {
-    //     this.isOn = false;
-    //     this.status = "circle-red-16.png";
-    //   }
-    // })
   }
 
   isMyUser() {

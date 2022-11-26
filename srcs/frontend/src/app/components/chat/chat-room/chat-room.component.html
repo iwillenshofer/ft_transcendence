@@ -47,6 +47,9 @@
         </div>
         <div class="row">
             <div class="col">
+                <p *ngFor="let member of (members$ | async)">{{member.user.username}}</p>
+            </div>
+            <div class="col">
                 Column
             </div>
         </div>

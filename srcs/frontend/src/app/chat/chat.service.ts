@@ -11,6 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
 import { MessagePaginateInterface } from '../model/message.interface';
 import { MessageInterface } from '../components/chat/models/message.interface';
+import { MemberInterface } from '../model/member.interface';
 
 
 @Injectable()
@@ -104,6 +105,14 @@ export class ChatService {
     if (filter.length >= 3)
       return this.http.get('/backend/chat/searchusers/' + filter, { withCredentials: true });
     return of([]);
+  }
+
+  requestMemberOfRoom(roomId: number) {
+    this.socket.emit('members_room', roomId);
+  }
+
+  getMembersOfRoom() {
+    return this.socket.fromEvent<MemberInterface[]>('members_room');
   }
 
 }

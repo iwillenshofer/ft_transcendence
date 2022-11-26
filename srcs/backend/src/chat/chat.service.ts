@@ -270,9 +270,10 @@ export class ChatService {
         const currentRoom = await this.roomRepository.findOne({
             where: { id: room.id },
             relations: {
-                members: true
+                members: { user: true }
             }
         });
+        console.log(currentRoom.members)
         return currentRoom.members;
     }
 

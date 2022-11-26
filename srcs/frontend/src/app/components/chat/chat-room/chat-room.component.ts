@@ -7,6 +7,7 @@ import { MemberRole } from 'src/app/model/member.interface';
 import { MessagePaginateInterface } from 'src/app/model/message.interface';
 import { RoomInterface, RoomType } from 'src/app/model/room.interface';
 import { UserInterface } from 'src/app/model/user.interface';
+import { MemberInterface } from '../models/member.interface';
 import { MessageInterface } from '../models/message.interface';
 
 @Component({
@@ -23,9 +24,11 @@ export class ChatRoomComponent implements OnInit, OnChanges {
   myUser!: UserInterface;
 
   ownerUsername!: string;
+  members$!: Observable<MemberInterface[]>
   messagesPaginate$: Observable<MessagePaginateInterface> = combineLatest([this.chatService.getMessages(), this.chatService.getAddedMessage().pipe(startWith(null))]).pipe(
     map(([messagePaginate, message]) => {
       if (message && message.room.id === this.chatRoom?.id && !messagePaginate.items.some(m => m.id === message.id)) {
+        console.log("here")
         messagePaginate.items.push(message);
       }
       const items = messagePaginate.items.sort((a, b) => new Date(a.created_at ?? 0).getTime() - new Date(b.created_at ?? 0).getTime());
@@ -43,10 +46,11 @@ export class ChatRoomComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.chatRoom?.id) {
+    if (this.chatRoom?.id)
       this.chatService.requestMessages(this.chatRoom?.id);
-    }
     this.ownerUsername = this.getOwner();
+    this.chatService.requestMemberOfRoom(this.chatRoom?.id ?? 0);
+    this.members$ = this.chatService.getMembersOfRoom();
   }
 
   sendMessage() {

@@ -64,6 +64,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async getMessages(socket: any, roomId: number) {
     const room: RoomEntity = await this.chatService.getRoomById(roomId);
     const messages = await this.chatService.findMessagesForRoom(room, { page: 1, limit: 25 });
+    console.log(messages.items)
     this.server.to(socket.id).emit('messages', messages);
 
   }
@@ -76,18 +77,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       room.password = this.encrypt.encode(room.password);
 
     const owner = await this.UsersService.getUser(+socket.handshake.headers.userid);
-    const member = await this.chatService.getMemberByUserId(owner.id);
+    if (owner) {
+      const member = await this.chatService.getMemberByUserId(owner.id);
 
-    await this.chatService.createRoom(room.toEntity(), [member]);
-    const rooms = await this.chatService.getRoomsOfMember(member, { page: 1, limit: 3 });
-    const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 3 });
+      await this.chatService.createRoom(room.toEntity(), [member]);
+      const rooms = await this.chatService.getRoomsOfMember(member, { page: 1, limit: 3 });
+      const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 3 });
 
-    this.server.to(socket.id).emit('rooms', rooms);
+      this.server.to(socket.id).emit('rooms', rooms);
 
-    const connectedUsers = await this.connectedUsersService.getAllConnectedUser();
-    connectedUsers.forEach(user => {
-      this.server.to(user.socketId).emit('publicRooms', publicRooms);
-    })
+      const connectedUsers = await this.connectedUsersService.getAllConnectedUser();
+      connectedUsers.forEach(user => {
+        this.server.to(user.socketId).emit('publicRooms', publicRooms);
+      })
+    }
+
   }
 
   @SubscribeMessage('create_direct_room')
@@ -175,6 +179,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const members = await this.chatService.getMembersByRoom(room);
     for (const member of members) {
       this.server.to(member.socketId).emit('message_added', createdMessage);
+    }
+  }
+
+  @SubscribeMessage("members_room")
+  async getMembersOfRoom(socket: Socket, roomId: number) {
+    if (roomId) {
+      const room = await this.chatService.getRoomById(roomId);
+      const members = await this.chatService.getMembersByRoom(room);
+      for (const member of members) {
+        console.log(member)
+        this.server.to(member.socketId).emit('members_room', members);
+      }
     }
   }
 
