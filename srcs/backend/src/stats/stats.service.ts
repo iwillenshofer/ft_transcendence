@@ -6,6 +6,7 @@ import { UserEntity } from 'src/users/users.entity';
 import { AchievementsEntity } from './achievements.entity';
 import { UsersService } from 'src/users/users.service';
 import { FriendsEntity } from 'src/friends/friends.entity';
+import { AchievementsDTO, HistoryDTO, StatsDTO } from './stats.dto';
 
 @Injectable()
 export class StatsService {
@@ -39,60 +40,38 @@ export class StatsService {
     this.achievements["l3"] = "login 50 times";
     this.achievements["r1"] = "reach rating 1000";
     this.achievements["r2"] = "reach rating 1200";
-    this.achievements["r2"] = "reach rating 1500";
+    this.achievements["r3"] = "reach rating 1500";
   }
 
   private achievements: { [name: string]: string; } = {};
 
-  async getHistory(username: string): Promise<any[]> {
 
-    let res = await this.gameRepository
-      .createQueryBuilder("games")
-      .innerJoinAndMapOne(
-        'games.user1',
-        "User",
-        'u',
-        'u.id= games.idP1'
-      )
-      .innerJoinAndMapOne(
-        'games.user2',
-        "User",
-        'u2',
-        'u2.id= games.idP2'
-      )
-      .select(['u.username', 'u2.username', 'u.avatar_url', 'u2.avatar_url', 'games.scoreP1', 'games.scoreP2', 'games.winner'])
-      .where("u.username = :username", { username: username })
-      .orWhere("u2.username = :username", { username: username })
-      .getMany();
-    // console.log(res);
-    return res;
+  async getHistory(username: string): Promise<HistoryDTO[]> {
+
+    let res = await this.gameRepository.find({
+		relations: ['idP1', 'idP2', 'winner'],
+		where: [{ idP1: {	username: username}	},
+				{ idP2: {	username: username}	}],
+	})
+    return (HistoryDTO.fromEntities(res));
   }
-
-  async getUserinfo(username: string) {
-    let user = await this.userRepository.findOneBy({ username: username });
-    // console.log(user);
-    return ({
-      'username': username,
-      'fullname': user.fullname,
-      'avatar_url': user.avatar_url,
-      'created_at': user.created_at,
-      'rating': user.rating
-    });
-  }
-
-
-
-
 
   /*
   ** Achievements, History, Stats, Info
   */
-  async getUserStats(username: string) {
+  async getUserStats(username: string): Promise<StatsDTO> {
     let user = await this.userRepository.findOneBy({ username: username });
-    if (!user)
-      return (null);
-
-
+    let dto: StatsDTO = StatsDTO.fromEntity(user);
+	if (user) {
+		dto.achievements = await this.getAchievements(user.username);
+		dto.history = await this.getHistory(user.username);
+		dto.games_played = dto.history.length;
+		dto.games_won = 0;
+		for(let i=0; i < dto.history.length; i++){
+			if (dto.history[i].winner == user.username) {dto.games_won++;}
+		}
+	}
+	return (dto);
   }
 
   _expectedProbability(ratingA: number, ratingB: number): number {
@@ -116,15 +95,17 @@ export class StatsService {
     await this.ratingAchievements(user2.id);
   }
 
-  async getAchievements(username: string) {
+  async getAchievements(username: string): Promise<AchievementsDTO[]> {
     const user_id: number = await this.UsersService.getIdByUsername(username);
-    // console.log("getting achievements for user " + username + " " + user_id);
-    const achievements = await this.achievementsRepository
-      .createQueryBuilder('f')
-      .leftJoinAndSelect("f.user", "user")
-      .where('user.id = :v1', { v1: user_id })
-      .getMany();
-    return (achievements);
+	if (user_id) {
+		const achievements = await this.achievementsRepository
+		.createQueryBuilder('f')
+		.leftJoinAndSelect("f.user", "user")
+		.where('user.id = :v1', { v1: user_id })
+		.getMany();
+    	return (AchievementsDTO.fromEntities(achievements));
+	}
+	return [];
   }
 
   async addAchievement(user_id: number, achievement: string) {
@@ -136,7 +117,6 @@ export class StatsService {
         qb.andWhere('achievement = :v2', { v2: achievement })
       }))
       .getOne();
-    // console.log("adding achievement:" + user_id);
     if (exists) {
       return null;
     } else {
@@ -150,7 +130,6 @@ export class StatsService {
     }
   }
 
-  //ok
   async gameAchievements(user_id: number) {
     const games: number = await this.gameRepository
       .createQueryBuilder('f')
@@ -180,7 +159,6 @@ export class StatsService {
 
   }
 
-  //ok
   async friendsAchievements(user_id: number) {
     const friends: number = await this.friendsRepository
       .createQueryBuilder('f')
@@ -191,7 +169,6 @@ export class StatsService {
     if (friends >= 10) { this.addAchievement(user_id, "f3") };
   }
 
-  //ok
   async ratingAchievements(user_id: number) {
     const user: UserEntity = await this.UsersService.getUserByID(user_id);
     if (user) {
@@ -200,11 +177,9 @@ export class StatsService {
     }
   }
 
-  //ok
   async loginAchievements(user_id: number) {
     const user: UserEntity = await this.UsersService.getUserByID(user_id);
     if (user) {
-      // console.log("checking login acchievements for user " + user.username + ": " + user_id);
       if (user.login_count >= 3) { this.addAchievement(user_id, "l1") };
       if (user.login_count >= 10) { this.addAchievement(user_id, "l2") };
       if (user.login_count >= 50) { this.addAchievement(user_id, "l3") };
@@ -212,15 +187,16 @@ export class StatsService {
   }
 
   async getStatusByUsername(username: string) {
-    //let user = await this.userRepository.findOneBy({ username: username });
-    //return user.status;
+    let user = await this.userRepository.findOneBy({ username: username });
+	return user.status;
   }
 
   async setStatusByUsername(username: string, status: string) {
-    //let user = await this.userRepository.findOneBy({ username: username });
-    //user.status = status;
-    //await this.userRepository.save(user);
-    //return user.status;
+    let user = await this.userRepository.findOneBy({ username: username });
+	if (!user) return ;
+    user.status = status;
+    await this.userRepository.save(user);
+    return user.status;
   }
 }
 

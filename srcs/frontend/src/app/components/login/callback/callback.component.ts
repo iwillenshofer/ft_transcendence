@@ -73,9 +73,12 @@ export class LoginCallbackComponent implements OnInit {
 		let x = await this.authService.updateUser();
 		if (this.authService.isAuthenticated())
 		{
-			if (this.currentUser?.login_count ?? 0 <= 1)
-				this.router.navigate(['/']);
-			this.router.navigate(['/profile']);
+			if (+(this.authService.userSubject.value?.login_count ?? 0) <= 1)
+			{	
+				this.router.navigate(['/profile']);
+			} else {
+			this.router.navigate(['/']);
+			}
 		}
 		else if (this.authService.isJwtAuthenticated())
 			this.need_tfa = true;

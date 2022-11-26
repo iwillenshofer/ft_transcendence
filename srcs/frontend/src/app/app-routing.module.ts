@@ -14,16 +14,16 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { DoubleLoginComponent } from './components/login/double-login/double-login.component';
 
 const routes: Routes = [
-	{ path: '', redirectTo: 'home', pathMatch: 'full' },
-	{ path: 'home', component: HomeComponent, canActivate: [AuthguardService], pathMatch: 'full' },
+	{ path: 'home', component: FriendsComponent, canActivate: [AuthguardService], pathMatch: 'full' },
 	{ path: 'login', component: LoginpageComponent, pathMatch: 'full' },
 	{ path: 'login/callback', component: LoginCallbackComponent, pathMatch: 'full' },
 	{ path: 'enable2fa', component: TwofactorComponent, canActivate: [AuthguardService], pathMatch: 'full' },
-	{ path: 'pong', component: GameComponent, pathMatch: 'full' },
-	{ path: 'chat', component: ChatComponent, pathMatch: 'full' },
-	{ path: 'friends', component: FriendsComponent, pathMatch: 'full' },
-	{ path: 'profile', component: ProfileComponent, pathMatch: 'full' },
 	{ path: 'doublelogin', component: DoubleLoginComponent, pathMatch: 'full' },
+	{ path: 'pong', component: GameComponent, canActivate: [AuthguardService], pathMatch: 'full' },
+	{ path: 'chat', component: ChatComponent, canActivate: [AuthguardService], pathMatch: 'full' },
+	{ path: 'friends', component: FriendsComponent, canActivate: [AuthguardService], pathMatch: 'full' },
+	{ path: 'profile', component: ProfileComponent, canActivate: [AuthguardService], pathMatch: 'full' },
+	{ path: '', redirectTo: 'home', pathMatch: 'prefix'},
 ];
 
 @NgModule({

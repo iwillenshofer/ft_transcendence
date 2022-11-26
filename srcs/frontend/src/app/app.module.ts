@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import {MatTooltipModule} from '@angular/material/tooltip';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginpageComponent } from './components/login/loginpage/loginpage.component';
@@ -46,6 +46,10 @@ import { ChatRoomComponent } from './components/chat/chat-room/chat-room.compone
 import { ChatMessageComponent } from './components/chat/chat-message/chat-message.component';
 import { ChatModule } from './components/chat/chat.module';
 import { DoubleLoginComponent } from './components/login/double-login/double-login.component';
+import { AchievementsComponent } from './components/friends/achievements/achievements.component';
+import { FriendProfileComponent } from './components/friends/friend-profile/friend-profile.component';
+import { GameStatsComponent } from './components/friends/game-stats/game-stats.component';
+import { FriendStatsComponent } from './components/friends/friend-stats/friend-stats.component';
 
 
 @NgModule({
@@ -72,6 +76,10 @@ import { DoubleLoginComponent } from './components/login/double-login/double-log
     ChatRoomComponent,
     ChatMessageComponent,
     DoubleLoginComponent,
+    AchievementsComponent,
+    FriendProfileComponent,
+    GameStatsComponent,
+    FriendStatsComponent,
   ],
   imports: [
     BrowserModule,
@@ -95,7 +103,8 @@ import { DoubleLoginComponent } from './components/login/double-login/double-log
     MatSnackBarModule,
     MatChipsModule,
     MatAutocompleteModule,
-    MatToolbarModule
+    MatToolbarModule,
+	MatTooltipModule
   ],
   providers: [
     {

@@ -2,6 +2,7 @@ export const INITIAL_VELOCITY = 3;
 export const MAX_SCORE = 1;
 export const VELOCITY_INCREASE = 0.2;
 
+
 let table = {
     width: 1280,
     height: 720

@@ -1,19 +1,11 @@
 <app-alerts *ngIf="!(tfa_fulfilled.value)"></app-alerts>
 
-<div [ngClass]="qrCode.value ? 'rightnav' : 'twoFactor'">
+<div>
 	<div class="twoFactor">
-		<div class="TfaTitle">
+		<div *ngIf="!qrCode.value" class="TfaTitle">
 			Two-factor Authentication
 		</div>
 		<div *ngIf="qrCode.value">
-			<div class="steps">
-				<b>Download an authenticator application.</b><br>
-				Download and install any authenticator app, like "Google Authenticator" on your phone.
-			</div>
-			<div class="steps">
-				<b>Scan the QR code.</b><br>
-				Open the authenticator app and scan the image below. If you prefer, you can use the text code instead.
-			</div>
 			<div class="qrCode">
 				<img class="images" [src]="qrCode.value" />
 			</div>

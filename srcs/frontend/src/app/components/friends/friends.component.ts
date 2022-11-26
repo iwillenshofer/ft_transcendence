@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { faMagnifyingGlass, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { BehaviorSubject } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
@@ -15,11 +16,11 @@ export class FriendsComponent implements OnInit {
   constructor(
     protected friendsService: FriendsService,
     private authService: AuthService,
+	protected router: Router
     ) {  }  
 
-
   ngOnInit(): void {
-    if (!(this.friendsService.selectedUser.value)) {
+    if (!(this.friendsService.selectedUser.value) || this.router.url == "/home") {
       this.friendsService.selectedUser.next( this.authService.userSubject.value?.username );
     }
     this.friendsService.selectedUser.subscribe(res => {
