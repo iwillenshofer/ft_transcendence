@@ -43,13 +43,6 @@ export class AuthService {
 			return false;
 		return (true);
 	}
-	/*
-	** popup variables
-	*/
-	initLogin() {
-		const url: string = '/auth/login';
-		window.location.href = url;
-	};
 
 	serverLogout() {
 		return (this.http.get('/backend/auth/logout', { withCredentials: true }));

@@ -8,6 +8,7 @@ export class UserDTO {
 	avatar_url: string;
 	tfa_fulfilled?: boolean = false;
 	tfa_enabled?: boolean = false;
+	login_count?: number = 0;
 
 	constructor(id: number = 0, username: string = '', fullname: string = '', avatar_url: string = '') {
 		this.id = id;
@@ -24,6 +25,7 @@ export class UserDTO {
 		user.avatar_url = dto.avatar_url;
 		user.tfa_fulfilled = dto.tfa_fulfilled;
 		user.tfa_enabled = dto.tfa_enabled;
+		user.login_count = dto.login_count;
 		return (user);
 	}
 
@@ -34,6 +36,7 @@ export class UserDTO {
 		user.fullname = entity.fullname;
 		user.avatar_url = entity.avatar_url;
 		user.tfa_enabled = entity.tfa_enabled;
+		user.login_count = entity.login_count;
 		return (user);
 	}
 

@@ -24,7 +24,6 @@ export class ChatService {
 
   connect() {
     this.socket.on("double_login", () => {
-      this.alert.info("Double Login!!!");
       this.router.navigate(['doublelogin']);
     });
     this.socket.connect();

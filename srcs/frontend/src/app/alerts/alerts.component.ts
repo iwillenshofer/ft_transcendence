@@ -29,6 +29,7 @@ export class AlertsComponent implements OnInit {
     this.alertsService.getAlerts().subscribe(messages => {
       this.alerts = messages;
     });
+	if (this.router.url === '/login') {return ;};
     this.socket = io("http://localhost:3000/game");
     let username: any;
     this.auth.getUser().then(data => {

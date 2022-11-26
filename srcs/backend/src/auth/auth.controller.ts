@@ -24,8 +24,8 @@ export class AuthController {
 	** since the user is not logged in yet, only intra42 guard is used
 	*/
 
-	@UseGuards(FakeIntra42Guard)
-	//@UseGuards(Intra42Guard)
+	//@UseGuards(FakeIntra42Guard)
+	@UseGuards(Intra42Guard)
 	@Get("login")
 	async login(@Request() req, @Response() res) {
 		return;
@@ -35,8 +35,8 @@ export class AuthController {
 	** /auth/callback is the intra's return
 	*/
 
-	@UseGuards(FakeIntra42Guard)
-	//@UseGuards(Intra42Guard)
+	//@UseGuards(FakeIntra42Guard)
+	@UseGuards(Intra42Guard)
 	@Get("callback")
 	async callback(@Response() res, @Request() req) {
 		if (req.user) {

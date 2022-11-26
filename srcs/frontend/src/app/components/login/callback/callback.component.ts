@@ -41,10 +41,6 @@ export class LoginCallbackComponent implements OnInit {
 		this.authService.logout();
 	}
 
-	initLogin() {
-		this.authService.initLogin();
-	}
-
 	ngOnInit() {
 		this.getToken();
 	}
@@ -54,13 +50,13 @@ export class LoginCallbackComponent implements OnInit {
 			const code = params['code'];
 			if (!(code)) {
 				this.alertservice.danger('Login failed. Is everything OK with the intranet?')
-				this.router.navigate(['/']);
+				this.router.navigate(['/login']);
 				return;
 			}
 			this.http.get<any>('/backend/auth/token/' + code).subscribe(result => {
 				if (!(result) || !(result.token)) {
 					this.alertservice.info('Invalid token. What are you trying to do here?')
-					this.router.navigate(['/']);
+					this.router.navigate(['/login']);
 					return;
 				}
 				console.log("set item")
@@ -76,7 +72,11 @@ export class LoginCallbackComponent implements OnInit {
 	async getUser() {
 		let x = await this.authService.updateUser();
 		if (this.authService.isAuthenticated())
-			this.router.navigate(['/']);
+		{
+			if (this.currentUser?.login_count ?? 0 <= 1)
+				this.router.navigate(['/']);
+			this.router.navigate(['/profile']);
+		}
 		else if (this.authService.isJwtAuthenticated())
 			this.need_tfa = true;
 	}
