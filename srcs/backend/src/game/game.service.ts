@@ -24,7 +24,7 @@ export class GameService {
         gameEntity.usernameP2 = game.player2.username;
         gameEntity.scoreP1 = game.player1.score;
         gameEntity.scoreP2 = game.player2.score;
-
+        gameEntity.isChallenge = game.challenge;
         gameEntity.winner = await this.usersService.getUserByUsername(game.winner.username);
         gameEntity.idP1 = await this.usersService.getUserByUsername(gameEntity.usernameP1);
         gameEntity.idP2 = await this.usersService.getUserByUsername(gameEntity.usernameP2);
@@ -36,6 +36,6 @@ export class GameService {
 
     async getGamesByUsername(username: string) {
         // let user = await this.userRepository.findOneBy({ id: id });
-        // return user.games;
+        // return auser.games;
     }
 }

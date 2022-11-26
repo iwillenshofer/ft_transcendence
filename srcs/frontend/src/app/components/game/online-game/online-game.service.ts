@@ -43,7 +43,7 @@ export class OnlineGameService {
     game.update();
   }
 
-  reset() {
+  start() {
     game.gameStart();
   }
 
@@ -94,6 +94,14 @@ export class OnlineGameService {
     }
     game.setFinished();
     return res;
+  }
+
+  setFinished() {
+    game.setFinished();
+  }
+
+  reset() {
+    game.setStarted(false);
   }
 
   // getScore() {

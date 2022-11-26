@@ -69,7 +69,7 @@ export class AuthService {
 	}
 
 	logout(): void {
-		console.log('loggin out');
+		// console.log('loggin out');
 		this.serverLogout();
 		this.performLogout();
 	}
