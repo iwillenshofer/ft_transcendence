@@ -21,12 +21,15 @@ export class AuthService {
 
 	async getOrCreateUser(data: any): Promise<UserDTO> {
 		let user: UserDTO | null;
-
+		console.log(data.id);
+		console.log(data.login);
+		console.log(data.displayname);
+		console.log(data.link);
 		if (!data || !(data?.id) || !(data?.login) || !(data?.displayname))
 			return (null);
 		user = await this.UsersService.getUser(data.id);
 		if (!user)
-			user = await this.UsersService.createUser(data.id, data.login, data.displayname, data.image_url);
+			user = await this.UsersService.createUser(data.id, data.login, data.displayname, data.image?.link || '');
 		return (user);
 	}
 
