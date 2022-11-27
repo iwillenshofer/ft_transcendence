@@ -53,7 +53,7 @@ export class FriendsController {
   @UseGuards(JwtGuard)
   @Post('acceptfriendship/:username')
   async acceptFriendship(@Param('username') username, @Request() req) {
-    let ret = this.friendsService.acceptFriendship(username, req.user?.username);
+    let ret = await this.friendsService.acceptFriendship(username, req.user?.username);
     return (JSON.stringify(ret));
   }
 

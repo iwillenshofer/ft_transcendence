@@ -128,8 +128,7 @@ export class FriendsService {
   async acceptFriendship(username: string = '') {
     if (username == '') { username = this.selectedUser.value || '' };
     this.confirmFriendship(username).subscribe((res) => {
-      // console.log(res);
-      if ((res.status == 3)) { this.alertService.success(res.message); }
+      if ((res.status == 3)) { this.alertService.success("friendship accepted"); }
       else { this.alertService.warning("friendship could not be accepted"); }
       this.update();
     });
