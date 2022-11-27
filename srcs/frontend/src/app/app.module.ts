@@ -111,7 +111,8 @@ import { DialogRoomSettingComponent } from './components/dialogs/dialog-room-set
     MatAutocompleteModule,
     MatToolbarModule,
     MatRadioModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
+	MatTooltipModule
   ],
   providers: [
     {
