@@ -4,7 +4,7 @@ import { Meta } from "./meta.interface";
 import { UserInterface } from "./user.interface";
 
 export interface RoomInterface {
-    id?: number;
+    id: number;
     name: string;
     name2?: string;
     description?: string;

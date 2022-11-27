@@ -26,11 +26,11 @@ p {
 .ownMessage {
     justify-content: end;
     background-color: lightblue;
-    word-break: break-all;
+    word-break: break-word;
 }
 
 .otherMessage {
-    word-break: break-all;
+    word-break: break-word;
 }
 
 .status {

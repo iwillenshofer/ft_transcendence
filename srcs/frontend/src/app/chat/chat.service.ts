@@ -115,4 +115,8 @@ export class ChatService {
     return this.socket.fromEvent<MemberInterface[]>('members_room');
   }
 
+  getMyMemberOfRoom(roomId: number): Observable<MemberInterface> {
+    return this.http.get<MemberInterface>('/backend/chat/get_my_member_of_room/' + roomId, { withCredentials: true });
+  }
+
 }

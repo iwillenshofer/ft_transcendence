@@ -59,4 +59,11 @@ export class ChatController {
     async getNonAddedUsers(@Request() req) {
         return of(await this.chatService.getNonAddedUsers(req.user.id));
     }
+
+    @UseGuards(JwtGuard)
+    @Get('get_my_member_of_room/:roomId')
+    async getMyMemberOfRoom(@Param('roomId') roomId, @Request() req) {
+        return of(await this.chatService.getMyMemberOfRoom(roomId, req.user.id));
+    }
+
 }

@@ -20,7 +20,7 @@ export class DialogNewRoomComponent implements OnInit {
 
   form: FormGroup = new FormGroup({
     name: new FormControl(null, [Validators.required, Validators.minLength(3), Validators.maxLength(20), Validators.pattern('^[a-z-A-Z-0-9]+$'),], [isRoomNameTaken(this.roomService)]),
-    description: new FormControl(null),
+    description: new FormControl(null, [Validators.maxLength(50)]),
     type: new FormControl(null, [Validators.required]),
     password: new FormControl(null, [Validators.required, Validators.minLength(8)])
   });
@@ -36,7 +36,7 @@ export class DialogNewRoomComponent implements OnInit {
       if (data === true) {
         this.dialogRef.close();
       }
-    })
+    });
   }
 
   get name(): FormControl {

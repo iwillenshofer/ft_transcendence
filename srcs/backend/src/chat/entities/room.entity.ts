@@ -29,7 +29,7 @@ export class RoomEntity extends BaseEntity {
     @OneToMany(() => MessageEntity, message => message.room, { onDelete: "CASCADE" })
     messages: MessageEntity[];
 
-    @ManyToMany(() => MemberEntity)
+    @ManyToMany(() => MemberEntity, (members) => members.rooms)
     @JoinTable()
     members: MemberEntity[];
 

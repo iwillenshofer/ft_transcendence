@@ -14,7 +14,7 @@ export class MemberEntity {
     @JoinColumn()
     user: UserEntity;
 
-    @Column({ default: MemberRole.Member })
+    @Column()
     role: MemberRole;
 
     @Column()
@@ -22,4 +22,8 @@ export class MemberEntity {
 
     @OneToMany(() => MessageEntity, message => message.member, { onDelete: "CASCADE" })
     messages: MessageEntity[];
+
+    @ManyToMany(() => RoomEntity, (rooms) => rooms.members)
+    rooms: RoomEntity[];
+
 }

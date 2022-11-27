@@ -52,14 +52,10 @@ export class ChatMessageComponent implements OnInit {
     this.created_at = this.message.created_at ?? new Date();
     this.isUserOnline$.subscribe(res => {
       this.isUserOnline = res;
-      if (this.isUserOnline == true) {
+      if (this.isUserOnline == true)
         this.isOn = true;
-        this.status = "circle-green-16.png";
-      }
-      else {
+      else
         this.isOn = false;
-        this.status = "circle-red-16.png";
-      }
     });
   }
 

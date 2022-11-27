@@ -99,6 +99,7 @@ export class DialogSearchUserComponent implements OnInit {
       let myUser_username = myUser.username;
       let user_id = username.id;
       let room: RoomInterface = {
+        id: NaN,
         name: myUser_username,
         name2: user_username,
         description: "Conversation between " + myUser_username + " and " + user_username,

@@ -1,4 +1,4 @@
-<div *ngIf="chatRoom; else no_chatroom_selected">
+<div *ngIf="!isRoomNulled(); else no_chatroom_selected">
     <div class="container text-center">
         <div class="row">
             <div class="col">
@@ -15,8 +15,16 @@
                         </span>
                         <ng-template #group_conversation>
                             <h2>{{chatRoom.name}}</h2>
-                            <h3>{{chatRoom.description}}</h3>
-                            <h4>{{this.ownerUsername}}</h4>
+
+                            <h3>
+                                <ul class="navbar-nav flex-direction" style="cursor: pointer;">
+                                    <li *ngIf="canModifiedNameAndDesc(myMember)" (click)="onChangeTitleAndDesc()">
+                                        <fa-icon title="{{chatRoom.name}} settings" [icon]="faGears"></fa-icon>
+                                    </li>
+                                </ul>
+                                {{chatRoom.description}}
+                            </h3>
+
                         </ng-template>
                     </span>
                 </div>
@@ -48,10 +56,64 @@
         </div>
         <div class="row">
             <div class="col">
-                <p *ngFor="let member of (members$ | async)">{{member.user.username}}</p>
+
+
+                <mat-selection-list #list [multiple]="false" (selectionChange)="onMemberChange($event)">
+                    <mat-list-option *ngFor="let member of members" [value]="member">
+                        <img src=" backend/{{ member.user.avatar_url }}" class="avatar rounded-circle">
+                        <fa-icon class="faOwner" *ngIf="isOwner(member)" [icon]="fasStar"></fa-icon>
+                        <fa-icon class="faAdmin" *ngIf="isAdmin(member)" [icon]="farStar"></fa-icon>
+                        {{member.user.username}}
+                        <mat-divider></mat-divider>
+                    </mat-list-option>
+                </mat-selection-list>
             </div>
-            <div class="col">
-                Column
+            <div class="col" *ngIf="selectedMember">
+                <div>
+                    <!-- <p>{{selectedMember.user.username}} is member since {{selectedMember.created_at | date:
+                        'dd/MM/yyyy'}} </p> -->
+                    <a>
+                        <fa-icon title="{{selectedMember.user.username}} profile" class="iconsMember" [icon]="faProfile"
+                            (click)="profile(selectedMember.user.username)" routerLink="/friends">
+                        </fa-icon>
+                    </a>
+                    <a>
+                        <fa-icon title="Challenge {{selectedMember.user.username}}" class="iconsMember"
+                            [icon]="faPaddle" (click)="challenge(selectedMember.user.username)" routerLink="/pong">
+                        </fa-icon>
+                    </a>
+                    <a>
+                        <fa-icon title="Block {{selectedMember.user.username}}" class="iconsMember" [icon]="faBan"
+                            (click)="blockUser(selectedMember.user.username)">
+                        </fa-icon>
+                    </a>
+                    <a>
+                        <fa-icon *ngIf="displaySetAsAdmin(selectedMember)"
+                            title="Add the administrator role to {{selectedMember.user.username}}" class="iconsMember"
+                            [icon]="fasStar" (click)="blockUser(selectedMember.user.username)">
+                        </fa-icon>
+                    </a>
+                    <a>
+                        <fa-icon *ngIf="isOwner(myMember) && isAdmin(selectedMember)"
+                            title="Remove the administrator role to {{selectedMember.user.username}}"
+                            class="iconsMember" [icon]="farStar" (click)="blockUser(selectedMember.user.username)">
+                        </fa-icon>
+                    </a>
+                </div>
+                <div *ngIf="isOwner(myMember) || isAdmin(myMember) else elseBlock">
+                    <button mat-button disabled color="warn">Mute</button>
+                    <button mat-button color="warn">10min</button>
+                    <button mat-button color="warn">1h</button>
+                    <button mat-button color="warn">24h</button>
+                    <br>
+                    <button mat-button disabled color="warn">Ban</button>
+                    <button mat-button color="warn">10min</button>
+                    <button mat-button color="warn">1h</button>
+                    <button mat-button color="warn">24h</button>
+                </div>
+                <ng-template #elseBlock>
+                    member
+                </ng-template>
             </div>
         </div>
     </div>

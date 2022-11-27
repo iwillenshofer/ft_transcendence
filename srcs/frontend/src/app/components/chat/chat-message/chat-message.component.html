@@ -15,7 +15,8 @@
         <p class="otherMessage">
             <span (mouseenter)="onMouseEnter()" class="test">
                 <img src=" backend/{{ this.avatar }}" class="avatar rounded-circle">
-                <img src="../../../../assets/images/{{this.status}}" class="status">
+                <img *ngIf="isOn" src="/assets/images/circle-green-16.png" class="status">
+                <img *ngIf="!isOn" src="/assets/images/circle-red-16.png" class="status">
                 <span (mouseenter)="onMouseEnterIcons()" (mouseleave)="onMouseOut()">
                     <a>
                         <fa-icon *ngIf=" this.onHover" [icon]="faProfile" (click)="profile()" routerLink="/friends"

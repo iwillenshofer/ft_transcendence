@@ -45,6 +45,9 @@ import { DialogSearchUserComponent } from './components/dialogs/dialog-search-us
 import { ChatRoomComponent } from './components/chat/chat-room/chat-room.component';
 import { ChatMessageComponent } from './components/chat/chat-message/chat-message.component';
 import { ChatModule } from './chat/chat.module';
+import { DialogRoomSettingComponent } from './components/dialogs/dialog-room-setting/dialog-room-setting.component';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 
 @NgModule({
@@ -70,6 +73,7 @@ import { ChatModule } from './chat/chat.module';
     DialogSearchUserComponent,
     ChatRoomComponent,
     ChatMessageComponent,
+    DialogRoomSettingComponent,
   ],
   imports: [
     BrowserModule,
@@ -93,7 +97,9 @@ import { ChatModule } from './chat/chat.module';
     MatSnackBarModule,
     MatChipsModule,
     MatAutocompleteModule,
-    MatToolbarModule
+    MatToolbarModule,
+    MatRadioModule,
+    MatButtonToggleModule
   ],
   providers: [
     {

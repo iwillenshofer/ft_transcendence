@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { MatSelectionListChange } from '@angular/material/list';
+import { MatSelectionList, MatSelectionListChange } from '@angular/material/list';
 import { PageEvent } from '@angular/material/paginator';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ChatService } from 'src/app/chat/chat.service';
@@ -13,6 +13,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DialogSearchUserComponent } from '../dialogs/dialog-search-user/dialog-search-user.component';
 import { UserService } from 'src/app/services/user.service';
 import { UserInterface } from 'src/app/model/user.interface';
+import { MatSelect } from '@angular/material/select';
 
 @Component({
   selector: 'app-chat',
@@ -20,6 +21,13 @@ import { UserInterface } from 'src/app/model/user.interface';
   styleUrls: ['./chat.component.scss']
 })
 export class ChatComponent implements OnInit {
+
+
+  @ViewChild('roomsAvailable')
+  roomsAvailable!: MatSelectionList;
+
+  @ViewChild('list')
+  list!: MatSelectionList;
 
   myRooms$ = this.chatService.getMyRooms();
   allMyRooms$ = this.chatService.getMyRoomsRequest();
@@ -31,8 +39,10 @@ export class ChatComponent implements OnInit {
   myUsername!: string;
 
   myRoomsName: string[] = []
-  selectedRoom: RoomInterface | null = null;
-  selectedPublicRoom = null;
+
+  selectedRoomNulled: RoomInterface = { id: 0, name: '', type: RoomType.Public }
+  selectedRoom: RoomInterface = this.selectedRoomNulled;
+  selectedPublicRoom: RoomInterface = this.selectedRoomNulled;
 
   Isrooms: boolean = false;
 
@@ -52,6 +62,14 @@ export class ChatComponent implements OnInit {
     this.myUsername = this.myUser.username;
     this.chatService.emitPaginateRooms(3, 0);
     this.chatService.emitPaginatePublicRooms(3, 0);
+
+
+    this.myRooms$.subscribe((res) => {
+      const tmp = res.items.find(room => room.id == this.selectedRoom.id);
+      if (tmp)
+        this.selectedRoom = tmp;
+    })
+
     this.myRoomsNameObsv$.subscribe(roomsName => {
       roomsName.forEach(name => {
         this.myRoomsName.push(name);
@@ -96,6 +114,7 @@ export class ChatComponent implements OnInit {
     const dialogRef = this.dialog.open(DialogPasswordComponent, {
       data: { room: this.selectedPublicRoom }
     });
+    this.roomsAvailable.deselectAll();
   }
 
   async onJoinRoom(selectedPublicRoom: RoomInterface | null) {
@@ -119,12 +138,13 @@ export class ChatComponent implements OnInit {
         this.myRoomsName.push(roomName);
       }
       this.selectedRoom = this.selectedPublicRoom;
-      this.selectedPublicRoom = null;
+      this.selectedPublicRoom = this.selectedRoomNulled;
     }
+    this.roomsAvailable.deselectAll();
   }
 
-  onLeaveRoom(selectedRoom: RoomInterface | null) {
-    if (selectedRoom != null) {
+  onLeaveRoom(selectedRoom: RoomInterface) {
+    if (selectedRoom != this.selectedRoomNulled) {
       this.chatService.leaveRoom(selectedRoom);
       let name = selectedRoom.name ?? '';
       const index = this.myRoomsName.indexOf(name, 0);
@@ -133,6 +153,7 @@ export class ChatComponent implements OnInit {
       }
       this.nulledSelectedRoom();
     }
+    this.roomsAvailable.deselectAll();
   }
 
   isProtected(type: RoomType) {
@@ -144,7 +165,6 @@ export class ChatComponent implements OnInit {
   }
 
   async onSearchUser() {
-    console.log(this.myRoomsName)
     const dialogRef = this.dialog.open(DialogSearchUserComponent);
 
     dialogRef.afterClosed().subscribe(ret => {
@@ -155,10 +175,19 @@ export class ChatComponent implements OnInit {
         }
       })
     })
+    this.roomsAvailable.deselectAll();
   }
 
   nulledSelectedRoom() {
-    this.selectedRoom = null;
-    this.selectedPublicRoom = null;
+    this.selectedRoom = this.selectedRoomNulled;
+    this.selectedPublicRoom = this.selectedRoomNulled;
+  }
+
+  isSelectRoomNull() {
+    return this.selectedRoom === this.selectedRoomNulled;
+  }
+
+  selectPublicRoomNull() {
+    return this.selectedPublicRoom === this.selectedRoomNulled;
   }
 }

@@ -40,18 +40,18 @@ export class ChatService {
         members.forEach(member => {
             room.members.push(member);
         })
-        return this.roomRepository.save(room);
+        return await this.roomRepository.save(room);
     }
 
-    async createMember(user: UserEntity, socketId: string): Promise<MemberEntity> {
-        const member = new CreateMemberDto(user, socketId);
-        return this.memberRepository.save(member.toEntity());
+    async createMember(user: UserEntity, socketId: string, role: MemberRole): Promise<MemberEntity> {
+        const member = new CreateMemberDto(user, socketId, role);
+        return await this.memberRepository.save(member.toEntity());
     }
 
-    async getMemberByUserId(userId: number): Promise<MemberEntity> {
-        return this.memberRepository.findOne({
+    async getMembersByUserId(userId: number): Promise<MemberEntity[]> {
+        return this.memberRepository.find({
             where: { 'user': { 'id': userId } },
-            relations: { user: true }
+            relations: { user: true, rooms: true }
         });
     }
 
@@ -61,9 +61,14 @@ export class ChatService {
         return await this.memberRepository.find({ relations: { user: true } });
     }
 
-    async updateSocketIdMember(socketId: string, member: MemberEntity): Promise<MemberEntity> {
-        member.socketId = socketId;
-        return await this.memberRepository.save(member);
+    async updateSocketIdMember(socketId: string, members: MemberEntity[]): Promise<MemberEntity[]> {
+        let membersUpdated = [];
+        for (var member of members) {
+            member.socketId = socketId;
+            let ret = await this.memberRepository.save(member);
+            membersUpdated.push(ret);
+        }
+        return (membersUpdated);
     }
 
     // async getAllMyConvRoomsAsText(userId: number): Promise<String[]> {
@@ -137,8 +142,7 @@ export class ChatService {
     //     return (room);
     // }
 
-    async getRoomsOfMember(member: MemberEntity, options: IPaginationOptions): Promise<Pagination<RoomEntity>> {
-        let userId = member.user.id;
+    async getRoomsOfMember(userId: number, options: IPaginationOptions): Promise<Pagination<RoomEntity>> {
         const query = this.roomRepository
             .createQueryBuilder('room')
             .leftJoin('room.members', 'member')
@@ -273,7 +277,6 @@ export class ChatService {
                 members: { user: true }
             }
         });
-        console.log(currentRoom.members)
         return currentRoom.members;
     }
 
@@ -320,4 +323,54 @@ export class ChatService {
             .getMany();
         return res;
     }
+
+    async getMyMemberOfRoom(roomId: number, userId: number): Promise<MemberEntity> {
+        let room = await this.roomRepository.findOne({
+            relations: ['members', 'members.user'],
+            where: { id: roomId }
+        });
+        if (room) {
+            let member = room.members.find(member => member.user.id == userId)
+            if (member) {
+                return (member);
+            }
+        }
+        return (null);
+    }
+
+    async updateRoomName(room: RoomEntity, name: string) {
+        room.name = name;
+        await this.roomRepository.save(room);
+    }
+
+    async updateRoomDescription(room: RoomEntity, description: string) {
+        room.description = description;
+        await this.roomRepository.save(room);
+    }
+
+    async updateOrCreateRoomPassword(room: RoomEntity, password: string) {
+        const encodedPassword = this.encrypt.encode(password);
+        room.password = encodedPassword;
+        room.type = RoomType.Protected;
+        await this.roomRepository.save(room);
+    }
+
+    async removeRoomPassword(room: RoomEntity) {
+        room.password = null;
+        room.type = RoomType.Private;
+        await this.roomRepository.save(room);
+    }
+
+
+
+    // let res = await this.memberRepository
+    //     .createQueryBuilder("member")
+    //     .leftJoinAndSelect('member.room', 'room')
+    //     .leftJoinAndSelect('member.user', 'user')
+    //     .where('room.id = :roomId', { roomId })
+    //     .andWhere('user.id = : userId', { userId })
+    //     .getOne()
+
+    // console.log(res);
+    // return (res);
 }
