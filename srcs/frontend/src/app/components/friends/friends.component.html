@@ -51,10 +51,10 @@
             </div>
 
             <div class="row">
-                <div class="col-12">
+                <div class="col-12 mb-3 ">
                     <div class="card bg-secondary shadow">
                         <div class="card-header bg-white border-0">
-                            Stats
+                            User Stats
                         </div>
                         <div class="card-body userlist text-center stats ">
                                 
@@ -64,6 +64,22 @@
                     </div>
                 </div>
             </div> <!--div class="row"-->
+
+            <div class="row"  *ngIf="router.url === '/home'">
+				<div class="col-12">
+					<div class="card bg-secondary shadow">
+						<div class="card-header bg-white border-0">
+							Game Stats
+						</div>
+						<div class="card-body user-list-card ">
+		
+							<app-game-stats></app-game-stats>
+							
+						</div>
+					</div>
+				</div>
+			</div>
+
         </div> <!--div class="col-sm-6  mb-3 "-->
       
         <div class="col-sm-3  mb-3 ">
@@ -82,11 +98,11 @@
 		<div class="col-sm-3  mb-3 " *ngIf="router.url === '/home'">
             <div class="card bg-secondary shadow">
                 <div class="card-header bg-white border-0">
-                    Game Stats
+                    Ladder Ranking
                 </div>
                 <div class="card-body user-list-card ">
 
-					<app-game-stats></app-game-stats>
+					<app-game-ranking></app-game-ranking>
 					
                 </div>
             </div>

@@ -25,7 +25,7 @@ export class AuthController {
 	*/
 
 	@UseGuards(FakeIntra42Guard)
-	@UseGuards(Intra42Guard)
+//	@UseGuards(Intra42Guard)
 	@Get("login")
 	async login(@Request() req, @Response() res) {
 		return;
@@ -36,7 +36,7 @@ export class AuthController {
 	*/
 
 	@UseGuards(FakeIntra42Guard)
-	@UseGuards(Intra42Guard)
+//	@UseGuards(Intra42Guard)
 	@Get("callback")
 	async callback(@Response() res, @Request() req) {
 		if (req.user) {

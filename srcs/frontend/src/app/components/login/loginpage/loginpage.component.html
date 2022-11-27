@@ -1,7 +1,9 @@
-<app-alerts></app-alerts>
-<div class="loginPage">
-    <div class="loginPage__content">
-        <p>Pong</p>
-        <button (click)="login()">Login</button>
-    </div>
+<canvas #loginpage ></canvas>
+
+<div class="outer-div">
+	<app-alerts></app-alerts>
+	<div class="inner-div">
+		<img src="/assets/images/logo-p.svg"><br>
+        <button class="btn btn-secondary" (click)="login()">Login</button>
+	</div>
 </div>

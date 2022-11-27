@@ -68,6 +68,12 @@
         max-width: 33.33333%;
         flex: 0 0 33.33333%;
       }
+
+	  .col-sm-3:last-of-type {
+        max-width: 100%;
+        flex: 0 0 100%;
+      }
+
       .col-sm-6 {
         max-width: 66.6666%;
         flex: 0 0 66.6666%;
@@ -79,6 +85,12 @@
         max-width: 25%;
         flex: 0 0 25%;
       }
+
+	  .col-sm-3:last-of-type {
+        max-width: 25%;
+        flex: 0 0 25%;
+      }
+
       .col-sm-6 {
         max-width: 50%;
         flex: 0 0 50%;

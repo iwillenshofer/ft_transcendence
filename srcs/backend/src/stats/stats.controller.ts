@@ -12,6 +12,12 @@ export class StatsController {
     private statsService: StatsService
   ) { };
 
+  @Get('/ranking')
+  async ranking(@Request() req) {
+	console.log("getting ranking");
+    let ret = await this.statsService.getLadderRanking();
+    return (JSON.stringify(ret));
+  }
 
   @UseGuards(JwtGuard)
   @Get('/:username')
@@ -34,6 +40,8 @@ export class StatsController {
     let ret = await this.statsService.getUserStats(username);
     return (JSON.stringify(ret));
   }
+
+
 
   @UseGuards(JwtGuard)
   @Get('status/:username')

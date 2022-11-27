@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AlertsService } from 'src/app/alerts/alerts.service';
+import { AuthService } from 'src/app/auth/auth.service';
 import { StatsDTO } from './stats.dto';
 
 @Injectable({
@@ -11,7 +13,9 @@ export class FriendsService {
 
   constructor(
     private http: HttpClient,
-    private alertService: AlertsService
+    private alertService: AlertsService,
+	private authService: AuthService,
+	private router: Router
   ) {
     this.selectedUser = new BehaviorSubject<string | undefined | null>(null);
     this.gamesPlayed = new BehaviorSubject<number>(0);
@@ -20,6 +24,7 @@ export class FriendsService {
     this.userList = new BehaviorSubject<any[]>([]);
     this.friendsList = new BehaviorSubject<any[]>([]);
     this.requestsList = new BehaviorSubject<any[]>([]);
+	this.rankingList = new BehaviorSubject<any[]>([]);
     this.friendStatus = new BehaviorSubject<number>(0);
     this.achievements = new BehaviorSubject<any[]>([]);
 	this.stats = new BehaviorSubject<StatsDTO | null>(null);
@@ -36,11 +41,18 @@ export class FriendsService {
   public requestsList: BehaviorSubject<any[]>;
   public achievements: BehaviorSubject<any[]>;
   public stats: BehaviorSubject<StatsDTO | null>;
+  public rankingList: BehaviorSubject<any[]>;
+
+
 
   ngOnInit(): void { }
 
   loadUser(username: string) {
     this.selectedUser.next(username);
+	if (username == this.authService.userSubject.value?.username)
+		this.router.navigate(['/home']);
+	else
+		this.router.navigate(['/friends']);
   }
 
   getUserStats(): Observable<StatsDTO> {
@@ -80,6 +92,10 @@ export class FriendsService {
     return this.http.get('/backend/friends/getfriends/', { withCredentials: true });
   }
 
+  getRankingList(): Observable<any> {
+    return this.http.get('/backend/stats/ranking', { withCredentials: true });
+  }
+
   getFriendshipStatus(username: any): Observable<any> {
     return this.http.get('/backend/friends/friendshipstatus/' + username, { withCredentials: true });
   }
@@ -95,6 +111,19 @@ export class FriendsService {
   confirmFriendship(username: string): Observable<any> {
     return this.http.post('/backend/friends/acceptfriendship/' + username, { withCredentials: true });
   }
+
+
+	getRankingImage(rating: number = 0): string {
+		let max_rank = 2000;
+		let min_rank = 400;
+		let badges = 23;
+		if(!rating) { rating = this.stats.value?.rating || 0}
+		if (rating <= min_rank) { rating = min_rank };
+		if (rating >= max_rank) { rating = max_rank };
+
+		rating = Math.floor((rating - min_rank) / ((max_rank - min_rank) / badges)) + 1;
+		return ('/assets/images/ranking/' + rating + '.png');
+	}
 
   async acceptFriendship(username: string = '') {
     if (username == '') { username = this.selectedUser.value || '' };
@@ -133,6 +162,7 @@ export class FriendsService {
     await this.updateRequestsList();
 //    await this.updateAchievements();
 	await this.updateUserStats();
+	await this.updateRanking();
   }
 
 
@@ -171,4 +201,13 @@ export class FriendsService {
     })
   }
   
+  async updateRanking() {
+    this.getRankingList().subscribe((res: any[]) => {
+		console.log('updating ranking');
+		console.log(res);
+      this.rankingList.next(res);
+    })
+  }
+  
+
 }

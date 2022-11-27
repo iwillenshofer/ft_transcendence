@@ -1,19 +1,15 @@
-mat-card {
-    mat-card-content {
-        form {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+form {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
 
-            mat-form-field {
-                width: 100%;
-                min-width: 100%;
-            }
+	mat-form-field {
+		width: 100%;
+		min-width: 100%;
+	}
 
-            .button {
-                display: flex;
-                justify-content: flex-end;
-            }
-        }
-    }
+	.button {
+		display: flex;
+		justify-content: flex-end;
+	}
 }

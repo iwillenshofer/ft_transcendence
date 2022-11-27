@@ -50,6 +50,7 @@ import { AchievementsComponent } from './components/friends/achievements/achieve
 import { FriendProfileComponent } from './components/friends/friend-profile/friend-profile.component';
 import { GameStatsComponent } from './components/friends/game-stats/game-stats.component';
 import { FriendStatsComponent } from './components/friends/friend-stats/friend-stats.component';
+import { GameRankingComponent } from './components/friends/game-ranking/game-ranking.component';
 
 
 @NgModule({
@@ -80,6 +81,7 @@ import { FriendStatsComponent } from './components/friends/friend-stats/friend-s
     FriendProfileComponent,
     GameStatsComponent,
     FriendStatsComponent,
+    GameRankingComponent,
   ],
   imports: [
     BrowserModule,

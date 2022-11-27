@@ -186,6 +186,17 @@ export class StatsService {
     }
   }
 
+  async getLadderRanking(): Promise<any[]> {
+	console.log("getting ladder");
+    let users = await this.userRepository.createQueryBuilder('u')
+	.select(['u.username','u.avatar_url', 'u.rating'])
+	.orderBy('u.rating', 'DESC')
+	.getMany();
+	console.log(users);
+    return users;
+  }
+
+
   async getStatusByUsername(username: string) {
     let user = await this.userRepository.findOneBy({ username: username });
 	return user.status;

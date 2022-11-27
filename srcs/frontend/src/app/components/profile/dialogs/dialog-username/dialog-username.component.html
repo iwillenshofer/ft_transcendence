@@ -1,52 +1,7 @@
-<!-- <strong style="font-size: 20px;">Change your username</strong><br>
-<em>
-
-    <div *ngIf="form.errors?.['required']">
-        <small>Must be between 3 and 15 characters in length</small>
-    </div>
-
-    <div class="invalid" *ngIf="form.errors?.['minlength'] || form.errors?.['maxlength']">
-        <small>Must be between 3 and 15 characters in length</small>
-    </div>
-
-    <div class="valid" *ngIf="!form.errors?.['minlength'] && !form.errors?.['maxlength'] && !form.errors?.['required']">
-        <small>Must be between 3 and 15 characters in length</small>
-    </div>
-
-    <div *ngIf="form.errors?.['required']">
-        <small>May contain lowercase letters, numbers</small>
-    </div>
-
-    <div class="invalid" *ngIf="form.errors?.['pattern']">
-        <small>May contain lowercase letters, numbers</small>
-    </div>
-
-    <div class="valid" *ngIf="!form.errors?.['pattern'] && !form.errors?.['required']">
-        <small>May contain lowercase letters, numbers</small>
-    </div>
-
-    <div class="invalid" *ngIf="form.errors?.['forbiddenName']">
-        <small>Must be different than "{{ form.value }}"</small>
-    </div>
-
-    <div class="invalid" *ngIf="form.errors?.['usernameTaken']">
-        <small>This username is already taken</small>
-    </div>
-
-</em>
-<p></p>
-
-<label for="name"></label>
-<input id="name" type="text" [formControl]="form">
-<button type="button" (click)="updateName(form.value)" [disabled]="form.invalid">Update</button> -->
-
-
-<br>
-<mat-card>
-    <mat-card-content>
+    <div class="text-center">
         <form [formGroup]="form" (ngSubmit)="updateName(username.value)">
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" style="width: 100%;">
                 <mat-label>New Username</mat-label>
                 <input type="text" matInput placeholder="Username" formControlName="username">
                 <mat-error *ngIf="username.touched && username.hasError('required')">Username is required</mat-error>
@@ -69,9 +24,8 @@
             </mat-form-field>
 
             <div class="button">
-                <button mat-raised-button type="submit" [disabled]="!form.valid">Change</button>
+                <button class="btn btn-secondary" type="submit" [disabled]="!form.valid">Change</button>
             </div>
 
         </form>
-    </mat-card-content>
-</mat-card>
+</div>
