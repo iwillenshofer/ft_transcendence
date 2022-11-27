@@ -22,6 +22,7 @@
     "@angular/router": "latest",
     "@fortawesome/angular-fontawesome": "latest",
     "@fortawesome/fontawesome-svg-core": "latest",
+    "@fortawesome/free-regular-svg-icons": "latest",
     "@fortawesome/free-solid-svg-icons": "latest",
     "@popperjs/core": "^2.11.6",
     "bootstrap": "latest",

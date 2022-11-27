@@ -51,6 +51,9 @@ import { FriendProfileComponent } from './components/friends/friend-profile/frie
 import { GameStatsComponent } from './components/friends/game-stats/game-stats.component';
 import { FriendStatsComponent } from './components/friends/friend-stats/friend-stats.component';
 import { GameRankingComponent } from './components/friends/game-ranking/game-ranking.component';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { DialogRoomSettingComponent } from './components/dialogs/dialog-room-setting/dialog-room-setting.component';
 
 
 @NgModule({
@@ -82,6 +85,7 @@ import { GameRankingComponent } from './components/friends/game-ranking/game-ran
     GameStatsComponent,
     FriendStatsComponent,
     GameRankingComponent,
+    DialogRoomSettingComponent
   ],
   imports: [
     BrowserModule,
@@ -106,7 +110,8 @@ import { GameRankingComponent } from './components/friends/game-ranking/game-ran
     MatChipsModule,
     MatAutocompleteModule,
     MatToolbarModule,
-	MatTooltipModule
+    MatRadioModule,
+    MatButtonToggleModule
   ],
   providers: [
     {

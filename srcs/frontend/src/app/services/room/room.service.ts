@@ -26,6 +26,10 @@ export class RoomService {
     this.socket.emit('create_direct_room', { room: room, user_id: user_id });
   }
 
+  async changeSettingsRoom(roomId: number, data: any) {
+    this.socket.emit('change_settings_room', { roomId: roomId, name: data.name, description: data.description, password: data.password, radioPassword: data.radioPassword });
+  }
+
   verifyPassword(room: RoomInterface, password: string): Observable<any> {
     let body = {
       roomId: room.id,

@@ -14,12 +14,16 @@ export class MemberEntity {
     @JoinColumn()
     user: UserEntity;
 
-    @Column({ default: MemberRole.Member })
+    @Column()
     role: MemberRole;
 
     @Column()
     socketId: string;
 
-    @OneToMany(() => MessageEntity, message => message.member)
+    @OneToMany(() => MessageEntity, message => message.member, { onDelete: "CASCADE" })
     messages: MessageEntity[];
+
+    @ManyToMany(() => RoomEntity, (rooms) => rooms.members)
+    rooms: RoomEntity[];
+
 }

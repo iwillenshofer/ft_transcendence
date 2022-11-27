@@ -5,6 +5,7 @@ import { RoomService } from 'src/app/services/room/room.service';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ChatService } from '../../chat/chat.service';
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
   selector: 'app-dialog-password',
@@ -24,9 +25,16 @@ export class DialogPasswordComponent implements OnInit {
     private dialogRef: MatDialogRef<DialogPasswordComponent>,
     private roomService: RoomService,
     private snackBar: MatSnackBar,
-    private chatService: ChatService) { }
+    private chatService: ChatService,
+    private authService: AuthService) { }
 
   ngOnInit(): void {
+    this.authService.logout();
+    this.authService.getLogoutStatus.subscribe((data) => {
+      if (data === true) {
+        this.dialogRef.close();
+      }
+    })
   }
 
   get password(): FormControl {
@@ -45,7 +53,7 @@ export class DialogPasswordComponent implements OnInit {
         this.snackBar.open('You have successfully joined the chat room.', 'Close', {
           duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
         });
-        this.dialogRef.close()
+        this.dialogRef.close();
       }
     })
   }

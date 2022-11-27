@@ -17,22 +17,19 @@ export class RoomEntity extends BaseEntity {
     @Column({ nullable: true })
     name2: string;
 
-    @Column()
+    @Column({ nullable: true })
     description: string;
 
     @Column()
     type: RoomType;
 
-    @Column()
-    creatorId: number;
-
     @Column({ nullable: true })
     password: string;
 
-    @OneToMany(() => MessageEntity, message => message.room)
+    @OneToMany(() => MessageEntity, message => message.room, { onDelete: "CASCADE" })
     messages: MessageEntity[];
 
-    @ManyToMany(() => MemberEntity)
+    @ManyToMany(() => MemberEntity, (members) => members.rooms)
     @JoinTable()
     members: MemberEntity[];
 

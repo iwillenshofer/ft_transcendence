@@ -1,38 +1,53 @@
-<div *ngIf="chatRoom; else no_chatroom_selected">
+<div *ngIf="!isRoomNulled(); else no_chatroom_selected">
     <div class="container text-center">
         <div class="row">
             <div class="col">
                 <div style="height: 75x;">
                     <span
-                        style="display: flex; flex-direction: row; align-items: center; justify-content: space-between">
-                        <h2 *ngIf="isConversation(chatRoom) && chatRoom.name == this.myUsername; else elseBlock2">
-                            <h2>{{chatRoom.name2}}</h2>
-                        </h2>
-                        <ng-template #elseBlock2>
+                        style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+                        <span *ngIf="isConversation(chatRoom); else group_conversation">
+                            <h2 *ngIf="chatRoom.name == this.myUser.username; else other_user">
+                                {{chatRoom.name2}}
+                            </h2>
+                            <ng-template #other_user>
+                                <h2>{{chatRoom.name}}</h2>
+                            </ng-template>
+                        </span>
+                        <ng-template #group_conversation>
                             <h2>{{chatRoom.name}}</h2>
-                            <h3>{{chatRoom.description}}</h3>
+
+                            <h3>
+                                <ul class="navbar-nav flex-direction" style="cursor: pointer;">
+                                    <li *ngIf="canModifiedNameAndDesc(myMember)" (click)="onChangeTitleAndDesc()">
+                                        <fa-icon title="{{chatRoom.name}} settings" [icon]="faGears"></fa-icon>
+                                    </li>
+                                </ul>
+                                {{chatRoom.description}}
+                            </h3>
+
                         </ng-template>
                     </span>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col message">
-                <span *ngFor="let message of (messagesPaginate$ | async)?.items">
-                    <app-chat-message [message]="message" [myUsername]="this.myUsername"></app-chat-message>
+        <div class=" row">
+            <div #messagesScroller class="col message">
+                <span *ngFor="let message of (messagesPaginate$ | async)?.items; let last = last">
+                    <app-chat-message [message]="message" [myUser]="this.myUser"></app-chat-message>
+                    {{last ? scrollToBottom() : ''}}
                 </span>
             </div>
         </div>
         <div class="row">
             <div class="col">
                 <div style="display: flex; align-items: center;">
-                    <mat-form-field style="width: 100%;">
+                    <mat-form-field style="width: 100%; margin-right: 10px;">
                         <input matInput [formControl]="chatMessage" type="text" autoComplete='off'
                             (keydown.enter)="sendMessage()">
                     </mat-form-field>
                     <button mat-icon-button [disabled]="!chatMessage.valid" (click)="sendMessage()">
-                        <span style="display: flex;; flex-direction: row; align-items: center; margin-left: 10px;">
+                        <span style="display: flex; flex-direction: row; align-items: center;">
                             <mat-icon>send</mat-icon>
                         </span>
                     </button>
@@ -41,7 +56,64 @@
         </div>
         <div class="row">
             <div class="col">
-                Column
+
+
+                <mat-selection-list #list [multiple]="false" (selectionChange)="onMemberChange($event)">
+                    <mat-list-option *ngFor="let member of members" [value]="member">
+                        <img src=" backend/{{ member.user.avatar_url }}" class="avatar rounded-circle">
+                        <fa-icon class="faOwner" *ngIf="isOwner(member)" [icon]="fasStar"></fa-icon>
+                        <fa-icon class="faAdmin" *ngIf="isAdmin(member)" [icon]="farStar"></fa-icon>
+                        {{member.user.username}}
+                        <mat-divider></mat-divider>
+                    </mat-list-option>
+                </mat-selection-list>
+            </div>
+            <div class="col" *ngIf="selectedMember">
+                <div>
+                    <!-- <p>{{selectedMember.user.username}} is member since {{selectedMember.created_at | date:
+                        'dd/MM/yyyy'}} </p> -->
+                    <a>
+                        <fa-icon title="{{selectedMember.user.username}} profile" class="iconsMember" [icon]="faProfile"
+                            (click)="profile(selectedMember.user.username)" routerLink="/friends">
+                        </fa-icon>
+                    </a>
+                    <a>
+                        <fa-icon title="Challenge {{selectedMember.user.username}}" class="iconsMember"
+                            [icon]="faPaddle" (click)="challenge(selectedMember.user.username)" routerLink="/pong">
+                        </fa-icon>
+                    </a>
+                    <a>
+                        <fa-icon title="Block {{selectedMember.user.username}}" class="iconsMember" [icon]="faBan"
+                            (click)="blockUser(selectedMember.user.username)">
+                        </fa-icon>
+                    </a>
+                    <a>
+                        <fa-icon *ngIf="displaySetAsAdmin(selectedMember)"
+                            title="Add the administrator role to {{selectedMember.user.username}}" class="iconsMember"
+                            [icon]="fasStar" (click)="blockUser(selectedMember.user.username)">
+                        </fa-icon>
+                    </a>
+                    <a>
+                        <fa-icon *ngIf="isOwner(myMember) && isAdmin(selectedMember)"
+                            title="Remove the administrator role to {{selectedMember.user.username}}"
+                            class="iconsMember" [icon]="farStar" (click)="blockUser(selectedMember.user.username)">
+                        </fa-icon>
+                    </a>
+                </div>
+                <div *ngIf="isOwner(myMember) || isAdmin(myMember) else elseBlock">
+                    <button mat-button disabled color="warn">Mute</button>
+                    <button mat-button color="warn">10min</button>
+                    <button mat-button color="warn">1h</button>
+                    <button mat-button color="warn">24h</button>
+                    <br>
+                    <button mat-button disabled color="warn">Ban</button>
+                    <button mat-button color="warn">10min</button>
+                    <button mat-button color="warn">1h</button>
+                    <button mat-button color="warn">24h</button>
+                </div>
+                <ng-template #elseBlock>
+                    member
+                </ng-template>
             </div>
         </div>
     </div>

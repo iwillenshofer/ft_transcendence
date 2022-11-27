@@ -31,6 +31,8 @@ export class AuthService {
 
 	public userSubject: BehaviorSubject<User | null>;
 	public user: Observable<User | null>;
+	private logoutStatus = new BehaviorSubject(false);
+	getLogoutStatus = this.logoutStatus.asObservable();
 
 	isAuthenticated(): boolean {
 		if (!(this.userSubject.value) || !(this.userSubject.value.tfa_fulfilled))
@@ -56,6 +58,7 @@ export class AuthService {
 		this.userSubject.next(null);
 		localStorage.removeItem('user');
 		localStorage.removeItem('token');
+		this.logoutStatus.next(true);
 		return this.router.navigate(['/login']);
 	}
 

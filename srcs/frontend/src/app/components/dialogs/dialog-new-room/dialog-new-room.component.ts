@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { BehaviorSubject } from 'rxjs';
+import { AlertsService } from 'src/app/alerts/alerts.service';
+import { AuthService } from 'src/app/auth/auth.service';
+import { User } from 'src/app/auth/user.model';
 import { RoomService } from 'src/app/services/room/room.service';
 import { isRoomNameTaken } from 'src/app/validators/async-room-name.validator';
 
@@ -16,16 +20,23 @@ export class DialogNewRoomComponent implements OnInit {
 
   form: FormGroup = new FormGroup({
     name: new FormControl(null, [Validators.required, Validators.minLength(3), Validators.maxLength(20), Validators.pattern('^[a-z-A-Z-0-9]+$'),], [isRoomNameTaken(this.roomService)]),
-    description: new FormControl(null),
+    description: new FormControl(null, [Validators.maxLength(50)]),
     type: new FormControl(null, [Validators.required]),
     password: new FormControl(null, [Validators.required, Validators.minLength(8)])
   });
 
   constructor(private roomService: RoomService,
-    private dialogRef: MatDialogRef<DialogNewRoomComponent>) { }
+    private authService: AuthService,
+    private dialogRef: MatDialogRef<DialogNewRoomComponent>) {
+  }
 
   ngOnInit(): void {
     this.form.controls['password'].disable();
+    this.authService.getLogoutStatus.subscribe((data) => {
+      if (data === true) {
+        this.dialogRef.close();
+      }
+    });
   }
 
   get name(): FormControl {
@@ -63,11 +74,7 @@ export class DialogNewRoomComponent implements OnInit {
     if (this.form.valid) {
       this.roomService.createRoom(this.form.getRawValue());
     }
-    this.closeDialog();
+    this.dialogRef.close({ data: this.form.getRawValue() });
   }
-
-  closeDialog() {
-    this.dialogRef.close();
-  }
-
 }
+

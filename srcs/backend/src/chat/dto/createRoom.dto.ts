@@ -6,15 +6,15 @@ export class CreateRoomDto {
     name2: string;
     description: string;
     type: RoomType;
-    creatorId: number;
+    //creatorId: number;
     password: string;
 
-    constructor(name: string = "", name2: string = "", description: string = "", type: RoomType = RoomType.Public, creatorId: number = 0, password: string = "") {
+    constructor(name: string = "", name2: string = "", description: string = "", type: RoomType = RoomType.Public, password: string = "") {
         this.name = name;
         this.name2 = name2;
         this.description = description;
         this.type = type;
-        this.creatorId = creatorId;
+        // this.creatorId = creatorId;
         this.password = password;
     }
 
@@ -24,7 +24,7 @@ export class CreateRoomDto {
         room.name2 = dto.name2;
         room.description = dto.description;
         room.type = dto.type;
-        room.creatorId = dto.type;
+        //room.creatorId = dto.type;
         room.password = dto.password;
         return (room);
     }
@@ -35,7 +35,7 @@ export class CreateRoomDto {
         room.name2 = entity.name2;
         room.description = entity.description;
         room.type = entity.type;
-        room.creatorId = entity.type;
+        //room.creatorId = entity.type;
         room.password = entity.password;
         return (room);
     }
@@ -46,7 +46,7 @@ export class CreateRoomDto {
         room.name2 = this.name2;
         room.description = this.description;
         room.type = this.type;
-        room.creatorId = this.type;
+        //room.creatorId = this.type;
         room.password = this.password;
         return (room);
     }

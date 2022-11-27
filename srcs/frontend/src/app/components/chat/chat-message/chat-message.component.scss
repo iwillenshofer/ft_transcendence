@@ -11,7 +11,7 @@ p {
 
 .avatar {
     position: absolute;
-    top: calc(25%);
+    top: 10px;
     left: 5px;
     height: 40px;
     width: 40x;
@@ -26,12 +26,41 @@ p {
 .ownMessage {
     justify-content: end;
     background-color: lightblue;
+    word-break: break-word;
+}
+
+.otherMessage {
+    word-break: break-word;
 }
 
 .status {
     position: absolute;
-    top: calc(63%);
+    top: 40px;
     left: 33px;
     height: 12px;
     width: 12x;
+}
+
+.onHoverProfileUserOn {
+    position: absolute;
+    top: 55px;
+    left: 5px;
+    cursor: pointer;
+    padding-right: 5px;
+    height: 40px;
+}
+
+.onHoverProfileUserOff {
+    position: absolute;
+    top: 55px;
+    left: 19px;
+    cursor: pointer;
+}
+
+.onHoverPaddle {
+    position: absolute;
+    top: 55px;
+    left: 25px;
+    cursor: pointer;
+    padding-left: 5px;
 }
