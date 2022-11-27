@@ -28,7 +28,7 @@ export class GameEntity {
     @Column()
     scoreP2: number;
 
-    @Column()
+    @Column({nullable: false, type: 'boolean', default: false })
     isChallenge: boolean;
 
     @ManyToOne(() => UserEntity)
@@ -37,7 +37,7 @@ export class GameEntity {
 
     @CreateDateColumn()
     created_at: Date;
-  
+
     @UpdateDateColumn()
     updated_at: Date;
 }

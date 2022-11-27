@@ -24,8 +24,8 @@ export class AuthController {
 	** since the user is not logged in yet, only intra42 guard is used
 	*/
 
-	@UseGuards(FakeIntra42Guard)
-	// @UseGuards(Intra42Guard)
+//	@UseGuards(FakeIntra42Guard)
+	@UseGuards(Intra42Guard)
 	@Get("login")
 	async login(@Request() req, @Response() res) {
 		return;
@@ -35,8 +35,8 @@ export class AuthController {
 	** /auth/callback is the intra's return
 	*/
 
-	@UseGuards(FakeIntra42Guard)
-	// @UseGuards(Intra42Guard)
+//	@UseGuards(FakeIntra42Guard)
+	@UseGuards(Intra42Guard)
 	@Get("callback")
 	async callback(@Response() res, @Request() req) {
 		if (req.user) {
@@ -50,9 +50,15 @@ export class AuthController {
 
 	@UseGuards(JwtGuard)
 	@Get('profile')
-	async profile(@Request() req) {
-		let user: UserDTO = UserDTO.from(await this.UsersService.getUser(req.user.id));
-		user.tfa_fulfilled = (!(await this.UsersService.getTfaEnabled(req.user.id)) || req.user.tfa_fulfilled);
+	async profile(@Request() req, @Res({ passthrough: true }) res) {
+		let user: UserDTO;
+		try {
+			user = UserDTO.from(await this.UsersService.getUser(req.user.id));
+			user.tfa_fulfilled = (!(await this.UsersService.getTfaEnabled(req.user.id)) || req.user.tfa_fulfilled);
+		} catch {
+			res.sendStatus(401);
+			return;
+		}
 		return (JSON.stringify(user));
 	}
 
@@ -76,8 +82,13 @@ export class AuthController {
 	@UseGuards(JwtGuard)
 	@Get('logout')
 	async logout(@Res({ passthrough: true }) res, @Request() req) {
-		let user: UserDTO = UserDTO.from(await this.UsersService.getUser(req.user.id));
-		this.connectedUsersService.deleteByUserId(user.id);
+		let user: UserDTO;
+		try {
+			user = UserDTO.from(await this.UsersService.getUser(req.user.id));
+			this.connectedUsersService.deleteByUserId(user.id);
+		} catch {
+			return ;
+		}
 		res.clearCookie('refresh_token', { httpOnly: true });
 		return { msg: "success" };
 	}

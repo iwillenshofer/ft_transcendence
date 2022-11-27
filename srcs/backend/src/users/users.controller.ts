@@ -84,7 +84,7 @@ export class UsersController {
 
     @Get('image/:imgpath')
     seeUploadedFile(@Param('imgpath') image, @Response() res) {
-        console.log("HERE")
+        // console.log("HERE")
         return res.sendFile(image, { root: './uploads/profileimages/' });
     }
 

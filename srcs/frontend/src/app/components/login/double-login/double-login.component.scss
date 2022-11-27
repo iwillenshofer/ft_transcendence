@@ -1,0 +1,26 @@
+
+  
+  .outer-div {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	position: relative;
+	height: 100%;
+	width: 100%;
+	border: 2px solid #006100;
+  }
+  
+  .inner-div {
+	margin: 0 auto;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 500px;
+	transform: translate(-50%, -50%);
+	text-align: center;
+  }
+  
+  .title {
+    color: gold;
+    font-size: 27px;
+  }

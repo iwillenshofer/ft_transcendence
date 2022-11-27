@@ -1,14 +1,17 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { ForbiddenException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-oauth2";
 import { HttpService } from "@nestjs/axios";
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, firstValueFrom, catchError } from 'rxjs';
 import { AuthService } from "../auth.service";
+
 
 @Injectable()
 export class Intra42Strategy extends PassportStrategy(Strategy, "intra42")
 {
-	constructor(private authService: AuthService) {
+	constructor(
+		private authService: AuthService,
+		private readonly httpService: HttpService) {
 		super({
 			passReqToCallback: true,
 			clientID: process.env.CLIENT_ID,
@@ -16,22 +19,17 @@ export class Intra42Strategy extends PassportStrategy(Strategy, "intra42")
 			tokenURL: process.env.BASE_URL + "/oauth/token",
 			clientSecret: process.env.CLIENT_SECRET,
 			callbackURL: "/auth/callback",
-			// scope: ['public'],
 		})
 	}
 
 	async validate(req: Request, accessToken: string, refreshToken: string): Promise<any> {
 		let user: any = null;
-		let httpservice = new HttpService;
 		let header = { Authorization: `Bearer ${accessToken}` }
+		const  data  = await firstValueFrom (this.httpService.get(process.env.BASE_URL + "/v2/me", {headers: header}));
 		try {
-			const req = await httpservice.get(process.env.BASE_URL + "/v2/me", { headers: header });
-			const data = await lastValueFrom(req);
-			user = await this.authService.getOrCreateUser(data.data);
-			if (!user)
-				return (null);
+			user = await this.authService.getOrCreateUser(data.data);		
 		} catch (error) {
-			return (null);
+			console.log(error);
 		}
 		return (user);
 	}

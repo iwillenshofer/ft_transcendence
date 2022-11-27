@@ -1,17 +1,15 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, firstValueFrom, Observable, Subject } from 'rxjs';
-import { Socket } from 'ngx-socket-io';
-import { ChatSocket } from './chat.socket';
-import { map } from 'rxjs/operators';
-import { UserInterface } from '../model/user.interface';
-import { RoomInterface } from '../model/room.interface';
-import { getSupportedInputTypes } from '@angular/cdk/platform';
-import { RoomPaginateInterface } from '../model/room.interface';
+import { Observable } from 'rxjs';
+import { UserInterface } from '../../model/user.interface';
+import { RoomInterface } from '../../model/room.interface';
+import { RoomPaginateInterface } from '../../model/room.interface';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
-import { MessagePaginateInterface } from '../model/message.interface';
-import { MessageInterface } from '../components/chat/models/message.interface';
-
+import { MessagePaginateInterface } from '../../model/message.interface';
+import { MessageInterface } from './models/message.interface';
+import { ChatSocket } from './chat-socket';
+import { Router } from '@angular/router';
+import { AlertsService } from 'src/app/alerts/alerts.service';
 
 @Injectable()
 export class ChatService {
@@ -19,10 +17,19 @@ export class ChatService {
   constructor(
     private socket: ChatSocket,
     private snackBar: MatSnackBar,
+    private alert: AlertsService,
+    private router: Router,
     private http: HttpClient) {
   }
 
-  disconnectChatSocket() {
+  connect() {
+    this.socket.on("double_login", () => {
+      this.router.navigate(['doublelogin']);
+    });
+    this.socket.connect();
+  }
+
+  disconnect() {
     this.socket.disconnect();
   }
 

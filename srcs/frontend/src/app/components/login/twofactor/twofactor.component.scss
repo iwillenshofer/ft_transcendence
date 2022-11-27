@@ -4,7 +4,7 @@
     text-align: center;
     border: 20px;
     /*margin: 30px 330px 0px 300px;*/
-	color:black
+	color:black;
 }
 
 /* right-nav: to be used by the 'content page' */
@@ -17,8 +17,13 @@
     font-size: 20px;
 }
 
-.inputCode {
+.form-control {
     font-size: 40px;
+	width: max-content;
+	margin: auto;
+	margin-top:5px;
+	margin-bottom:5px;
+	text-align: center;
 }
 
 .TfaTitle {
@@ -36,22 +41,4 @@
 h1 {
     font-size: 80px;
     color: white;
-}
-
-button {
-    margin-top: 10px;
-    height: 70px;
-    width: 150px;
-    background-color: white;
-    color: black;
-    border: 2px solid #e7e7e7;
-    transition-duration: 0.4s;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 20px;
-}
-
-button:hover {
-    background-color: #e7e7e7;
-    color: black;
 }

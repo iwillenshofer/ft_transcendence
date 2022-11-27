@@ -23,11 +23,12 @@
     "@fortawesome/angular-fontawesome": "latest",
     "@fortawesome/fontawesome-svg-core": "latest",
     "@fortawesome/free-solid-svg-icons": "latest",
+    "@popperjs/core": "^2.11.6",
     "bootstrap": "latest",
     "ngx-bootstrap": "latest",
     "ngx-cookie-service": "latest",
     "ngx-socket-io": "latest",
-    "onetime": "^6.0.0",
+    "onetime": "latest",
     "rxjs": "latest",
     "tslib": "latest",
     "zone.js": "latest"

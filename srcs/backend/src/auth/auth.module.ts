@@ -13,6 +13,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthEntity } from './models/auth.entity';
 import { ConnectedUsersService } from 'src/services/connected-user/connected-user.service';
 import { ConnectedUserEntity } from 'src/chat/entities/connected-user.entity';
+import { HttpModule } from "@nestjs/axios";
 
 @Module({
     imports: [
@@ -21,7 +22,8 @@ import { ConnectedUserEntity } from 'src/chat/entities/connected-user.entity';
         JwtModule.register({
             secret: process.env.JWT_SECRET,
         }),
-        TypeOrmModule.forFeature([AuthEntity, ConnectedUserEntity])
+        TypeOrmModule.forFeature([AuthEntity, ConnectedUserEntity]),
+		HttpModule
     ],
     controllers: [AuthController],
     providers: [AuthService, Intra42Strategy, JwtStrategy, JwtRefreshStrategy, TfaStrategy, FakeIntra42Strategy, ConnectedUsersService],

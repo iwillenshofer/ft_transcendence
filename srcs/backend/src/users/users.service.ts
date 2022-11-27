@@ -47,6 +47,21 @@ export class UsersService {
 		return await this.userRepository.findOneBy({ id: id });
 	}
 
+	async getUniqueUsername(username: string)
+	{
+		let i: number = 0;
+		let new_user: string;
+		let alreadyExist = await this.userRepository.findOneBy({ username: username });
+		if (!alreadyExist)
+			return (username);
+		if (username.length > 6)
+		username = username.substring(0, 6);
+		new_user = username;
+		while (await this.userRepository.findOneBy({ username: new_user }))
+			new_user = username + "_" + (++i);
+		return (new_user);
+	}
+
 	async createUser(intra_id: number, login: string, displayname: string, image_url: string): Promise<UserDTO> {
 
 		const ext = '.' + image_url.split('.').pop();
@@ -66,7 +81,7 @@ export class UsersService {
 
 		const user: UserEntity = await this.userRepository.create({
 			id: intra_id,
-			username: login,
+			username: await this.getUniqueUsername(login),
 			fullname: displayname,
 			avatar_url: image_url
 		});
@@ -110,7 +125,7 @@ export class UsersService {
 
 	async getIdByUsername(username: string) {
 		let user = await this.userRepository.findOneBy({ username: username });
-		return (user.id);
+		return (user?.id);
 	}
 
 	async getUserByUsername(username: string) {
@@ -125,16 +140,18 @@ export class UsersService {
 
 	async getUsername(id: number) {
 		let user = await this.userRepository.findOneBy({ id: id });
-		return (user.username);
+		return (user?.username);
 	}
 
 	async getUrlAvatar(id: number): Promise<string> {
 		let user = await this.userRepository.findOneBy({ id: id });
-		return (user.avatar_url);
+		return (user?.avatar_url);
 	}
 
 	async getRefreshToken(id: number): Promise<string> {
 		let user = await this.userRepository.findOneBy({ id: id });
+		if (!user)
+			return (null);
 		return (this.encrypt.decode(user.refreshtoken));
 	}
 
@@ -172,7 +189,6 @@ export class UsersService {
 
 	async getTfaCode(id: number): Promise<string> {
 		let user = await this.userRepository.findOneBy({ id: id });
-		// console.log("secret retrieved:" + this.encrypt.decode(user.tfa_code));
 		return (this.encrypt.decode(user.tfa_code));
 	}
 
@@ -185,9 +201,8 @@ export class UsersService {
 	}
 
 	async deleteAvatar(oldAvatar: string) {
-		await fs.unlink('./uploads/profileimages/' + oldAvatar, (err) => {
-			if (err)
-				throw err;
+		await fs.unlink('./uploads/profileimages/' + oldAvatar, () => {
+			console.log("Could not remove old avatar file.")
 		})
 	}
 

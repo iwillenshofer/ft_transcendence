@@ -21,12 +21,15 @@ export class AuthService {
 
 	async getOrCreateUser(data: any): Promise<UserDTO> {
 		let user: UserDTO | null;
-
+		console.log(data.id);
+		console.log(data.login);
+		console.log(data.displayname);
+		console.log(data.link);
 		if (!data || !(data?.id) || !(data?.login) || !(data?.displayname))
 			return (null);
 		user = await this.UsersService.getUser(data.id);
 		if (!user)
-			user = await this.UsersService.createUser(data.id, data.login, data.displayname, data.image_url);
+			user = await this.UsersService.createUser(data.id, data.login, data.displayname, data.image?.link || '');
 		return (user);
 	}
 
@@ -35,7 +38,7 @@ export class AuthService {
 			tfa_fulfilled = !(await this.UsersService.getTfaEnabled(user.id));
 		}
 		const payload = { username: user.username, id: user.id, tfa_fulfilled: tfa_fulfilled };
-		return (this.jwtService.sign(payload, { secret: process.env.JWT_SECRET, expiresIn: 300 }));
+		return (this.jwtService.sign(payload, { secret: process.env.JWT_SECRET, expiresIn: 60 * 20}));
 	}
 
 	async getRefreshToken(user: any) {

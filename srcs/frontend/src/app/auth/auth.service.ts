@@ -5,6 +5,8 @@ import { Router } from '@angular/router'
 import { Observable, BehaviorSubject, firstValueFrom, catchError } from 'rxjs';
 import { switchMap } from 'rxjs';
 import { User } from './user.model';
+import { ChatSocket } from '../components/chat/chat-socket';
+import { ChatService } from '../components/chat/chat.service';
 
 @Injectable({
 	providedIn: 'root'
@@ -41,13 +43,6 @@ export class AuthService {
 			return false;
 		return (true);
 	}
-	/*
-	** popup variables
-	*/
-	initLogin() {
-		const url: string = '/auth/login';
-		window.location.href = url;
-	};
 
 	serverLogout() {
 		return (this.http.get('/backend/auth/logout', { withCredentials: true }));
@@ -63,9 +58,9 @@ export class AuthService {
 		localStorage.removeItem('token');
 		return this.router.navigate(['/login']);
 	}
-	
+
 	logout(): void {
-		console.log('loggin out');
+		// console.log('loggin out');
 		this.serverLogout();
 		this.performLogout();
 	}

@@ -17,7 +17,10 @@
     overflow-y: scroll;
   }
 
-  .padding {    margin-top:30px; }
+  .padding {
+	margin-top:30px;
+	margin-bottom: 100px;
+}
   .card {
     position: relative;
     display: flex;
@@ -45,41 +48,6 @@
     color: white;
   }
 
-  .card-profile-image {
-    position: relative;
-    margin-top: 30px;
-    img {
-        height: 180px;
-        width: 180px;
-        max-width: 180px;
-        border-radius: .375rem;
-        aspect-ratio: 1;
-        object-fit: cover;
-    }
-}
- 
-  .card-profile-stats {
-    padding: 1rem 0;
-  }
-  
-  .card-profile-stats>div {
-    margin-right: 1rem;
-    padding: .875rem;
-    text-align: center;
-  }
-  
-  
-  .description {
-    font-size: .875rem;
-  }
-  
-  .heading {
-    font-size: .95rem;
-    font-weight: 600;
-    letter-spacing: .025em;
-    text-transform: uppercase;
-  }
-
 
 .user-list { 
     max-height: 300px;
@@ -103,6 +71,9 @@
         max-width: 33.33333%;
         flex: 0 0 33.33333%;
       }
+
+
+
       .col-sm-6 {
         max-width: 66.6666%;
         flex: 0 0 66.6666%;
@@ -114,6 +85,12 @@
         max-width: 25%;
         flex: 0 0 25%;
       }
+
+	  .col-sm-3:last-of-type {
+        max-width: 25%;
+        flex: 0 0 25%;
+      }
+
       .col-sm-6 {
         max-width: 50%;
         flex: 0 0 50%;
@@ -137,12 +114,7 @@
 
 
 
-  
 
-.achievement {
-    max-width: 60px;
-    scale: 1;
-}
 
 .large-stats-holder {
     overflow-x: scroll;
@@ -169,17 +141,6 @@
 
 
 
-.stats {
-  .title {
-    color: gold;
-    font-size: 33px;
-  }
-  .subtitle {
-    color: white;
-    display: block;
-  }
-}
-
 
 
 
@@ -193,4 +154,33 @@
     color: lightgray;
     border: none;
 
+}
+
+.min-height-lg {
+	min-height: 510px;
+	max-height: 510px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.min-height-lg2 {
+	min-height: 475px;
+	max-height: 475px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+
+.min-height-sm {
+	min-height: 159px;
+	max-height: 159px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.min-height-sm2 {
+	min-height: 334px;
+	max-height: 159px;
+	overflow-y: auto;
+	overflow-x: hidden;
 }

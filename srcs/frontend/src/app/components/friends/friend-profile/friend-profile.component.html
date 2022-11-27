@@ -1,0 +1,39 @@
+<div class="row justify-content-center">
+	<div class="col order-lg-2 text-center">
+	<div class="card-profile-image">
+		<img src="/backend/{{this.friendsService.stats.value?.avatar_url}}" class="rounded-circle">
+	</div>
+	</div>
+	</div>
+	<div class="card-body pt-0 pt-md-4">
+		<div class="row ">
+			<div class="col mt-4  text-center">
+			<h1>{{this.friendsService.stats.value?.username}}</h1>
+			</div>
+		</div>
+		<div class="row  text-center" >
+			<div class="col">
+			<h3>{{this.friendsService.stats.value?.fullname}}</h3>
+			</div>
+		</div>
+		<div class="row  text-center mb-5 mt-2" >
+			<div class="col">
+				<button *ngIf="this.friendsService.friendStatus.value == 0" (click)="this.friendsService.addFriendship()" type="button" class="btn btn-info">Add Friend</button>
+				<button *ngIf="this.friendsService.friendStatus.value == 1" (click)="this.friendsService.delFriendship()" type="button" class="btn btn-danger">Cancel Request</button>
+				<button *ngIf="this.friendsService.friendStatus.value == 2" (click)="this.friendsService.acceptFriendship()" type="button" class="btn btn-success">Accept Friend</button>
+				<button *ngIf="this.friendsService.friendStatus.value == 2" (click)="this.friendsService.delFriendship()" type="button" class="btn btn-danger">Deny Friendship</button>
+				<button *ngIf="this.friendsService.friendStatus.value == 3" (click)="this.friendsService.delFriendship()" type="button" class="btn btn-danger">Remove Friend</button>
+
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<i>rating: {{this.friendsService.stats.value?.rating}}</i>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<i>player since: {{this.friendsService.stats.value?.created_at | date}}</i>
+			</div>
+		</div>
+	</div>

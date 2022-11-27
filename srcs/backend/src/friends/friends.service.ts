@@ -150,9 +150,8 @@ export class FriendsService {
             const res = await this.friendsRepository.save(friendship);
             await this.statsService.friendsAchievements(u1.id);
             await this.statsService.friendsAchievements(u2.id);
-            return res;
         }
-        return (this.getFriendshipStatus(username, me));
+        return (await this.getFriendshipStatus(username, me));
     }
 
     async deleteFriendship(username: string, me: string) {
