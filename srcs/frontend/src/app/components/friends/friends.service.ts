@@ -154,21 +154,23 @@ export class FriendsService {
   }
 
   async update() {
-//    await this.updateHistory();
-//    await this.updateUserInfo();
-    await this.updateFriendshipStatus();
-    await this.updateFriendsList();
-    await this.updateRequestsList();
-//    await this.updateAchievements();
-	await this.updateUserStats();
-	await this.updateRanking();
+
+	  await this.updateFriendsList();
+	  await this.updateRequestsList();
+	  
+	  if (this.selectedUser.value) {
+		await this.updateUserStats();
+		await this.updateFriendshipStatus();
+		if (this.selectedUser.value == this.authService.userSubject.value?.username)
+			await this.updateRanking();
+	  }
   }
 
 
   async updateUserStats() {
     this.getUserStats().subscribe((res: StatsDTO) => {
       this.stats.next(res);
-	  console.log(JSON.stringify(this.stats.value));
+	  if (!(res.username)) {this.selectedUser.next(null);}
     })
   }
 

@@ -17,7 +17,10 @@
     overflow-y: scroll;
   }
 
-  .padding {    margin-top:30px; }
+  .padding {
+	margin-top:30px;
+	margin-bottom: 100px;
+}
   .card {
     position: relative;
     display: flex;
@@ -69,10 +72,7 @@
         flex: 0 0 33.33333%;
       }
 
-	  .col-sm-3:last-of-type {
-        max-width: 100%;
-        flex: 0 0 100%;
-      }
+
 
       .col-sm-6 {
         max-width: 66.6666%;
@@ -154,4 +154,33 @@
     color: lightgray;
     border: none;
 
+}
+
+.min-height-lg {
+	min-height: 510px;
+	max-height: 510px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.min-height-lg2 {
+	min-height: 475px;
+	max-height: 475px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+
+.min-height-sm {
+	min-height: 159px;
+	max-height: 159px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.min-height-sm2 {
+	min-height: 334px;
+	max-height: 159px;
+	overflow-y: auto;
+	overflow-x: hidden;
 }
