@@ -10,8 +10,8 @@
         <div class="col-xl-3 mb-3" *ngIf="router.url === '/friends'">
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                    <button class="nav-link active" id="nav-myfriends-tab" data-bs-toggle="tab" data-bs-target="#nav-myfriends" type="button" role="tab" aria-controls="nav-myfriends" aria-selected="true">My Friends</button>
-                    <button class="nav-link" id="nav-requests-tab" data-bs-toggle="tab" data-bs-target="#nav-requests" type="button" role="tab" aria-controls="nav-requests" aria-selected="false">Requests</button>
+                    <button (click)="this.friendsService.updateFriendsList()" class="nav-link active" id="nav-myfriends-tab" data-bs-toggle="tab" data-bs-target="#nav-myfriends" type="button" role="tab" aria-controls="nav-myfriends" aria-selected="true">My Friends</button>
+                    <button (click)="this.friendsService.updateRequestsList()" class="nav-link" id="nav-requests-tab" data-bs-toggle="tab" data-bs-target="#nav-requests" type="button" role="tab" aria-controls="nav-requests" aria-selected="false">Requests</button>
                     <button class="nav-link" id="nav-search-tab" data-bs-toggle="tab" data-bs-target="#nav-search" type="button" role="tab" aria-controls="nav-search" aria-selected="false">Search</button>
                 </div>
             </nav>
