@@ -14,13 +14,13 @@ class Ball {
 	public vy: number = 0;
 	public removing: boolean = false;
 	public alpha: number = 500;
+	private colors = ["#111111","#333333","#7777777","#999999","#bbbbbb","#dddddd","#ffffff", "#f47b37", "#fcb338", "#fcc816"];
 
 	constructor (canvas_x: number, canvas_y: number, x: number = 0, y: number = 0) {
-		let colors = ["#111111","#333333","#7777777","#999999","#bbbbbb","#dddddd","#ffffff", "#f47b37", "#fcb338", "#fcc816"];
-		var rndColor= Math.floor((Math.random() * colors.length) + 1);
-		this.vx = Math.floor((Math.random() * 15) + 1) * (Math.floor(Math.random() * 2) ? 1 : -1);
-		this.vy = Math.floor((Math.random() * 15) + 1) * (Math.floor(Math.random() * 2) ? 1 : -1);;
-		this.color = colors[rndColor];
+		var rndColor= Math.floor((Math.random() * this.colors.length) + 1);
+		this.vx = ((Math.random() * 9) + 1) * (Math.floor(Math.random() * 2) ? 1 : -1);
+		this.vy = ((Math.random() * 9) + 1) * (Math.floor(Math.random() * 2) ? 1 : -1);;
+		this.color = this.colors[rndColor];
 		this.radius = Math.floor((Math.random() * 5) + 1);
 		this.x = x;
 		this.y = y;
@@ -94,13 +94,28 @@ export class LoginpageComponent implements AfterViewInit {
 			this.ball.push(new Ball(this.canvas.width, this.canvas.height, x, y));
 	}
 
+	moveEvent(event: any) {
+		const rect = this.canvas.getBoundingClientRect();
+		const x = event.clientX - rect.left;
+		const y = event.clientY - rect.top;
+		const random = Math.floor((Math.random() * 25) + 1);
+		if (random == 5) {
+			if (this.ball.length)
+				this.ball[0].removing = true;
+			this.ball.push(new Ball(this.canvas.width, this.canvas.height, x, y));
+		}
+	}
+
 	ngAfterViewInit(): void {
 		this.canvas = this.pageCanvas.nativeElement;
 		this.resizeCanvas();
 		window.addEventListener('resize', () => { this.resizeCanvas() }, false);
 		window.addEventListener('mousedown', (e: any) => {
 			this.clickEvent(e);
-		  })
+		  });
+		window.addEventListener('mousemove', (e: any) => {
+			this.moveEvent(e);
+		})
 		this.ctx = this.canvas.getContext("2d");
 		this.clearCanvas();
 		for (let i = 1; i < 30; i++)

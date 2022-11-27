@@ -24,15 +24,32 @@ canvas {
 	text-align: center;
   }
 
-button {
-    height: 50px;
-    width: 150px;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 26px;
-}
 
 button:hover {
     background-color: #e7e7e7;
+	filter: opacity(100%);;
     color: black;
+	.logo42 {
+		filter: brightness(0);
+	}
+}
+
+.loginbutton {
+	font-family: 'Futura', sans-serif;
+	text-transform: uppercase;
+	font-size: 0.9rem;
+	line-height: 1.5;
+	font-style: italic;
+	margin: 8px;
+
+}
+
+.logo42 {
+	width: 50px;
+	filter: invert(100%);
+
+}
+
+.opacity {
+	filter: opacity(50%);;
 }
