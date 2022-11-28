@@ -1,6 +1,6 @@
 export const INITIAL_VELOCITY = 3;
 export const MAX_SCORE = 1;
-export const VELOCITY_INCREASE = 0.2;
+export const VELOCITY_INCREASE = 0.5;
 
 
 let table = {
@@ -72,12 +72,12 @@ export function gameStart() {
 
 export function update() {
     ballUpdate();
-    syncBall();
     paddleUpdate();
     if (isCustom)
         powerUpUpdate()
     if (isLose()) {
         handleLose();
+        syncBall();
         ball.lastTouch = 0;
     }
 }
@@ -247,7 +247,7 @@ function syncScore() {
 }
 
 function syncBall() {
-    if (isPlayer())
+    if (_socket.id == player1.socket)
         _socket.emit('syncBall', ball);
     _socket.on('ball', (newBall: any) => {
         ball = newBall;
@@ -255,14 +255,18 @@ function syncBall() {
 }
 
 function ballRandomX() {
-    let num = Math.cos(randomNumberBetween(0.2, 0.9));
-    ball.direction.x = Math.round(num * 10) / 10;
+    if (_socket.id == player1.socket) {
+        let num = Math.cos(randomNumberBetween(0.2, 0.9));
+        ball.direction.x = Math.round(num * 10) / 10;
+    }
     syncBall();
 }
 
 function ballRandomY() {
-    let num = Math.sin(randomNumberBetween(0, 2 * Math.PI));
-    ball.direction.y = Math.round(num * 10) / 10;
+    if (_socket.id == player1.socket) {
+        let num = Math.sin(randomNumberBetween(0, 2 * Math.PI));
+        ball.direction.y = Math.round(num * 10) / 10;
+    }
     syncBall();
 }
 
