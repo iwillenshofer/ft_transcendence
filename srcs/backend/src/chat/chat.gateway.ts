@@ -17,7 +17,7 @@ import { ConnectedUserEntity } from './entities/connected-user.entity';
 import { MemberRole } from './models/memberRole.model';
 import { ChangeSettingRoomDto } from './dto/changeSettingRoom.dto';
 
-@WebSocketGateway({ cors: '*:*', namespace: 'chat', allowEIO3: true })
+@WebSocketGateway({ cors: '*:*', namespace: 'chat', transports: ['websocket', 'polling'] } )
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @WebSocketServer()
