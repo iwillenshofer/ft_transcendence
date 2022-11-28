@@ -8,7 +8,7 @@ export class ChatSocket extends Socket {
 
   constructor() {
     super({
-      url: 'http://localhost:3000/chat', options: {
+      url: 'http://127.0.0.1:3000/chat', options: {
         autoConnect: false,
         extraHeaders: { userid: getUserId() ?? "null" }
       }

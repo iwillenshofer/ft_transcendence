@@ -68,7 +68,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.socket = io("http://localhost:3000/game");
+    this.socket = io("http://127.0.0.1:3000/game");
     if (this.mode == 'spec') {
       this.friendsService.setStatus('login2', 'watching')
       this.socket.emit("watchGame", this.specGame);

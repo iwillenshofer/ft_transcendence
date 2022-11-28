@@ -30,7 +30,7 @@ export class AlertsComponent implements OnInit {
       this.alerts = messages;
     });
 	if (this.router.url === '/login') {return ;};
-    this.socket = io("http://localhost:3000/game");
+    this.socket = io("http://127.0.0.1:3000/game");
     let username: any;
     this.auth.getUser().then(data => {
       username = data.username;

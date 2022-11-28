@@ -56,7 +56,7 @@ export class GameComponent implements OnInit {
   toggleLiveGames() {
     this.showLiveGames = true;
     this.liveGames = undefined;
-    this.socket = io("http://localhost:3000/game");
+    this.socket = io("http://127.0.0.1:3000/game");
     this.socket.emit("liveGames");
     this.socket.on("games", (games: any) => {
       if (games.length > 0)
