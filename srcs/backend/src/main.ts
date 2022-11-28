@@ -7,7 +7,7 @@ async function bootstrap() {
   app.use(cookieParser());
   app.enableCors(
     {
-      origin: 'http://3.228.29.103:4200',
+      origin: 'http://localhost:4200',
       credentials: true,
     });
   await app.listen(3000);
