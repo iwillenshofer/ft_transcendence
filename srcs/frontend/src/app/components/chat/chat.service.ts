@@ -130,4 +130,12 @@ export class ChatService {
     return this.http.get<MemberInterface>('/backend/chat/get_my_member_of_room/' + roomId, { withCredentials: true });
   }
 
+  getUsersOnline(): Observable<UserInterface[]> {
+    return this.socket.fromEvent<UserInterface[]>('users_online');
+  }
+
+  requestUsersOnline() {
+    this.socket.emit('users_online');
+  }
+
 }

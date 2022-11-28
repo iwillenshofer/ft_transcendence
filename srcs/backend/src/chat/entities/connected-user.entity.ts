@@ -8,11 +8,12 @@ export class ConnectedUserEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Column({ default: true })
+    connected: boolean;
+
     @Column()
     socketId: string;
 
-    @ManyToOne(() => UserEntity)
-    @JoinColumn()
+    @OneToOne(() => UserEntity, user => user.connected_user, { onDelete: "CASCADE" })
     user: UserEntity;
-
 }

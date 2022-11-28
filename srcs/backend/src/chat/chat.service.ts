@@ -7,6 +7,7 @@ import { UsersService } from 'src/users/users.service';
 import { Brackets, Repository } from 'typeorm';
 import { CreateMemberDto } from './dto/createMember.dto';
 import { CreateMessageDto } from './dto/createMessage.dto';
+import { ConnectedUserEntity } from './entities/connected-user.entity';
 import { MemberEntity } from './entities/member.entity';
 import { MessageEntity } from './entities/message.entity';
 import { RoomEntity } from './entities/room.entity';
@@ -25,6 +26,8 @@ export class ChatService {
         private memberRepository: Repository<MemberEntity>,
         @InjectRepository(UserEntity)
         private userRepository: Repository<UserEntity>,
+        @InjectRepository(ConnectedUserEntity)
+        private connectedUserRepository: Repository<ConnectedUserEntity>,
         private readonly encrypt: EncryptService,
         private UsersService: UsersService) { }
 
@@ -94,6 +97,17 @@ export class ChatService {
     //     });
     //     res.filter((item, index) => res.indexOf(item) === index);
     //     return (res);
+    // }
+
+    // async getAllConnectedUsers(): Promise<UserEntity[]> {
+    //     const users = await this.userRepository
+    //         .createQueryBuilder('user')
+    //         .select('connected_users')
+    //         .getMany();
+
+    //     console.log(users);
+    //     return users;
+
     // }
 
     async getAllMyRoomsAsText(userId: number): Promise<String[]> {
@@ -202,6 +216,8 @@ export class ChatService {
             where: { id: room.id },
             relations: ['members', 'members.user']
         });
+
+        this.messageRepository.delete
 
         if (thisRoom.members.length == 1) {
             if (await this.deleteRoom(thisRoom)) {

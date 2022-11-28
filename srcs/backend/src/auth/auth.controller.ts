@@ -82,13 +82,7 @@ export class AuthController {
 	@UseGuards(JwtGuard)
 	@Get('logout')
 	async logout(@Res({ passthrough: true }) res, @Request() req) {
-		let user: UserDTO;
-		try {
-			user = UserDTO.from(await this.UsersService.getUser(req.user.id));
-			this.connectedUsersService.deleteByUserId(user.id);
-		} catch {
-			return ;
-		}
+		let user: UserDTO = UserDTO.from(await this.UsersService.getUser(req.user.id));
 		res.clearCookie('refresh_token', { httpOnly: true });
 		return { msg: "success" };
 	}

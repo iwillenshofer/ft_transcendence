@@ -1,10 +1,11 @@
 
 
 import { GameEntity } from 'src/game/game.entity';
-import { BaseEntity, Entity, Unique, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, OneToMany } from 'typeorm';
+import { BaseEntity, Entity, Unique, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, OneToMany, OneToOne, JoinColumn } from 'typeorm';
 import { MessageEntity } from 'src/chat/entities/message.entity';
 import { RoomEntity } from 'src/chat/entities/room.entity';
 import { MemberEntity } from 'src/chat/entities/member.entity';
+import { ConnectedUserEntity } from 'src/chat/entities/connected-user.entity';
 
 @Entity({ name: 'User' })
 @Unique(['id'])
@@ -57,4 +58,10 @@ export class UserEntity extends BaseEntity {
 
   @Column({ nullable: true, type: 'varchar', length: 50 })
   status: string = "offline";
+
+  @OneToOne(() => ConnectedUserEntity, connectedUser => connectedUser.user)
+  @JoinColumn()
+  connected_user: ConnectedUserEntity;
+
+
 }
