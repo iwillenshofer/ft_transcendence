@@ -6,7 +6,7 @@ import { Server, Socket } from 'socket.io';
 import { TfaGuard } from 'src/auth/tfa/tfa.guard';
 import { randomInt } from 'crypto';
 
-@WebSocketGateway({ cors: '*:*', namespace: 'game' })
+@WebSocketGateway({ cors: '*:*', namespace: 'game', allowEIO3: true})
 export class GameGateway {
 
   constructor(private gameService: GameService) { }
