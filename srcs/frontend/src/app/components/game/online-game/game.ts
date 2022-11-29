@@ -1,12 +1,13 @@
 export const INITIAL_VELOCITY = 3;
-export const MAX_SCORE = 1;
-export const VELOCITY_INCREASE = 0.5;
+export const MAX_SCORE = 3;
+export const VELOCITY_INCREASE = 0.7;
 
 
 let table = {
     width: 1280,
     height: 720
 };
+
 export let player1 = {
     socket: '',
     x: 0,
@@ -113,14 +114,14 @@ function ballUpdate() {
     if (isCollision(rectP1(), rect)) {
         ball.lastTouch = 1;
         ball.direction.x *= -1;
-        ballRandomY();
+        // ballRandomY();
         ball.velocity += VELOCITY_INCREASE;
     }
 
     if (isCollision(rectP2(), rect)) {
         ball.lastTouch = 2;
         ball.direction.x *= -1;
-        ballRandomY();
+        // ballRandomY();
         ball.velocity += VELOCITY_INCREASE;
     }
 }
