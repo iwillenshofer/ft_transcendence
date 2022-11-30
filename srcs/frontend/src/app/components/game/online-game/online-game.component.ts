@@ -70,14 +70,15 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.socket = io("/game");
-	//this.socket.on("users_ongame", (res: string) => {
-	//	console.log("ongame received");
-	//	this.usersOnlineServices.setInGame(res);
-	//	});
-	//this.socket.on("users_outgame", (res: string) => {
-	//	console.log("ongame received");
-	//	this.usersOnlineServices.setOutGame(res);
-	//	});
+	console.log("registering listeners");
+	this.socket.on("users_ongame", (res: string) => {
+		console.log("ongame received");
+		this.usersOnlineServices.setInGame(res);
+		});
+	this.socket.on("users_outgame", (res: string) => {
+		console.log("outgame received");
+		this.usersOnlineServices.setOutGame(res);
+		});
 	this.username = this.auth.userSubject.value?.username ?? '';
     // this.auth.getUser().then(data => {
     //   this.username = data.username;

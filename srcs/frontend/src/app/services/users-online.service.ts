@@ -45,6 +45,7 @@ export class UsersOnlineService {
 	let users: Map<string, number> = this.statusSubject.value;
 	users.set(username, INGAME);
 	this.statusSubject.next(users);
+	console.log(this.statusSubject.value);
 }
  	
   setWatching(username:string) {

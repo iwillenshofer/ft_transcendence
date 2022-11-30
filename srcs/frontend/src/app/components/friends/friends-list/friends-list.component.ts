@@ -15,10 +15,11 @@ export class FriendsListComponent implements OnInit {
   constructor(protected friendsService: FriendsService, protected gameService: OnlineGameService, protected router: Router, 	protected onlineService: UsersOnlineService) { }
   searchIcon: IconDefinition = faMagnifyingGlass;
 
-  protected isOnline: boolean = false;
   private onlineUsers: Map<string, number> = new Map<string, number>();
   getOnline(username: string): string
   {
+	console.log("getting online comp. for " + username + ":::" + this.onlineUsers.get(username) );
+	console.log(this.onlineUsers);
 	if (!(this.onlineUsers.get(username) ?? 0))
 		return 'offline';
 	else if( this.onlineUsers.get(username) == 2)
@@ -31,7 +32,6 @@ export class FriendsListComponent implements OnInit {
 
   ngOnInit(): void {
 	this.onlineService.statusSubject.subscribe((val) => {
-		this.isOnline = !(this.isOnline);
 		this.onlineUsers = val;
 	});
   }
