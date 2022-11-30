@@ -70,14 +70,14 @@ export class FriendsService {
     return this.http.get('/backend/stats/userinfo/' + this.selectedUser.value, { withCredentials: true });
   }
 
-  getStatus(username: string): Observable<any> {
-    let x = this.http.get('/backend/stats/status/' + username, { withCredentials: true });
-    return x;
+  getStatus(username: string) {
+   // let x = this.http.get('/backend/stats/status/' + username, { withCredentials: true });
+   // return x;
   }
 
   setStatus(username: string, status: string) {
-    let body = { status: status }
-    this.http.put('/backend/stats/status/' + username, body, { withCredentials: true }).subscribe(res => { })
+    //let body = { status: status }
+    //this.http.put('/backend/stats/status/' + username, body, { withCredentials: true }).subscribe(res => { })
   }
 
   getUserList(filter: string): Observable<any> {
