@@ -68,10 +68,11 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.socket = io("/socket/game");
-    this.auth.getUser().then(data => {
-      this.username = data.username;
-    })
+    this.socket = io("/game");
+	this.username = this.auth.userSubject.value?.username ?? '';
+    // this.auth.getUser().then(data => {
+    //   this.username = data.username;
+    // })
     if (this.mode == 'spec') {
       this.friendsService.setStatus(this.username, 'watching')
       this.socket.emit("watchGame", this.specGame);
@@ -118,6 +119,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
 
   players() {
     this.socket.once("players", (player1: any, player2: any) => {
+	  console.log("P1:" + JSON.stringify(player1) + " P2:" + JSON.stringify(player2));
       this.setPlayers(player1, player2)
       this.friendsService.setStatus(this.username, 'inGame')
       this.isWaiting = false;
