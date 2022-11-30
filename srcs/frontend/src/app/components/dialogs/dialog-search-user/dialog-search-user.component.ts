@@ -18,7 +18,8 @@ import { ChatService } from '../../chat/chat.service';
 })
 export class DialogSearchUserComponent implements OnInit {
 
-  myUser!: User;
+  myUser$ = this.userService.getMyUser();
+  myUser!: UserInterface;
   users$ = this.chatService.getNonAddedUsers();
   myRooms$ = this.chatService.getMyRoomsRequest();
   myRooms!: RoomInterface[];
@@ -44,6 +45,10 @@ export class DialogSearchUserComponent implements OnInit {
       if (res === true) {
         this.dialogRef.close();
       }
+    });
+
+    this.myUser$.subscribe(user => {
+      this.myUser = user;
     });
 
     this.myRooms$.subscribe(rooms => {
@@ -93,10 +98,9 @@ export class DialogSearchUserComponent implements OnInit {
 
   async createPrivateChat() {
     let username = this.searchUsersCtrl.value;
-    const myUser = await this.userService.getMyUser();
-    if (username && myUser) {
+    if (username && this.myUser) {
       let user_username = username.username;
-      let myUser_username = myUser.username;
+      let myUser_username = this.myUser.username;
       let user_id = username.id;
       let room: RoomInterface = {
         id: NaN,

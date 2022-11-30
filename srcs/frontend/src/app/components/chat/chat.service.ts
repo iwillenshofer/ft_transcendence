@@ -68,6 +68,10 @@ export class ChatService {
     this.socket.emit('join_room', { roomId: room.id });
   }
 
+  addUserToRoom(room: RoomInterface, user: UserInterface) {
+    this.socket.emit('add_user_to_room', { roomId: room.id, userId: user.id });
+  }
+
   emitPaginateRooms(limit: number, page: number) {
     this.socket.emit('paginate_rooms', { limit, page });
   }

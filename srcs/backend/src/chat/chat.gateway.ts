@@ -16,6 +16,7 @@ import { UserEntity, UsersService } from 'src/users/users.service';
 import { ConnectedUserEntity } from './entities/connected-user.entity';
 import { MemberRole } from './models/memberRole.model';
 import { ChangeSettingRoomDto } from './dto/changeSettingRoom.dto';
+import e from 'express';
 
 @WebSocketGateway({ cors: '*:*', namespace: 'chat' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -49,7 +50,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(user)
     if (!user)
       return;
-	await this.checkSingleConnection(user);
+    await this.checkSingleConnection(user);
     let members = await this.chatService.getMembersByUserId(user.id);
     if (members)
       members = await this.chatService.updateSocketIdMember(socket.id, members);
@@ -161,6 +162,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(socket.id).emit('rooms', rooms);
   }
 
+  @SubscribeMessage('add_user_to_room')
+  async addUserToRoom(socket: Socket, joinRoomDto: JoinRoomDto) {
+    const user = await this.UsersService.getUser(joinRoomDto.userId);
+    const connected_user = await this.connectedUsersService.getByUserId(user.id);
+    const member = await this.chatService.createMember(user.toEntity(), connected_user.socketId, MemberRole.Member);
+    const room = await this.chatService.getRoomById(joinRoomDto.roomId);
+    await this.chatService.addMemberToRoom(room, member);
+    const rooms = await this.chatService.getRoomsOfMember(user.id, { page: 1, limit: 3 });
+    this.server.to(socket.id).emit('rooms', rooms);
+  }
+
+
 
   // @SubscribeMessage('joinRoomUser')
   // async onJoinRoomUser(socket: Socket, joinRoomDto: JoinRoomDto) {
@@ -180,7 +193,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const members = await this.chatService.getMembersByUserId(+socket.handshake.headers.userid);
     const this_room = await this.chatService.getRoomById(roomId);
 
-    let member = members.find(room => { room.id == this_room.id })
+    let member: MemberEntity;
+    members.forEach(element => {
+      if (element.user.id == +socket.handshake.headers.userid)
+        member = element;
+    });
 
     if (await this.chatService.removeMemberFromRoom(this_room, member) != null) {
       let rooms = await this.chatService.getRoomsOfMember(+socket.handshake.headers.userid, { page: 1, limit: 3 });

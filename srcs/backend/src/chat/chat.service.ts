@@ -212,25 +212,26 @@ export class ChatService {
         //        If yes, we need to change the creator. (Maybe an admin)
         //        If no admin, delete the room
 
-        let thisRoom = await this.roomRepository.findOne({
-            where: { id: room.id },
-            relations: ['members', 'members.user']
-        });
+        // let thisRoom = await this.roomRepository.findOne({
+        //     where: { id: room.id },
+        //     relations: ['members', 'members.user']
+        // });
 
-        this.messageRepository.delete
-
-        if (thisRoom.members.length == 1) {
-            if (await this.deleteRoom(thisRoom)) {
+        if (room.members.length == 1) {
+            if (await this.deleteRoom(room)) {
+                await this.memberRepository.remove(member);
                 return (null);
             }
         }
 
-        for (const { index, value } of thisRoom.members.map((value, index) => ({ index, value }))) {
-            if (value.user.id == member.user.id) {
-                thisRoom.members.splice(index, 1);
-                return await this.roomRepository.save(thisRoom);
-            }
-        };
+        await this.memberRepository.remove(member);
+
+        // for (const { index, value } of thisRoom.members.map((value, index) => ({ index, value }))) {
+        //     if (value.user.id == member.user.id) {
+        //         thisRoom.members.splice(index, 1);
+        //         return await this.roomRepository.save(thisRoom);
+        //     }
+        // };
         return (null);
     }
 

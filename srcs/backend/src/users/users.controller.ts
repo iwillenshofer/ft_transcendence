@@ -46,6 +46,7 @@ export class UsersController {
     @UseGuards(JwtGuard)
     @Get('get_my_user')
     async getMyUser(@Request() req) {
+        console.log("USERID : " + req.user.id);
         let user: UserDTO = UserDTO.from(await this.UsersService.getUser(req.user.id));
         return (JSON.stringify(user));
     }

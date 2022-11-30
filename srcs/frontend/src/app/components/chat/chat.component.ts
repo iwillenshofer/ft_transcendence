@@ -35,8 +35,8 @@ export class ChatComponent implements OnInit {
   publicRooms$ = this.chatService.getPublicRooms();
   myRoomsNameObsv$ = this.chatService.getAllMyRoomsAsText();
 
+  myUser$ = this.userService.getMyUser();
   myUser!: UserInterface;
-  myUsername!: string;
 
   myRoomsName: string[] = []
 
@@ -58,8 +58,9 @@ export class ChatComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.myUser = await this.userService.getMyUser();
-    this.myUsername = this.myUser.username;
+    this.myUser$.subscribe(user => {
+      this.myUser = user;
+    });
     this.chatService.emitPaginateRooms(3, 0);
     this.chatService.emitPaginatePublicRooms(3, 0);
 
@@ -105,12 +106,14 @@ export class ChatComponent implements OnInit {
         let selectedRoom: RoomInterface | undefined;
         if (selectedRoom = rooms.find(room => room.name == ret.data.name)) {
           this.selectedRoom = selectedRoom;
+          this.myRoomsName.push(this.selectedRoom.name);
         }
       })
     })
   }
 
   openDialogPassword() {
+    console.log("here")
     const dialogRef = this.dialog.open(DialogPasswordComponent, {
       data: { room: this.selectedPublicRoom }
     });
@@ -118,6 +121,7 @@ export class ChatComponent implements OnInit {
   }
 
   async onJoinRoom(selectedPublicRoom: RoomInterface | null) {
+
     if (selectedPublicRoom != null) {
       let roomName = selectedPublicRoom.name ?? '';
       if (this.myRoomsName.includes(roomName)) {

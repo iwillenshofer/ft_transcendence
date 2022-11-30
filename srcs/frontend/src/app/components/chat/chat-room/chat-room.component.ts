@@ -72,7 +72,7 @@ export class ChatRoomComponent implements OnInit, OnChanges {
     this.members$.subscribe(members => {
       members.forEach(member => {
         if (member.user.id != this.myUser.id) {
-          if (!this.members.some(thismember => thismember.id == member.id))
+          if (!this.members.some(thismember => thismember.user.id == member.user.id))
             this.members.push(member);
         }
       });

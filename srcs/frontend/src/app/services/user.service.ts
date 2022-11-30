@@ -72,7 +72,7 @@ export class UserService {
   }
 
   getMyUser() {
-    return firstValueFrom(this.http.get<User>('/backend/user/get_my_user/', { withCredentials: true }));
+    return this.http.get<any>('/backend/user/get_my_user/', { withCredentials: true });
   }
 
   getAllUsername(): Observable<any> {
