@@ -76,7 +76,6 @@ export function update() {
         powerUpUpdate()
     if (isLose()) {
         handleLose();
-        syncBall();
         ball.lastTouch = 0;
     }
 }
@@ -122,6 +121,7 @@ function ballUpdate() {
         // ballRandomY();
         ball.velocity += VELOCITY_INCREASE;
     }
+    syncBall();
 }
 
 function rectP1() {
