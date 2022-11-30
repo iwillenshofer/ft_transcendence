@@ -255,18 +255,14 @@ function syncBall() {
 
 function ballRandomX() {
     if (_socket.id == player1.socket) {
-        let num = Math.cos(randomNumberBetween(0.2, 0.9));
-        ball.direction.x = Math.round(num * 10) / 10;
+        ball.direction.x = Math.cos(randomNumberBetween(0.2, 0.9));
     }
     syncBall();
 }
 
 function ballRandomY() {
-    if (_socket.id == player1.socket) {
-        let num = Math.sin(randomNumberBetween(0, 2 * Math.PI));
-        ball.direction.y = Math.round(num * 10) / 10;
-        console.log(ball.direction.y)
-    }
+    if (_socket.id == player1.socket)
+        ball.direction.y = Math.sin(randomNumberBetween(0.2, 2 * Math.PI - 0.2));
     syncBall();
 }
 
