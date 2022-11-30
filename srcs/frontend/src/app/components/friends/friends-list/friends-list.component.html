@@ -7,7 +7,7 @@
 
             <div *ngFor="let item of this.friendsService.friendsList.value"
                 class="row user-list d-flex align-items-center">
-                <div class="col-3 online">
+                <div class="col-3 {{  this.getOnline(item.username) }}">
                     <img src="backend/{{ item.avatar_url }}" class="rounded-circle user-list-image">
                 </div>
                 <div class="col-6 align-middle">

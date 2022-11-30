@@ -47,6 +47,17 @@
         border-left-style: solid;
     }
 
+	.ongame {
+        border-left-width: 3px;
+        border-left-color: rgb(187, 0, 255);
+        border-left-style: solid;
+    }
+	.watching {
+        border-left-width: 3px;
+        border-left-color: rgb(255, 153, 0);
+        border-left-style: solid;
+    }
+	
     .busy {
         border-left-width: 3px;
         border-left-color: orange;
@@ -55,7 +66,7 @@
 
     .offline {
         border-left-width: 3px;
-        border-left-color: darkred;
+        border-left-color: rgb(0, 0, 0);
         border-left-style: solid;
     }
     .name {

@@ -16,6 +16,7 @@ import { UserEntity, UsersService } from 'src/users/users.service';
 import { ConnectedUserEntity } from './entities/connected-user.entity';
 import { MemberRole } from './models/memberRole.model';
 import { ChangeSettingRoomDto } from './dto/changeSettingRoom.dto';
+import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({ cors: '*:*', namespace: 'chat', transports: ['websocket', 'polling'] } )
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -45,8 +46,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @UseGuards(TfaGuard)
   async handleConnection(socket: Socket, ...args: any[]) {
+	Logger.warn('handling connection');
     const user = await this.UsersService.getUserById(+socket.handshake.headers.userid);
-    console.log(user)
+    console.log(user);
     if (!user)
       return;
 	await this.checkSingleConnection(user);
@@ -63,6 +65,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     let usersOnline = await this.connectedUsersService.getAllUserOnline();
     const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
     connectedUsers.forEach(user => {
+		Logger.warn("emmiting users_online");
       this.server.to(user.socketId).emit('users_online', usersOnline);
     });
 
@@ -78,9 +81,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (user) {
       let usersOnline = await this.connectedUsersService.getAllUserOnline();
       const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
-      connectedUsers.forEach(user => {
-        this.server.to(user.socketId).emit('users_online', usersOnline);
-      });
+        this.server.emit('users_online', usersOnline);
     }
     socket.disconnect();
   }

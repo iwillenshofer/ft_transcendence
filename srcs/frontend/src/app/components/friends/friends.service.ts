@@ -76,7 +76,8 @@ export class FriendsService {
   }
 
   setStatus(username: string, status: string) {
-    //let body = { status: status }
+	
+	//let body = { status: status }
     //this.http.put('/backend/stats/status/' + username, body, { withCredentials: true }).subscribe(res => { })
   }
 

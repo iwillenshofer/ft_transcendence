@@ -18,13 +18,10 @@
 	"ws": true,
 	"logLevel": "debug"
   },
-  "/socket/chat": {
+  "/chat": {
     "target": "http://backend:3000",
     "secure": false,
     "changeOrigin": true,
-    "pathRewrite": {
-      "^/socket/chat": "/chat"
-    },
 	"ws": true,
 	"logLevel": "debug"
   },

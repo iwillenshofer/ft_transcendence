@@ -3,6 +3,7 @@ import { Component, ViewChild, ElementRef, OnInit, HostListener, Input, OnDestro
 import io from "socket.io-client";
 import { OnlineGameService } from './online-game.service';
 import { FriendsService } from '../../friends/friends.service';
+import { UsersOnlineService } from 'src/app/services/users-online.service';
 
 
 @Component({
@@ -32,7 +33,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   ball: any;
   username: string = "";
 
-  constructor(public gameService: OnlineGameService, private auth: AuthService, private friendsService: FriendsService) {
+  constructor(public gameService: OnlineGameService, private auth: AuthService, private friendsService: FriendsService, private usersOnlineServices: UsersOnlineService) {
     this.ball = gameService.getBall();
   }
 
@@ -69,6 +70,14 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.socket = io("/game");
+	//this.socket.on("users_ongame", (res: string) => {
+	//	console.log("ongame received");
+	//	this.usersOnlineServices.setInGame(res);
+	//	});
+	//this.socket.on("users_outgame", (res: string) => {
+	//	console.log("ongame received");
+	//	this.usersOnlineServices.setOutGame(res);
+	//	});
 	this.username = this.auth.userSubject.value?.username ?? '';
     // this.auth.getUser().then(data => {
     //   this.username = data.username;
@@ -121,7 +130,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.socket.once("players", (player1: any, player2: any) => {
 	  console.log("P1:" + JSON.stringify(player1) + " P2:" + JSON.stringify(player2));
       this.setPlayers(player1, player2)
-      this.friendsService.setStatus(this.username, 'inGame')
       this.isWaiting = false;
       this.gameService.start()
       this.update();
