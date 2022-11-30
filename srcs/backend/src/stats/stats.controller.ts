@@ -14,7 +14,7 @@ export class StatsController {
 
   @Get('/ranking')
   async ranking(@Request() req) {
-	console.log("getting ranking");
+    // console.log("getting ranking");
     let ret = await this.statsService.getLadderRanking();
     return (JSON.stringify(ret));
   }
@@ -23,7 +23,7 @@ export class StatsController {
   @Get('/:username')
   async stats(@Param('username') username): Promise<StatsDTO> {
     let userStats = await this.statsService.getUserStats(username);
-	console.log(JSON.stringify(userStats));
+    // console.log(JSON.stringify(userStats));
     return (userStats);
   }
 
@@ -43,19 +43,19 @@ export class StatsController {
 
 
 
-  @UseGuards(JwtGuard)
-  @Get('status/:username')
-  async getStatus(@Param('username') username, @Response() res) {
-    let status = await this.statsService.getStatusByUsername(username);
-    res.status(200).send({ status: status });
-  }
+  // @UseGuards(JwtGuard)
+  // @Get('status/:username')
+  // async getStatus(@Param('username') username, @Response() res) {
+  //   let status = await this.statsService.getStatusByUsername(username);
+  //   res.status(200).send({ status: status });
+  // }
 
-  @UseGuards(JwtGuard)
-  @Put('status/:username')
-  async setStatus(@Param('username') username: string, @Body() body: any, @Response() res) {
-    let status = await this.statsService.setStatusByUsername(username, body.status);
-    res.status(200).send({ status: status });
-  }
+  // @UseGuards(JwtGuard)
+  // @Put('status/:username')
+  // async setStatus(@Param('username') username: string, @Body() body: any, @Response() res) {
+  //   let status = await this.statsService.setStatusByUsername(username, body.status);
+  //   res.status(200).send({ status: status });
+  // }
 
   @UseGuards(JwtGuard)
   @Get('achievements/:username')

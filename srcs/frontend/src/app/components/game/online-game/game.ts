@@ -60,9 +60,7 @@ export function setGameSocket(socket: any) {
 }
 
 export function gameStart() {
-    console.log(started)
     if (!started) {
-        console.log('a')
         resetPlayersPosition();
         resetBall();
         resetScore();
