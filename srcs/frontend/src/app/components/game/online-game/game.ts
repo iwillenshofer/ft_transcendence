@@ -265,6 +265,7 @@ function ballRandomY() {
     if (_socket.id == player1.socket) {
         let num = Math.sin(randomNumberBetween(0, 2 * Math.PI));
         ball.direction.y = Math.round(num * 10) / 10;
+        console.log(ball.direction.y)
     }
     syncBall();
 }
