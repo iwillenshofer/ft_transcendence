@@ -78,25 +78,31 @@
                         </fa-icon>
                     </a>
                     <a>
-                        <fa-icon title="Challenge {{selectedMember.user.username}}" class="iconsMember"
-                            [icon]="faPaddle" (click)="challenge(selectedMember.user.username)" routerLink="/pong">
+                        <fa-icon *ngIf="!isBlocked && !isBlocker" title=" Challenge {{selectedMember.user.username}}"
+                            class="iconsMember" [icon]="faPaddle" (click)="challenge(selectedMember.user.username)"
+                            routerLink="/pong">
                         </fa-icon>
                     </a>
                     <a>
-                        <fa-icon title="Block {{selectedMember.user.username}}" class="iconsMember" [icon]="faBan"
-                            (click)="blockUser(selectedMember.user.username)">
+                        <fa-icon *ngIf="!isBlocked; else blocked_user" title="Block {{selectedMember.user.username}}"
+                            class="iconsMember" [icon]="faLock" (click)="blockUser(selectedMember.user.id)">
                         </fa-icon>
+                        <ng-template #blocked_user>
+                            <fa-icon title="Unblock {{selectedMember.user.username}}" class="iconsMember"
+                                [icon]="faUnlock" (click)="unblockUser(selectedMember.user.id)">
+                            </fa-icon>
+                        </ng-template>
                     </a>
                     <a>
                         <fa-icon *ngIf="displaySetAsAdmin(selectedMember)"
                             title="Add the administrator role to {{selectedMember.user.username}}" class="iconsMember"
-                            [icon]="fasStar" (click)="blockUser(selectedMember.user.username)">
+                            [icon]="fasStar" (click)="blockUser(selectedMember.user.id)">
                         </fa-icon>
                     </a>
                     <a>
                         <fa-icon *ngIf="isOwner(myMember) && isAdmin(selectedMember)"
                             title="Remove the administrator role to {{selectedMember.user.username}}"
-                            class="iconsMember" [icon]="farStar" (click)="blockUser(selectedMember.user.username)">
+                            class="iconsMember" [icon]="farStar" (click)="blockUser(selectedMember.user.id)">
                         </fa-icon>
                     </a>
                 </div>

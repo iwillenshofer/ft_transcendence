@@ -113,7 +113,6 @@ export class ChatComponent implements OnInit {
   }
 
   openDialogPassword() {
-    console.log("here")
     const dialogRef = this.dialog.open(DialogPasswordComponent, {
       data: { room: this.selectedPublicRoom }
     });

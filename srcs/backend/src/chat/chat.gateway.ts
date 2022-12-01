@@ -17,6 +17,7 @@ import { ConnectedUserEntity } from './entities/connected-user.entity';
 import { MemberRole } from './models/memberRole.model';
 import { ChangeSettingRoomDto } from './dto/changeSettingRoom.dto';
 import e from 'express';
+import { BlockUserDto } from './dto/blockUser.dto';
 
 @WebSocketGateway({ cors: '*:*', namespace: 'chat' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -89,7 +90,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('messages')
   async getMessages(socket: any, roomId: number) {
     const room: RoomEntity = await this.chatService.getRoomById(roomId);
-    const messages = await this.chatService.findMessagesForRoom(room, { page: 1, limit: 25 });
+    const messages = await this.chatService.findMessagesForRoom(room, { page: 1, limit: 25 }, +socket.handshake.headers.userid);
     this.server.to(socket.id).emit('messages', messages);
 
   }
@@ -220,7 +221,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const user = await this.UsersService.getUserById(+socket.handshake.headers.userid);
     const membersSender = await this.chatService.getMembersByUserId(user.id);
     const this_room = await this.chatService.getRoomById(createMessage.room.id);
-    console.log(membersSender)
     let this_member: MemberEntity;
     for (var member of membersSender) {
       member.rooms.forEach(room => {
@@ -229,11 +229,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
       })
     }
+
     const createdMessage = await this.chatService.createMessage(message.toEntity(), member);
+
+    let blockerUsers: number[] = [];
+    (await this.chatService.getBlockerUser(+socket.handshake.headers.userid)).forEach(user => {
+      blockerUsers.push(user.userId);
+    });
 
     const members = await this.chatService.getMembersByRoom(this_room);
     for (const member of members) {
-      this.server.to(member.socketId).emit('message_added', createdMessage);
+      if (!blockerUsers.includes(member.user.id))
+        this.server.to(member.socketId).emit('message_added', createdMessage);
     }
   }
 
@@ -286,9 +293,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.server.to(user.socketId).emit('users_online', usersOnline);
       });
     }
-
   }
 
+  @SubscribeMessage("block_user")
+  async blockUser(socket: Socket, blockUserDto: BlockUserDto) {
+    console.log("block_user")
+    await this.chatService.addBlockedUser(+socket.handshake.headers.userid, blockUserDto.blockedUserId);
+  }
+
+  @SubscribeMessage("unblock_user")
+  async unblockUser(socket: Socket, blockUserDto: BlockUserDto) {
+    await this.chatService.removeBlockedUser(+socket.handshake.headers.userid, blockUserDto.blockedUserId);
+  }
 
   private onPrePaginate(page: PageInterface) {
     page.limit = page.limit > 100 ? 100 : page.limit;

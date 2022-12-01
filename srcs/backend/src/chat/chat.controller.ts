@@ -27,7 +27,7 @@ export class ChatController {
     @UseGuards(JwtGuard)
     @Get('searchusers/:username')
     async getUsers(@Param('username') username, @Request() req) {
-        let ret = await this.chatService.searchUsers(username, req.user.username);
+        let ret = await this.chatService.searchUsers(username, req.user.username, req.user.id);
         return (JSON.stringify(ret));
     }
 
@@ -66,4 +66,33 @@ export class ChatController {
         return of(await this.chatService.getMyMemberOfRoom(roomId, req.user.id));
     }
 
+    @UseGuards(JwtGuard)
+    @Get("is_blocked/:userId")
+    async isBlockedUser(@Param('userId') userId, @Request() req) {
+        return of(await this.chatService.isBlockedUser(+req.user.id, +userId));
+    }
+
+    @UseGuards(JwtGuard)
+    @Get("get_blocked_users")
+    async getBlockedUsers(@Request() req) {
+
+        let blockedUserId: number[] = [];
+        (await this.chatService.getBlockedUser(+req.user.id)).forEach(blockedUser => {
+            blockedUserId.push(blockedUser.blockedUserId);
+        });
+
+        return of(blockedUserId);
+    }
+
+    @UseGuards(JwtGuard)
+    @Get("get_blocker_users")
+    async getBlockerUsers(@Request() req) {
+
+        let blockerUserId: number[] = [];
+        (await this.chatService.getBlockerUser(+req.user.id)).forEach(blockerUser => {
+            blockerUserId.push(blockerUser.userId);
+        });
+
+        return of(blockerUserId);
+    }
 }

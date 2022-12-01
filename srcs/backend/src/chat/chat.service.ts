@@ -7,6 +7,7 @@ import { UsersService } from 'src/users/users.service';
 import { Brackets, Repository } from 'typeorm';
 import { CreateMemberDto } from './dto/createMember.dto';
 import { CreateMessageDto } from './dto/createMessage.dto';
+import { BlockedUserEntity } from './entities/blocked_user.entity';
 import { ConnectedUserEntity } from './entities/connected-user.entity';
 import { MemberEntity } from './entities/member.entity';
 import { MessageEntity } from './entities/message.entity';
@@ -28,6 +29,8 @@ export class ChatService {
         private userRepository: Repository<UserEntity>,
         @InjectRepository(ConnectedUserEntity)
         private connectedUserRepository: Repository<ConnectedUserEntity>,
+        @InjectRepository(BlockedUserEntity)
+        private blockedUserRepository: Repository<BlockedUserEntity>,
         private readonly encrypt: EncryptService,
         private UsersService: UsersService) { }
 
@@ -262,13 +265,26 @@ export class ChatService {
     //     });
     // }
 
-    async findMessagesForRoom(room: RoomEntity, options: IPaginationOptions): Promise<Pagination<MessageEntity>> {
+    async findMessagesForRoom(room: RoomEntity, options: IPaginationOptions, userId: number): Promise<Pagination<MessageEntity>> {
+
+        let blockedUsers: number[] = [];
+        (await this.getBlockedUser(userId)).forEach(user => {
+            blockedUsers.push(user.blockedUserId);
+        });
+
+        let usersToSend: number[] = [];
+        (await this.getMembersByRoom(room)).forEach(member => {
+            if (!blockedUsers.includes(member.user.id))
+                usersToSend.push(member.user.id);
+        });
+
         const query = this.messageRepository
             .createQueryBuilder('message')
             .leftJoin('message.room', 'room')
             .where('room.id = :roomId', { roomId: room.id })
             .leftJoinAndSelect('message.member', 'member')
             .leftJoinAndSelect('member.user', 'user')
+            .andWhere('user.id IN (:...usersToSend)', { usersToSend: usersToSend })
         let res = await paginate(query, options);
         return (res);
     }
@@ -331,12 +347,30 @@ export class ChatService {
         return (nonAddedUsers);
     }
 
-    async searchUsers(search: string, me: string) {
+    async searchUsers(search: string, me: string, userId: number) {
+
+        let blockedUsers: number[] = [];
+        (await this.getBlockedUser(userId)).forEach(user => {
+            blockedUsers.push(user.blockedUserId);
+        });
+
+        let blockerUsers: number[] = [];
+        (await this.getBlockerUser(userId)).forEach(user => {
+            blockerUsers.push(user.userId);
+        });
+
+        let nonBlockedUsers: number[] = [];
+        (await this.getAllMembers()).forEach(member => {
+            if (!blockedUsers.includes(member.user.id) && !blockerUsers.includes(member.user.id))
+                nonBlockedUsers.push(member.user.id);
+        });
+
         let res = await this.userRepository
             .createQueryBuilder("user")
             .select(['user.username', 'user.avatar_url', 'user.id'])
             .where('user.username != :me', { me: me })
             .andWhere("user.username like :name", { name: `%${search}%` })
+            .andWhere('user.id IN (:...nonBlockedUsers)', { nonBlockedUsers: nonBlockedUsers })
             .getMany();
         return res;
     }
@@ -378,6 +412,29 @@ export class ChatService {
         await this.roomRepository.save(room);
     }
 
+    async addBlockedUser(userId: number, BlockedUserId: number) {
+        await this.blockedUserRepository.save({ userId: userId, blockedUserId: BlockedUserId });
+    }
+
+    async removeBlockedUser(userId: number, BlockedUserId: number) {
+        const blockedUser = await this.blockedUserRepository.find({ where: { userId: userId, blockedUserId: BlockedUserId } });
+        await this.blockedUserRepository.remove(blockedUser);
+    }
+
+    async isBlockedUser(userId: number, BlockedUserId: number): Promise<boolean> {
+        const count = await this.blockedUserRepository.count({ where: { userId: userId, blockedUserId: BlockedUserId } });
+        if (count > 0)
+            return (true);
+        return (false);
+    }
+
+    async getBlockedUser(userId: number): Promise<BlockedUserEntity[]> {
+        return (await this.blockedUserRepository.find({ where: { userId: userId } }));
+    }
+
+    async getBlockerUser(userId: number): Promise<BlockedUserEntity[]> {
+        return (await this.blockedUserRepository.find({ where: { blockedUserId: userId } }));
+    }
 
 
     // let res = await this.memberRepository

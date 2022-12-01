@@ -142,4 +142,25 @@ export class ChatService {
     this.socket.emit('users_online');
   }
 
+  blockUser(userId: number) {
+    console.log("here")
+    this.socket.emit('block_user', { blockedUserId: userId });
+  }
+
+  unblockUser(userId: number) {
+    this.socket.emit('unblock_user', { blockedUserId: userId });
+  }
+
+  isBlockedUser(userId: number) {
+    return this.http.get<boolean>('/backend/chat/is_blocked/' + userId, { withCredentials: true });
+  }
+
+  getBlockedUsers() {
+    return this.http.get<number[]>('/backend/chat/get_blocked_users/', { withCredentials: true });
+  }
+
+  getBlockerUsers() {
+    return this.http.get<number[]>('/backend/chat/get_blocker_users/', { withCredentials: true });
+  }
+
 }

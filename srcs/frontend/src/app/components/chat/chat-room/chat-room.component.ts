@@ -12,7 +12,7 @@ import { faGears } from '@fortawesome/free-solid-svg-icons';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogRoomSettingComponent } from '../../dialogs/dialog-room-setting/dialog-room-setting.component';
 import { MatSelectionListChange } from '@angular/material/list';
-import { faStar as fasStar, faTableTennisPaddleBall, faAddressCard, faBan } from '@fortawesome/free-solid-svg-icons';
+import { faStar as fasStar, faTableTennisPaddleBall, faAddressCard, faLock, faUnlock } from '@fortawesome/free-solid-svg-icons';
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
 import { OnlineGameService } from '../../game/online-game.service';
 import { FriendsService } from '../../friends/friends.service';
@@ -42,11 +42,18 @@ export class ChatRoomComponent implements OnInit, OnChanges {
   members: MemberInterface[] = [];
   myMember!: MemberInterface;
   selectedMember!: MemberInterface | null;
+  isBlocked = false;
+  isBlocker = false;
+  blockedUsers$ = this.chatService.getBlockedUsers();
+  blockedUsers: Number[] = [];
+  blockerUsers$ = this.chatService.getBlockerUsers();
+  blockerUsers: Number[] = [];
   fasStar = fasStar;
   farStar = farStar;
   faPaddle = faTableTennisPaddleBall;
   faProfile = faAddressCard;
-  faBan = faBan;
+  faLock = faLock;
+  faUnlock = faUnlock;
 
   messagesPaginate$: Observable<MessagePaginateInterface> = combineLatest([this.chatService.getMessages(), this.chatService.getAddedMessage().pipe(startWith(null))]).pipe(
     map(([messagePaginate, message]) => {
@@ -69,6 +76,20 @@ export class ChatRoomComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
+    this.blockedUsers$.subscribe(blockedUsers => {
+      blockedUsers.forEach(user => {
+        this.blockedUsers.push(user);
+      });
+    });
+
+    this.blockerUsers$.subscribe(blockerUsers => {
+      blockerUsers.forEach(user => {
+        this.blockerUsers.push(user);
+      });
+    });
+
+    console.log(this.blockerUsers)
+
     this.members$.subscribe(members => {
       members.forEach(member => {
         if (member.user.id != this.myUser.id) {
@@ -146,6 +167,8 @@ export class ChatRoomComponent implements OnInit, OnChanges {
   }
 
   onMemberChange(event: MatSelectionListChange) {
+    this.isBlocked = this.isBlockedUser(event.source.selectedOptions.selected[0].value.user.id);
+    this.isBlocker = this.isBlockerUser(event.source.selectedOptions.selected[0].value.user.id);
     this.selectedMember = event.source.selectedOptions.selected[0].value;
   }
 
@@ -157,8 +180,22 @@ export class ChatRoomComponent implements OnInit, OnChanges {
     this.friensService.loadUser(username);
   }
 
-  blockUser(username: string) {
+  blockUser(userId: number) {
+    this.chatService.blockUser(userId);
+    this.isBlocked = true;
+  }
 
+  unblockUser(userId: number) {
+    this.chatService.unblockUser(userId);
+    this.isBlocked = false;
+  }
+
+  isBlockedUser(userId: number): boolean {
+    return (this.blockedUsers.includes(userId));
+  }
+
+  isBlockerUser(userId: number): boolean {
+    return (this.blockerUsers.includes(userId));
   }
 
   displaySetAsAdmin(member: MemberInterface) {
