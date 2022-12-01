@@ -1,12 +1,11 @@
-
 .search-box {
     background-color: #6c757d;
     height: 40px;
     border-radius: 50px;
-    width  : 100%;
-  }
-  
-  .search-input {
+    width: 100%;
+}
+
+.search-input {
     max-width: 70%;
     outline: none;
     border: none;
@@ -17,10 +16,10 @@
     font-size: 16px;
     transition: .3s;
     line-height: 40px;
-  }
-  
-  .search-btn {
-    float:right;
+}
+
+.search-btn {
+    float: right;
     padding-right: 20px;
     margin-top: 10px;
     color: rgb(178, 178, 178);
@@ -47,17 +46,18 @@
         border-left-style: solid;
     }
 
-	.ongame {
+    .ingame {
         border-left-width: 3px;
         border-left-color: rgb(187, 0, 255);
         border-left-style: solid;
     }
-	.watching {
+
+    .watching {
         border-left-width: 3px;
         border-left-color: rgb(255, 153, 0);
         border-left-style: solid;
     }
-	
+
     .busy {
         border-left-width: 3px;
         border-left-color: orange;
@@ -69,16 +69,20 @@
         border-left-color: rgb(0, 0, 0);
         border-left-style: solid;
     }
+
     .name {
         font-size: 14px;
         font-weight: bold;
         color: white;
         cursor: pointer;
     }
+
     button {
         font-size: 12px;
     }
-    padding-bottom: 10px;;
+
+    padding-bottom: 10px;
+    ;
     margin-bottom: 10px;
     border-bottom: 2px;
     border-bottom-style: solid;
@@ -86,7 +90,7 @@
 }
 
 .user-list:last-child {
-        margin-bottom: 0px;
-        padding-bottom: 0px;
-        border-bottom-style: none;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    border-bottom-style: none;
 }

@@ -26,7 +26,6 @@ export class HistoryDTO {
 	public static fromEntities(entity: GameEntity[]): HistoryDTO[] {
 		let history: HistoryDTO[] = [];
 		for (let item of entity) {
-			console.log("history entity: " + JSON.stringify(item));
 			history.push(HistoryDTO.fromEntity(item));
 		}
 		return (history);

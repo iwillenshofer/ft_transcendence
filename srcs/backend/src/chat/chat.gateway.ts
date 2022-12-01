@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { TfaGuard } from 'src/auth/tfa/tfa.guard';
 import { Server, Socket } from 'socket.io';
 import { PageInterface } from './models/page.interface';
@@ -18,7 +18,7 @@ import { MemberRole } from './models/memberRole.model';
 import { ChangeSettingRoomDto } from './dto/changeSettingRoom.dto';
 import { Logger } from '@nestjs/common';
 
-@WebSocketGateway({ cors: '*:*', namespace: 'chat', transports: ['websocket', 'polling'] } )
+@WebSocketGateway({ cors: '*:*', namespace: 'chat', transports: ['websocket', 'polling'] })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @WebSocketServer()
@@ -46,12 +46,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @UseGuards(TfaGuard)
   async handleConnection(socket: Socket, ...args: any[]) {
-	Logger.warn('handling connection');
+    Logger.warn('handling connection');
     const user = await this.UsersService.getUserById(+socket.handshake.headers.userid);
-    console.log(user);
     if (!user)
       return;
-	await this.checkSingleConnection(user);
+    // console.log(user);
+    await this.checkSingleConnection(user);
     let members = await this.chatService.getMembersByUserId(user.id);
     if (members)
       members = await this.chatService.updateSocketIdMember(socket.id, members);
@@ -61,11 +61,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       await this.connectedUsersService.createConnectedUser(socket.id, user);
     else
       await this.connectedUsersService.updateSocketIdConnectedUSer(socket.id, connectedUser);
-
+    // this.server.emit('setStatus', { username: user.username, status: "online" })
+    this.setStatus(user.username, "online")
+    console.log('online')
     let usersOnline = await this.connectedUsersService.getAllUserOnline();
     const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
     connectedUsers.forEach(user => {
-		Logger.warn("emmiting users_online");
+      Logger.warn("emmiting users_online");
       this.server.to(user.socketId).emit('users_online', usersOnline);
     });
 
@@ -79,9 +81,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const user = await this.UsersService.getUserById(+socket.handshake.headers.userid);
     await this.connectedUsersService.deleteBySocketId(socket.id);
     if (user) {
+      this.setStatus(user.username, "offline")
       let usersOnline = await this.connectedUsersService.getAllUserOnline();
       const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
-        this.server.emit('users_online', usersOnline);
+      this.server.emit('users_online', usersOnline);
     }
     socket.disconnect();
   }
@@ -204,7 +207,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const user = await this.UsersService.getUserById(+socket.handshake.headers.userid);
     const membersSender = await this.chatService.getMembersByUserId(user.id);
     const this_room = await this.chatService.getRoomById(createMessage.room.id);
-    console.log(membersSender)
+    // console.log(membersSender)
     let this_member: MemberEntity;
     for (var member of membersSender) {
       member.rooms.forEach(room => {
@@ -235,7 +238,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("change_settings_room")
   async changeSettingsRoom(socket: Socket, data: ChangeSettingRoomDto) {
     if (data.roomId) {
-      console.log(data.radioPassword)
+      // console.log(data.radioPassword)
       const room = await this.chatService.getRoomById(data.roomId);
       if (data.name)
         await this.chatService.updateRoomName(room, data.name);
@@ -278,6 +281,40 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     page.limit = page.limit > 100 ? 100 : page.limit;
     page.page += 1;
     return (page);
+  }
+
+  usersStatus: {
+    username: string,
+    status: string
+  }[] = [];
+
+  @SubscribeMessage('getStatus')
+  async getStatus(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+    this.server.emit('chatStatus', this.usersStatus)
+  }
+
+  @SubscribeMessage('setStatus')
+  async setStatusSocket(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+    // console.log('setStatus')
+    let username = data[0];
+    let status = data[1];
+    this.setStatus(username, status)
+  }
+
+  setStatus(username: string, status: string) {
+    let user = { username: username, status: status };
+    let find = 0;
+    this.usersStatus.forEach(u => {
+      if (u.username == username) {
+        u.status = status;
+        find = 1;
+      }
+    });
+    if (find == 0) {
+      this.usersStatus.push(user)
+    }
+    // console.log(this.usersStatus)
+    this.server.emit('chatStatus', this.usersStatus)
   }
 
 }

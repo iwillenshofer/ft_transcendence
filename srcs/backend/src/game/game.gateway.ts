@@ -119,10 +119,10 @@ export class GameGateway {
       if (game.player1.socket && game.player2.socket) {
         if (client.id == game.player1.socket || client.id == game.player2.socket) {
           this.server.to(game.gameID).emit("players", game.player1, game.player2);
-		  Logger.warn("emmiting users_ongame");
-		  this.server.emit("users_ongame", game.player1.username);
-		  this.server.emit("users_ongame", game.player2.username); 
-		}
+          // Logger.warn("emmiting users_ongame");
+          // this.server.emit("users_ongame", game.player1.username);
+          // this.server.emit("users_ongame", game.player2.username);
+        }
       }
     }
   }
@@ -224,9 +224,9 @@ export class GameGateway {
       if (game.player1.disconnected && game.player2.disconnected) {
         this.server.in(gameID).socketsLeave(gameID);
         this.server.in(gameID).disconnectSockets();
-		Logger.warn("emmiting users_outgame");
-		this.server.emit("users_outgame", game.player1.username);
-		this.server.emit("users_outgame", game.player2.username);
+        // Logger.warn("emmiting users_outgame");
+        // this.server.emit("users_outgame", game.player1.username);
+        // this.server.emit("users_outgame", game.player2.username);
         this.deleteGameById(gameID);
       }
     }
@@ -236,7 +236,6 @@ export class GameGateway {
     for (let index = 0; index < this.games.length; index++) {
       let game = this.games[index];
       if (game && game.gameID == gameID) {
-        console.log('delete')
         delete this.games[index];
         this.games.splice(index, 1);
       }
