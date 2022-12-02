@@ -10,6 +10,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserInterface } from 'src/app/model/user.interface';
 import { ChatService } from '../../chat/chat.service';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-dialog-search-user',
@@ -23,6 +24,7 @@ export class DialogSearchUserComponent implements OnInit {
   users$ = this.chatService.getNonAddedUsers();
   myRooms$ = this.chatService.getMyRoomsRequest();
   myRooms!: RoomInterface[];
+  disabled = true;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -127,6 +129,14 @@ export class DialogSearchUserComponent implements OnInit {
   getUsername(value: any) {
     if (value)
       return value.username;
+  }
+
+  updateMySelection(event: MatAutocompleteSelectedEvent) {
+    this.disabled = false;
+  }
+
+  onInputChange() {
+    this.disabled = true;
   }
 
 }

@@ -365,14 +365,16 @@ export class ChatService {
                 nonBlockedUsers.push(member.user.id);
         });
 
-        let res = await this.userRepository
+        let query = await this.userRepository
             .createQueryBuilder("user")
             .select(['user.username', 'user.avatar_url', 'user.id'])
             .where('user.username != :me', { me: me })
             .andWhere("user.username like :name", { name: `%${search}%` })
-            .andWhere('user.id IN (:...nonBlockedUsers)', { nonBlockedUsers: nonBlockedUsers })
-            .getMany();
-        return res;
+        if (nonBlockedUsers.length > 0) {
+            query.andWhere("user.id IN (:...users)", { users: nonBlockedUsers })
+        }
+        const users = query.getMany();
+        return users;
     }
 
     async getMyMemberOfRoom(roomId: number, userId: number): Promise<MemberEntity> {
