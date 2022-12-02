@@ -44,7 +44,7 @@
                 <div style="display: flex; align-items: center;">
                     <mat-form-field style="width: 100%; margin-right: 10px;">
                         <input matInput [formControl]="chatMessage" type="text" autoComplete='off'
-                            (keydown.enter)="sendMessage()">
+                            (keydown.enter)="sendMessage()" (disabled)="isBlockerUser(this.myUser.id)">
                     </mat-form-field>
                     <button mat-icon-button [disabled]="!chatMessage.valid" (click)="sendMessage()">
                         <span style="display: flex; flex-direction: row; align-items: center;">

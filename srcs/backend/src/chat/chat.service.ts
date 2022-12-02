@@ -41,7 +41,6 @@ export class ChatService {
 
     async createRoom(room: RoomEntity, members: MemberEntity[]): Promise<RoomEntity> {
         room.members = [];
-        //room.creatorId = members[0].user.id;
         members[0].role = MemberRole.Owner;
         members.forEach(member => {
             room.members.push(member);
@@ -55,16 +54,34 @@ export class ChatService {
     }
 
     async getMembersByUserId(userId: number): Promise<MemberEntity[]> {
-        return this.memberRepository.find({
+        return await this.memberRepository.find({
             where: { 'user': { 'id': userId } },
             relations: { user: true, rooms: true }
         });
     }
 
+    async getMemberByUserId(userId: number): Promise<MemberEntity> {
+        return await this.memberRepository.findOne({
+            where: { 'user': { 'id': userId } },
+            relations: { user: true, rooms: true }
+        });
+    }
 
+    async getMemberByRoomAndUser(room: RoomEntity, user: UserEntity): Promise<MemberEntity | null> {
+        const member = await this.memberRepository
+            .createQueryBuilder('member')
+            .leftJoinAndSelect("member.user", "user")
+            .leftJoinAndSelect("member.rooms", "rooms")
+            .where("rooms.id = :roomId", { roomId: room.id })
+            .andWhere("user.id = :userId", { userId: user.id })
+            .getOne()
 
-    async getAllMembers(): Promise<MemberEntity[]> {
-        return await this.memberRepository.find({ relations: { user: true } });
+        return (member);
+    }
+
+    async rejoinMemberToRoom(member: MemberEntity) {
+        member.isMember = true;
+        await this.memberRepository.save(member);
     }
 
     async updateSocketIdMember(socketId: string, members: MemberEntity[]): Promise<MemberEntity[]> {
@@ -76,42 +93,6 @@ export class ChatService {
         }
         return (membersUpdated);
     }
-
-    // async getAllMyConvRoomsAsText(userId: number): Promise<String[]> {
-    //     const query = await this.roomRepository
-    //         .createQueryBuilder('room')
-    //         .leftJoin('room.users', 'user')
-    //         .where('user.id = :userId', { userId })
-    //         .leftJoinAndSelect('room.users', 'all_users')
-    //         .getMany();
-
-    //     let res: string[] = [];
-    //     query.forEach(item => {
-    //         if (item && item.type == RoomType.Direct) {
-    //             if (item.name != undefined && item.name != null) {
-    //                 let name = item.name ?? '';
-    //                 res.push(name);
-    //             }
-    //             if (item.name2 != undefined && item.name2 != null) {
-    //                 let name2 = item.name2 ?? '';
-    //                 res.push(name2);
-    //             }
-    //         }
-    //     });
-    //     res.filter((item, index) => res.indexOf(item) === index);
-    //     return (res);
-    // }
-
-    // async getAllConnectedUsers(): Promise<UserEntity[]> {
-    //     const users = await this.userRepository
-    //         .createQueryBuilder('user')
-    //         .select('connected_users')
-    //         .getMany();
-
-    //     console.log(users);
-    //     return users;
-
-    // }
 
     async getAllMyRoomsAsText(userId: number): Promise<String[]> {
         const rooms = await this.roomRepository
@@ -154,63 +135,24 @@ export class ChatService {
         return (room);
     }
 
-    // async getRoomByName(roomName: string): Promise<RoomEntity> {
-    //     const room = await this.roomRepository.findOneBy({ name: roomName });
-    //     return (room);
-    // }
-
     async getRoomsOfMember(userId: number, options: IPaginationOptions): Promise<Pagination<RoomEntity>> {
         const query = this.roomRepository
             .createQueryBuilder('room')
             .leftJoin('room.members', 'member')
             .leftJoin('member.user', 'user')
-            .where('user.id = :userId', { userId });
+            .where('user.id = :userId', { userId })
+            .andWhere('member.isMember = :isMember', { isMember: true })
         let pages = await paginate(query, options);
         pages.meta.currentPage -= 1;
         return (pages);
     }
-
-    // async getRoomsForMember(userId: number, options: IPaginationOptions): Promise<Pagination<RoomEntity>> {
-    //     const query = this.roomRepository
-    //         .createQueryBuilder('member')
-    //         .leftJoin('member.user', 'user')
-    //         .where('user.id = :userId', { userId });
-    //     let res = await paginate(query, options);
-    //     res.meta.currentPage -= 1;
-    //     console.log(res)
-    //     return (res);
-    // }
 
     async isRoomNameTaken(roomName: string) {
         let count = await this.roomRepository.countBy({ name: roomName });
         return count == 0 ? false : true;
     }
 
-    // async updateNameDirectRooms(oldUsername: string, newUsername: string) {
-    //     let directRoomsName = await this.roomRepository.find({
-    //         where: { name: oldUsername }
-    //     });
-
-    //     let directRoomsName2 = await this.roomRepository.find({
-    //         where: { name2: oldUsername }
-    //     });
-
-    //     directRoomsName.forEach(item => {
-    //         if (item.name == oldUsername) {
-    //             item.name = newUsername;
-    //             item.save();
-    //         }
-    //     });
-
-    //     directRoomsName2.forEach(item => {
-    //         if (item.name2 == oldUsername) {
-    //             item.name2 = newUsername;
-    //             item.save();
-    //         }
-    //     });
-    // }
-
-    async removeMemberFromRoom(room: RoomEntity, member: MemberEntity): Promise<RoomEntity> {
+    async removeMemberFromRoom(room: RoomEntity, member: MemberEntity): Promise<string> {
         // TODO : Check if member is the creator.
         //        If yes, we need to change the creator. (Maybe an admin)
         //        If no admin, delete the room
@@ -220,22 +162,17 @@ export class ChatService {
         //     relations: ['members', 'members.user']
         // });
 
-        if (room.members.length == 1) {
-            if (await this.deleteRoom(room)) {
+        if (member.role == MemberRole.Owner) {
+            if (await this.roomRepository.remove(room)) {
                 await this.memberRepository.remove(member);
-                return (null);
+                return ("delete_room");
             }
         }
 
-        await this.memberRepository.remove(member);
+        member.isMember = false;
+        await this.memberRepository.save(member);
 
-        // for (const { index, value } of thisRoom.members.map((value, index) => ({ index, value }))) {
-        //     if (value.user.id == member.user.id) {
-        //         thisRoom.members.splice(index, 1);
-        //         return await this.roomRepository.save(thisRoom);
-        //     }
-        // };
-        return (null);
+        return ("");
     }
 
     async verifyPassword(roomId: number, password: string): Promise<boolean> {
@@ -256,14 +193,6 @@ export class ChatService {
         const ret = await message.save();
         return (ret);
     }
-
-    // async getUsersFromRoom(room: RoomEntity) {
-    //     const users = await this.roomRepository.findOne({
-    //         where: { id: room.id },
-    //         relations: { users: true },
-    //         select: { users: true }
-    //     });
-    // }
 
     async findMessagesForRoom(room: RoomEntity, options: IPaginationOptions, userId: number): Promise<Pagination<MessageEntity>> {
 
@@ -289,28 +218,23 @@ export class ChatService {
         return (res);
     }
 
-    // async addMemberToRoom(member: MemberEntity) {
-    //     const res = await this.memberRepository.save(member);
-    //     return (res);
-    // }
-
-    // async removeMemberFromRoom(user: UserEntity) {
-    //     const res = this.memberRepository.delete(user);
-    //     return (res);
-    // }
-
-    async deleteRoom(room: RoomEntity) {
-        return this.roomRepository.remove(room);
-    }
-
     async getMembersByRoom(room: RoomEntity): Promise<MemberEntity[]> {
-        const currentRoom = await this.roomRepository.findOne({
-            where: { id: room.id },
-            relations: {
-                members: { user: true }
-            }
-        });
-        return currentRoom.members;
+        // const currentRoom = await this.roomRepository.findOne({
+        //     where: { id: room.id },
+        //     relations: {
+        //         members: { user: true }
+        //     }
+        // });
+        // return currentRoom.members;
+        const members = await this.memberRepository
+            .createQueryBuilder('member')
+            .leftJoinAndSelect("member.user", "user")
+            .leftJoinAndSelect("member.rooms", "rooms")
+            .where("rooms.id = :roomId", { roomId: room.id })
+            .andWhere("member.isMember = :isMember", { isMember: true })
+            .getMany()
+
+        return (members);
     }
 
     async getAllAddedUsers(user: UserEntity) {
@@ -360,12 +284,12 @@ export class ChatService {
         });
 
         let nonBlockedUsers: number[] = [];
-        (await this.getAllMembers()).forEach(member => {
-            if (!blockedUsers.includes(member.user.id) && !blockerUsers.includes(member.user.id))
-                nonBlockedUsers.push(member.user.id);
+        (await await this.UsersService.getAllUsers()).forEach(user => {
+            if (!blockedUsers.includes(user.id) && !blockerUsers.includes(user.id))
+                nonBlockedUsers.push(user.id);
         });
 
-        let query = await this.userRepository
+        let query = this.userRepository
             .createQueryBuilder("user")
             .select(['user.username', 'user.avatar_url', 'user.id'])
             .where('user.username != :me', { me: me })
@@ -373,7 +297,8 @@ export class ChatService {
         if (nonBlockedUsers.length > 0) {
             query.andWhere("user.id IN (:...users)", { users: nonBlockedUsers })
         }
-        const users = query.getMany();
+        const users = await query.getMany();
+        console.log(users)
         return users;
     }
 
@@ -438,15 +363,35 @@ export class ChatService {
         return (await this.blockedUserRepository.find({ where: { blockedUserId: userId } }));
     }
 
+    async getAllMyRooms(userId: number): Promise<RoomEntity[]> {
+        const rooms = await this.roomRepository
+            .createQueryBuilder('room')
+            .leftJoin('room.members', 'member')
+            .leftJoin('member.user', 'user')
+            .where('user.id = :userId', { userId })
+            .andWhere('member.isMember = :isMember', { isMember: true })
+            .getMany();
+        return (rooms);
+    }
 
-    // let res = await this.memberRepository
-    //     .createQueryBuilder("member")
-    //     .leftJoinAndSelect('member.room', 'room')
-    //     .leftJoinAndSelect('member.user', 'user')
-    //     .where('room.id = :roomId', { roomId })
-    //     .andWhere('user.id = : userId', { userId })
-    //     .getOne()
+    async getDirectRoom(user_1: string, user_2: string): Promise<RoomEntity> {
+        const room = await this.roomRepository
+            .createQueryBuilder('room')
+            .leftJoin('room.members', 'member')
+            .leftJoin('member.user', 'user')
+            .where('room.type = :DirectType', { DirectType: RoomType.Direct })
+            .andWhere(new Brackets(qb => {
+                qb.andWhere(new Brackets(qb => {
+                    qb.where('room.name = :username1', { username1: user_1 })
+                        .andWhere('room.name2 = :username2', { username2: user_2 })
+                }))
+                    .orWhere(new Brackets(qb => {
+                        qb.where('room.name = :username2', { username2: user_2 })
+                            .andWhere('room.name2 = :username1', { username1: user_1 })
+                    }))
+            }))
+            .getOne()
+        return (room);
+    }
 
-    // console.log(res);
-    // return (res);
 }

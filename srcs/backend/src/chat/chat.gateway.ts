@@ -30,12 +30,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private connectedUsersService: ConnectedUsersService,
     private readonly encrypt: EncryptService) { }
 
-
-
-  // afterInit(server: Server) {
-  // }
-
-
   async checkSingleConnection(user: UserEntity) {
     let connected_users: ConnectedUserEntity[] = await this.connectedUsersService.getUsersById(user.id);
     for (var item of connected_users) {
@@ -92,7 +86,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const room: RoomEntity = await this.chatService.getRoomById(roomId);
     const messages = await this.chatService.findMessagesForRoom(room, { page: 1, limit: 25 }, +socket.handshake.headers.userid);
     this.server.to(socket.id).emit('messages', messages);
-
   }
 
   @SubscribeMessage('create_room')
@@ -156,9 +149,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('join_room')
   async onJoinRoom(socket: Socket, joinRoomDto: JoinRoomDto) {
     const user = await this.UsersService.getUser(+socket.handshake.headers.userid);
-    const member = await this.chatService.createMember(user.toEntity(), socket.id, MemberRole.Member);
     const room = await this.chatService.getRoomById(joinRoomDto.roomId);
-    await this.chatService.addMemberToRoom(room, member);
+    let member = await this.chatService.getMemberByRoomAndUser(room, user.toEntity());
+    if (member == null) {
+      member = await this.chatService.createMember(user.toEntity(), socket.id, MemberRole.Member);
+      await this.chatService.addMemberToRoom(room, member);
+    }
+    else
+      await this.chatService.rejoinMemberToRoom(member);
     const rooms = await this.chatService.getRoomsOfMember(user.id, { page: 1, limit: 3 });
     this.server.to(socket.id).emit('rooms', rooms);
   }
@@ -174,21 +172,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(socket.id).emit('rooms', rooms);
   }
 
-
-
-  // @SubscribeMessage('joinRoomUser')
-  // async onJoinRoomUser(socket: Socket, joinRoomDto: JoinRoomDto) {
-
-  //   const user: UserDTO = await this.UsersService.getUser(joinRoomDto.userId);
-  //   const room: RoomEntity = await this.chatService.getRoomByName(joinRoomDto.roomName);
-  //   if (await this.chatService.addUserToRoom(room, user.toEntity())) {
-  //     const member = new CreateMemberDto(user.toEntity(), socket.id, room);
-  //     await this.chatService.addMemberToRoom(member.toEntity());
-  //     const rooms = await this.chatService.getRoomsForUsers(user.id, { page: 1, limit: 3 });
-  //     return this.server.to(socket.id).emit('rooms', rooms);
-  //   }
-  // }
-
   @SubscribeMessage('leave_room')
   async onLeaveRoom(socket: Socket, roomId: number) {
     const members = await this.chatService.getMembersByUserId(+socket.handshake.headers.userid);
@@ -200,7 +183,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         member = element;
     });
 
-    if (await this.chatService.removeMemberFromRoom(this_room, member) != null) {
+    if (await this.chatService.removeMemberFromRoom(this_room, member) != "delete_room") {
       let rooms = await this.chatService.getRoomsOfMember(+socket.handshake.headers.userid, { page: 1, limit: 3 });
       this.server.to(socket.id).emit('rooms', rooms);
     }
@@ -297,13 +280,73 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage("block_user")
   async blockUser(socket: Socket, blockUserDto: BlockUserDto) {
-    console.log("block_user")
     await this.chatService.addBlockedUser(+socket.handshake.headers.userid, blockUserDto.blockedUserId);
+    const member = await this.chatService.getMemberByUserId(blockUserDto.blockedUserId);
+
+    let blockerUserId: number[] = [];
+    (await this.chatService.getBlockerUser(+socket.handshake.headers.userid)).forEach(blockerUser => {
+      blockerUserId.push(blockerUser.userId);
+    });
+    this.server.to(socket.id).emit('blocker_users', blockerUserId);
+    this.server.to(member.socketId).emit('blocker_users', blockerUserId);
+
+    let blockedUserId: number[] = [];
+    (await this.chatService.getBlockedUser(+socket.handshake.headers.userid)).forEach(blockedUser => {
+      blockedUserId.push(blockedUser.blockedUserId);
+    });
+    this.server.to(socket.id).emit('blocked_users', blockedUserId);
+    this.server.to(member.socketId).emit('blocked_users', blockedUserId);
+
+    // const user_1 = await this.UsersService.getUser(+socket.handshake.headers.userid);
+    // const user_2 = await this.UsersService.getUser(member.user.id);
+
+    // let directRoom = await this.chatService.getDirectRoom(user_1.username, user_2.username);
+    // console.log(directRoom);
+
   }
 
   @SubscribeMessage("unblock_user")
   async unblockUser(socket: Socket, blockUserDto: BlockUserDto) {
     await this.chatService.removeBlockedUser(+socket.handshake.headers.userid, blockUserDto.blockedUserId);
+    const member = await this.chatService.getMemberByUserId(blockUserDto.blockedUserId);
+
+    let blockerUserId: number[] = [];
+    (await this.chatService.getBlockerUser(+socket.handshake.headers.userid)).forEach(blockerUser => {
+      blockerUserId.push(blockerUser.userId);
+    });
+    this.server.to(socket.id).emit('blocker_users', blockerUserId);
+    this.server.to(member.socketId).emit('blocker_users', blockerUserId);
+
+    let blockedUserId: number[] = [];
+    (await this.chatService.getBlockedUser(+socket.handshake.headers.userid)).forEach(blockedUser => {
+      blockedUserId.push(blockedUser.blockedUserId);
+    });
+    this.server.to(socket.id).emit('blocked_users', blockedUserId);
+    this.server.to(member.socketId).emit('blocked_users', blockedUserId);
+  }
+
+  @SubscribeMessage("get_all_my_rooms")
+  async getAllMyRooms(socket: Socket) {
+    const rooms = await this.chatService.getAllMyRooms(+socket.handshake.headers.userid);
+    this.server.to(socket.id).emit('all_my_rooms', rooms);
+  }
+
+  @SubscribeMessage("blocked_users")
+  async getBlockedUsers(socket: Socket) {
+    let blockedUserId: number[] = [];
+    (await this.chatService.getBlockedUser(+socket.handshake.headers.userid)).forEach(blockedUser => {
+      blockedUserId.push(blockedUser.blockedUserId);
+    });
+    this.server.to(socket.id).emit('blocked_users', blockedUserId);
+  }
+
+  @SubscribeMessage("blocker_users")
+  async getBlockerUsers(socket: Socket) {
+    let blockerUserId: number[] = [];
+    (await this.chatService.getBlockerUser(+socket.handshake.headers.userid)).forEach(blockerUser => {
+      blockerUserId.push(blockerUser.userId);
+    });
+    this.server.to(socket.id).emit('blocker_users', blockerUserId);
   }
 
   private onPrePaginate(page: PageInterface) {

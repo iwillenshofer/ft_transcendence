@@ -1,6 +1,6 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { debounceTime, finalize, map, Observable, startWith, switchMap, tap, throwError } from 'rxjs';
+import { debounceTime, finalize, map, Observable, startWith, Subscription, switchMap, tap, throwError } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { User } from 'src/app/auth/user.model';
 import { RoomInterface, RoomType } from 'src/app/model/room.interface';
@@ -17,13 +17,21 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
   templateUrl: './dialog-search-user.component.html',
   styleUrls: ['./dialog-search-user.component.scss']
 })
-export class DialogSearchUserComponent implements OnInit {
+export class DialogSearchUserComponent implements OnInit, OnDestroy {
 
   myUser$ = this.userService.getMyUser();
   myUser!: UserInterface;
+
   users$ = this.chatService.getNonAddedUsers();
-  myRooms$ = this.chatService.getMyRoomsRequest();
-  myRooms!: RoomInterface[];
+
+  myRooms$ = this.chatService.getAllMyRooms();
+  myRooms: RoomInterface[] = [];
+
+  subscription1$!: Subscription;
+  subscription2$!: Subscription;
+  subscription3$!: Subscription;
+  subscription4$!: Subscription;
+
   disabled = true;
 
   constructor(
@@ -34,34 +42,30 @@ export class DialogSearchUserComponent implements OnInit {
     protected chatService: ChatService,
     private authService: AuthService,
     private dialogRef: MatDialogRef<DialogSearchUserComponent>,) {
-
   }
 
   searchUsersCtrl = new FormControl();
   filteredUsers!: any;
   isLoading = false;
-  errorMsg: string = "";
 
   async ngOnInit() {
-    this.authService.getLogoutStatus.subscribe((res) => {
-      if (res === true) {
+    this.subscription1$ = this.authService.getLogoutStatus.subscribe((res) => {
+      if (res == true)
         this.dialogRef.close();
-      }
     });
 
-    this.myUser$.subscribe(user => {
+    this.subscription2$ = this.myUser$.subscribe(user => {
       this.myUser = user;
     });
 
-    this.myRooms$.subscribe(rooms => {
+    this.subscription3$ = this.myRooms$.subscribe(rooms => {
       this.myRooms = rooms;
     });
 
-    this.searchUsersCtrl.valueChanges
+    this.subscription4$ = this.searchUsersCtrl.valueChanges
       .pipe(
         debounceTime(500),
         tap(() => {
-          this.errorMsg = "";
           this.filteredUsers = [];
           this.isLoading = true;
         }),
@@ -75,14 +79,19 @@ export class DialogSearchUserComponent implements OnInit {
       )
       .subscribe(res => {
         if (res == undefined) {
-          this.errorMsg = "The user couldn't be found.";
           this.filteredUsers = [];
         }
         else {
-          this.errorMsg = "";
           this.filteredUsers = res;
         }
-      })
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.subscription1$.unsubscribe();
+    this.subscription2$.unsubscribe();
+    this.subscription3$.unsubscribe();
+    this.subscription4$.unsubscribe();
   }
 
   checkIfAlreadyExist() {
@@ -138,5 +147,4 @@ export class DialogSearchUserComponent implements OnInit {
   onInputChange() {
     this.disabled = true;
   }
-
 }

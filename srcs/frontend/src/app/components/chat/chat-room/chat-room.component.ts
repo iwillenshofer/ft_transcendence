@@ -38,7 +38,7 @@ export class ChatRoomComponent implements OnInit, OnChanges {
   selectedRoomNulled: RoomInterface = { id: 0, name: '', type: RoomType.Public }
   faGears = faGears;
   ownerUsername!: string;
-  members$: Observable<MemberInterface[]> = this.chatService.getMembersOfRoom();
+  members$ = this.chatService.getMembersOfRoom();
   members: MemberInterface[] = [];
   myMember!: MemberInterface;
   selectedMember!: MemberInterface | null;
@@ -76,6 +76,9 @@ export class ChatRoomComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
+    this.chatService.emitGetBlockedUsers();
+    this.chatService.emitGetBlockerUsers();
+
     this.blockedUsers$.subscribe(blockedUsers => {
       blockedUsers.forEach(user => {
         this.blockedUsers.push(user);
@@ -88,9 +91,8 @@ export class ChatRoomComponent implements OnInit, OnChanges {
       });
     });
 
-    console.log(this.blockerUsers)
-
     this.members$.subscribe(members => {
+      this.members.splice(0);
       members.forEach(member => {
         if (member.user.id != this.myUser.id) {
           if (!this.members.some(thismember => thismember.user.id == member.user.id))
@@ -98,7 +100,6 @@ export class ChatRoomComponent implements OnInit, OnChanges {
         }
       });
     });
-
 
     this.chatService.getMyMemberOfRoom(this.chatRoom?.id).subscribe((member: MemberInterface) => {
       this.myMember = member;

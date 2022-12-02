@@ -53,7 +53,7 @@ export class ChatService {
     return this.socket.fromEvent<MessagePaginateInterface>('messages');
   }
 
-  getMyRooms(): Observable<RoomPaginateInterface> {
+  getMyRoomsPaginate(): Observable<RoomPaginateInterface> {
     return this.socket.fromEvent<RoomPaginateInterface>('rooms');
   }
 
@@ -80,6 +80,11 @@ export class ChatService {
     this.socket.emit('paginate_public_and_protected_rooms', { limit, page });
   }
 
+  emitGetAllMyRooms() {
+    this.socket.emit('get_all_my_rooms');
+
+  }
+
   getPublicRooms(): Observable<RoomPaginateInterface> {
     return this.socket.fromEvent<RoomPaginateInterface>('publicRooms');
   }
@@ -88,12 +93,8 @@ export class ChatService {
     this.socket.emit('leave_room', room.id);
   }
 
-  getAllMyRoomsAsText() {
-    return this.http.get<string[]>('/backend/chat/get_all_my_rooms_as_text/', { withCredentials: true });
-  }
-
-  getMyRoomsRequest() {
-    return this.http.get<RoomInterface[]>('/backend/chat/get_my_rooms/', { withCredentials: true });
+  getAllMyRooms() {
+    return this.socket.fromEvent<RoomInterface[]>('all_my_rooms');
   }
 
   requestMessages(roomId: number) {
@@ -156,11 +157,19 @@ export class ChatService {
   }
 
   getBlockedUsers() {
-    return this.http.get<number[]>('/backend/chat/get_blocked_users/', { withCredentials: true });
+    return this.socket.fromEvent<number[]>('blocked_users');
   }
 
   getBlockerUsers() {
-    return this.http.get<number[]>('/backend/chat/get_blocker_users/', { withCredentials: true });
+    return this.socket.fromEvent<number[]>('blocker_users');
+  }
+
+  emitGetBlockedUsers() {
+    this.socket.emit('blocked_users');
+  }
+
+  emitGetBlockerUsers() {
+    this.socket.emit('blocker_users');
   }
 
 }

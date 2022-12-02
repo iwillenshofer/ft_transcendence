@@ -22,7 +22,6 @@ export class DialogRoomSettingComponent {
   hide = true;
   filteredUsers!: any;
   isLoading = false;
-  errorMsg: string = "";
 
   members$ = this.chatService.getMembersOfRoom();
   members: MemberInterface[] = [];
@@ -56,7 +55,6 @@ export class DialogRoomSettingComponent {
       .pipe(
         debounceTime(500),
         tap(() => {
-          this.errorMsg = "";
           this.filteredUsers = [];
           this.isLoading = true;
         }),
@@ -70,11 +68,9 @@ export class DialogRoomSettingComponent {
       )
       .subscribe(res => {
         if (res == undefined) {
-          this.errorMsg = "The user couldn't be found.";
           this.filteredUsers = [];
         }
         else {
-          this.errorMsg = "";
           this.filteredUsers = res;
         }
       });
@@ -152,6 +148,10 @@ export class DialogRoomSettingComponent {
   getUsername(value: any) {
     if (value)
       return value.username;
+  }
+
+  isPrivateRoom() {
+    return (this.data.room.type == RoomType.Private);
   }
 
 }

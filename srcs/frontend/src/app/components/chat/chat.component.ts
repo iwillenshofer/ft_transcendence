@@ -1,8 +1,8 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MatSelectionList, MatSelectionListChange } from '@angular/material/list';
 import { PageEvent } from '@angular/material/paginator';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { RoomInterface, RoomPaginateInterface, RoomType } from 'src/app/model/room.interface';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogNewRoomComponent } from '../dialogs/dialog-new-room/dialog-new-room.component';
@@ -20,7 +20,7 @@ import { MatSelect } from '@angular/material/select';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, OnDestroy {
 
 
   @ViewChild('roomsAvailable')
@@ -29,22 +29,21 @@ export class ChatComponent implements OnInit {
   @ViewChild('list')
   list!: MatSelectionList;
 
-  myRooms$ = this.chatService.getMyRooms();
-  allMyRooms$ = this.chatService.getMyRoomsRequest();
-  allMyRooms!: RoomInterface[];
+  myRooms$ = this.chatService.getMyRoomsPaginate();
   publicRooms$ = this.chatService.getPublicRooms();
-  myRoomsNameObsv$ = this.chatService.getAllMyRoomsAsText();
+
+  allMyRooms$ = this.chatService.getAllMyRooms();
+  allMyRooms!: RoomInterface[];
 
   myUser$ = this.userService.getMyUser();
   myUser!: UserInterface;
 
-  myRoomsName: string[] = []
+  subscription1$!: Subscription;
+  subscription2$!: Subscription;
 
   selectedRoomNulled: RoomInterface = { id: 0, name: '', type: RoomType.Public }
   selectedRoom: RoomInterface = this.selectedRoomNulled;
   selectedPublicRoom: RoomInterface = this.selectedRoomNulled;
-
-  Isrooms: boolean = false;
 
   faKey = faKey;
   faUserGroup = faUserGroup;
@@ -58,28 +57,22 @@ export class ChatComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.myUser$.subscribe(user => {
-      this.myUser = user;
-    });
     this.chatService.emitPaginateRooms(3, 0);
     this.chatService.emitPaginatePublicRooms(3, 0);
+    this.chatService.emitGetAllMyRooms();
 
-
-    this.myRooms$.subscribe((res) => {
-      const tmp = res.items.find(room => room.id == this.selectedRoom.id);
-      if (tmp)
-        this.selectedRoom = tmp;
-    })
-
-    this.myRoomsNameObsv$.subscribe(roomsName => {
-      roomsName.forEach(name => {
-        this.myRoomsName.push(name);
-      });
+    this.subscription1$ = this.myUser$.subscribe(user => {
+      this.myUser = user;
     });
 
-    this.allMyRooms$.subscribe(rooms => {
+    this.subscription2$ = this.allMyRooms$.subscribe(rooms => {
       this.allMyRooms = rooms;
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscription1$.unsubscribe();
+    this.subscription2$.unsubscribe();
   }
 
   onSelectRoom(event: MatSelectionListChange) {
@@ -101,15 +94,16 @@ export class ChatComponent implements OnInit {
   openDialogNewRoom() {
     const dialogRef = this.dialog.open(DialogNewRoomComponent);
 
-    dialogRef.afterClosed().subscribe(ret => {
+    const subscription$ = dialogRef.afterClosed().subscribe(ret => {
       this.allMyRooms$.subscribe(rooms => {
         let selectedRoom: RoomInterface | undefined;
         if (selectedRoom = rooms.find(room => room.name == ret.data.name)) {
           this.selectedRoom = selectedRoom;
-          this.myRoomsName.push(this.selectedRoom.name);
+          this.allMyRooms.push(this.selectedRoom);
         }
-      })
-    })
+      });
+    });
+    subscription$.unsubscribe();
   }
 
   openDialogPassword() {
@@ -122,8 +116,7 @@ export class ChatComponent implements OnInit {
   async onJoinRoom(selectedPublicRoom: RoomInterface | null) {
 
     if (selectedPublicRoom != null) {
-      let roomName = selectedPublicRoom.name ?? '';
-      if (this.myRoomsName.includes(roomName)) {
+      if (this.allMyRooms.includes(selectedPublicRoom)) {
         this.selectedRoom = this.selectedPublicRoom;
         this.snackBar.open(`You are already a member of this chat room.`, 'Close', {
           duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
@@ -138,10 +131,9 @@ export class ChatComponent implements OnInit {
         this.snackBar.open('You have successfully joined the chat room.', 'Close', {
           duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
         });
-        this.myRoomsName.push(roomName);
+        this.allMyRooms.push(selectedPublicRoom);
       }
-      this.selectedRoom = this.selectedPublicRoom;
-      this.selectedPublicRoom = this.selectedRoomNulled;
+      this.nulledSelectedRoom();
     }
     this.roomsAvailable.deselectAll();
   }
@@ -149,10 +141,9 @@ export class ChatComponent implements OnInit {
   onLeaveRoom(selectedRoom: RoomInterface) {
     if (selectedRoom != this.selectedRoomNulled) {
       this.chatService.leaveRoom(selectedRoom);
-      let name = selectedRoom.name ?? '';
-      const index = this.myRoomsName.indexOf(name, 0);
+      const index = this.allMyRooms.findIndex(room => room.id == selectedRoom.id);
       if (index > -1) {
-        this.myRoomsName.splice(index, 1);
+        this.allMyRooms.splice(index, 1);
       }
       this.nulledSelectedRoom();
     }
@@ -170,15 +161,13 @@ export class ChatComponent implements OnInit {
   async onSearchUser() {
     const dialogRef = this.dialog.open(DialogSearchUserComponent);
 
-    dialogRef.afterClosed().subscribe(ret => {
-      this.allMyRooms$.subscribe(rooms => {
-        let selectedRoom: RoomInterface | undefined;
-        if (selectedRoom = rooms.find(room => room.id == ret.data.id || room.name == ret.data.name)) {
-          this.selectedRoom = selectedRoom;
-        }
-      })
-    })
+    const subscription$ = dialogRef.afterClosed().subscribe(ret => {
+      let selectedRoom: RoomInterface | undefined;
+      if (selectedRoom = this.allMyRooms.find(room => room.id == ret.data.id || room.name == ret.data.name))
+        this.selectedRoom = selectedRoom;
+    });
     this.roomsAvailable.deselectAll();
+    subscription$.unsubscribe();
   }
 
   nulledSelectedRoom() {

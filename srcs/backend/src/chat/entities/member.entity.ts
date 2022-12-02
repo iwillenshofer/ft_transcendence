@@ -10,6 +10,9 @@ export class MemberEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Column({ default: true })
+    isMember: boolean;
+
     @ManyToOne(() => UserEntity)
     @JoinColumn()
     user: UserEntity;
@@ -20,7 +23,7 @@ export class MemberEntity {
     @Column()
     socketId: string;
 
-    @OneToMany(() => MessageEntity, message => message.member, { onDelete: "CASCADE" })
+    @OneToMany(() => MessageEntity, message => message.member, { cascade: true })
     messages: MessageEntity[];
 
     @ManyToMany(() => RoomEntity, (rooms) => rooms.members)
