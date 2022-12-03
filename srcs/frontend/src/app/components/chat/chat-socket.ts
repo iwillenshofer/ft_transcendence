@@ -6,13 +6,14 @@ import { getUserId } from "../../auth/auth.module"
 @Injectable()
 export class ChatSocket extends Socket {
 
-  constructor() {
+  constructor(private authService: AuthService) {
     super({
-      url: 'http://localhost:3000/chat', options: {
+      url: '/chat', options: {
         autoConnect: false,
         extraHeaders: { userid: getUserId() ?? "null" }
       }
-    })
-    console.log("socket construcotr")
+    }) 
+	console.log("socket construcotr")
+
   }
 }

@@ -7,6 +7,7 @@ export class HistoryDTO {
 	score_p1: number = 0;
 	score_p2: number = 0;
 	winner: string = '';
+	is_challenge: boolean = false;
 }
 
 export class AchievementsDTO {
@@ -28,3 +29,10 @@ export class StatsDTO {
 	games_played: number = 0;
 	games_won: number = 0;
 }
+
+export class GameStatsDTO {
+	matches: number = 0;
+	users: number = 0;
+	logins: number = 0;
+}
+

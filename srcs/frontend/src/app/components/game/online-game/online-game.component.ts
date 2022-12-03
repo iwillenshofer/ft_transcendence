@@ -1,8 +1,10 @@
+import { ChatSocket } from 'src/app/components/chat/chat-socket';
 import { AuthService } from 'src/app/auth/auth.service';
 import { Component, ViewChild, ElementRef, OnInit, HostListener, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
 import io from "socket.io-client";
 import { OnlineGameService } from './online-game.service';
 import { FriendsService } from '../../friends/friends.service';
+import { UsersOnlineService } from 'src/app/services/users-online.service';
 
 
 @Component({
@@ -32,7 +34,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   ball: any;
   username: string = "";
 
-  constructor(public gameService: OnlineGameService, private auth: AuthService, private friendsService: FriendsService) {
+  constructor(public gameService: OnlineGameService, private auth: AuthService, private usersOnlineServices: UsersOnlineService, private chatSocket: ChatSocket) {
     this.ball = gameService.getBall();
   }
 
@@ -68,29 +70,29 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.socket = io("http://localhost:3000/game");
+    this.socket = io("/game");
+
+    this.username = this.auth.userSubject.value?.username ?? '';
+    // this.auth.getUser().then(data => {
+    //   this.username = data.username;
+    // })
     if (this.mode == 'spec') {
-      this.friendsService.setStatus('login2', 'watching')
+      this.chatSocket.emit('setStatus', this.username, "watching")
       this.socket.emit("watchGame", this.specGame);
       this.gameUnavailable()
     }
     else if (this.mode == 'friend') {
-      this.friendsService.setStatus('login2', 'inChallenge')
-      this.auth.getUser().then(data => {
-        this.username = data.username;
-        if (data.username != this.challenged) {
-          this.socket.emit("challenge", data.username, this.challenged, this.powerUps)
-        }
-        this.socket.emit("joinGame", this.powerUps, data.username, this.challenged);
-        this.gameUnavailable()
-      });
+      this.chatSocket.emit('setStatus', this.username, "ingame")
+      if (this.username != this.challenged) {
+        this.socket.emit("challenge", this.username, this.challenged, this.powerUps)
+      }
+      this.socket.emit("joinGame", this.powerUps, this.username, this.challenged);
+      this.gameUnavailable()
     }
     else {
-      this.auth.getUser().then(data => {
-        this.friendsService.setStatus('login2', 'searchingGame')
-        this.username = data.username;
-        this.socket.emit("joinGame", this.powerUps, data.username, this.challenged);
-      });
+      // this.usersOnlineServices.setStatus(this.username, 'ingame')
+      this.chatSocket.emit('setStatus', this.username, "ingame")
+      this.socket.emit("joinGame", this.powerUps, this.username, this.challenged);
     }
     this.gameService.setMode(this.mode)
     this.gameService.setCustom(this.powerUps)
@@ -105,7 +107,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.finished = true;
     window.cancelAnimationFrame(this.currentAnimationFrameId as number);
     this.gameService.reset();
-    this.friendsService.setStatus('login2', 'online')
+    this.chatSocket.emit('setStatus', this.username, "online")
     await this.socket.emit("cancelChallenge", this.username, this.challenged)
     await this.socket.disconnect();
   }
@@ -122,7 +124,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   players() {
     this.socket.once("players", (player1: any, player2: any) => {
       this.setPlayers(player1, player2)
-      this.friendsService.setStatus('login2', 'inGame')
       this.isWaiting = false;
       this.gameService.start()
       this.update();

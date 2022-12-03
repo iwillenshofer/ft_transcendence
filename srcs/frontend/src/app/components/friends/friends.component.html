@@ -58,11 +58,11 @@
 
             <div  *ngIf="(this.friendsService.selectedUser.value)"  class="row">
                 <div class="col-12 mb-3 ">
-                    <div class="card bg-secondary shadow min-height-sm">
+                    <div class="card bg-secondary shadow {{ this.router.url === '/home' ? 'min-height-sm' : 'min-height-sm4'}}">
                         <div class="card-header bg-white border-0">
                             User Stats
                         </div>
-                        <div class="card-body userlist text-center stats ">
+                        <div class="card-body userlist text-center stats">
                                 
 								<app-friend-stats></app-friend-stats>
 
@@ -73,11 +73,11 @@
 
             <div class="row"  *ngIf="router.url === '/home'">
 				<div class="col-12">
-					<div class="card bg-secondary shadow min-height-sm">
+					<div class="card bg-secondary shadow min-height-sm3">
 						<div class="card-header bg-white border-0">
 							Game Stats
 						</div>
-						<div class="card-body user-list-card ">
+						<div class="card-body user-list-card gamestats">
 		
 							<app-game-stats></app-game-stats>
 							

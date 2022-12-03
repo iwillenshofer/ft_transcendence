@@ -11,6 +11,7 @@ export class HistoryDTO {
 	score_p1: number = 0;
 	score_p2: number = 0;
 	winner: string = '';
+	is_challenge: boolean = false;
 
 	public static fromEntity(entity: GameEntity) {
 		const history = new HistoryDTO();
@@ -21,12 +22,12 @@ export class HistoryDTO {
 		history.score_p1 = entity?.scoreP1 || 0;
 		history.score_p2 = entity?.scoreP2 || 0;
 		history.winner = entity?.winner?.username || '';
+		history.is_challenge = entity?.isChallenge || false;
 		return (history);
 	}
 	public static fromEntities(entity: GameEntity[]): HistoryDTO[] {
 		let history: HistoryDTO[] = [];
 		for (let item of entity) {
-			console.log("history entity: " + JSON.stringify(item));
 			history.push(HistoryDTO.fromEntity(item));
 		}
 		return (history);
@@ -78,4 +79,10 @@ export class StatsDTO {
 	history: HistoryDTO[] = [];
 	games_played: number = 0;
 	games_won: number = 0;
+}
+
+export class GameStatsDTO {
+	matches: number = 0;
+	users: number = 0;
+	logins: number = 0;
 }

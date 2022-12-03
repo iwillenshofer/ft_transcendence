@@ -30,9 +30,9 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     //  this.getPlayer();
-    this.userOnlineService.UsersOnline$.subscribe(val => {
-      this.UsersOnline = val;
-    })
+  //  this.userOnlineService.UsersOnline$.subscribe(val => {
+  //    this.UsersOnline = val;
+  //  })
     //console.log("here " + this.userOnlineService.UsersOnline)
   }
 

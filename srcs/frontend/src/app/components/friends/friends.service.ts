@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AlertsService } from 'src/app/alerts/alerts.service';
 import { AuthService } from 'src/app/auth/auth.service';
-import { StatsDTO } from './stats.dto';
+import { GameStatsDTO, StatsDTO } from './stats.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +14,8 @@ export class FriendsService {
   constructor(
     private http: HttpClient,
     private alertService: AlertsService,
-	private authService: AuthService,
-	private router: Router
+    private authService: AuthService,
+    private router: Router
   ) {
     this.selectedUser = new BehaviorSubject<string | undefined | null>(null);
     this.gamesPlayed = new BehaviorSubject<number>(0);
@@ -24,10 +24,11 @@ export class FriendsService {
     this.userList = new BehaviorSubject<any[]>([]);
     this.friendsList = new BehaviorSubject<any[]>([]);
     this.requestsList = new BehaviorSubject<any[]>([]);
-	this.rankingList = new BehaviorSubject<any[]>([]);
+    this.rankingList = new BehaviorSubject<any[]>([]);
     this.friendStatus = new BehaviorSubject<number>(0);
     this.achievements = new BehaviorSubject<any[]>([]);
-	this.stats = new BehaviorSubject<StatsDTO | null>(null);
+    this.stats = new BehaviorSubject<StatsDTO | null>(null);
+	this.gameStats = new BehaviorSubject<GameStatsDTO>({matches: 0, logins: 0, users: 0});
   }
 
   public selectedUser: BehaviorSubject<string | undefined | null>;
@@ -42,21 +43,26 @@ export class FriendsService {
   public achievements: BehaviorSubject<any[]>;
   public stats: BehaviorSubject<StatsDTO | null>;
   public rankingList: BehaviorSubject<any[]>;
+  public gameStats: BehaviorSubject<GameStatsDTO>;
 
 
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 
   loadUser(username: string) {
     this.selectedUser.next(username);
-	if (username == this.authService.userSubject.value?.username)
-		this.router.navigate(['/home']);
-	else
-		this.router.navigate(['/friends']);
+    if (username == this.authService.userSubject.value?.username)
+      this.router.navigate(['/home']);
+    else
+      this.router.navigate(['/friends', username]);
   }
 
   getUserStats(): Observable<StatsDTO> {
     return this.http.get<StatsDTO>('/backend/stats/' + this.selectedUser.value, { withCredentials: true });
+  }
+
+  getGameStats(): Observable<GameStatsDTO> {
+    return this.http.get<GameStatsDTO>('/backend/stats/gamestats', { withCredentials: true });
   }
 
   getHistory(): Observable<any> {
@@ -70,14 +76,15 @@ export class FriendsService {
     return this.http.get('/backend/stats/userinfo/' + this.selectedUser.value, { withCredentials: true });
   }
 
-  getStatus(username: string): Observable<any> {
-    let x = this.http.get('/backend/stats/status/' + username, { withCredentials: true });
-    return x;
+  getStatus(username: string) {
+    // let x = this.http.get('/backend/stats/status/' + username, { withCredentials: true });
+    // return x;
   }
 
   setStatus(username: string, status: string) {
-    let body = { status: status }
-    this.http.put('/backend/stats/status/' + username, body, { withCredentials: true }).subscribe(res => { })
+
+    //let body = { status: status }
+    //this.http.put('/backend/stats/status/' + username, body, { withCredentials: true }).subscribe(res => { })
   }
 
   getUserList(filter: string): Observable<any> {
@@ -113,17 +120,17 @@ export class FriendsService {
   }
 
 
-	getRankingImage(rating: number = 0): string {
-		let max_rank = 2000;
-		let min_rank = 400;
-		let badges = 23;
-		if(!rating) { rating = this.stats.value?.rating || 0}
-		if (rating <= min_rank) { rating = min_rank };
-		if (rating >= max_rank) { rating = max_rank };
+  getRankingImage(rating: number = 0): string {
+    let max_rank = 2000;
+    let min_rank = 400;
+    let badges = 23;
+    if (!rating) { rating = this.stats.value?.rating || 0 }
+    if (rating <= min_rank) { rating = min_rank };
+    if (rating >= max_rank) { rating = max_rank };
 
-		rating = Math.floor((rating - min_rank) / ((max_rank - min_rank) / badges)) + 1;
-		return ('/assets/images/ranking/' + rating + '.png');
-	}
+    rating = Math.floor((rating - min_rank) / ((max_rank - min_rank) / badges)) + 1;
+    return ('/assets/images/ranking/' + rating + '.png');
+  }
 
   async acceptFriendship(username: string = '') {
     if (username == '') { username = this.selectedUser.value || '' };
@@ -155,22 +162,30 @@ export class FriendsService {
 
   async update() {
 
-	  await this.updateFriendsList();
-	  await this.updateRequestsList();
-	  
-	  if (this.selectedUser.value) {
-		await this.updateUserStats();
-		await this.updateFriendshipStatus();
-		if (this.selectedUser.value == this.authService.userSubject.value?.username)
-			await this.updateRanking();
+    await this.updateFriendsList();
+    await this.updateRequestsList();
+
+    if (this.selectedUser.value) {
+      await this.updateUserStats();
+      await this.updateFriendshipStatus();
+      if (this.selectedUser.value == this.authService.userSubject.value?.username)
+	  {
+        await this.updateRanking();
+	    await this.updateGameStats();  
 	  }
+    }
   }
 
+  async updateGameStats() {
+    this.getGameStats().subscribe((res: GameStatsDTO) => {
+      this.gameStats.next(res);
+    })
+  }
 
   async updateUserStats() {
     this.getUserStats().subscribe((res: StatsDTO) => {
       this.stats.next(res);
-	  if (!(res.username)) {this.selectedUser.next(null);}
+      if (!(res.username)) { this.selectedUser.next(null); }
     })
   }
 
@@ -201,14 +216,12 @@ export class FriendsService {
       this.requestsList.next(res);
     })
   }
-  
+
   async updateRanking() {
     this.getRankingList().subscribe((res: any[]) => {
-		console.log('updating ranking');
-		console.log(res);
       this.rankingList.next(res);
     })
   }
-  
+
 
 }
