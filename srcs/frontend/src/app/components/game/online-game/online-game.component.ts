@@ -82,7 +82,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.gameUnavailable()
     }
     else if (this.mode == 'friend') {
-      this.chatSocket.emit('setStatus', this.username, "ingame")
       if (this.username != this.challenged) {
         this.socket.emit("challenge", this.username, this.challenged, this.powerUps)
       }
@@ -91,7 +90,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     }
     else {
       // this.usersOnlineServices.setStatus(this.username, 'ingame')
-      this.chatSocket.emit('setStatus', this.username, "ingame")
       this.socket.emit("joinGame", this.powerUps, this.username, this.challenged);
     }
     this.gameService.setMode(this.mode)
@@ -124,6 +122,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   players() {
     this.socket.once("players", (player1: any, player2: any) => {
       this.setPlayers(player1, player2)
+      this.chatSocket.emit('setStatus', this.username, "ingame")
       this.isWaiting = false;
       this.gameService.start()
       this.update();
