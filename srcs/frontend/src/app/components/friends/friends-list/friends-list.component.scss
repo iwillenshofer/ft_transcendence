@@ -40,36 +40,6 @@
         object-fit: cover;
     }
 
-    .online {
-        border-left-width: 3px;
-        border-left-color: lightgreen;
-        border-left-style: solid;
-    }
-
-    .ingame {
-        border-left-width: 3px;
-        border-left-color: rgb(187, 0, 255);
-        border-left-style: solid;
-    }
-
-    .watching {
-        border-left-width: 3px;
-        border-left-color: rgb(255, 153, 0);
-        border-left-style: solid;
-    }
-
-    .busy {
-        border-left-width: 3px;
-        border-left-color: orange;
-        border-left-style: solid;
-    }
-
-    .offline {
-        border-left-width: 3px;
-        border-left-color: rgb(0, 0, 0);
-        border-left-style: solid;
-    }
-
     .name {
         font-size: 14px;
         font-weight: bold;

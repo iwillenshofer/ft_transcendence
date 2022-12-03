@@ -16,56 +16,42 @@ export interface UserI {
 	providedIn: 'root'
 })
 export class UsersOnlineService {
-	public UsersOnline: Observable<UserInterface[]> = new Observable<UserInterface[]>()
-	public statusSubject = new BehaviorSubject<Map<string, number>>(new Map());
+	//public UsersOnline: Observable<UserInterface[]> = new Observable<UserInterface[]>()
+	//public statusSubject = new BehaviorSubject<Map<string, number>>(new Map());
 
-	constructor(private socket: ChatSocket) { }
+	constructor(private socket: ChatSocket) {
+		this.socket.on('chatStatus', (users: any) => {
+			this.users = users;
+		  })
+		  this.getUsers()
+	}
 
-	users: UserI[] = []
+	public users: UserI[] = []
 
-	// setStatus(username: string, status: string) {
-	// 	this.socket.on('chatStatus', (users: any) => {
-	// 		this.users = users;
-	// 	})
-	// }
-
+	ngOnInit(): void { }
 
 	getUsers() {
 		this.socket.emit('getStatus')
 	}
 
-	updateChatStatus(res: UserInterface[]) {
-		let users: Map<string, number> = this.statusSubject.value;
-		let online_users: string[] = [];
-		for (let item of res) {
-			if ((users.has(item.username) && users.get(item.username) == OFFLINE) ||
-				!(users.has(item.username)))
-				users.set(item.username, ONLINE);
-			online_users.push(item.username);
-		}
-		users.forEach((value: number, key: string) => {
-			if (!(online_users.includes(key)))
-				users.set(key, OFFLINE);
+	getOnlineCount(): number {
+		let count: number = 0;
+		this.users.forEach(user => {
+		  if (user.status != "offline") {
+			count++;
+		  }
 		});
-		this.statusSubject.next(users);
-	}
+		return count;
+	  }
 
-	setInGame(username: string) {
-		let users: Map<string, number> = this.statusSubject.value;
-		users.set(username, INGAME);
-		this.statusSubject.next(users);
-	}
-
-	setWatching(username: string) {
-		let users: Map<string, number> = this.statusSubject.value;
-		users.set(username, WATCHING);
-		this.statusSubject.next(users);
-	}
-
-	setOutGame(username: string) {
-		let users: Map<string, number> = this.statusSubject.value;
-		users.set(username, ONLINE);
-		this.statusSubject.next(users);
-	}
-
+	getOnline(username: string): string {
+		let status = "offline";
+		this.users.forEach(user => {
+		  if (user.username == username) {
+			status = user.status;
+			return;
+		  }
+		});
+		return status;
+	  }
 }

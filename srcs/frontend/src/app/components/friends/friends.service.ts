@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AlertsService } from 'src/app/alerts/alerts.service';
 import { AuthService } from 'src/app/auth/auth.service';
-import { StatsDTO } from './stats.dto';
+import { GameStatsDTO, StatsDTO } from './stats.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +28,7 @@ export class FriendsService {
     this.friendStatus = new BehaviorSubject<number>(0);
     this.achievements = new BehaviorSubject<any[]>([]);
     this.stats = new BehaviorSubject<StatsDTO | null>(null);
+	this.gameStats = new BehaviorSubject<GameStatsDTO>({matches: 0, logins: 0, users: 0});
   }
 
   public selectedUser: BehaviorSubject<string | undefined | null>;
@@ -42,21 +43,26 @@ export class FriendsService {
   public achievements: BehaviorSubject<any[]>;
   public stats: BehaviorSubject<StatsDTO | null>;
   public rankingList: BehaviorSubject<any[]>;
+  public gameStats: BehaviorSubject<GameStatsDTO>;
 
 
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 
   loadUser(username: string) {
     this.selectedUser.next(username);
     if (username == this.authService.userSubject.value?.username)
       this.router.navigate(['/home']);
     else
-      this.router.navigate(['/friends']);
+      this.router.navigate(['/friends', username]);
   }
 
   getUserStats(): Observable<StatsDTO> {
     return this.http.get<StatsDTO>('/backend/stats/' + this.selectedUser.value, { withCredentials: true });
+  }
+
+  getGameStats(): Observable<GameStatsDTO> {
+    return this.http.get<GameStatsDTO>('/backend/stats/gamestats', { withCredentials: true });
   }
 
   getHistory(): Observable<any> {
@@ -163,10 +169,18 @@ export class FriendsService {
       await this.updateUserStats();
       await this.updateFriendshipStatus();
       if (this.selectedUser.value == this.authService.userSubject.value?.username)
+	  {
         await this.updateRanking();
+	    await this.updateGameStats();  
+	  }
     }
   }
 
+  async updateGameStats() {
+    this.getGameStats().subscribe((res: GameStatsDTO) => {
+      this.gameStats.next(res);
+    })
+  }
 
   async updateUserStats() {
     this.getUserStats().subscribe((res: StatsDTO) => {

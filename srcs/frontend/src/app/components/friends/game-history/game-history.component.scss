@@ -27,25 +27,52 @@
     .name {
         font-size: 12px;
         color: white;
+		font-weight: bold;
+		cursor: pointer;
+		padding-left: 5px;
+		padding-right: 5px;
+		white-space: nowrap;
     }
-    button {
+
+	button {
         font-size: 12px;
     }
     .player {
       text-align: center;
+	  margin: 0px;
+	  padding: 0px;
+	  overflow: none;
     }
-    .score {
-      font-weight: normal;
-      font-size: 22px;
-      text-align: center;
-      color: lightgray;
-      >span {
-        border-bottom-width: 3px;
-        border-bottom-style: solid;
+
+	  .score-wrapper {
+		text-align: center;
+	  }
+	  
+      .score {
+		  border-bottom-width: 3px;
+		  border-bottom-style: solid;
+		  color: lightgray;
+		  font-size: 22px;
+		  text-align: center;
+		  white-space: nowrap;
+		  margin: 0px;
+		  padding: 0px;
+		  overflow: none;
+		  font-weight: normal;
       }
+	  .challenge {
+		margin-top: 5px;
+		display: block;
+	  }
+	  .friendly {
+		color: rgb(219, 219, 219);
+	}
+      .ladder {
+		  color: gold;
+	  }
+
       .game-won {border-bottom-color: lightgreen; }
       .game-lost {border-bottom-color: darkred; }
-    }
   
     font-weight: normal;
     padding-bottom: 10px;;

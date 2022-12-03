@@ -1,13 +1,15 @@
 <div *ngFor="let item of this.friendsService.stats.value?.history" class="row match-history d-flex align-items-center">
-    <div  class="col-3 player">
-        <img src="backend/{{item?.user1_avatar_url}}" class="rounded-circle user-list-image">          
+    <div  class="col-4 player">
+		<app-thumbnail [username]="item.user1" size="small" [avatar]="item.user1_avatar_url"></app-thumbnail>
         <span (click)="this.friendsService.loadUser(item.user1)" class="align-middle align-self-center name">{{item.user1}}</span>
     </div> 
-    <div class="col-6 align-middle score">
-        <span class="align-middle align-self-center" [ngClass]="getScoreClass(item.user1, item.user2, item.score_p1, item.score_p2)">{{item.score_p1}} x {{item.score_p2}}</span>
+    <div class="col-4 align-middle score-wrapper">
+        <span class="align-middle align-self-center score" [ngClass]="getScoreClass(item.user1, item.user2, item.score_p1, item.score_p2)">{{item.score_p1}} x {{item.score_p2}}</span>
+		<span class="challenge {{item.is_challenge ? 'friendly' : 'ladder'}}">{{item.is_challenge ? 'friendly' : 'ladder'}}</span>
+
     </div> 
-    <div class="col-3 player">
-        <img src="backend/{{item.user2_avatar_url}}" class="rounded-circle user-list-image">          
+    <div class="col-4 player">
+		<app-thumbnail [username]="item.user2" size="small" [avatar]="item.user2_avatar_url"></app-thumbnail>
         <span (click)="this.friendsService.loadUser(item.user2)" class="align-middle align-self-center name">{{item.user2}}</span>
     </div> 
 </div>
