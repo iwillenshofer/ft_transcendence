@@ -9,7 +9,7 @@
 			<div class="ordinal "><p class="nb{{ i + 1 }}">{{ this.getOrdinal(i+1) }}</p></div>
 		</div>
 		<div class="col-3">
-			<img src="backend/{{ item.avatar_url }}" class="rounded-circle user-list-image">
+			<app-thumbnail [username]="item.username" size="small" [avatar]="item.avatar_url"></app-thumbnail>
 		</div>
 		<div class="col-5 align-middle">
 			<span class="align-middle align-self-center name">

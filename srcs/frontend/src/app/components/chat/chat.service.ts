@@ -36,9 +36,6 @@ export class ChatService {
     this.socket.on("double_login", () => {
       this.router.navigate(['doublelogin']);
     });
-    this.socket.on("users_online", (res: UserInterface[]) => {
-		this.usersOnlineServices.updateChatStatus(res);
-	  });
     this.socket.connect();
   }
 

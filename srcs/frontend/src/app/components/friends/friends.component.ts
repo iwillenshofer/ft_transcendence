@@ -34,7 +34,11 @@ export class FriendsComponent implements OnInit {
     });
 	this.route.paramMap.subscribe((params: ParamMap) => {
 		if (this.router.url != "/home")
+		{
 			this.friendsService.selectedUser.next(params.get('id'));
+			if (this.friendsService.selectedUser.value == this.authService.userSubject.value?.username)
+				this.router.navigate(['/home']);
+		}
 	})
   }
 }

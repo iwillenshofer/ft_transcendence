@@ -15,34 +15,13 @@ import io from "socket.io-client";
 })
 export class FriendsListComponent implements OnInit {
 
-  constructor(protected friendsService: FriendsService, protected gameService: OnlineGameService, protected router: Router, protected onlineService: UsersOnlineService, chatSocket: ChatSocket) { this.socket = chatSocket }
+  constructor(protected friendsService: FriendsService, protected gameService: OnlineGameService, protected router: Router, 
+	protected onlineService: UsersOnlineService
+	) { }
   searchIcon: IconDefinition = faMagnifyingGlass;
   socket: any;
-  onlineUsers: UserI[] = [];
 
-
-  getOnline(username: string): string {
-    let status = "offline";
-    this.onlineUsers.forEach(user => {
-      if (user.username == username) {
-        status = user.status;
-        return;
-      }
-    });
-    return status;
-  }
-
-  ngOnInit(): void {
-    // this.socket = io("/chat");
-    this.socket.on('chatStatus', (users: any) => {
-      this.onlineUsers = users;
-    })
-    this.onlineService.getUsers()
-
-    // this.onlineService.statusSubject.subscribe((val) => {
-    // this.onlineUsers = val;
-    // });
-  }
+  ngOnInit(): void { }
 
   updateUserList(event: any) {
     const search: string = event.target.value;

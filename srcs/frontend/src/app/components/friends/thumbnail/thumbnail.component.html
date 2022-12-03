@@ -1,0 +1,4 @@
+
+<div class="image-wrap size-{{ this.size }}">
+	<img src="backend/{{ this.avatar }}" (click)="this.friendService.loadUser(this.username)" matTooltip="{{this.username}} is {{this.onlineService.getOnline(this.username)}}" matTooltipPosition="right" class="rounded-circle size-{{ this.size }} {{  this.onlineService.getOnline(this.username) }}">
+</div>

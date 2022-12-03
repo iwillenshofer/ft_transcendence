@@ -6,7 +6,7 @@ import { UserEntity } from 'src/users/users.entity';
 import { AchievementsEntity } from './achievements.entity';
 import { UsersService } from 'src/users/users.service';
 import { FriendsEntity } from 'src/friends/friends.entity';
-import { AchievementsDTO, HistoryDTO, StatsDTO } from './stats.dto';
+import { AchievementsDTO, GameStatsDTO, HistoryDTO, StatsDTO } from './stats.dto';
 
 @Injectable()
 export class StatsService {
@@ -187,13 +187,27 @@ export class StatsService {
   }
 
   async getLadderRanking(): Promise<any[]> {
-    // console.log("getting ladder");
     let users = await this.userRepository.createQueryBuilder('u')
       .select(['u.username', 'u.avatar_url', 'u.rating'])
       .orderBy('u.rating', 'DESC')
       .getMany();
-    // console.log(users);
     return users;
+  }
+
+  async getGameStats(): Promise<GameStatsDTO> {
+    let users = await this.userRepository.createQueryBuilder('u')
+      .select('SUM(u.login_count)', 'logins')
+	  .addSelect('COUNT(*)', 'count')
+      .getRawOne();
+	console.log(users);
+	let stats: GameStatsDTO = new GameStatsDTO;
+	stats.logins = +users.logins;
+	stats.users = +users.count;
+    let games = await this.gameRepository.createQueryBuilder('u')
+	  .select('COUNT(*)', 'count')
+      .getRawOne();
+	stats.matches = +games.count;
+    return stats;
   }
 
 
