@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginpageComponent } from './components/login/loginpage/loginpage.component';
@@ -54,6 +54,7 @@ import { GameRankingComponent } from './components/friends/game-ranking/game-ran
 import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { DialogRoomSettingComponent } from './components/dialogs/dialog-room-setting/dialog-room-setting.component';
+import { PanelChatRoomComponent } from './components/chat/panel-chat-room/panel-chat-room.component';
 
 
 @NgModule({
@@ -85,7 +86,8 @@ import { DialogRoomSettingComponent } from './components/dialogs/dialog-room-set
     GameStatsComponent,
     FriendStatsComponent,
     GameRankingComponent,
-    DialogRoomSettingComponent
+    DialogRoomSettingComponent,
+    PanelChatRoomComponent
   ],
   imports: [
     BrowserModule,
@@ -112,7 +114,7 @@ import { DialogRoomSettingComponent } from './components/dialogs/dialog-room-set
     MatToolbarModule,
     MatRadioModule,
     MatButtonToggleModule,
-	MatTooltipModule
+    MatTooltipModule
   ],
   providers: [
     {

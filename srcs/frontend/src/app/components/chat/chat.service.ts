@@ -172,4 +172,20 @@ export class ChatService {
     this.socket.emit('blocker_users');
   }
 
+  setAsAdmin(userId: number, roomId: number) {
+    this.socket.emit('set_as_admin', { userId: userId, roomId: roomId });
+  }
+
+  unsetAdmin(userId: number, roomId: number) {
+    this.socket.emit('unset_as_admin', { userId: userId, roomId: roomId });
+  }
+
+  setMute(memberId: number, muteTime: Date) {
+    this.socket.emit('set_mute', { memberId: memberId, muteTime: muteTime });
+  }
+
+  setBan(memberId: number, banTime: Date) {
+    this.socket.emit('set_ban', { memberId: memberId, banTime: banTime });
+  }
+
 }

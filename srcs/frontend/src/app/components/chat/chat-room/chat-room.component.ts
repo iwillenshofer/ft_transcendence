@@ -41,19 +41,21 @@ export class ChatRoomComponent implements OnInit, OnChanges {
   members$ = this.chatService.getMembersOfRoom();
   members: MemberInterface[] = [];
   myMember!: MemberInterface;
+
   selectedMember!: MemberInterface | null;
+  // selectedMemberNulled: MemberInterface = { id: -1, role: MemberRole.Owner, user: this.myUser }
+
   isBlocked = false;
   isBlocker = false;
+
   blockedUsers$ = this.chatService.getBlockedUsers();
   blockedUsers: Number[] = [];
+
   blockerUsers$ = this.chatService.getBlockerUsers();
   blockerUsers: Number[] = [];
+
   fasStar = fasStar;
   farStar = farStar;
-  faPaddle = faTableTennisPaddleBall;
-  faProfile = faAddressCard;
-  faLock = faLock;
-  faUnlock = faUnlock;
 
   messagesPaginate$: Observable<MessagePaginateInterface> = combineLatest([this.chatService.getMessages(), this.chatService.getAddedMessage().pipe(startWith(null))]).pipe(
     map(([messagePaginate, message]) => {
@@ -71,8 +73,8 @@ export class ChatRoomComponent implements OnInit, OnChanges {
 
   constructor(private chatService: ChatService,
     private gameService: OnlineGameService,
-    private friensService: FriendsService,
-    public dialog: MatDialog,) {
+    private friendService: FriendsService,
+    public dialog: MatDialog) {
   }
 
   ngOnInit(): void {
@@ -94,6 +96,10 @@ export class ChatRoomComponent implements OnInit, OnChanges {
     this.members$.subscribe(members => {
       this.members.splice(0);
       members.forEach(member => {
+        if (this.selectedMember?.id == member.id)
+          this.selectedMember = member;
+        if (this.myMember.id == member.id)
+          this.myMember = member;
         if (member.user.id != this.myUser.id) {
           if (!this.members.some(thismember => thismember.user.id == member.user.id))
             this.members.push(member);
@@ -107,6 +113,7 @@ export class ChatRoomComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    // this.selectedMember = this.selectedMemberNulled;
     this.selectedMember = null;
 
     if (this.chatRoom?.id)
@@ -178,7 +185,7 @@ export class ChatRoomComponent implements OnInit, OnChanges {
   }
 
   profile(username: string) {
-    this.friensService.loadUser(username);
+    this.friendService.loadUser(username);
   }
 
   blockUser(userId: number) {
@@ -197,6 +204,14 @@ export class ChatRoomComponent implements OnInit, OnChanges {
 
   isBlockerUser(userId: number): boolean {
     return (this.blockerUsers.includes(userId));
+  }
+
+  setAsAdmin(member: MemberInterface) {
+    this.chatService.setAsAdmin(member.user.id, this.chatRoom.id);
+  }
+
+  unsetAdmin(member: MemberInterface) {
+    this.chatService.unsetAdmin(member.user.id, this.chatRoom.id);
   }
 
   displaySetAsAdmin(member: MemberInterface) {
