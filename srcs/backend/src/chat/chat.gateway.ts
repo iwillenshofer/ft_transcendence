@@ -18,6 +18,8 @@ import { MemberRole } from './models/memberRole.model';
 import { ChangeSettingRoomDto } from './dto/changeSettingRoom.dto';
 import e from 'express';
 import { BlockUserDto } from './dto/blockUser.dto';
+import { SetAdminDto } from './dto/setAdmin.dto';
+import { MuteMemberDto } from './dto/muteMember.dto';
 
 @WebSocketGateway({ cors: '*:*', namespace: 'chat' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -348,6 +350,39 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
     this.server.to(socket.id).emit('blocker_users', blockerUserId);
   }
+
+  @SubscribeMessage("set_as_admin")
+  async setAsAdmin(socket: Socket, data: SetAdminDto) {
+    const room = await this.chatService.getRoomById(data.roomId);
+    const user = await this.UsersService.getUserById(data.userId);
+    const member = await this.chatService.getMemberByRoomAndUser(room, user);
+    await this.chatService.setAdmin(member);
+    const members = await this.chatService.getMembersByRoom(room);
+    for (const member of members) {
+      this.server.to(member.socketId).emit('members_room', members);
+    }
+  }
+
+  @SubscribeMessage("unset_as_admin")
+  async unsetAdmin(socket: Socket, data: SetAdminDto) {
+    const room = await this.chatService.getRoomById(data.roomId);
+    const user = await this.UsersService.getUserById(data.userId);
+    const member = await this.chatService.getMemberByRoomAndUser(room, user);
+    await this.chatService.unsetAdmin(member);
+    const members = await this.chatService.getMembersByRoom(room);
+    for (const member of members) {
+      this.server.to(member.socketId).emit('members_room', members);
+    }
+  }
+
+  @SubscribeMessage("set_mute")
+  async setMute(socket: Socket, data: MuteMemberDto) {
+    const member = await this.chatService.getMemberById(data.memberId);
+    await this.chatService.setMute(member, data.muteTime);
+
+    // this.server.to(member.socketId).emit('members_room', members);
+  }
+
 
   private onPrePaginate(page: PageInterface) {
     page.limit = page.limit > 100 ? 100 : page.limit;

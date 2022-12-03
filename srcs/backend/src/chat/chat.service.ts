@@ -394,4 +394,33 @@ export class ChatService {
         return (room);
     }
 
+    async setAdmin(member: MemberEntity) {
+        member.role = MemberRole.Administrator;
+        await this.memberRepository.save(member);
+    }
+
+    async unsetAdmin(member: MemberEntity) {
+        member.role = MemberRole.Member;
+        await this.memberRepository.save(member);
+    }
+
+    async getMemberById(memberId: number) {
+        const member = await this.memberRepository
+            .createQueryBuilder("member")
+            .where("member.id = : memberId", { memberId: memberId })
+            .getOne();
+
+        return (member);
+    }
+
+    async setMute(member: MemberEntity, muteTime: Date) {
+        member.muteUntil = muteTime;
+        await this.memberRepository.save(member);
+    }
+
+    async setBan(member: MemberEntity, banTime: Date) {
+        member.banUntil = banTime;
+        await this.memberRepository.save(member);
+    }
+
 }
