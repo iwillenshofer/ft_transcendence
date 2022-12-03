@@ -7,8 +7,8 @@
 
             <div *ngFor="let item of this.friendsService.friendsList.value"
                 class="row user-list d-flex align-items-center">
-                <div class="col-3 online">
-                    <img src="backend/{{ item.avatar_url }}" class="rounded-circle user-list-image">
+                <div class="col-3">
+					<app-thumbnail [username]="item.username" [avatar]="item.avatar_url"></app-thumbnail>
                 </div>
                 <div class="col-6 align-middle">
                     <span class="align-middle align-self-center name">
@@ -33,7 +33,7 @@
             <div *ngFor="let item of this.friendsService.requestsList.value"
                 class="row user-list d-flex align-items-center">
                 <div class="col-3">
-                    <img src="backend/{{ item.avatar_url }}" class="rounded-circle user-list-image">
+					<app-thumbnail [username]="item.username" [avatar]="item.avatar_url"></app-thumbnail>
                 </div>
                 <div class="col-6 align-middle">
                     <span class="align-middle align-self-center name">
@@ -64,7 +64,7 @@
             <div *ngFor="let item of this.friendsService.userList.value"
                 class="row user-list d-flex align-items-center">
                 <div class="col-3">
-                    <img src="backend/{{ item.avatar_url }}" class="rounded-circle user-list-image">
+					<app-thumbnail [username]="item.username" [avatar]="item.avatar_url"></app-thumbnail>
                 </div>
                 <div class="col-6 align-middle">
                     <span (click)="this.friendsService.loadUser(item.username)"

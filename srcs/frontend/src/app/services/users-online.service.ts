@@ -1,24 +1,57 @@
 import { Injectable, OnInit } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { ChatService } from '../components/chat/chat.service';
+import { ChatSocket } from '../components/chat/chat-socket';
 import { UserInterface } from '../model/user.interface';
 
+export const OFFLINE = 0;
+export const ONLINE = 1;
+export const INGAME = 2;
+export const WATCHING = 3;
+export interface UserI {
+	username: string,
+	status: string,
+}
+
 @Injectable({
-  providedIn: 'root'
+	providedIn: 'root'
 })
 export class UsersOnlineService {
+	//public UsersOnline: Observable<UserInterface[]> = new Observable<UserInterface[]>()
+	//public statusSubject = new BehaviorSubject<Map<string, number>>(new Map());
 
-  UsersOnline$!: Observable<UserInterface[]>
-  UsersOnlineSubject$ = new BehaviorSubject<UserInterface[]>([]);
-  UsersOnline: UserInterface[] = [];
+	constructor(private socket: ChatSocket) {
+		this.socket.on('chatStatus', (users: any) => {
+			this.users = users;
+		  })
+		  this.getUsers()
+	}
 
-  constructor(private chatService: ChatService) {
-    // this.chatService.requestUsersOnline();
-    this.UsersOnline$ = this.chatService.getUsersOnline();
-    // console.log("there")
-    this.UsersOnline$.subscribe((res: UserInterface[]) => {
-      res = this.UsersOnline;
-      this.UsersOnlineSubject$.next(res);
-    });
-  }
+	public users: UserI[] = []
+
+	ngOnInit(): void { }
+
+	getUsers() {
+		this.socket.emit('getStatus')
+	}
+
+	getOnlineCount(): number {
+		let count: number = 0;
+		this.users.forEach(user => {
+		  if (user.status != "offline") {
+			count++;
+		  }
+		});
+		return count;
+	  }
+
+	getOnline(username: string): string {
+		let status = "offline";
+		this.users.forEach(user => {
+		  if (user.username == username) {
+			status = user.status;
+			return;
+		  }
+		});
+		return status;
+	  }
 }

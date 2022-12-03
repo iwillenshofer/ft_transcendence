@@ -14,6 +14,7 @@ import { Socket } from 'ngx-socket-io';
 import { map } from 'rxjs/operators';
 import { getSupportedInputTypes } from '@angular/cdk/platform';
 import { MemberInterface } from '../../model/member.interface';
+import { UsersOnlineService } from 'src/app/services/users-online.service';
 
 
 @Injectable()
@@ -26,7 +27,8 @@ export class ChatService {
     private snackBar: MatSnackBar,
     private alert: AlertsService,
     private router: Router,
-    private http: HttpClient) {
+    private http: HttpClient,
+	private usersOnlineServices: UsersOnlineService) {
     this.connectedUsers = new BehaviorSubject<any[]>([]);
   }
 

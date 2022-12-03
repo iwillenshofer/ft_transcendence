@@ -54,6 +54,7 @@ import { GameRankingComponent } from './components/friends/game-ranking/game-ran
 import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { DialogRoomSettingComponent } from './components/dialogs/dialog-room-setting/dialog-room-setting.component';
+import { ThumbnailComponent } from './components/friends/thumbnail/thumbnail.component';
 
 
 @NgModule({
@@ -85,7 +86,8 @@ import { DialogRoomSettingComponent } from './components/dialogs/dialog-room-set
     GameStatsComponent,
     FriendStatsComponent,
     GameRankingComponent,
-    DialogRoomSettingComponent
+    DialogRoomSettingComponent,
+    ThumbnailComponent
   ],
   imports: [
     BrowserModule,

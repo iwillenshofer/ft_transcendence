@@ -59,7 +59,7 @@ export class LoginCallbackComponent implements OnInit {
 					this.router.navigate(['/login']);
 					return;
 				}
-				console.log("set item")
+				// console.log("set item")
 				localStorage.setItem('token', result.token);
 				this.getUser();
 			});

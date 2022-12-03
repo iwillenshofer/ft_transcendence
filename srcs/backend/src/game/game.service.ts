@@ -29,7 +29,8 @@ export class GameService {
         gameEntity.idP1 = await this.usersService.getUserByUsername(gameEntity.usernameP1);
         gameEntity.idP2 = await this.usersService.getUserByUsername(gameEntity.usernameP2);
         this.gameRepository.save(gameEntity);
-        this.statsService.updateRating(gameEntity);
+		if (!(gameEntity.isChallenge))
+        	this.statsService.updateRating(gameEntity);
         this.statsService.gameAchievements(gameEntity.idP1.id);
         this.statsService.gameAchievements(gameEntity.idP2.id);
     }
