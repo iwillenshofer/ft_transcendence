@@ -7,38 +7,44 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { UsersOnlineService } from 'src/app/services/users-online.service';
 import { FriendsService } from './friends.service';
 import { GameHistoryComponent } from './game-history/game-history.component';
+import { OnlineGameService } from '../game/game.service';
 
 @Component({
-  selector: 'app-friends',
-  templateUrl: './friends.component.html',
-  styleUrls: ['./friends.component.scss']
+	selector: 'app-friends',
+	templateUrl: './friends.component.html',
+	styleUrls: ['./friends.component.scss']
 })
 export class FriendsComponent implements OnInit {
 
-  constructor(
-    protected friendsService: FriendsService,
-    private authService: AuthService,
-	protected router: Router,
-	private route: ActivatedRoute,
-	private alertService: AlertsService,
-	) {  }  
+	constructor(
+		protected friendsService: FriendsService,
+		private authService: AuthService,
+		protected router: Router,
+		private route: ActivatedRoute,
+		private alertService: AlertsService,
+		private gameService: OnlineGameService
+	) { }
 
-  ngOnInit(): void {
-	if (this.router.url == "/home") {
-      this.friendsService.selectedUser.next( this.authService.userSubject.value?.username );
-    } else {
-		this.friendsService.selectedUser.next(null);
-	}
-    this.friendsService.selectedUser.subscribe(res => {
-		this.friendsService.update();
-    });
-	this.route.paramMap.subscribe((params: ParamMap) => {
-		if (this.router.url != "/home")
-		{
-			this.friendsService.selectedUser.next(params.get('id'));
-			if (this.friendsService.selectedUser.value == this.authService.userSubject.value?.username)
-				this.router.navigate(['/home']);
+	ngOnInit(): void {
+		if (this.router.url == "/home") {
+			this.friendsService.selectedUser.next(this.authService.userSubject.value?.username);
+		} else {
+			this.friendsService.selectedUser.next(null);
 		}
-	})
-  }
+		this.friendsService.selectedUser.subscribe(res => {
+			this.friendsService.update();
+		});
+		this.route.paramMap.subscribe((params: ParamMap) => {
+			if (this.router.url != "/home") {
+				this.friendsService.selectedUser.next(params.get('id'));
+				if (this.friendsService.selectedUser.value == this.authService.userSubject.value?.username)
+					this.router.navigate(['/home']);
+			}
+		})
+	}
+
+	specFriend(username: string) {
+		this.gameService.spec(username);
+		this.router.navigate(['/pong']);
+	}
 }

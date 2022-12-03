@@ -1,4 +1,4 @@
-import { OnlineGameService } from './../components/game/online-game.service';
+import { OnlineGameService } from '../components/game/game.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Component, Input, OnInit } from '@angular/core';
 import { AlertModel } from './alerts.model';
@@ -29,7 +29,7 @@ export class AlertsComponent implements OnInit {
     this.alertsService.getAlerts().subscribe(messages => {
       this.alerts = messages;
     });
-	if (this.router.url === '/login') {return ;};
+    if (this.router.url === '/login') { return; };
     this.socket = io("/game");
     let username: any;
     this.auth.getUser().then(data => {

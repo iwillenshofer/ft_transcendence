@@ -241,6 +241,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.socket.once("winner", (message: any) => {
       this.finishedMessage = message;
       this.drawFinish();
+      this.chatSocket.emit('setStatus', this.username, "online")
       this.socket.removeAllListeners();
       this.socket.disconnect();
     })
