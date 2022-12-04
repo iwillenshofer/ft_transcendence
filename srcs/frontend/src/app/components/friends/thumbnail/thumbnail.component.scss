@@ -6,6 +6,7 @@ img {
 	padding: 2px;
 }
 
+
 .size-small {
 	height: 40px;
 	width: 40px;
@@ -62,9 +63,15 @@ button {
 	vertical-align: middle;
 }
 
+.btn {
+	padding-left: 2px;
+}
+
 .nobutton {
 	border: 0px !important;
 	cursor:auto;
+	padding-left: 3px;
+	padding-right: 3px;
 }
 
 .dropdown-top {

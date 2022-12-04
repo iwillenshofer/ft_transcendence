@@ -12,6 +12,7 @@ import { ChatComponent } from './components/chat/chat.component';
 import { FriendsComponent } from './components/friends/friends.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { DoubleLoginComponent } from './components/login/double-login/double-login.component';
+import { FourohfourComponent } from './components/login/fourohfour/fourohfour.component';
 
 const routes: Routes = [
 	{ path: 'home', component: FriendsComponent, canActivate: [AuthguardService], pathMatch: 'full' },
@@ -24,7 +25,9 @@ const routes: Routes = [
 	{ path: 'friends/:id', component: FriendsComponent, canActivate: [AuthguardService], pathMatch: 'full' },
 	{ path: 'friends', component: FriendsComponent, canActivate: [AuthguardService], pathMatch: 'full' },
 	{ path: 'profile', component: ProfileComponent, canActivate: [AuthguardService], pathMatch: 'full' },
-	{ path: '', redirectTo: 'home', pathMatch: 'prefix'},
+	{ path: '', redirectTo: 'home', pathMatch: 'full'},
+	{ path: '**', component: FourohfourComponent, pathMatch: 'full'}
+
 ];
 
 @NgModule({

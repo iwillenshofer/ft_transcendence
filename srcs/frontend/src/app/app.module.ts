@@ -55,6 +55,8 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { DialogRoomSettingComponent } from './components/dialogs/dialog-room-setting/dialog-room-setting.component';
 import { ThumbnailComponent } from './components/friends/thumbnail/thumbnail.component';
+import { FloatingballsComponent } from './components/login/floatingballs/floatingballs.component';
+import { FourohfourComponent } from './components/login/fourohfour/fourohfour.component';
 
 
 @NgModule({
@@ -87,7 +89,9 @@ import { ThumbnailComponent } from './components/friends/thumbnail/thumbnail.com
     FriendStatsComponent,
     GameRankingComponent,
     DialogRoomSettingComponent,
-    ThumbnailComponent
+    ThumbnailComponent,
+    FloatingballsComponent,
+    FourohfourComponent
   ],
   imports: [
     BrowserModule,
