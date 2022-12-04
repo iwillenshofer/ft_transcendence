@@ -382,8 +382,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async setMute(socket: Socket, data: MuteMemberDto) {
     const member = await this.chatService.getMemberById(data.memberId);
     await this.chatService.setMute(member, data.muteTime);
-
-    // this.server.to(member.socketId).emit('members_room', members);
+    const room = await this.chatService.getRoomById(data.roomId);
+    const members = await this.chatService.getMembersByRoom(room);
+    this.server.to(member.socketId).emit('members_room', members);
   }
 
 

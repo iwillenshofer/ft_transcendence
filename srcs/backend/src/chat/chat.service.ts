@@ -407,7 +407,7 @@ export class ChatService {
     async getMemberById(memberId: number) {
         const member = await this.memberRepository
             .createQueryBuilder("member")
-            .where("member.id = : memberId", { memberId: memberId })
+            .where("member.id = :memberId", { memberId: memberId })
             .getOne();
 
         return (member);

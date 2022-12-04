@@ -4,6 +4,8 @@ import { MessageInterface } from "./message.interface";
 
 export interface MemberInterface {
     id?: number;
+    muteUntil?: Date;
+    banUntil?: Date;
     user: UserInterface;
     role: MemberRole;
     socketId?: string;

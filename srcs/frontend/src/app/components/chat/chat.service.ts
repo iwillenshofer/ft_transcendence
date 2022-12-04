@@ -28,19 +28,23 @@ export class ChatService {
     private alert: AlertsService,
     private router: Router,
     private http: HttpClient,
-	private usersOnlineServices: UsersOnlineService) {
+    private usersOnlineServices: UsersOnlineService) {
     this.connectedUsers = new BehaviorSubject<any[]>([]);
   }
+
+  isSocket = false;
 
   connect() {
     this.socket.on("double_login", () => {
       this.router.navigate(['doublelogin']);
     });
     this.socket.connect();
+    this.isSocket = true;
   }
 
   disconnect() {
     this.socket.disconnect();
+    this.isSocket = false;
   }
 
   connectChatSocket() {
