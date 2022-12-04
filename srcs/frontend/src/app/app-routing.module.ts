@@ -21,7 +21,7 @@ const routes: Routes = [
 	{ path: 'enable2fa', component: TwofactorComponent, canActivate: [AuthguardService], pathMatch: 'full' },
 	{ path: 'doublelogin', component: DoubleLoginComponent, pathMatch: 'full' },
 	{ path: 'pong', component: GameComponent, canActivate: [AuthguardService], pathMatch: 'full' },
-	{ path: 'chat', component: ChatComponent, canActivate: [AuthguardService], pathMatch: 'full' },
+	{ path: 'letschat', component: ChatComponent, canActivate: [AuthguardService], pathMatch: 'full' },
 	{ path: 'friends/:id', component: FriendsComponent, canActivate: [AuthguardService], pathMatch: 'full' },
 	{ path: 'friends', component: FriendsComponent, canActivate: [AuthguardService], pathMatch: 'full' },
 	{ path: 'profile', component: ProfileComponent, canActivate: [AuthguardService], pathMatch: 'full' },
