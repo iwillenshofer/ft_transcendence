@@ -38,12 +38,12 @@ export class AuthService {
 			tfa_fulfilled = !(await this.UsersService.getTfaEnabled(user.id));
 		}
 		const payload = { username: user.username, id: user.id, tfa_fulfilled: tfa_fulfilled };
-		return (this.jwtService.sign(payload, { secret: process.env.JWT_SECRET, expiresIn: 60 * 20 }));
+		return (this.jwtService.sign(payload, { secret: process.env.JWT_SECRET, expiresIn: 60 * 60 * 24 * 7 }));
 	}
 
 	async getRefreshToken(user: any) {
 		const payload = { username: user.username, id: user.id };
-		return (this.jwtService.sign(payload, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: 60 * 60 * 24 * 7 }));
+		return (this.jwtService.sign(payload, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: 60 * 60 * 24 * 30 }));
 	}
 
 	/*
