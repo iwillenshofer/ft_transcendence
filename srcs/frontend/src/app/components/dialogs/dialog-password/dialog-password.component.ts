@@ -29,7 +29,6 @@ export class DialogPasswordComponent implements OnInit {
     private authService: AuthService) { }
 
   ngOnInit(): void {
-    this.authService.logout();
     this.authService.getLogoutStatus.subscribe((data) => {
       if (data === true) {
         this.dialogRef.close();

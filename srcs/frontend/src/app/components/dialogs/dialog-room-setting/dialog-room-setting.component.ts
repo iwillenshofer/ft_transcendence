@@ -9,6 +9,7 @@ import { MemberInterface } from 'src/app/model/member.interface';
 import { RoomType } from 'src/app/model/room.interface';
 import { RoomService } from 'src/app/services/room/room.service';
 import { isRoomNameTaken } from 'src/app/validators/async-room-name.validator';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
 @Component({
@@ -21,18 +22,22 @@ export class DialogRoomSettingComponent {
   hide = true;
   filteredUsers!: any;
   isLoading = false;
-  errorMsg: string = "";
+
+  members$ = this.chatService.getMembersOfRoom();
+  members: MemberInterface[] = [];
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private roomService: RoomService,
     private authService: AuthService,
     private chatService: ChatService,
+    private snackBar: MatSnackBar,
     private dialogRef: MatDialogRef<DialogRoomSettingComponent>) {
 
   }
 
   ngOnInit(): void {
+    this.chatService.requestMemberOfRoom(this.data.room.id);
     if (this.data.room.type == RoomType.Direct) {
       this.form.controls['searchUsersCtrl'].disable();
     }
@@ -50,7 +55,6 @@ export class DialogRoomSettingComponent {
       .pipe(
         debounceTime(500),
         tap(() => {
-          this.errorMsg = "";
           this.filteredUsers = [];
           this.isLoading = true;
         }),
@@ -64,14 +68,18 @@ export class DialogRoomSettingComponent {
       )
       .subscribe(res => {
         if (res == undefined) {
-          this.errorMsg = "The user couldn't be found.";
           this.filteredUsers = [];
         }
         else {
-          this.errorMsg = "";
           this.filteredUsers = res;
         }
       });
+
+    this.members$.subscribe(members => {
+      members.forEach(member => {
+        this.members.push(member);
+      })
+    })
 
   }
 
@@ -123,18 +131,27 @@ export class DialogRoomSettingComponent {
   checkIfAlreadyAdded() {
     let user = this.searchUsersCtrl.value;
     if (user) {
-
-      let member = this.data.room.members.find((member: MemberInterface) => member.user.username == user.username)
-      if (!member)
-        console.log("add")
+      let member = this.members.find(member => member.user.username == user.username)
+      if (!member) {
+        this.chatService.addUserToRoom(this.data.room, user);
+        this.snackBar.open(user.username + ` has been successfully added to the chatroom.`, 'Close', {
+          duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
+        });
+      }
       else
-        console.log("don't add")
+        this.snackBar.open(user.username + ` is already a member of this chat room.`, 'Close', {
+          duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
+        });
     }
   }
 
   getUsername(value: any) {
     if (value)
       return value.username;
+  }
+
+  isPrivateRoom() {
+    return (this.data.room.type == RoomType.Private);
   }
 
 }

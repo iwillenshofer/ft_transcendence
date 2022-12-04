@@ -1,65 +1,67 @@
 <app-navbar></app-navbar>
 
-<div class="container" style="margin-top: 10px; margin-bottom: 10px;">
-    <div class="row d-flex flex-wrap-reverse">
+<div class="container-fluid">
 
-        <div class="col-xl-4 rooms">
-            <div class="row align-items-center">
-                <div class="col-6 col-xl-12 my-rooms">
-                    <h1>My Chatrooms</h1>
-                    <span>
-                        <mat-selection-list #list [multiple]="false" (selectionChange)="onSelectRoom($event)">
-                            <mat-list-option *ngFor="let room of (myRooms$ | async)?.items" [value]="room">
-                                <div *ngIf="isConversation(room) && room.name == this.myUsername; else elseBlock">
-                                    {{room.name2}}
-                                </div>
-                                <ng-template #elseBlock>{{room.name}}</ng-template>
-                                <fa-icon *ngIf="isConversation(room)" [icon]="faUserGroup"></fa-icon>
-                                <fa-icon *ngIf="!isConversation(room)" [icon]="faUsers"></fa-icon>
-                                <mat-divider></mat-divider>
-                            </mat-list-option>
-                        </mat-selection-list>
-                        <mat-paginator [length]="(myRooms$ | async)?.meta?.totalItems"
-                            [pageIndex]="(myRooms$ | async)?.meta?.currentPage"
-                            [pageSize]="(myRooms$ | async)?.meta?.itemsPerPage" (page)="onPaginateRooms($event)"
-                            [pageSizeOptions]="[3]"></mat-paginator>
-                    </span>
-                    <button class="btn-create" mat-raised-button (click)="openDialogNewRoom()">Create
-                        room</button>
-                    <button class="btn-leave" *ngIf="!isSelectRoomNull() && !isConversation(this.selectedRoom)"
-                        mat-raised-button (click)="onLeaveRoom(selectedRoom)">Leave
-                        room</button>
+    <div class="container" style="margin-top: 10px; margin-bottom: 10px;">
+        <div class="row d-flex flex-wrap-reverse">
+
+            <div class="col-xl-4 rooms">
+                <div class="row align-items-center">
+                    <div class="col-6 col-xl-12 my-rooms">
+                        <h1>My Chatrooms</h1>
+                        <span>
+                            <mat-selection-list #list [multiple]="false" (selectionChange)="onSelectRoom($event)">
+                                <mat-list-option *ngFor="let room of (myRooms$ | async)?.items" [value]="room">
+                                    <div
+                                        *ngIf="isConversation(room) && room.name == this.myUser.username; else elseBlock">
+                                        {{room.name2}}
+                                    </div>
+                                    <ng-template #elseBlock>{{room.name}}</ng-template>
+                                    <fa-icon *ngIf="isConversation(room)" [icon]="faUserGroup"></fa-icon>
+                                    <fa-icon *ngIf="!isConversation(room)" [icon]="faUsers"></fa-icon>
+                                    <mat-divider></mat-divider>
+                                </mat-list-option>
+                            </mat-selection-list>
+                            <mat-paginator [length]="(myRooms$ | async)?.meta?.totalItems"
+                                [pageIndex]="(myRooms$ | async)?.meta?.currentPage"
+                                [pageSize]="(myRooms$ | async)?.meta?.itemsPerPage" (page)="onPaginateRooms($event)"
+                                [pageSizeOptions]="[3]"></mat-paginator>
+                        </span>
+                        <button class="btn-create" mat-raised-button (click)="openDialogNewRoom()">Create
+                            room</button>
+                        <button class="btn-leave" *ngIf="!isSelectRoomNull() && !isConversation(this.selectedRoom)"
+                            mat-raised-button (click)="onLeaveRoom(selectedRoom)">Leave
+                            room</button>
+                    </div>
+                    <div class="col-6 col-xl-12 av-rooms">
+                        <h1>Rooms Available</h1>
+                        <span>
+                            <mat-selection-list #roomsAvailable [multiple]="false"
+                                (selectionChange)="onSelectPublicRoom($event)">
+                                <mat-list-option *ngFor="let room of (publicRooms$ | async)?.items" [value]="room">
+                                    {{room.name}} <fa-icon *ngIf="isProtected(room.type)" [icon]="faKey"></fa-icon>
+                                    <mat-divider></mat-divider>
+                                </mat-list-option>
+                            </mat-selection-list>
+                            <mat-paginator [length]="(publicRooms$ | async)?.meta?.totalItems"
+                                [pageIndex]="(publicRooms$ | async)?.meta?.currentPage"
+                                [pageSize]="(publicRooms$ | async)?.meta?.itemsPerPage"
+                                (page)="onPaginatePublicRooms($event)" [pageSizeOptions]="[3]"></mat-paginator>
+                        </span>
+                        <br>
+                        <button class="btn-join" mat-raised-button (click)="onJoinRoom(selectedPublicRoom)"
+                            [disabled]="selectPublicRoomNull()">Join
+                            room</button>
+                        <button class="btn-search" mat-raised-button (click)="onSearchUser()">Search
+                            user</button>
+                    </div>
                 </div>
-                <div class="col-6 col-xl-12 av-rooms">
-                    <h1>Rooms Available</h1>
-                    <span>
-                        <mat-selection-list #roomsAvailable [multiple]="false"
-                            (selectionChange)="onSelectPublicRoom($event)">
-                            <mat-list-option *ngFor="let room of (publicRooms$ | async)?.items" [value]="room">
-                                {{room.name}} <fa-icon *ngIf="isProtected(room.type)" [icon]="faKey"></fa-icon>
-                                <mat-divider></mat-divider>
-                            </mat-list-option>
-                        </mat-selection-list>
-                        <mat-paginator [length]="(publicRooms$ | async)?.meta?.totalItems"
-                            [pageIndex]="(publicRooms$ | async)?.meta?.currentPage"
-                            [pageSize]="(publicRooms$ | async)?.meta?.itemsPerPage"
-                            (page)="onPaginatePublicRooms($event)" [pageSizeOptions]="[3]"></mat-paginator>
-                    </span>
-                    <br>
-                    <button class="btn-join" mat-raised-button (click)="onJoinRoom(selectedPublicRoom)"
-                        [disabled]="selectPublicRoomNull()">Join
-                        room</button>
-                    <button class="btn-search" mat-raised-button (click)="onSearchUser()">Search
-                        user</button>
-                </div>
+            </div>
+            <div class="col-xl-8 chat" style="background-color: #fff;">
+                <app-chat-room *ngIf="!isSelectRoomNull()" [chatRoom]="selectedRoom" [myUser]="this.myUser">
+                </app-chat-room>
             </div>
 
         </div>
-
-        <div class="col-xl-8 chat" style="background-color: #fff;">
-            <app-chat-room *ngIf="!isSelectRoomNull()" [chatRoom]="selectedRoom" [myUser]="this.myUser">
-            </app-chat-room>
-        </div>
-
     </div>
 </div>
