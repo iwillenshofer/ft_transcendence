@@ -16,7 +16,6 @@
 		<li  *ngIf="this.onlineService.getOnline(this.username) == 'ingame'"><a class="dropdown-item" ><fa-icon [icon]="icon[2]"></fa-icon><span class="name">Watch</span></a></li>
 	</ul>
   </div>
-
-  <div class="nobutton btn" *ngIf="!(this.dropdown) || this.username == this.authService.userSubject.value?.username ?? ''">
+  <div class=" nobutton btn" *ngIf="!(this.dropdown) || this.username == this.authService.userSubject.value?.username ?? ''">
   <img src="backend/{{ this.avatar }}" class="rounded-circle size-{{ this.size }} {{  this.onlineService.getOnline(this.username) }}">
 </div>

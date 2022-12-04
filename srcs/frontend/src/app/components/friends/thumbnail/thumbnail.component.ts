@@ -26,7 +26,7 @@ export class ThumbnailComponent {
 	@Input() avatar: string = '';
 	@Input() size: string = 'medium';
 	@Input() dropdown: boolean = true;
-	@Input() light: boolean = true;
+	@Input() light: boolean = false;
 
 	ngOnInit(): void { }
 
