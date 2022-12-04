@@ -3,10 +3,13 @@ import { UserInterface } from "./user.interface";
 
 export interface MemberInterface {
     id?: number;
+    muteUntil?: Date;
+    banUntil?: Date;
     user: UserInterface;
     role: MemberRole;
     socketId?: string;
-    messages: MessageInterface[];
+    messages?: MessageInterface[];
+    created_at?: Date;
 }
 
 export enum MemberRole {

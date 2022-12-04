@@ -17,6 +17,7 @@ import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
 import { OnlineGameService } from '../../game/game.service';
 import { FriendsService } from '../../friends/friends.service';
 import { ChatService } from '../chat.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
 @Component({
@@ -74,7 +75,8 @@ export class ChatRoomComponent implements OnInit, OnChanges {
   constructor(private chatService: ChatService,
     private gameService: OnlineGameService,
     private friendService: FriendsService,
-    public dialog: MatDialog) {
+    public dialog: MatDialog,
+    private snackBar: MatSnackBar,) {
   }
 
   ngOnInit(): void {
@@ -94,6 +96,7 @@ export class ChatRoomComponent implements OnInit, OnChanges {
     });
 
     this.members$.subscribe(members => {
+      let removeMyMember = true;
       this.members.splice(0);
       members.forEach(member => {
         if (this.selectedMember?.id == member.id)
@@ -124,7 +127,13 @@ export class ChatRoomComponent implements OnInit, OnChanges {
   }
 
   sendMessage() {
-    if (this.chatRoom) {
+    const now = new Date().toISOString();
+    if (this.myMember.muteUntil && this.myMember.muteUntil?.toString() > now) {
+      this.snackBar.open('You are muted', 'Close', {
+        duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
+      });
+    }
+    else if (this.chatRoom) {
       this.chatService.sendMessage(this.chatMessage.value, this.chatRoom);
       this.chatMessage.reset();
     }
@@ -222,5 +231,4 @@ export class ChatRoomComponent implements OnInit, OnChanges {
     }
     return (false);
   }
-
 }

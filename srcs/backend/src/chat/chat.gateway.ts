@@ -21,6 +21,7 @@ import { BlockUserDto } from './dto/blockUser.dto';
 import { SetAdminDto } from './dto/setAdmin.dto';
 import { MuteMemberDto } from './dto/muteMember.dto';
 import { Logger } from '@nestjs/common';
+import { BanMemberDto } from './dto/banMember.dto';
 
 @WebSocketGateway({ cors: '*:*', namespace: 'chat', transports: ['websocket', 'polling'] })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -336,6 +337,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(socket.id).emit('all_my_rooms', rooms);
   }
 
+  @SubscribeMessage("get_all_public_rooms")
+  async getAllPublicRooms(socket: Socket) {
+    const rooms = await this.chatService.getAllPublicRooms();
+    this.server.to(socket.id).emit('all_public_rooms', rooms);
+  }
+
   @SubscribeMessage("blocked_users")
   async getBlockedUsers(socket: Socket) {
     let blockedUserId: number[] = [];
@@ -382,10 +389,31 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async setMute(socket: Socket, data: MuteMemberDto) {
     const member = await this.chatService.getMemberById(data.memberId);
     await this.chatService.setMute(member, data.muteTime);
-
-    // this.server.to(member.socketId).emit('members_room', members);
+    const room = await this.chatService.getRoomById(data.roomId);
+    const members = await this.chatService.getMembersByRoom(room);
+    this.server.to(member?.socketId).emit('members_room', members);
   }
 
+  @SubscribeMessage("set_ban")
+  async setBan(socket: Socket, data: BanMemberDto) {
+    const member = await this.chatService.getMemberById(data.memberId);
+    console.log(member);
+    await this.chatService.setBan(member, data.banTime);
+    const room = await this.chatService.getRoomById(data.roomId);
+    const members = await this.chatService.getMembersByRoom(room);
+    await this.chatService.removeMemberFromRoom(room, member);
+    for (const member of members) {
+      this.server.to(member.socketId).emit('members_room', members);
+    }
+    const rooms = await this.chatService.getRoomsOfMember(member.user.id, { page: 1, limit: 3 });
+    this.server.to(member.socketId).emit('rooms', rooms);
+
+    const all_rooms = await this.chatService.getAllMyRooms(+member.user.id);
+    this.server.to(member.socketId).emit('all_my_rooms', all_rooms);
+
+    const all_public_rooms = await this.chatService.getAllPublicRooms();
+    this.server.to(member.socketId).emit('all_public_rooms', all_public_rooms);
+  }
 
   private onPrePaginate(page: PageInterface) {
     page.limit = page.limit > 100 ? 100 : page.limit;

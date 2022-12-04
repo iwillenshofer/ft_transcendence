@@ -12,8 +12,6 @@ export class ChatSocket extends Socket {
         autoConnect: false,
         extraHeaders: { userid: getUserId() ?? "null" }
       }
-    }) 
-	console.log("socket construcotr")
-
+    })
   }
 }

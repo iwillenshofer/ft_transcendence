@@ -374,6 +374,17 @@ export class ChatService {
         return (rooms);
     }
 
+    async getAllPublicRooms(): Promise<RoomEntity[]> {
+        const rooms = await this.roomRepository
+            .createQueryBuilder('room')
+            .leftJoinAndSelect('room.members', "members")
+            .leftJoinAndSelect('members.user', "user")
+            .where("room.type IN (:...types)", { types: [RoomType.Public, RoomType.Protected] })
+            .getMany();
+        console.log(rooms);
+        return (rooms);
+    }
+
     async getDirectRoom(user_1: string, user_2: string): Promise<RoomEntity> {
         const room = await this.roomRepository
             .createQueryBuilder('room')
@@ -405,22 +416,24 @@ export class ChatService {
     }
 
     async getMemberById(memberId: number) {
-        const member = await this.memberRepository
-            .createQueryBuilder("member")
-            .where("member.id = : memberId", { memberId: memberId })
-            .getOne();
-
-        return (member);
+        return await this.memberRepository.findOne({
+            where: { id: memberId },
+            relations: { user: true, rooms: true }
+        });
     }
 
     async setMute(member: MemberEntity, muteTime: Date) {
-        member.muteUntil = muteTime;
-        await this.memberRepository.save(member);
+        if (muteTime) {
+            member.muteUntil = muteTime;
+            await this.memberRepository.save(member);
+        }
     }
 
     async setBan(member: MemberEntity, banTime: Date) {
-        member.banUntil = banTime;
-        await this.memberRepository.save(member);
+        if (banTime) {
+            member.banUntil = banTime;
+            await this.memberRepository.save(member);
+        }
     }
 
 }
