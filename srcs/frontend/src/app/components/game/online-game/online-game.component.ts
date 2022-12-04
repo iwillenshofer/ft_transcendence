@@ -34,7 +34,11 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   ball: any;
   username: string = "";
 
-  constructor(public gameService: OnlineGameService, private auth: AuthService, private usersOnlineServices: UsersOnlineService, private chatSocket: ChatSocket) {
+  constructor(
+    public gameService: OnlineGameService,
+    private auth: AuthService,
+    private chatSocket: ChatSocket,
+  ) {
     this.ball = gameService.getBall();
   }
 
@@ -241,6 +245,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.socket.once("winner", (message: any) => {
       this.finishedMessage = message;
       this.drawFinish();
+      this.chatSocket.emit('setStatus', this.username, "online")
       this.socket.removeAllListeners();
       this.socket.disconnect();
     })

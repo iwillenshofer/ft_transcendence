@@ -7,6 +7,7 @@ export class OnlineGameService {
 
   challenged: any;
   powerUps: any;
+  p1Username: any;
 
   constructor() { }
 
@@ -16,5 +17,9 @@ export class OnlineGameService {
 
   togglePowerUps(powerUps: any) {
     this.powerUps = powerUps;
+  }
+
+  spec(username: string) {
+    this.p1Username = username;
   }
 }

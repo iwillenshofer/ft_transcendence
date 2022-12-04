@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { IconDefinition, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { FriendsService } from '../friends.service';
-import { OnlineGameService } from '../../game/online-game.service';
+import { OnlineGameService } from '../../game/game.service';
 import { UsersOnlineService } from 'src/app/services/users-online.service';
 import io from "socket.io-client";
 

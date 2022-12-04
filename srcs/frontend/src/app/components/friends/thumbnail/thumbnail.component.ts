@@ -3,13 +3,13 @@ import { UsersOnlineService } from 'src/app/services/users-online.service';
 import { FriendsService } from '../friends.service';
 import { faEllipsisVertical, faTableTennisPaddleBall, faTv, faIdCard, faLock, faUnlock, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from 'src/app/auth/auth.service';
-import { OnlineGameService } from '../../game/online-game.service';
 import { Router } from '@angular/router';
+import { OnlineGameService } from '../../game/game.service';
 
 @Component({
-  selector: 'app-thumbnail',
-  templateUrl: './thumbnail.component.html',
-  styleUrls: ['./thumbnail.component.scss']
+	selector: 'app-thumbnail',
+	templateUrl: './thumbnail.component.html',
+	styleUrls: ['./thumbnail.component.scss']
 })
 export class ThumbnailComponent {
 
@@ -19,7 +19,7 @@ export class ThumbnailComponent {
 		protected authService: AuthService,
 		protected gameService: OnlineGameService,
 		protected router: Router
-		) {}
+	) { }
 
 	protected icon: IconDefinition[] = [faEllipsisVertical, faTableTennisPaddleBall, faTv, faIdCard, faLock, faUnlock]
 	@Input() username: string = '';
@@ -32,5 +32,5 @@ export class ThumbnailComponent {
 
 	challenge(player: any) {
 		this.gameService.challenge(player);
-	  }
+	}
 }
