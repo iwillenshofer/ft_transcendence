@@ -1,0 +1,44 @@
+<div>
+    <a>
+        <fa-icon title="{{selectedMember.user.username}} profile" class="iconsMember" [icon]="faProfile"
+            (click)="profile(selectedMember.user.username)" routerLink="/friends">
+        </fa-icon>
+    </a>
+    <a>
+        <fa-icon *ngIf="!isBlocked && !isBlocker" title=" Challenge {{selectedMember.user.username}}"
+            class="iconsMember" [icon]="faPaddle" (click)="challenge(selectedMember.user.username)" routerLink="/pong">
+        </fa-icon>
+    </a>
+    <a>
+        <fa-icon *ngIf="!isBlocked; else blocked_user" title="Block {{selectedMember.user.username}}"
+            class="iconsMember" [icon]="faLock" (click)="blockUser(selectedMember.user.id)">
+        </fa-icon>
+        <ng-template #blocked_user>
+            <fa-icon title="Unblock {{selectedMember.user.username}}" class="iconsMember" [icon]="faUnlock"
+                (click)="unblockUser(selectedMember.user.id)">
+            </fa-icon>
+        </ng-template>
+    </a>
+    <a>
+        <fa-icon *ngIf="displaySetAsAdmin(selectedMember) && !isAdmin"
+            title="Add the administrator role to {{selectedMember.user.username}}" class="iconsMember" [icon]="fasStar"
+            (click)="setAsAdmin(selectedMember)">
+        </fa-icon>
+    </a>
+    <a>
+        <fa-icon *ngIf="amIOwner && isAdmin" title="Remove the administrator role to {{selectedMember.user.username}}"
+            class="iconsMember" [icon]="farStar" (click)="unsetAdmin(selectedMember)">
+        </fa-icon>
+    </a>
+</div>
+<div *ngIf="((amIOwner || amIAdmin) && !isOwner)">
+    <button mat-button disabled color="warn">Mute</button>
+    <button mat-button color="warn" (click)="setMute('10mn')">10min</button>
+    <button mat-button color="warn" (click)="setMute('1h')">1h</button>
+    <button mat-button color="warn" (click)="setMute('24h')">24h</button>
+    <br>
+    <button mat-button disabled color="warn">Ban</button>
+    <button mat-button color="warn" (click)="setBan('10mn')">10min</button>
+    <button mat-button color="warn" (click)="setBan('1h')">1h</button>
+    <button mat-button color="warn" (click)="setBan('24h')">24h</button>
+</div>

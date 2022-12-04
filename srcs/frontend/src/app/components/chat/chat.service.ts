@@ -55,7 +55,7 @@ export class ChatService {
     return this.socket.fromEvent<MessagePaginateInterface>('messages');
   }
 
-  getMyRooms(): Observable<RoomPaginateInterface> {
+  getMyRoomsPaginate(): Observable<RoomPaginateInterface> {
     return this.socket.fromEvent<RoomPaginateInterface>('rooms');
   }
 
@@ -70,12 +70,21 @@ export class ChatService {
     this.socket.emit('join_room', { roomId: room.id });
   }
 
+  addUserToRoom(room: RoomInterface, user: UserInterface) {
+    this.socket.emit('add_user_to_room', { roomId: room.id, userId: user.id });
+  }
+
   emitPaginateRooms(limit: number, page: number) {
     this.socket.emit('paginate_rooms', { limit, page });
   }
 
   emitPaginatePublicRooms(limit: number, page: number) {
     this.socket.emit('paginate_public_and_protected_rooms', { limit, page });
+  }
+
+  emitGetAllMyRooms() {
+    this.socket.emit('get_all_my_rooms');
+
   }
 
   getPublicRooms(): Observable<RoomPaginateInterface> {
@@ -86,12 +95,8 @@ export class ChatService {
     this.socket.emit('leave_room', room.id);
   }
 
-  getAllMyRoomsAsText() {
-    return this.http.get<string[]>('/backend/chat/get_all_my_rooms_as_text/', { withCredentials: true });
-  }
-
-  getMyRoomsRequest() {
-    return this.http.get<RoomInterface[]>('/backend/chat/get_my_rooms/', { withCredentials: true });
+  getAllMyRooms() {
+    return this.socket.fromEvent<RoomInterface[]>('all_my_rooms');
   }
 
   requestMessages(roomId: number) {
@@ -138,6 +143,51 @@ export class ChatService {
 
   requestUsersOnline() {
     this.socket.emit('users_online');
+  }
+
+  blockUser(userId: number) {
+    console.log("here")
+    this.socket.emit('block_user', { blockedUserId: userId });
+  }
+
+  unblockUser(userId: number) {
+    this.socket.emit('unblock_user', { blockedUserId: userId });
+  }
+
+  isBlockedUser(userId: number) {
+    return this.http.get<boolean>('/backend/chat/is_blocked/' + userId, { withCredentials: true });
+  }
+
+  getBlockedUsers() {
+    return this.socket.fromEvent<number[]>('blocked_users');
+  }
+
+  getBlockerUsers() {
+    return this.socket.fromEvent<number[]>('blocker_users');
+  }
+
+  emitGetBlockedUsers() {
+    this.socket.emit('blocked_users');
+  }
+
+  emitGetBlockerUsers() {
+    this.socket.emit('blocker_users');
+  }
+
+  setAsAdmin(userId: number, roomId: number) {
+    this.socket.emit('set_as_admin', { userId: userId, roomId: roomId });
+  }
+
+  unsetAdmin(userId: number, roomId: number) {
+    this.socket.emit('unset_as_admin', { userId: userId, roomId: roomId });
+  }
+
+  setMute(memberId: number, muteTime: Date) {
+    this.socket.emit('set_mute', { memberId: memberId, muteTime: muteTime });
+  }
+
+  setBan(memberId: number, banTime: Date) {
+    this.socket.emit('set_ban', { memberId: memberId, banTime: banTime });
   }
 
 }
