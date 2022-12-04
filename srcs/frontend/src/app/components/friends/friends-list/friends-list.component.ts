@@ -15,9 +15,11 @@ import io from "socket.io-client";
 })
 export class FriendsListComponent implements OnInit {
 
-  constructor(protected friendsService: FriendsService, protected gameService: OnlineGameService, protected router: Router,
-    protected onlineService: UsersOnlineService
-  ) { }
+  constructor(protected friendsService: FriendsService,
+	protected gameService: OnlineGameService,
+	protected router: Router, 
+	protected onlineService: UsersOnlineService
+	) { }
   searchIcon: IconDefinition = faMagnifyingGlass;
   socket: any;
 

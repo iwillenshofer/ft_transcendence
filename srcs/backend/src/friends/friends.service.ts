@@ -6,6 +6,7 @@ import { UserEntity } from 'src/users/users.entity';
 import { UsersService } from 'src/users/users.service';
 import { FriendsStatusDTO } from './friendsStatus.dto';
 import { StatsService } from 'src/stats/stats.service';
+import { BlockedUserEntity } from 'src/chat/entities/blocked_user.entity';
 
 @Injectable()
 export class FriendsService {
@@ -15,6 +16,8 @@ export class FriendsService {
         private friendsRepository: Repository<FriendsEntity>,
         @InjectRepository(UserEntity)
         private usersRepository: Repository<UserEntity>,
+		@InjectRepository(BlockedUserEntity)
+        private blockedUsersRepo: Repository<BlockedUserEntity>,
         private usersService: UsersService,
         private statsService: StatsService
     ) { }
@@ -169,5 +172,42 @@ export class FriendsService {
                 qb.andWhere('user1 = :v4', { v4: u2.id })
             })).execute();
         return (this.getFriendshipStatus(username, me));
+    }
+
+    async getFriendBlocked(username: string, me: string): Promise<boolean> {
+        let u1: number = await this.usersService.getIdByUsername(me);
+        let u2: number = await this.usersService.getIdByUsername(username);
+        if (!(u1) || !(u2))
+            return (false);
+        let blocked_user = await this.blockedUsersRepo.findOneBy(
+			{userId: u1, blockedUserId: u2 })
+        if (blocked_user)
+			return (true);
+		return false;
+    }
+
+    async setFriendBlocked(username: string, me: string, blocked: boolean) {
+        let u1 = await this.usersService.getIdByUsername(me);
+        let u2 = await this.usersService.getIdByUsername(username);
+        if (!(u1) || !(u2))
+            return (false);
+		let blocked_user = await this.blockedUsersRepo.findOneBy(
+			{userId: u1, blockedUserId: u2 })
+
+		if (blocked && blocked_user)
+			return true;
+		else if (blocked)
+		{
+			let user: BlockedUserEntity = this.blockedUsersRepo.create({
+				userId: u1,
+				blockedUserId: u2
+			});
+			await this.blockedUsersRepo.save(user);
+		}
+		else if (!blocked && blocked_user)
+		{
+			await this.blockedUsersRepo.remove(blocked_user);
+		}
+		return true;
     }
 }

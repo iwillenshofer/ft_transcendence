@@ -44,6 +44,8 @@ export class UsersService {
 	}
 
 	async getUserById(id: number): Promise<UserEntity> {
+		if (!(id))
+			return null
 		return await this.userRepository.findOneBy({ id: id });
 	}
 
@@ -51,6 +53,11 @@ export class UsersService {
 	{
 		let i: number = 0;
 		let new_user: string;
+		username = username.substring(0, 10);
+		if (!(username))
+			username = "user";
+		while (username.length < 3)
+			username = username + "0";
 		let alreadyExist = await this.userRepository.findOneBy({ username: username });
 		if (!alreadyExist)
 			return (username);
@@ -58,7 +65,7 @@ export class UsersService {
 		username = username.substring(0, 6);
 		new_user = username;
 		while (await this.userRepository.findOneBy({ username: new_user }))
-			new_user = username + "_" + (++i);
+			new_user = username + "" + (++i);
 		return (new_user);
 	}
 

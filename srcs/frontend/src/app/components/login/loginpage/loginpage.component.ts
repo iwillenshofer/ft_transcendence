@@ -46,82 +46,9 @@ class Ball {
 	templateUrl: './loginpage.component.html',
 	styleUrls: ['./loginpage.component.scss']
 })
-export class LoginpageComponent implements AfterViewInit {
+export class LoginpageComponent {
 
-	constructor(private authservice: AuthService,
-		private alertservice: AlertsService) {
-		 }
-
-	@ViewChild("loginpage")
-	private pageCanvas!: ElementRef;
-	private canvas: any;
-	private ball: Ball[] = []; 
-	private ctx: any;
-
-	drawBall(ball: Ball) {
-		this.ctx.beginPath();
-		this.ctx.arc(ball.x, ball.y, ball.radius, Math.PI * 2, false);
-		this.ctx.fillStyle = ball.color;
-		this.ctx.globalAlpha = ball.alpha / 500;
-		this.ctx.fill();
-		this.ctx.closePath();
-		ball.update(this.canvas.width, this.canvas.height);
-	}
-
-	resizeCanvas() {
-		this.canvas.width = window.innerWidth;
-		this.canvas.height = window.innerHeight;
-	}
-
-	clearCanvas(){
-		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-	}
-	
-	update() {
-		this.clearCanvas();
-		this.ball = this.ball.filter(item => (item.alpha !== 0));
-		for (var ball of this.ball)
-			this.drawBall(ball);
-	}
-
-	clickEvent(event: any) {
-		const rect = this.canvas.getBoundingClientRect();
-		const x = event.clientX - rect.left;
-		const y = event.clientY - rect.top;
-		for (var ball of this.ball)
-			ball.removing = true;
-		for (let i = 1; i < 50; i++)
-			this.ball.push(new Ball(this.canvas.width, this.canvas.height, x, y));
-	}
-
-	moveEvent(event: any) {
-		const rect = this.canvas.getBoundingClientRect();
-		const x = event.clientX - rect.left;
-		const y = event.clientY - rect.top;
-		const random = Math.floor((Math.random() * 25) + 1);
-		if (random == 5) {
-			if (this.ball.length)
-				this.ball[0].removing = true;
-			this.ball.push(new Ball(this.canvas.width, this.canvas.height, x, y));
-		}
-	}
-
-	ngAfterViewInit(): void {
-		this.canvas = this.pageCanvas.nativeElement;
-		this.resizeCanvas();
-		window.addEventListener('resize', () => { this.resizeCanvas() }, false);
-		window.addEventListener('mousedown', (e: any) => {
-			this.clickEvent(e);
-		  });
-		window.addEventListener('mousemove', (e: any) => {
-			this.moveEvent(e);
-		})
-		this.ctx = this.canvas.getContext("2d");
-		this.clearCanvas();
-		for (let i = 1; i < 30; i++)
-			this.ball.push(new Ball(this.canvas.width, this.canvas.height));
-		setInterval(() => { this.update() }, 1800/60);
-	}
+	constructor() { }
 
 	login()	{
 		window.location.href='/auth/login';

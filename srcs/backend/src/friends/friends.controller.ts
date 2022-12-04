@@ -81,5 +81,30 @@ export class FriendsController {
   }
 
 
+  @UseGuards(JwtGuard)
+  @Get('isblocked/:username')
+  async getFriendBlocked(@Param('username') username, @Request() req) {
+    let ret = await this.friendsService.getFriendBlocked(username, req.user?.username);
+    return (JSON.stringify(ret));
+  }
+
+  @UseGuards(JwtGuard)
+  @Post('block/:username')
+  async setFriendBlocked(@Param('username') username, @Request() req) {
+    let ret = await this.friendsService.setFriendBlocked(username, req.user?.username, true);
+    return (JSON.stringify(ret));
+  }
+
+  @UseGuards(JwtGuard)
+  @Post('unblock/:username')
+  async setFriendUnblocked(@Param('username') username, @Request() req) {
+    let ret = await this.friendsService.setFriendBlocked(username, req.user?.username, false);
+    return (JSON.stringify(ret));
+  }
+
+
+
+
+
 
 }
