@@ -19,6 +19,7 @@ import { FriendsEntity } from './friends/friends.entity';
 import { AchievementsEntity } from './stats/achievements.entity';
 import { StatsModule } from './stats/stats.module';
 import { FriendsModule } from './friends/friends.module';
+import { BlockedUsersEntity } from './chat/entities/blocked-users.entity';
 
 @Module({
   imports: [
@@ -33,9 +34,9 @@ import { FriendsModule } from './friends/friends.module';
       username: process.env.POSTGRES_USER || 'postgres',
       password: process.env.POSTGRES_PASSWORD || 'postgress',
       database: process.env.POSTGRES_DB || 'postgres',
-      entities: [UserEntity, RoomEntity, AuthEntity, MessageEntity, GameEntity, ConnectedUserEntity, MemberEntity, FriendsEntity, AchievementsEntity],
-      //dropSchema: true,
-      //synchronize: true,
+      entities: [UserEntity, RoomEntity, AuthEntity, MessageEntity, GameEntity, ConnectedUserEntity, MemberEntity, FriendsEntity, AchievementsEntity, BlockedUsersEntity],
+ //     dropSchema: true,
+ //     synchronize: true,
     }),
     AuthModule,
     UsersModule,

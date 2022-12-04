@@ -18,13 +18,13 @@
 		</div>
 		<div class="row  text-center mt-2"  *ngIf="this.friendsService.stats.value?.username != this.authService.userSubject.value?.username">
 			<div class="col">
-				<button *ngIf="this.friendsService.friendStatus.value == 0" (click)="this.friendsService.addFriendship()" type="button" class="btn btn-info">Add Friend</button>
-				<button *ngIf="this.friendsService.friendStatus.value == 1" (click)="this.friendsService.delFriendship()" type="button" class="btn btn-danger">Cancel Request</button>
-				<button *ngIf="this.friendsService.friendStatus.value == 2" (click)="this.friendsService.acceptFriendship()" type="button" class="btn btn-success">Accept Friend</button>
-				<button *ngIf="this.friendsService.friendStatus.value == 2" (click)="this.friendsService.delFriendship()" type="button" class="btn btn-danger">Deny Friendship</button>
-				<button *ngIf="this.friendsService.friendStatus.value == 3" (click)="this.friendsService.delFriendship()" type="button" class="btn btn-danger">Remove Friend</button>
-				<button *ngIf="this.friendsService.friendBlocked.value == false" (click)="this.friendsService.blockUser()" type="button" class="btn btn-danger">Block</button>
-				<button *ngIf="this.friendsService.friendBlocked.value == true" (click)="this.friendsService.unblockUser()" type="button" class="btn btn-danger">Unblock</button>
+				<button *ngIf="this.friendsService.friendStatus.value == 0" (click)="this.friendsService.addFriendship()" type="button" class="btn btn-info btn-profile">Add Friend</button>
+				<button *ngIf="this.friendsService.friendStatus.value == 1" (click)="this.friendsService.delFriendship()" type="button" class="btn btn-danger btn-profile">Cancel Request</button>
+				<button *ngIf="this.friendsService.friendStatus.value == 2" (click)="this.friendsService.acceptFriendship()" type="button" class="btn btn-success btn-profile">Accept Friend</button>
+				<button *ngIf="this.friendsService.friendStatus.value == 2" (click)="this.friendsService.delFriendship()" type="button" class="btn btn-danger btn-profile">Deny Friendship</button>
+				<button *ngIf="this.friendsService.friendStatus.value == 3" (click)="this.friendsService.delFriendship()" type="button" class="btn btn-danger btn-profile">Remove Friend</button>
+				<button *ngIf="this.friendsService.friendBlocked.value == false" (click)="this.friendsService.blockUser()" type="button" class="btn btn-secondary btn-dark">Block</button>
+				<button *ngIf="this.friendsService.friendBlocked.value == true" (click)="this.friendsService.unblockUser()" type="button" class="btn btn-secondary btn-dark">Unblock</button>
 			</div>
 		</div>
 		<div class="row rating mt-4">

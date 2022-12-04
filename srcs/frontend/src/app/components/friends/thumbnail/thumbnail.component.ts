@@ -4,6 +4,7 @@ import { FriendsService } from '../friends.service';
 import { faEllipsisVertical, faTableTennisPaddleBall, faTv, faIdCard, faLock, faUnlock, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from 'src/app/auth/auth.service';
 import { OnlineGameService } from '../../game/online-game.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-thumbnail',
@@ -16,7 +17,8 @@ export class ThumbnailComponent {
 		protected onlineService: UsersOnlineService,
 		protected friendService: FriendsService,
 		protected authService: AuthService,
-		protected gameService: OnlineGameService
+		protected gameService: OnlineGameService,
+		protected router: Router
 		) {}
 
 	protected icon: IconDefinition[] = [faEllipsisVertical, faTableTennisPaddleBall, faTv, faIdCard, faLock, faUnlock]

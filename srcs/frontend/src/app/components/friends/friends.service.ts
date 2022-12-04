@@ -84,11 +84,11 @@ export class FriendsService {
   }
   
   setFriendBlocked(): Observable<boolean> {
-    return this.http.post<boolean>('/backend/stats/block/' + this.selectedUser.value, { withCredentials: true });
+    return this.http.post<boolean>('/backend/friends/block/' + this.selectedUser.value, { withCredentials: true });
   }
 
   setFriendUnblocked(): Observable<boolean> {
-    return this.http.post<boolean>('/backend/stats/unblock/' + this.selectedUser.value, { withCredentials: true });
+    return this.http.post<boolean>('/backend/friends/unblock/' + this.selectedUser.value, { withCredentials: true });
   }
 
   getStatus(username: string) {
@@ -177,7 +177,7 @@ export class FriendsService {
 
   async blockUser() {
     this.setFriendBlocked().subscribe((res) => {
-      if (res) { this.alertService.success("user blocked"); }
+      if (res) { this.alertService.success("User blocked"); }
       else { this.alertService.warning("user could not be blocked"); }
       this.update();
     });
@@ -185,7 +185,7 @@ export class FriendsService {
 
   async unblockUser() {
     this.setFriendUnblocked().subscribe((res) => {
-      if (res) { this.alertService.success("user unblocked"); }
+      if (res) { this.alertService.success("User unblocked"); }
       else { this.alertService.warning("user could not be unblocked"); }
       this.update();
     });

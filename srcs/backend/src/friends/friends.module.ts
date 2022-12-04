@@ -9,11 +9,12 @@ import { UsersModule } from 'src/users/users.module';
 import { EncryptService } from 'src/services/encrypt.service';
 import { StatsService } from 'src/stats/stats.service';
 import { StatsModule } from 'src/stats/stats.module';
+import { BlockedUsersEntity } from 'src/chat/entities/blocked-users.entity';
 
 @Module({
   imports: [
     HttpModule,
-    TypeOrmModule.forFeature([FriendsEntity, UserEntity]),
+    TypeOrmModule.forFeature([FriendsEntity, UserEntity, BlockedUsersEntity]),
     UsersModule,
     StatsModule
   ],

@@ -44,6 +44,8 @@ export class UsersService {
 	}
 
 	async getUserById(id: number): Promise<UserEntity> {
+		if (!(id))
+			return null
 		return await this.userRepository.findOneBy({ id: id });
 	}
 

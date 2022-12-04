@@ -20,7 +20,7 @@ export class AlertsService {
   async canAdd(newAlert: AlertModel) {
     let alerts$ = this.alertsSubject.getValue();
     for (let index = 0; index < alerts$.length; index++) {
-      if (newAlert.challenger == alerts$[index].challenger)
+      if (newAlert.challenger && (newAlert.challenger == alerts$[index].challenger))
         return false;
     }
     return true;
