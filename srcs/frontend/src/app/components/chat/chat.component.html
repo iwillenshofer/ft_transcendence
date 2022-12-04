@@ -1,10 +1,8 @@
 <app-navbar></app-navbar>
 
-<div class="container-fluid">
-
+<div class="scroll">
     <div class="container" style="margin-top: 10px; margin-bottom: 10px;">
         <div class="row d-flex flex-wrap-reverse">
-
             <div class="col-xl-4 rooms">
                 <div class="row align-items-center">
                     <div class="col-6 col-xl-12 my-rooms">
@@ -61,7 +59,6 @@
                 <app-chat-room *ngIf="!isSelectRoomNull()" [chatRoom]="selectedRoom" [myUser]="this.myUser">
                 </app-chat-room>
             </div>
-
         </div>
     </div>
 </div>

@@ -10,7 +10,6 @@
     .my-rooms {
         border-radius: 0px 0px 0px 15px;
         border-right: 1px solid white;
-        min-height: 300px;
     }
 
     .av-rooms {
@@ -37,7 +36,6 @@
         border-top: 1px solid white;
     }
 }
-
 
 mat-paginator {
     background-color: #f3f3f3;
@@ -79,10 +77,10 @@ mat-paginator {
 
 .chat {
     background-color: #fff;
-    min-height: 300px;
+    min-height: 320px;
 }
 
-.container-fluid {
-    height: 100%;
+.scroll {
+    height: calc(100% - 120px);
     overflow-y: scroll;
 }
