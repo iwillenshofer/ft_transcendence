@@ -96,13 +96,13 @@ export class ChatRoomComponent implements OnInit, OnChanges {
     });
 
     this.members$.subscribe(members => {
-      let removeMyMember = true;
       this.members.splice(0);
       members.forEach(member => {
         if (this.selectedMember?.id == member.id)
           this.selectedMember = member;
-        if (this.myMember.id == member.id)
+        if (this.myMember.id == member.id) {
           this.myMember = member;
+        }
         if (member.user.id != this.myUser.id) {
           if (!this.members.some(thismember => thismember.user.id == member.user.id))
             this.members.push(member);
@@ -116,9 +116,7 @@ export class ChatRoomComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // this.selectedMember = this.selectedMemberNulled;
     this.selectedMember = null;
-
     if (this.chatRoom?.id)
       this.chatService.requestMessages(this.chatRoom?.id);
     this.ownerUsername = this.getOwner();

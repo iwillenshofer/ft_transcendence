@@ -157,7 +157,6 @@ export class ChatService {
   }
 
   blockUser(userId: number) {
-    console.log("here")
     this.socket.emit('block_user', { blockedUserId: userId });
   }
 
@@ -193,8 +192,8 @@ export class ChatService {
     this.socket.emit('unset_as_admin', { userId: userId, roomId: roomId });
   }
 
-  setMute(memberId: number, roomId: number, banTime: Date) {
-    this.socket.emit('set_mute', { memberId: memberId, roomId: roomId, banTime: banTime });
+  setMute(memberId: number, roomId: number, muteTime: Date) {
+    this.socket.emit('set_mute', { memberId: memberId, roomId: roomId, muteTime: muteTime });
   }
 
   setBan(memberId: number, roomId: number, banTime: Date) {

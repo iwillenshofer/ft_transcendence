@@ -179,7 +179,6 @@ export class ChatService {
         const room = await this.getRoomById(roomId);
         if (room && room.type == RoomType.Protected) {
             let encryptedPass = this.encrypt.encode(password);
-            console.log(encryptedPass)
             if (encryptedPass == room.password) {
                 return true;
             }
@@ -298,7 +297,6 @@ export class ChatService {
             query.andWhere("user.id IN (:...users)", { users: nonBlockedUsers })
         }
         const users = await query.getMany();
-        console.log(users)
         return users;
     }
 
@@ -381,7 +379,6 @@ export class ChatService {
             .leftJoinAndSelect('members.user', "user")
             .where("room.type IN (:...types)", { types: [RoomType.Public, RoomType.Protected] })
             .getMany();
-        console.log(rooms);
         return (rooms);
     }
 

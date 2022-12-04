@@ -206,9 +206,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   isBanned(selectedRoom: RoomInterface): boolean {
     const room = this.allPublicRooms.find(room => room.id == selectedRoom.id);
     if (room) {
-      console.log(room.members)
       const member = room.members?.find(member => member.user?.id == this.myUser.id);
-      console.log(member)
       if (member) {
         const now = new Date().toISOString();
         if (member.banUntil && member.banUntil?.toString() > now) {

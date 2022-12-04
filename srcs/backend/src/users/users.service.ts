@@ -49,8 +49,7 @@ export class UsersService {
 		return await this.userRepository.findOneBy({ id: id });
 	}
 
-	async getUniqueUsername(username: string)
-	{
+	async getUniqueUsername(username: string) {
 		let i: number = 0;
 		let new_user: string;
 		username = username.substring(0, 10);
@@ -62,7 +61,7 @@ export class UsersService {
 		if (!alreadyExist)
 			return (username);
 		if (username.length > 6)
-		username = username.substring(0, 6);
+			username = username.substring(0, 6);
 		new_user = username;
 		while (await this.userRepository.findOneBy({ username: new_user }))
 			new_user = username + "" + (++i);
