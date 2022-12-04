@@ -96,6 +96,7 @@ export class ChatRoomComponent implements OnInit, OnChanges {
     });
 
     this.members$.subscribe(members => {
+      let removeMyMember = true;
       this.members.splice(0);
       members.forEach(member => {
         if (this.selectedMember?.id == member.id)

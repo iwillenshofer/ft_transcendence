@@ -140,20 +140,18 @@ export class PanelChatRoomComponent implements OnInit, OnChanges {
 
   setMute(duration: string) {
     let muteTime = new Date();
-    console.log(muteTime)
     if (this.selectedMember.id) {
       if (duration == "10mn") {
         muteTime.setMinutes(muteTime.getMinutes() + 10);
-        console.log(muteTime)
-        this.chatService.setMute(this.selectedMember.id, muteTime);
+        this.chatService.setMute(this.selectedMember.id, this.chatRoom.id, muteTime);
       }
       else if (duration == "1h") {
         muteTime.setHours(muteTime.getHours() + 1)
-        this.chatService.setMute(this.selectedMember.id, muteTime);
+        this.chatService.setMute(this.selectedMember.id, this.chatRoom.id, muteTime);
       }
       else if (duration == "24h") {
         muteTime.setHours(muteTime.getHours() + 24);
-        this.chatService.setMute(this.selectedMember.id, muteTime);
+        this.chatService.setMute(this.selectedMember.id, this.chatRoom.id, muteTime);
       }
     }
   }
@@ -162,18 +160,16 @@ export class PanelChatRoomComponent implements OnInit, OnChanges {
     let banTime = new Date();
     if (this.selectedMember.id) {
       if (duration == "10mn") {
-        console.log(banTime)
         banTime.setMinutes(banTime.getMinutes() + 10);
-        this.chatService.setBan(this.selectedMember.id, banTime);
-        console.log(banTime)
+        this.chatService.setBan(this.selectedMember.id, this.chatRoom.id, banTime);
       }
       else if (duration == "1h") {
         banTime.setHours(banTime.getHours() + 1)
-        this.chatService.setBan(this.selectedMember.id, banTime);
+        this.chatService.setBan(this.selectedMember.id, this.chatRoom.id, banTime);
       }
       else if (duration == "24h") {
         banTime.setHours(banTime.getHours() + 24);
-        this.chatService.setBan(this.selectedMember.id, banTime);
+        this.chatService.setBan(this.selectedMember.id, this.chatRoom.id, banTime);
       }
     }
   }

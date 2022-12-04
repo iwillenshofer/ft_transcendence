@@ -88,7 +88,10 @@ export class ChatService {
 
   emitGetAllMyRooms() {
     this.socket.emit('get_all_my_rooms');
+  }
 
+  emitGetPublicRooms() {
+    this.socket.emit('get_all_public_rooms');
   }
 
   getPublicRooms(): Observable<RoomPaginateInterface> {
@@ -101,6 +104,10 @@ export class ChatService {
 
   getAllMyRooms() {
     return this.socket.fromEvent<RoomInterface[]>('all_my_rooms');
+  }
+
+  getAllPublicRooms() {
+    return this.socket.fromEvent<RoomInterface[]>('all_public_rooms');
   }
 
   requestMessages(roomId: number) {
@@ -186,12 +193,12 @@ export class ChatService {
     this.socket.emit('unset_as_admin', { userId: userId, roomId: roomId });
   }
 
-  setMute(memberId: number, muteTime: Date) {
-    this.socket.emit('set_mute', { memberId: memberId, muteTime: muteTime });
+  setMute(memberId: number, roomId: number, banTime: Date) {
+    this.socket.emit('set_mute', { memberId: memberId, roomId: roomId, banTime: banTime });
   }
 
-  setBan(memberId: number, banTime: Date) {
-    this.socket.emit('set_ban', { memberId: memberId, banTime: banTime });
+  setBan(memberId: number, roomId: number, banTime: Date) {
+    this.socket.emit('set_ban', { memberId: memberId, roomId: roomId, banTime: banTime });
   }
 
 }

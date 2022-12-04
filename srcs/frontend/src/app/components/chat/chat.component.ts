@@ -35,11 +35,15 @@ export class ChatComponent implements OnInit, OnDestroy {
   allMyRooms$ = this.chatService.getAllMyRooms();
   allMyRooms!: RoomInterface[];
 
+  allPublicRooms$ = this.chatService.getAllPublicRooms();
+  allPublicRooms!: RoomInterface[];
+
   myUser$ = this.userService.getMyUser();
   myUser!: UserInterface;
 
   subscription1$!: Subscription;
   subscription2$!: Subscription;
+  subscription3$!: Subscription;
 
   selectedRoomNulled: RoomInterface = { id: 0, name: '', type: RoomType.Public }
   selectedRoom: RoomInterface = this.selectedRoomNulled;
@@ -60,6 +64,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.chatService.emitPaginateRooms(3, 0);
     this.chatService.emitPaginatePublicRooms(3, 0);
     this.chatService.emitGetAllMyRooms();
+    this.chatService.emitGetPublicRooms();
 
     this.subscription1$ = this.myUser$.subscribe(user => {
       this.myUser = user;
@@ -67,6 +72,13 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.subscription2$ = this.allMyRooms$.subscribe(rooms => {
       this.allMyRooms = rooms;
+      if (!rooms.find(room => room.id == this.selectedRoom.id)) {
+        this.selectedRoom = this.selectedRoomNulled;
+      }
+    });
+
+    this.subscription3$ = this.allPublicRooms$.subscribe(rooms => {
+      this.allPublicRooms = rooms;
     });
   }
 
@@ -121,6 +133,14 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.snackBar.open(`You are already a member of this chat room.`, 'Close', {
           duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
         });
+        return;
+      }
+      if (this.isBanned(selectedPublicRoom)) {
+        this.snackBar.open(`You are banned from this chat room.`, 'Close', {
+          duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
+        });
+        this.roomsAvailable.deselectAll();
+        this.nulledSelectedRoom();
         return;
       }
       if (selectedPublicRoom.type == RoomType.Protected) {
@@ -182,4 +202,22 @@ export class ChatComponent implements OnInit, OnDestroy {
   selectPublicRoomNull() {
     return this.selectedPublicRoom === this.selectedRoomNulled;
   }
+
+  isBanned(selectedRoom: RoomInterface): boolean {
+    const room = this.allPublicRooms.find(room => room.id == selectedRoom.id);
+    if (room) {
+      console.log(room.members)
+      const member = room.members?.find(member => member.user?.id == this.myUser.id);
+      console.log(member)
+      if (member) {
+        const now = new Date().toISOString();
+        if (member.banUntil && member.banUntil?.toString() > now) {
+          return (true);
+        }
+      }
+    }
+    return (false);
+  }
+
 }
+
