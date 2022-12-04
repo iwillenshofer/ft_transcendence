@@ -25,8 +25,9 @@
     <mat-card-content>
         <mat-form-field>
             <input matInput placeholder="Search" aria-label="State" [matAutocomplete]="auto"
-                [formControl]="searchUsersCtrl">
-            <mat-autocomplete #auto="matAutocomplete" [displayWith]="getUsername">
+                [formControl]="searchUsersCtrl" (input)="onInputChange()">
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="getUsername"
+                (optionSelected)='updateMySelection($event.option.value)'>
                 <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
                 <ng-container *ngIf="!isLoading">
                     <mat-option *ngFor="let user of filteredUsers" [value]="user">
@@ -37,14 +38,7 @@
             </mat-autocomplete>
         </mat-form-field>
         <div class=" button">
-            <button mat-raised-button type="submit" [disabled]="!searchUsersCtrl.value"
-                (click)="checkIfAlreadyExist()">Chat</button>
+            <button mat-raised-button type="submit" [disabled]="disabled" (click)="checkIfAlreadyExist()">Chat</button>
         </div>
     </mat-card-content>
 </mat-card>
-
-<br>
-
-<ng-container *ngIf="errorMsg">
-    {{errorMsg}}
-</ng-container>

@@ -16,11 +16,12 @@ import { StatsService } from 'src/stats/stats.service';
 import { GameEntity } from 'src/game/game.entity';
 import { FriendsEntity } from 'src/friends/friends.entity';
 import { AchievementsEntity } from 'src/stats/achievements.entity';
+import { BlockedUserEntity } from 'src/chat/entities/blocked_user.entity';
 
 @Module({
     imports: [
         HttpModule,
-        TypeOrmModule.forFeature([UserEntity, RoomEntity, MessageEntity, ConnectedUserEntity, MemberEntity, GameEntity, FriendsEntity, AchievementsEntity])
+        TypeOrmModule.forFeature([UserEntity, RoomEntity, MessageEntity, ConnectedUserEntity, MemberEntity, GameEntity, FriendsEntity, AchievementsEntity, BlockedUserEntity])
     ],
     providers: [UsersService, EncryptService, ChatService, ConnectedUsersService, StatsService],
     exports: [UsersService],

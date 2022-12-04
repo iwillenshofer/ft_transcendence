@@ -66,27 +66,6 @@ export class ChatMessageComponent implements OnInit {
     return false;
   }
 
-  onMouseEnter() {
-    this.onHover = true;
-    setTimeout(() => {
-      if (this.isOnHoverIcon == true)
-        this.onMouseEnter();
-      else
-        this.onMouseOut();
-    },
-      15000);
-  }
-
-  onMouseEnterIcons() {
-    this.isOnHoverIcon = true;
-    this.onHover = true;
-  }
-
-  onMouseOut() {
-    this.onHover = false;
-    this.isOnHoverIcon = false;
-  }
-
   challenge() {
     this.gameService.challenge(this.username);
   }

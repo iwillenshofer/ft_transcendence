@@ -6,7 +6,7 @@ import { UserEntity } from 'src/users/users.entity';
 import { UsersService } from 'src/users/users.service';
 import { FriendsStatusDTO } from './friendsStatus.dto';
 import { StatsService } from 'src/stats/stats.service';
-import { BlockedUsersEntity } from 'src/chat/entities/blocked-users.entity';
+import { BlockedUserEntity } from 'src/chat/entities/blocked_user.entity';
 
 @Injectable()
 export class FriendsService {
@@ -16,8 +16,8 @@ export class FriendsService {
         private friendsRepository: Repository<FriendsEntity>,
         @InjectRepository(UserEntity)
         private usersRepository: Repository<UserEntity>,
-		@InjectRepository(BlockedUsersEntity)
-        private blockedUsersRepo: Repository<BlockedUsersEntity>,
+		@InjectRepository(BlockedUserEntity)
+        private blockedUsersRepo: Repository<BlockedUserEntity>,
         private usersService: UsersService,
         private statsService: StatsService
     ) { }
@@ -175,43 +175,32 @@ export class FriendsService {
     }
 
     async getFriendBlocked(username: string, me: string): Promise<boolean> {
-        let u1 = await this.usersService.getUserByUsername(me);
-        let u2 = await this.usersService.getUserByUsername(username);
+        let u1: number = await this.usersService.getIdByUsername(me);
+        let u2: number = await this.usersService.getIdByUsername(username);
         if (!(u1) || !(u2))
             return (false);
-        let blocked_user = await this.blockedUsersRepo.createQueryBuilder('f')
-            .innerJoinAndSelect('f.user1', 'u1')
-            .innerJoinAndSelect('f.user2', 'u2')
-            .where(new Brackets(qb => {
-                qb.where('u1.id = :v1', { v1: u1.id })
-                qb.andWhere('u2.id = :v2', { v2: u2.id })
-            }))
-            .getOne()
+        let blocked_user = await this.blockedUsersRepo.findOneBy(
+			{userId: u1, blockedUserId: u2 })
         if (blocked_user)
 			return (true);
 		return false;
     }
 
     async setFriendBlocked(username: string, me: string, blocked: boolean) {
-        let u1 = await this.usersService.getUserByUsername(me);
-        let u2 = await this.usersService.getUserByUsername(username);
+        let u1 = await this.usersService.getIdByUsername(me);
+        let u2 = await this.usersService.getIdByUsername(username);
         if (!(u1) || !(u2))
             return (false);
-        let blocked_user = await this.blockedUsersRepo.createQueryBuilder('f')
-            .innerJoinAndSelect('f.user1', 'u1')
-            .innerJoinAndSelect('f.user2', 'u2')
-            .where(new Brackets(qb => {
-                qb.where('u1.id = :v1', { v1: u1.id })
-                qb.andWhere('u2.id = :v2', { v2: u2.id })
-            }))
-            .getOne()
+		let blocked_user = await this.blockedUsersRepo.findOneBy(
+			{userId: u1, blockedUserId: u2 })
+
 		if (blocked && blocked_user)
 			return true;
 		else if (blocked)
 		{
-			let user: BlockedUsersEntity = this.blockedUsersRepo.create({
-				user1: u1,
-				user2: u2
+			let user: BlockedUserEntity = this.blockedUsersRepo.create({
+				userId: u1,
+				blockedUserId: u2
 			});
 			await this.blockedUsersRepo.save(user);
 		}

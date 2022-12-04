@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { ChatService } from './chat.service';
 import { ChatSocket } from './chat-socket';
 
-
 @NgModule({
   declarations: [
   ],

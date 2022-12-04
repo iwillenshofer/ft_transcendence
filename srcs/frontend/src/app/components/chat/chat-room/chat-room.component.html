@@ -44,7 +44,7 @@
                 <div style="display: flex; align-items: center;">
                     <mat-form-field style="width: 100%; margin-right: 10px;">
                         <input matInput [formControl]="chatMessage" type="text" autoComplete='off'
-                            (keydown.enter)="sendMessage()">
+                            (keydown.enter)="sendMessage()" (disabled)="isBlockerUser(this.myUser.id)">
                     </mat-form-field>
                     <button mat-icon-button [disabled]="!chatMessage.valid" (click)="sendMessage()">
                         <span style="display: flex; flex-direction: row; align-items: center;">
@@ -69,51 +69,9 @@
                 </mat-selection-list>
             </div>
             <div class="col" *ngIf="selectedMember">
-                <div>
-                    <!-- <p>{{selectedMember.user.username}} is member since {{selectedMember.created_at | date:
-                        'dd/MM/yyyy'}} </p> -->
-                    <a>
-                        <fa-icon title="{{selectedMember.user.username}} profile" class="iconsMember" [icon]="faProfile"
-                            (click)="profile(selectedMember.user.username)" routerLink="/friends">
-                        </fa-icon>
-                    </a>
-                    <a>
-                        <fa-icon title="Challenge {{selectedMember.user.username}}" class="iconsMember"
-                            [icon]="faPaddle" (click)="challenge(selectedMember.user.username)" routerLink="/pong">
-                        </fa-icon>
-                    </a>
-                    <a>
-                        <fa-icon title="Block {{selectedMember.user.username}}" class="iconsMember" [icon]="faBan"
-                            (click)="blockUser(selectedMember.user.username)">
-                        </fa-icon>
-                    </a>
-                    <a>
-                        <fa-icon *ngIf="displaySetAsAdmin(selectedMember)"
-                            title="Add the administrator role to {{selectedMember.user.username}}" class="iconsMember"
-                            [icon]="fasStar" (click)="blockUser(selectedMember.user.username)">
-                        </fa-icon>
-                    </a>
-                    <a>
-                        <fa-icon *ngIf="isOwner(myMember) && isAdmin(selectedMember)"
-                            title="Remove the administrator role to {{selectedMember.user.username}}"
-                            class="iconsMember" [icon]="farStar" (click)="blockUser(selectedMember.user.username)">
-                        </fa-icon>
-                    </a>
-                </div>
-                <div *ngIf="isOwner(myMember) || isAdmin(myMember) else elseBlock">
-                    <button mat-button disabled color="warn">Mute</button>
-                    <button mat-button color="warn">10min</button>
-                    <button mat-button color="warn">1h</button>
-                    <button mat-button color="warn">24h</button>
-                    <br>
-                    <button mat-button disabled color="warn">Ban</button>
-                    <button mat-button color="warn">10min</button>
-                    <button mat-button color="warn">1h</button>
-                    <button mat-button color="warn">24h</button>
-                </div>
-                <ng-template #elseBlock>
-                    member
-                </ng-template>
+                <app-panel-chat-room [chatRoom]="chatRoom" [myUser]="myUser" [selectedMember]="selectedMember"
+                    [myMember]="myMember">
+                </app-panel-chat-room>
             </div>
         </div>
     </div>

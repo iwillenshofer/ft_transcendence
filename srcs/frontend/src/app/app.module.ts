@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginpageComponent } from './components/login/loginpage/loginpage.component';
@@ -54,6 +54,7 @@ import { GameRankingComponent } from './components/friends/game-ranking/game-ran
 import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { DialogRoomSettingComponent } from './components/dialogs/dialog-room-setting/dialog-room-setting.component';
+import { PanelChatRoomComponent } from './components/chat/panel-chat-room/panel-chat-room.component';
 import { ThumbnailComponent } from './components/friends/thumbnail/thumbnail.component';
 import { FloatingballsComponent } from './components/login/floatingballs/floatingballs.component';
 import { FourohfourComponent } from './components/login/fourohfour/fourohfour.component';
@@ -91,7 +92,8 @@ import { FourohfourComponent } from './components/login/fourohfour/fourohfour.co
     DialogRoomSettingComponent,
     ThumbnailComponent,
     FloatingballsComponent,
-    FourohfourComponent
+    FourohfourComponent,
+    PanelChatRoomComponent
   ],
   imports: [
     BrowserModule,
@@ -118,7 +120,7 @@ import { FourohfourComponent } from './components/login/fourohfour/fourohfour.co
     MatToolbarModule,
     MatRadioModule,
     MatButtonToggleModule,
-	MatTooltipModule
+    MatTooltipModule
   ],
   providers: [
     {
