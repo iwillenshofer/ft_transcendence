@@ -153,25 +153,31 @@ export class ChatService {
     }
 
     async removeMemberFromRoom(room: RoomEntity, member: MemberEntity): Promise<string> {
-        // TODO : Check if member is the creator.
-        //        If yes, we need to change the creator. (Maybe an admin)
-        //        If no admin, delete the room
-
-        // let thisRoom = await this.roomRepository.findOne({
-        //     where: { id: room.id },
-        //     relations: ['members', 'members.user']
-        // });
-
         if (member.role == MemberRole.Owner) {
-            if (await this.roomRepository.remove(room)) {
-                await this.memberRepository.remove(member);
-                return ("delete_room");
+            member.role = MemberRole.Member;
+            const admins = room.members.sort((a, b) => a.created_at.getTime() - b.created_at.getTime())
+                .filter((obj) => obj.isMember == true && obj.role == MemberRole.Administrator && obj.id != member.id);
+            if (admins.length > 0) {
+                admins[0].role = MemberRole.Owner;
+                await this.memberRepository.save(admins[0]);
+            }
+            else {
+                let members = room.members.filter((obj) => obj.isMember == true && obj.id != member.id && obj.role != MemberRole.Owner);
+                if (members) {
+                    members[0].role = MemberRole.Owner;
+                    await this.memberRepository.save(members[0]);
+                }
+                else {
+                    if (await this.roomRepository.remove(room)) {
+                        await this.memberRepository.remove(member);
+                        return ("delete_room");
+                    }
+                }
             }
         }
 
         member.isMember = false;
         await this.memberRepository.save(member);
-
         return ("");
     }
 
@@ -218,13 +224,6 @@ export class ChatService {
     }
 
     async getMembersByRoom(room: RoomEntity): Promise<MemberEntity[]> {
-        // const currentRoom = await this.roomRepository.findOne({
-        //     where: { id: room.id },
-        //     relations: {
-        //         members: { user: true }
-        //     }
-        // });
-        // return currentRoom.members;
         const members = await this.memberRepository
             .createQueryBuilder('member')
             .leftJoinAndSelect("member.user", "user")
@@ -432,5 +431,4 @@ export class ChatService {
             await this.memberRepository.save(member);
         }
     }
-
 }
