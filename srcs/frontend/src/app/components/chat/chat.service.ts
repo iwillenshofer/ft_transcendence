@@ -41,10 +41,6 @@ export class ChatService {
     this.isSocketActive = false;
   }
 
-  connectChatSocket() {
-    this.socket.connect();
-  }
-
   sendMessage(message: string, room: RoomInterface) {
     this.socket.emit('add_message', { message: message, room: room });
   }
