@@ -282,7 +282,7 @@ export class ChatService {
         });
 
         let nonBlockedUsers: number[] = [];
-        (await await this.UsersService.getAllUsers()).forEach(user => {
+        (await this.UsersService.getAllUsers()).forEach(user => {
             if (!blockedUsers.includes(user.id) && !blockerUsers.includes(user.id))
                 nonBlockedUsers.push(user.id);
         });
@@ -296,6 +296,7 @@ export class ChatService {
             query.andWhere("user.id IN (:...users)", { users: nonBlockedUsers })
         }
         const users = await query.getMany();
+        console.log(users);
         return users;
     }
 

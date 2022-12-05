@@ -131,6 +131,7 @@ export class ChatService {
   }
 
   getUserList(filter: string): Observable<any> {
+    console.log("here")
     if (filter.length >= 3)
       return this.http.get('/backend/chat/searchusers/' + filter, { withCredentials: true });
     return of([]);

@@ -1,8 +1,8 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatRadioChange } from '@angular/material/radio';
-import { debounceTime, finalize, switchMap, tap } from 'rxjs';
+import { debounceTime, finalize, Subscription, switchMap, tap } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { ChatService } from '../../chat/chat.service';
 import { MemberInterface, MemberRole } from 'src/app/model/member.interface';
@@ -10,6 +10,7 @@ import { RoomType } from 'src/app/model/room.interface';
 import { RoomService } from 'src/app/services/room/room.service';
 import { isRoomNameTaken } from 'src/app/validators/async-room-name.validator';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
 
 @Component({
@@ -17,7 +18,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './dialog-room-setting.component.html',
   styleUrls: ['./dialog-room-setting.component.scss']
 })
-export class DialogRoomSettingComponent {
+export class DialogRoomSettingComponent implements OnInit, OnDestroy {
 
   hide = true;
   filteredUsers!: any;
@@ -27,6 +28,11 @@ export class DialogRoomSettingComponent {
   members: MemberInterface[] = [];
 
   myMember!: MemberInterface;
+
+  disabled = true;
+
+  subscription1$!: Subscription;
+  subscription2$!: Subscription;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -51,17 +57,17 @@ export class DialogRoomSettingComponent {
     if (this.data.room.type != RoomType.Protected) {
       this.form.controls['password'].disable();
     }
-    if (this.myMember.role != MemberRole.Owner) {
+    if (this.myMember?.role != MemberRole.Owner) {
       this.form.controls['password'].disable();
     }
 
-    this.authService.getLogoutStatus.subscribe((data) => {
+    this.subscription1$ = this.authService.getLogoutStatus.subscribe((data) => {
       if (data === true) {
         this.dialogRef.close();
       }
     });
 
-    this.searchUsersCtrl.valueChanges
+    this.subscription2$ = this.searchUsersCtrl.valueChanges
       .pipe(
         debounceTime(500),
         tap(() => {
@@ -90,7 +96,11 @@ export class DialogRoomSettingComponent {
         this.members.push(member);
       })
     })
+  };
 
+  ngOnDestroy(): void {
+    this.subscription1$.unsubscribe();
+    this.subscription2$.unsubscribe();
   }
 
   form: FormGroup = new FormGroup({
@@ -165,7 +175,15 @@ export class DialogRoomSettingComponent {
   }
 
   isOwner() {
-    return (this.myMember.role != MemberRole.Owner)
+    return (this.myMember?.role != MemberRole.Owner)
+  }
+
+  updateMySelection(event: MatAutocompleteSelectedEvent) {
+    this.disabled = false;
+  }
+
+  onInputChange() {
+    this.disabled = true;
   }
 
 }
