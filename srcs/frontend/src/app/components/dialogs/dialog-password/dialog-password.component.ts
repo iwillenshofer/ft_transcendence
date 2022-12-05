@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { RoomService } from 'src/app/services/room/room.service';
@@ -6,19 +6,22 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ChatService } from '../../chat/chat.service';
 import { AuthService } from 'src/app/auth/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-dialog-password',
   templateUrl: './dialog-password.component.html',
   styleUrls: ['./dialog-password.component.scss']
 })
-export class DialogPasswordComponent implements OnInit {
+export class DialogPasswordComponent implements OnInit, OnDestroy {
 
   invalidPassword = false;
 
   form: FormGroup = new FormGroup({
     password: new FormControl(null, [Validators.required])
   });
+
+  subscription1$!: Subscription;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -29,11 +32,14 @@ export class DialogPasswordComponent implements OnInit {
     private authService: AuthService) { }
 
   ngOnInit(): void {
-    this.authService.getLogoutStatus.subscribe((data) => {
-      if (data === true) {
+    this.subscription1$ = this.authService.getLogoutStatus.subscribe((data) => {
+      if (data === true)
         this.dialogRef.close();
-      }
-    })
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.subscription1$.unsubscribe();
   }
 
   get password(): FormControl {
@@ -56,5 +62,4 @@ export class DialogPasswordComponent implements OnInit {
       }
     })
   }
-
 }
