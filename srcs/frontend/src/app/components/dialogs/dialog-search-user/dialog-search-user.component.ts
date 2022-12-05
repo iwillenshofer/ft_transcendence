@@ -19,20 +19,24 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 })
 export class DialogSearchUserComponent implements OnInit, OnDestroy {
 
-  myUser$ = this.userService.getMyUser();
-  myUser!: UserInterface;
+  disabledChatButton = true;
 
-  users$ = this.chatService.getNonAddedUsers();
+  filteredUsers!: any;
+
+  isLoading = false;
 
   myRooms$ = this.chatService.getAllMyRooms();
   myRooms: RoomInterface[] = [];
+
+  myUser$ = this.userService.getMyUser();
+  myUser!: UserInterface;
+
+  searchUsersCtrl = new FormControl();
 
   subscription1$!: Subscription;
   subscription2$!: Subscription;
   subscription3$!: Subscription;
   subscription4$!: Subscription;
-
-  disabled = true;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -43,10 +47,6 @@ export class DialogSearchUserComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private dialogRef: MatDialogRef<DialogSearchUserComponent>,) {
   }
-
-  searchUsersCtrl = new FormControl();
-  filteredUsers!: any;
-  isLoading = false;
 
   async ngOnInit() {
     this.subscription1$ = this.authService.getLogoutStatus.subscribe((res) => {
@@ -97,11 +97,10 @@ export class DialogSearchUserComponent implements OnInit, OnDestroy {
   checkIfAlreadyExist() {
     let user = this.searchUsersCtrl.value;
     if (user) {
-
-      let room = this.myRooms.find(room => room.name == user.username || room.name2 == user.username)
-      if (room) {
+      let room = this.myRooms.find(room => room.name == user.username ||
+        room.name2 == user.username)
+      if (room)
         this.dialogRef.close({ data: room })
-      }
       else
         this.createPrivateChat();
     }
@@ -140,11 +139,11 @@ export class DialogSearchUserComponent implements OnInit, OnDestroy {
       return value.username;
   }
 
-  updateMySelection(event: MatAutocompleteSelectedEvent) {
-    this.disabled = false;
+  onInputChange() {
+    this.disabledChatButton = true;
   }
 
-  onInputChange() {
-    this.disabled = true;
+  updateMySelection(event: MatAutocompleteSelectedEvent) {
+    this.disabledChatButton = false;
   }
 }
