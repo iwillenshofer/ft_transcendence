@@ -5,7 +5,7 @@ import { MatRadioChange } from '@angular/material/radio';
 import { debounceTime, finalize, switchMap, tap } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { ChatService } from '../../chat/chat.service';
-import { MemberInterface } from 'src/app/model/member.interface';
+import { MemberInterface, MemberRole } from 'src/app/model/member.interface';
 import { RoomType } from 'src/app/model/room.interface';
 import { RoomService } from 'src/app/services/room/room.service';
 import { isRoomNameTaken } from 'src/app/validators/async-room-name.validator';
@@ -26,6 +26,8 @@ export class DialogRoomSettingComponent {
   members$ = this.chatService.getMembersOfRoom();
   members: MemberInterface[] = [];
 
+  myMember!: MemberInterface;
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private roomService: RoomService,
@@ -37,11 +39,19 @@ export class DialogRoomSettingComponent {
   }
 
   ngOnInit(): void {
+    this.chatService.getMyMemberOfRoom(this.data.room.id).subscribe((member: MemberInterface) => {
+      this.myMember = member;
+    });
+
     this.chatService.requestMemberOfRoom(this.data.room.id);
+
     if (this.data.room.type == RoomType.Direct) {
       this.form.controls['searchUsersCtrl'].disable();
     }
     if (this.data.room.type != RoomType.Protected) {
+      this.form.controls['password'].disable();
+    }
+    if (this.myMember.role != MemberRole.Owner) {
       this.form.controls['password'].disable();
     }
 
@@ -152,6 +162,10 @@ export class DialogRoomSettingComponent {
 
   isPrivateRoom() {
     return (this.data.room.type == RoomType.Private);
+  }
+
+  isOwner() {
+    return (this.myMember.role != MemberRole.Owner)
   }
 
 }

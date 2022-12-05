@@ -72,10 +72,10 @@
             <label>Password: </label>
             <mat-radio-group formControlName="radioPassword">
                 <mat-radio-button value="on" [checked]="isProtected()" (change)="radioButtonChange($event)"
-                    [disabled]="isPrivateRoom()">Activate
+                    [disabled]="isPrivateRoom() || isOwner()">Activate
                 </mat-radio-button>
                 <mat-radio-button value="off" [checked]="!isProtected()" (change)="radioButtonChange($event)"
-                    [disabled]="isPrivateRoom()">Deactivate
+                    [disabled]="isPrivateRoom() || isOwner()">Deactivate
                 </mat-radio-button>
             </mat-radio-group>
 
