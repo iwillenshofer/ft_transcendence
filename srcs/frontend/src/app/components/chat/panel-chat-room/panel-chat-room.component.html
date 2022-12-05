@@ -5,8 +5,8 @@
         </fa-icon>
     </a>
     <a>
-        <fa-icon *ngIf="!isBlocked && !isBlocker" title=" Challenge {{selectedMember.user.username}}"
-            class="iconsMember" [icon]="faPaddle" (click)="challenge(selectedMember.user.username)" routerLink="/pong">
+        <fa-icon title=" Challenge {{selectedMember.user.username}}" class="iconsMember" [icon]="faPaddle"
+            (click)="challenge(selectedMember.user.username)" routerLink="/pong">
         </fa-icon>
     </a>
     <a>
