@@ -33,12 +33,12 @@
 </div>
 <div *ngIf="((amIOwner || amIAdmin) && !isOwner)">
     <button mat-button disabled color="warn">Mute</button>
-    <button mat-button color="warn" (click)="setMute('10mn')">10min</button>
+    <button mat-button color="warn" (click)="setMute('5mn')">5min</button>
     <button mat-button color="warn" (click)="setMute('1h')">1h</button>
     <button mat-button color="warn" (click)="setMute('24h')">24h</button>
     <br>
     <button mat-button disabled color="warn">Ban</button>
-    <button mat-button color="warn" (click)="setBan('10mn')">10min</button>
+    <button mat-button color="warn" (click)="setBan('5mn')">5min</button>
     <button mat-button color="warn" (click)="setBan('1h')">1h</button>
     <button mat-button color="warn" (click)="setBan('24h')">24h</button>
 </div>

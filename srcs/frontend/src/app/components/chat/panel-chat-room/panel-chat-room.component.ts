@@ -141,8 +141,8 @@ export class PanelChatRoomComponent implements OnInit, OnChanges {
   setMute(duration: string) {
     let muteTime = new Date();
     if (this.selectedMember.id) {
-      if (duration == "10mn") {
-        muteTime.setMinutes(muteTime.getMinutes() + 10);
+      if (duration == "5mn") {
+        muteTime.setMinutes(muteTime.getMinutes() + 5);
         this.chatService.setMute(this.selectedMember.id, this.chatRoom.id, muteTime);
       }
       else if (duration == "1h") {
@@ -159,8 +159,8 @@ export class PanelChatRoomComponent implements OnInit, OnChanges {
   setBan(duration: string) {
     let banTime = new Date();
     if (this.selectedMember.id) {
-      if (duration == "10mn") {
-        banTime.setMinutes(banTime.getMinutes() + 10);
+      if (duration == "5mn") {
+        banTime.setMinutes(banTime.getMinutes() + 5);
         this.chatService.setBan(this.selectedMember.id, this.chatRoom.id, banTime);
       }
       else if (duration == "1h") {
