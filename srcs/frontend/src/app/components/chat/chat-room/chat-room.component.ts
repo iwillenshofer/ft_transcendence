@@ -44,7 +44,6 @@ export class ChatRoomComponent implements OnInit, OnChanges {
   myMember!: MemberInterface;
 
   selectedMember!: MemberInterface | null;
-  // selectedMemberNulled: MemberInterface = { id: -1, role: MemberRole.Owner, user: this.myUser }
 
   isBlocked = false;
   isBlocker = false;
@@ -80,6 +79,7 @@ export class ChatRoomComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
+    this.chatService.requestMemberOfRoom(this.chatRoom?.id);
     this.chatService.emitGetBlockedUsers();
     this.chatService.emitGetBlockerUsers();
 
@@ -97,9 +97,12 @@ export class ChatRoomComponent implements OnInit, OnChanges {
 
     this.members$.subscribe(members => {
       this.members.splice(0);
+      let unselect = true;
       members.forEach(member => {
-        if (this.selectedMember?.id == member.id)
+        if (this.selectedMember?.id == member.id) {
+          unselect = false;
           this.selectedMember = member;
+        }
         if (this.myMember.id == member.id) {
           this.myMember = member;
         }
@@ -108,6 +111,8 @@ export class ChatRoomComponent implements OnInit, OnChanges {
             this.members.push(member);
         }
       });
+      if (unselect)
+        this.selectedMember = null;
     });
 
     this.chatService.getMyMemberOfRoom(this.chatRoom?.id).subscribe((member: MemberInterface) => {
@@ -120,8 +125,8 @@ export class ChatRoomComponent implements OnInit, OnChanges {
     if (this.chatRoom?.id)
       this.chatService.requestMessages(this.chatRoom?.id);
     this.ownerUsername = this.getOwner();
-    this.chatService.requestMemberOfRoom(this.chatRoom?.id ?? 0);
-    this.members = [];
+    this.chatService.requestMemberOfRoom(this.chatRoom?.id);
+    this.members.splice(0);
   }
 
   sendMessage() {
