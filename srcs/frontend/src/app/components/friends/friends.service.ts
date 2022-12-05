@@ -29,7 +29,9 @@ export class FriendsService {
     this.achievements = new BehaviorSubject<any[]>([]);
     this.stats = new BehaviorSubject<StatsDTO | null>(null);
 	this.gameStats = new BehaviorSubject<GameStatsDTO>({matches: 0, logins: 0, users: 0});
-  }
+	this.friendBlocked = new BehaviorSubject<boolean>(false);
+
+}
 
   public selectedUser: BehaviorSubject<string | undefined | null>;
   public history: any[] = [];
@@ -44,7 +46,7 @@ export class FriendsService {
   public stats: BehaviorSubject<StatsDTO | null>;
   public rankingList: BehaviorSubject<any[]>;
   public gameStats: BehaviorSubject<GameStatsDTO>;
-
+  public friendBlocked: BehaviorSubject<boolean>;
 
 
   ngOnInit(): void {}
@@ -72,8 +74,21 @@ export class FriendsService {
   getAchievements(): Observable<any> {
     return this.http.get('/backend/stats/achievements/' + this.selectedUser.value, { withCredentials: true });
   }
+
   getUserInfo(): Observable<any> {
     return this.http.get('/backend/stats/userinfo/' + this.selectedUser.value, { withCredentials: true });
+  }
+
+  getFriendBlocked(): Observable<boolean> {
+    return this.http.get<boolean>('/backend/friends/isblocked/' + this.selectedUser.value, { withCredentials: true });
+  }
+  
+  setFriendBlocked(): Observable<boolean> {
+    return this.http.post<boolean>('/backend/friends/block/' + this.selectedUser.value, { withCredentials: true });
+  }
+
+  setFriendUnblocked(): Observable<boolean> {
+    return this.http.post<boolean>('/backend/friends/unblock/' + this.selectedUser.value, { withCredentials: true });
   }
 
   getStatus(username: string) {
@@ -160,6 +175,22 @@ export class FriendsService {
     });
   }
 
+  async blockUser() {
+    this.setFriendBlocked().subscribe((res) => {
+      if (res) { this.alertService.success("User blocked"); }
+      else { this.alertService.warning("user could not be blocked"); }
+      this.update();
+    });
+  }
+
+  async unblockUser() {
+    this.setFriendUnblocked().subscribe((res) => {
+      if (res) { this.alertService.success("User unblocked"); }
+      else { this.alertService.warning("user could not be unblocked"); }
+      this.update();
+    });
+  }
+
   async update() {
 
     await this.updateFriendsList();
@@ -168,12 +199,19 @@ export class FriendsService {
     if (this.selectedUser.value) {
       await this.updateUserStats();
       await this.updateFriendshipStatus();
+	  await this.updateFriendBlocked();
       if (this.selectedUser.value == this.authService.userSubject.value?.username)
 	  {
         await this.updateRanking();
 	    await this.updateGameStats();  
 	  }
     }
+  }
+
+  async updateFriendBlocked() {
+    this.getFriendBlocked().subscribe((res: boolean) => {
+      this.friendBlocked.next(res);
+    })
   }
 
   async updateGameStats() {

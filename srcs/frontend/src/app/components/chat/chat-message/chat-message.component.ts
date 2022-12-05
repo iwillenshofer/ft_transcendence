@@ -3,7 +3,7 @@ import { UserService } from 'src/app/services/user.service';
 import { ChatService } from '../chat.service';
 import { MessageInterface } from '../models/message.interface';
 import { faTableTennisPaddleBall, faAddressCard } from '@fortawesome/free-solid-svg-icons';
-import { OnlineGameService } from '../../game/online-game.service';
+import { OnlineGameService } from '../../game/game.service';
 import { FriendsService } from '../../friends/friends.service';
 import { User } from 'src/app/auth/user.model';
 import { UserInterface } from 'src/app/model/user.interface';
@@ -64,27 +64,6 @@ export class ChatMessageComponent implements OnInit {
       return true;
     }
     return false;
-  }
-
-  onMouseEnter() {
-    this.onHover = true;
-    setTimeout(() => {
-      if (this.isOnHoverIcon == true)
-        this.onMouseEnter();
-      else
-        this.onMouseOut();
-    },
-      15000);
-  }
-
-  onMouseEnterIcons() {
-    this.isOnHoverIcon = true;
-    this.onHover = true;
-  }
-
-  onMouseOut() {
-    this.onHover = false;
-    this.isOnHoverIcon = false;
   }
 
   challenge() {

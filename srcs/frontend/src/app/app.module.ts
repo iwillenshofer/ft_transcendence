@@ -56,6 +56,8 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { DialogRoomSettingComponent } from './components/dialogs/dialog-room-setting/dialog-room-setting.component';
 import { PanelChatRoomComponent } from './components/chat/panel-chat-room/panel-chat-room.component';
 import { ThumbnailComponent } from './components/friends/thumbnail/thumbnail.component';
+import { FloatingballsComponent } from './components/login/floatingballs/floatingballs.component';
+import { FourohfourComponent } from './components/login/fourohfour/fourohfour.component';
 
 
 @NgModule({
@@ -89,6 +91,8 @@ import { ThumbnailComponent } from './components/friends/thumbnail/thumbnail.com
     GameRankingComponent,
     DialogRoomSettingComponent,
     ThumbnailComponent,
+    FloatingballsComponent,
+    FourohfourComponent,
     PanelChatRoomComponent
   ],
   imports: [

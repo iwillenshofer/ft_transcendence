@@ -4,8 +4,8 @@ img {
 	border: 3px solid;
 	border-color: yellow;
 	padding: 2px;
-	cursor: pointer;
 }
+
 
 .size-small {
 	height: 40px;
@@ -31,16 +31,73 @@ img {
 
 .online {
 	border-color: lightgreen;
+	color: lightgreen;
 }
 
 .ingame {
 	border-color: var(--bs-info);
+	color: var(--bs-info);
 }
 
 .watching {
 	border-color: rgb(255, 153, 0);
+	color: rgb(255, 153, 0);
 }
 
 .offline {
 	border-color: rgb(79, 79, 79);
+	color: rgb(79, 79, 79);
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.ng-fa-icon {
+	padding-left: 3px;
+	color: darkgray;
+	display: inline-block;
+}
+
+button {
+	vertical-align: middle;
+}
+
+.btn {
+	padding-left: 2px;
+}
+
+.nobutton {
+	border: 0px !important;
+	cursor:auto;
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
+.dropdown-top {
+	display: block;
+	width: 100%;
+	text-align: right;
+}
+.dropdown-status {
+	font-style: italic;
+	margin-right: 10px;
+	font-weight: bold;
+
+}
+
+a {
+	cursor: pointer;
+}
+
+.name {
+	text-transform: uppercase;
+	font-style: italic;
+	color: darkgray;
+	font-size: 12px;
+	margin-left: 5px;
+}
+
+.dropdown-light {
+	background-color: rgb(230, 230, 230);
 }

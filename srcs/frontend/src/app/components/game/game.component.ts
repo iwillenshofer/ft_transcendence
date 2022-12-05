@@ -1,5 +1,5 @@
-import { OnlineGameService } from './online-game.service';
-import { Component, OnChanges, OnInit } from '@angular/core';
+import { OnlineGameService } from './game.service';
+import { Component, OnInit } from '@angular/core';
 import io from "socket.io-client";
 import { AuthService } from 'src/app/auth/auth.service';
 import { AlertsService } from 'src/app/alerts/alerts.service';
@@ -29,6 +29,7 @@ export class GameComponent implements OnInit {
   }
 
   public async ngOnInit() {
+    this.socket = io("/game");
     if (this.gameService.challenged) {
       this.cmenu = true;
       this.challenged = this.gameService.challenged;
@@ -41,6 +42,9 @@ export class GameComponent implements OnInit {
         this.startGame('friend')
         this.alert.clear()
       }
+    }
+    if (this.gameService.p1Username) {
+      this.specGame(this.gameService.p1Username)
     }
   }
 
@@ -56,7 +60,6 @@ export class GameComponent implements OnInit {
   toggleLiveGames() {
     this.showLiveGames = true;
     this.liveGames = undefined;
-    this.socket = io("/game");
     this.socket.emit("liveGames");
     this.socket.on("games", (games: any) => {
       if (games.length > 0)
@@ -72,6 +75,21 @@ export class GameComponent implements OnInit {
     this.menu = false;
     this.mode = 'spec';
     this.toWatch = player1;
+  }
+
+  specGame(username: string) {
+    this.socket.emit("liveGames");
+    this.socket.on("games", (games: any[]) => {
+      if (games) {
+        for (let index = 0; index < games.length; index++) {
+          console.log(games[index].player1.username, games[index].player2.username, username)
+          if (games[index].player1.username == username || games[index].player2.username == username) {
+            console.log("ntr")
+            this.watchGame(games[index].player1.socket)
+          }
+        }
+      }
+    });
   }
 
   quit(event: boolean) {

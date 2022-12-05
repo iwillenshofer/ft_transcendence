@@ -8,7 +8,7 @@
 			<div class="number"><p class="nb{{ i + 1 }}">{{ i + 1 }}</p></div>
 			<div class="ordinal "><p class="nb{{ i + 1 }}">{{ this.getOrdinal(i+1) }}</p></div>
 		</div>
-		<div class="col-3">
+		<div class="col-3 min-margin align-items-left">
 			<app-thumbnail [username]="item.username" size="small" [avatar]="item.avatar_url"></app-thumbnail>
 		</div>
 		<div class="col-5 align-middle">

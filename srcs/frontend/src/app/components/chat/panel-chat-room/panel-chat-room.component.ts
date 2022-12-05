@@ -14,9 +14,9 @@ import { DialogRoomSettingComponent } from '../../dialogs/dialog-room-setting/di
 import { MatSelectionListChange } from '@angular/material/list';
 import { faStar as fasStar, faTableTennisPaddleBall, faAddressCard, faLock, faUnlock } from '@fortawesome/free-solid-svg-icons';
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
-import { OnlineGameService } from '../../game/online-game.service';
 import { FriendsService } from '../../friends/friends.service';
 import { ChatService } from '../chat.service';
+import { OnlineGameService } from '../../game/game.service';
 
 @Component({
   selector: 'app-panel-chat-room',

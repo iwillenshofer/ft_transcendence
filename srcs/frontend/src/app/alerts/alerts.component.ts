@@ -1,4 +1,4 @@
-import { OnlineGameService } from './../components/game/online-game.service';
+import { OnlineGameService } from '../components/game/game.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Component, Input, OnInit } from '@angular/core';
 import { AlertModel } from './alerts.model';
@@ -26,40 +26,47 @@ export class AlertsComponent implements OnInit {
   alerts: AlertModel[] = [];
 
   ngOnInit(): void {
+    this.socket = io("/game");
+    this.socket.connect()
+    // const io = require('socket.io-client');
+    // this.socket = io.connect('http://website.com');
     this.alertsService.getAlerts().subscribe(messages => {
       this.alerts = messages;
     });
-	if (this.router.url === '/login') {return ;};
-    this.socket = io("/game");
+    if (this.router.url === '/login') { return; };
     let username: any;
     this.auth.getUser().then(data => {
       username = data.username;
-    });
-    this.socket.on("notifyChallenge", (challenger: any, challenged: any, powerUps: any) => {
-      if (challenged == username) {
-        this.alertsService.challenge(challenger,
-          {
-            accept_click: () => {
-              this.router.navigateByUrl('/friends', { skipLocationChange: true }).then(() => {
-                this.gameService.challenge(username);
-                this.gameService.togglePowerUps(powerUps);
-                this.router.navigate(['/pong']);
-              });
-            },
-            deny_click: () => {
-              this.alertsService.cancelChallenge(challenger);
-              this.socket.emit("cancelChallenge", challenger, username, true)
+      console.log('user', this.socket, username)
+      this.socket.on("notifyChallenge", (challenger: any, challenged: any, powerUps: any) => {
+        console.log('notify', username, challenged)
+        if (challenged == username) {
+          this.alertsService.challenge(challenger,
+            {
+              accept_click: () => {
+                this.router.navigateByUrl('/friends', { skipLocationChange: true }).then(() => {
+                  this.gameService.challenge(username);
+                  this.gameService.togglePowerUps(powerUps);
+                  this.router.navigate(['/pong']);
+                });
+              },
+              deny_click: () => {
+                this.alertsService.cancelChallenge(challenger);
+                this.socket.emit("cancelChallenge", challenger, username, true)
+              }
             }
-          }
-        );
-      }
-      this.socket.off('notifyChallenge', this.socket);
-    });
-    this.socket.on("removeChallenge", (challenger: any, challenged: any) => {
-      if (challenged == username) {
-        this.alertsService.cancelChallenge(challenger);
-      }
-    });
+          );
+        }
+        this.socket.off('notifyChallenge', this.socket);
+      });
+      this.socket.on("removeChallenge", (challenger: any, challenged: any) => {
+        if (challenged == username) {
+          this.alertsService.cancelChallenge(challenger);
+        }
+      });
+    })
+
+
   }
 
   onClosed(dismissedAlert: any): void {

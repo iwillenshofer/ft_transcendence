@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AuthService } from 'src/app/auth/auth.service';
 import { FriendsService } from '../friends.service';
 
 @Component({
@@ -8,6 +9,8 @@ import { FriendsService } from '../friends.service';
 })
 export class FriendProfileComponent {
 
-	constructor(protected friendsService: FriendsService) { }
+	constructor(
+		protected friendsService: FriendsService,
+		protected authService: AuthService) { }
 
 }

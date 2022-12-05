@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { IconDefinition, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { FriendsService } from '../friends.service';
-import { OnlineGameService } from '../../game/online-game.service';
+import { OnlineGameService } from '../../game/game.service';
 import { UsersOnlineService } from 'src/app/services/users-online.service';
 import io from "socket.io-client";
 
@@ -15,7 +15,9 @@ import io from "socket.io-client";
 })
 export class FriendsListComponent implements OnInit {
 
-  constructor(protected friendsService: FriendsService, protected gameService: OnlineGameService, protected router: Router, 
+  constructor(protected friendsService: FriendsService,
+	protected gameService: OnlineGameService,
+	protected router: Router, 
 	protected onlineService: UsersOnlineService
 	) { }
   searchIcon: IconDefinition = faMagnifyingGlass;
