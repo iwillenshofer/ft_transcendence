@@ -12,7 +12,6 @@ import { isRoomNameTaken } from 'src/app/validators/async-room-name.validator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
-
 @Component({
   selector: 'app-dialog-room-setting',
   templateUrl: './dialog-room-setting.component.html',
@@ -20,8 +19,19 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 })
 export class DialogRoomSettingComponent implements OnInit, OnDestroy {
 
-  hide = true;
+  disabledAddButton = true;
+
   filteredUsers!: any;
+
+  form: FormGroup = new FormGroup({
+    name: new FormControl(null, [Validators.minLength(3), Validators.maxLength(20), Validators.pattern('^[a-z-A-Z-0-9]+$'),], [isRoomNameTaken(this.roomService)]),
+    description: new FormControl(null, [Validators.maxLength(50)]),
+    password: new FormControl(null, [Validators.required, Validators.minLength(8)]),
+    searchUsersCtrl: new FormControl(null),
+    radioPassword: new FormControl(null)
+  });
+
+  hide = true;
   isLoading = false;
 
   members$ = this.chatService.getMembersOfRoom();
@@ -29,10 +39,9 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
 
   myMember!: MemberInterface;
 
-  disabled = true;
-
   subscription1$!: Subscription;
   subscription2$!: Subscription;
+  subscription3$!: Subscription;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -41,33 +50,28 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
     private chatService: ChatService,
     private snackBar: MatSnackBar,
     private dialogRef: MatDialogRef<DialogRoomSettingComponent>) {
-
   }
 
   ngOnInit(): void {
-    this.chatService.getMyMemberOfRoom(this.data.room.id).subscribe((member: MemberInterface) => {
+    this.subscription1$ = this.chatService.getMyMemberOfRoom(this.data.room.id).subscribe((member: MemberInterface) => {
       this.myMember = member;
     });
 
     this.chatService.requestMemberOfRoom(this.data.room.id);
 
-    if (this.data.room.type == RoomType.Direct) {
+    if (this.data.room.type == RoomType.Direct)
       this.form.controls['searchUsersCtrl'].disable();
-    }
-    if (this.data.room.type != RoomType.Protected) {
+    if (this.data.room.type != RoomType.Protected)
       this.form.controls['password'].disable();
-    }
-    if (this.myMember?.role != MemberRole.Owner) {
+    if (this.myMember?.role != MemberRole.Owner)
       this.form.controls['password'].disable();
-    }
 
-    this.subscription1$ = this.authService.getLogoutStatus.subscribe((data) => {
-      if (data === true) {
+    this.subscription2$ = this.authService.getLogoutStatus.subscribe((data) => {
+      if (data === true)
         this.dialogRef.close();
-      }
     });
 
-    this.subscription2$ = this.searchUsersCtrl.valueChanges
+    this.subscription3$ = this.searchUsersCtrl.valueChanges
       .pipe(
         debounceTime(500),
         tap(() => {
@@ -95,57 +99,29 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
       members.forEach(member => {
         this.members.push(member);
       })
-    })
+    });
   };
 
   ngOnDestroy(): void {
     this.subscription1$.unsubscribe();
     this.subscription2$.unsubscribe();
-  }
-
-  form: FormGroup = new FormGroup({
-    name: new FormControl(null, [Validators.minLength(3), Validators.maxLength(20), Validators.pattern('^[a-z-A-Z-0-9]+$'),], [isRoomNameTaken(this.roomService)]),
-    description: new FormControl(null, [Validators.maxLength(50)]),
-    password: new FormControl(null, [Validators.required, Validators.minLength(8)]),
-    searchUsersCtrl: new FormControl(null),
-    radioPassword: new FormControl(null)
-  });
-
-  get name(): FormControl {
-    return this.form.get('name') as FormControl;
+    this.subscription3$.unsubscribe();
   }
 
   get description(): FormControl {
     return this.form.get('description') as FormControl;
   }
 
-  get searchUsersCtrl(): FormControl {
-    return this.form.get('searchUsersCtrl') as FormControl;
+  get name(): FormControl {
+    return this.form.get('name') as FormControl;
   }
 
   get password(): FormControl {
     return this.form.get('password') as FormControl;
   }
 
-  SubmitChanges() {
-    if (this.form.valid) {
-      this.roomService.changeSettingsRoom(this.data.room.id, this.form.getRawValue());
-    }
-    this.dialogRef.close({ data: this.form.getRawValue() });
-  }
-
-  isProtected() {
-    return this.data.room.type == RoomType.Protected;
-  }
-
-  radioButtonChange(data: MatRadioChange) {
-    if (data.value == "on") {
-      this.form.controls['password'].enable();
-    }
-    else {
-      this.form.controls['password'].disable();
-      this.form.controls['password'].reset();
-    }
+  get searchUsersCtrl(): FormControl {
+    return this.form.get('searchUsersCtrl') as FormControl;
   }
 
   checkIfAlreadyAdded() {
@@ -174,16 +150,36 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
     return (this.data.room.type == RoomType.Private);
   }
 
+  isProtected() {
+    return this.data.room.type == RoomType.Protected;
+  }
+
+  onInputChange() {
+    this.disabledAddButton = true;
+  }
+
   isOwner() {
     return (this.myMember?.role != MemberRole.Owner)
   }
 
+  radioButtonChange(data: MatRadioChange) {
+    if (data.value == "on") {
+      this.form.controls['password'].enable();
+    }
+    else {
+      this.form.controls['password'].disable();
+      this.form.controls['password'].reset();
+    }
+  }
+
+  submitChanges() {
+    if (this.form.valid) {
+      this.roomService.changeSettingsRoom(this.data.room.id, this.form.getRawValue());
+    }
+    this.dialogRef.close({ data: this.form.getRawValue() });
+  }
+
   updateMySelection(event: MatAutocompleteSelectedEvent) {
-    this.disabled = false;
+    this.disabledAddButton = false;
   }
-
-  onInputChange() {
-    this.disabled = true;
-  }
-
 }
