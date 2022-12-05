@@ -1,5 +1,4 @@
-import { HttpService } from '@nestjs/axios';
-import { Body, Controller, Get, Param, Post, Request, Response, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Request, Response, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Observable, of } from 'rxjs';
@@ -84,9 +83,12 @@ export class UsersController {
     }
 
     @Get('image/:imgpath')
-    seeUploadedFile(@Param('imgpath') image, @Response() res) {
-        // console.log("HERE")
-        return res.sendFile(image, { root: './uploads/profileimages/' });
+    async seeUploadedFile(@Param('imgpath') image, @Response() res) {
+        const fs = require('fs');
+        if (fs.existsSync('./uploads/profileimages/' + image))
+            return await res.sendFile(image, { root: './uploads/profileimages/' });
+        else
+            res.status(404).redirect('/fourohfour');
     }
 
     @UseGuards(JwtGuard)
