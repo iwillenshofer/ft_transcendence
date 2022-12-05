@@ -10,12 +10,8 @@ import { ChatSocket } from './chat-socket';
 import { Router } from '@angular/router';
 import { AlertsService } from 'src/app/alerts/alerts.service';
 import { BehaviorSubject, firstValueFrom, Observable, of, Subject } from 'rxjs';
-import { Socket } from 'ngx-socket-io';
-import { map } from 'rxjs/operators';
-import { getSupportedInputTypes } from '@angular/cdk/platform';
 import { MemberInterface } from '../../model/member.interface';
 import { UsersOnlineService } from 'src/app/services/users-online.service';
-
 
 @Injectable()
 export class ChatService {
@@ -25,26 +21,24 @@ export class ChatService {
   constructor(
     private socket: ChatSocket,
     private snackBar: MatSnackBar,
-    private alert: AlertsService,
     private router: Router,
-    private http: HttpClient,
-    private usersOnlineServices: UsersOnlineService) {
+    private http: HttpClient) {
     this.connectedUsers = new BehaviorSubject<any[]>([]);
   }
 
-  isSocket = false;
+  isSocketActive = false;
 
   connect() {
     this.socket.on("double_login", () => {
       this.router.navigate(['doublelogin']);
     });
     this.socket.connect();
-    this.isSocket = true;
+    this.isSocketActive = true;
   }
 
   disconnect() {
     this.socket.disconnect();
-    this.isSocket = false;
+    this.isSocketActive = false;
   }
 
   connectChatSocket() {
@@ -131,7 +125,6 @@ export class ChatService {
   }
 
   getUserList(filter: string): Observable<any> {
-    console.log("here")
     if (filter.length >= 3)
       return this.http.get('/backend/chat/searchusers/' + filter, { withCredentials: true });
     return of([]);
@@ -200,5 +193,4 @@ export class ChatService {
   setBan(memberId: number, roomId: number, banTime: Date) {
     this.socket.emit('set_ban', { memberId: memberId, roomId: roomId, banTime: banTime });
   }
-
 }

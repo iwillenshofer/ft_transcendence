@@ -38,7 +38,7 @@ export class NavbarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (!this.chatService.isSocket) {
+    if (!this.chatService.isSocketActive) {
       this.chatService.connect();
     }
   }
