@@ -29,10 +29,7 @@ export class ChatMessageComponent implements OnInit {
   }
 
   isMyUser() {
-    if (this.message.member.user.username &&
-      this.message.member.user.username === this.myUser.username) {
-      return true;
-    }
-    return false;
+    return (this.message.member.user.username &&
+      this.message.member.user.username == this.myUser.username);
   }
 }
