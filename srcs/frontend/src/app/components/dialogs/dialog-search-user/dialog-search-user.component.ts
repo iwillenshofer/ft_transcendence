@@ -134,16 +134,15 @@ export class DialogSearchUserComponent implements OnInit, OnDestroy {
     this.dialogRef.close();
   }
 
-  getUsername(value: any) {
-    if (value)
-      return value.username;
+  getUsername(value: any): string {
+    return (value.username);
   }
 
   onInputChange() {
     this.disabledChatButton = true;
   }
 
-  updateMySelection(event: MatAutocompleteSelectedEvent) {
+  updateMySelection() {
     this.disabledChatButton = false;
   }
 }
