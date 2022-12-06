@@ -22,6 +22,7 @@ import { SetAdminDto } from './dto/setAdmin.dto';
 import { MuteMemberDto } from './dto/muteMember.dto';
 import { Logger } from '@nestjs/common';
 import { BanMemberDto } from './dto/banMember.dto';
+import { RoomType } from './models/typeRoom.model';
 
 @WebSocketGateway({ cors: '*:*', namespace: 'chat', transports: ['websocket', 'polling'] })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -41,6 +42,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.server.to(item.socketId).emit('double_login');
       this.server.in(item.socketId).disconnectSockets();
     }
+  }
+
+  async emitRooms(user_id: number, socket_id: string, page: PageInterface = { page: 1, limit: 3 } ) {
+	page = this.onPrePaginate(page);
+    this.server.to(socket_id).emit('rooms_direct', 
+		await this.chatService.getRoomsOfMember(user_id, page, RoomType.Direct));
+    this.server.to(socket_id).emit('rooms_nondirect', 
+		await this.chatService.getRoomsOfMember(user_id, page,  RoomType.Public));
+    this.server.to(socket_id).emit('rooms',
+		await this.chatService.getRoomsOfMember(user_id, page));
   }
 
   @UseGuards(TfaGuard)
@@ -68,10 +79,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       Logger.warn("emmiting users_online");
       this.server.to(user.socketId).emit('users_online', usersOnline);
     });
-
-    const rooms = await this.chatService.getRoomsOfMember(user.id, { page: 1, limit: 3 });
+	await this.emitRooms(user.id, socket.id);
     const allUsers = await this.UsersService.getAllUsers();
-    this.server.to(socket.id).emit('rooms', rooms);
     this.server.to(socket.id).emit('all_users', allUsers);
   }
 
@@ -106,11 +115,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const member = await this.chatService.createMember(owner.toEntity(), socket.id, MemberRole.Owner);
 
       await this.chatService.createRoom(room.toEntity(), [member]);
-      const rooms = await this.chatService.getRoomsOfMember(+socket.handshake.headers.userid, { page: 1, limit: 3 });
+	  await this.emitRooms(+socket.handshake.headers.userid, socket.id);
+
       const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 3 });
-
-      this.server.to(socket.id).emit('rooms', rooms);
-
       const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
       connectedUsers.forEach(user => {
         this.server.to(user.socketId).emit('publicRooms', publicRooms);
@@ -131,19 +138,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const invitedMember = await this.chatService.createMember(invited.toEntity(), socketId_invited, MemberRole.Member);
 
     await this.chatService.createRoom(room.toEntity(), [ownerMember, invitedMember]);
-
-    const roomOwner = await this.chatService.getRoomsOfMember(owner.id, { page: 1, limit: 3 });
-    const roomInvited = await this.chatService.getRoomsOfMember(invited.id, { page: 1, limit: 3 });
-
-    this.server.to(ownerMember.socketId).emit('rooms', roomOwner);
-    this.server.to(invitedMember.socketId).emit('rooms', roomInvited);
+	await this.emitRooms(owner.id, ownerMember.socketId);
+	await this.emitRooms(invited.id, invitedMember.socketId);
   }
 
   @SubscribeMessage('paginate_rooms')
   async paginateRoom(socket: Socket, page: PageInterface) {
-    const members = await this.chatService.getMembersByUserId(+socket.handshake.headers.userid);
-    const rooms = await this.chatService.getRoomsOfMember(+socket.handshake.headers.userid, this.onPrePaginate(page));
-    return this.server.to(socket.id).emit('rooms', rooms);
+	await this.emitRooms(+socket.handshake.headers.userid, socket.id, page);
   }
 
   @SubscribeMessage('paginate_public_and_protected_rooms')
@@ -162,11 +163,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       await this.chatService.addMemberToRoom(room, member);
     }
     else
+	{
       await this.chatService.rejoinMemberToRoom(member);
-    const rooms = await this.chatService.getRoomsOfMember(user.id, { page: 1, limit: 3 });
-    this.server.to(socket.id).emit('rooms', rooms);
-
-    const members = await this.chatService.getMembersByRoom(room);
+	  await this.emitRooms(user.id, socket.id);
+	}
+	const members = await this.chatService.getMembersByRoom(room);
     for (const member of members) {
       this.server.to(member.socketId).emit('members_room', members);
     }
@@ -179,8 +180,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const member = await this.chatService.createMember(user.toEntity(), connected_user.socketId, MemberRole.Member);
     const room = await this.chatService.getRoomById(joinRoomDto.roomId);
     await this.chatService.addMemberToRoom(room, member);
-    const rooms = await this.chatService.getRoomsOfMember(user.id, { page: 1, limit: 3 });
-    this.server.to(socket.id).emit('rooms', rooms);
+	await this.emitRooms(user.id, socket.id);
   }
 
   @SubscribeMessage('leave_room')
@@ -195,9 +195,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
 
     if (await this.chatService.removeMemberFromRoom(room, member) == "delete_room") {
-      let rooms = await this.chatService.getRoomsOfMember(+socket.handshake.headers.userid, { page: 1, limit: 3 });
-      this.server.to(socket.id).emit('rooms', rooms);
-
+	  await this.emitRooms(+socket.handshake.headers.userid, socket.id);
       const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 3 });
       const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
       const allPublicRooms = await this.chatService.getAllPublicRooms();
@@ -207,9 +205,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       });
     }
     else {
-      let rooms = await this.chatService.getRoomsOfMember(+socket.handshake.headers.userid, { page: 1, limit: 3 });
-      this.server.to(socket.id).emit('rooms', rooms);
-
+      await this.emitRooms(+socket.handshake.headers.userid, socket.id);
       const members = await this.chatService.getMembersByRoom(room);
       for (const member of members) {
         this.server.to(member.socketId).emit('members_room', members);
@@ -416,8 +412,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     for (const member of members) {
       this.server.to(member.socketId).emit('members_room', members);
     }
-    const rooms = await this.chatService.getRoomsOfMember(member.user.id, { page: 1, limit: 3 });
-    this.server.to(member.socketId).emit('rooms', rooms);
+	await this.emitRooms(member.user.id, member.socketId);
 
     const all_rooms = await this.chatService.getAllMyRooms(+member.user.id);
     this.server.to(member.socketId).emit('all_my_rooms', all_rooms);
