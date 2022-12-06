@@ -11,7 +11,7 @@
                             <mat-selection-list #list [multiple]="false" (selectionChange)="onSelectRoom($event)">
                                 <mat-list-option *ngFor="let room of (myRooms$ | async)?.items" [value]="room">
                                     <div
-                                        *ngIf="isConversation(room) && room.name == this.myUser.username; else elseBlock">
+                                        *ngIf="isConversation(room) && room.name == this.myUser?.username; else elseBlock">
                                         {{room.name2}}
                                     </div>
                                     <ng-template #elseBlock>{{room.name}}</ng-template>

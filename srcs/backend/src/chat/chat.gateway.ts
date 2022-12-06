@@ -200,8 +200,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 3 });
       const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
+      const allPublicRooms = await this.chatService.getAllPublicRooms();
       connectedUsers.forEach(user => {
         this.server.to(user.socketId).emit('publicRooms', publicRooms);
+        this.server.to(user.socketId).emit('all_public_rooms', allPublicRooms);
       });
     }
     else {

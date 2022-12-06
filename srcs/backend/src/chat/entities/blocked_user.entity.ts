@@ -13,7 +13,7 @@ export class BlockedUserEntity {
     @Column()
     blockedUserId: number;
 
-	@CreateDateColumn()
+    @CreateDateColumn()
     created_at: Date;
 
     @UpdateDateColumn()

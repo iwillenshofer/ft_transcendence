@@ -90,7 +90,7 @@ export class ChatRoomComponent implements OnInit, OnChanges, OnDestroy {
           unselect = false;
           this.selectedMember = member;
         }
-        if (this.myMember.id == member.id) {
+        if (this.myMember?.id == member?.id) {
           this.myMember = member;
         }
         if (member.user.id != this.myUser.id) {

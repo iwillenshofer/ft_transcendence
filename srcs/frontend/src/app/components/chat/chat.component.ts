@@ -70,13 +70,15 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.subscription2$ = this.allMyRooms$.subscribe(rooms => {
       this.allMyRooms = rooms;
-      if (!rooms.find(room => room.id == this.selectedRoom.id)) {
+      if (!rooms.find(room => room.id == this.selectedRoom.id))
         this.selectedRoom = this.selectedRoomNulled;
-      }
     });
 
     this.subscription3$ = this.allPublicRooms$.subscribe(rooms => {
       this.allPublicRooms = rooms;
+      console.log("there")
+      if (!rooms.find(room => room.id == this.selectedPublicRoom.id))
+        this.selectedPublicRoom = this.selectedRoomNulled;
     });
   }
 
@@ -84,7 +86,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.subscription1$.unsubscribe();
     this.subscription2$.unsubscribe();
     this.subscription3$.unsubscribe();
-
   }
 
   onSelectRoom(event: MatSelectionListChange) {
@@ -175,9 +176,11 @@ export class ChatComponent implements OnInit, OnDestroy {
   async onSearchUser() {
     const dialogRef = this.dialog.open(DialogSearchUserComponent);
 
-    const subscription$ = dialogRef.afterClosed().subscribe(ret => {
+    dialogRef.afterClosed().subscribe(ret => {
       let selectedRoom: RoomInterface | undefined;
-      if (selectedRoom = this.allMyRooms.find(room => room.id == ret.data.id || room.name == ret.data.name))
+      if (ret.data)
+        selectedRoom = this.allMyRooms.find(room => room.id == ret.data.id || room.name == ret.data.name)
+      if (selectedRoom)
         this.selectedRoom = selectedRoom;
     });
     this.roomsAvailable.deselectAll();
