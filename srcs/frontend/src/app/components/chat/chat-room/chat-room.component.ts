@@ -32,12 +32,6 @@ export class ChatRoomComponent implements OnInit, OnChanges {
   @ViewChild('messagesScroller')
   private messagesScroller!: ElementRef;
 
-  blockedUsers$ = this.chatService.getBlockedUsers();
-  blockedUsers: Number[] = [];
-
-  blockerUsers$ = this.chatService.getBlockerUsers();
-  blockerUsers: Number[] = [];
-
   chatMessage: FormControl = new FormControl(null, [Validators.required]);
 
   faGears = faGears;
@@ -53,20 +47,22 @@ export class ChatRoomComponent implements OnInit, OnChanges {
 
   selectedMember!: MemberInterface | null;
 
-  isBlocked = false;
-  isBlocker = false;
-
-  messagesPaginate$: Observable<MessagePaginateInterface> = combineLatest([this.chatService.getMessages(), this.chatService.getAddedMessage().pipe(startWith(null))]).pipe(
-    map(([messagePaginate, message]) => {
-      if (message && message.room.id === this.chatRoom?.id && !messagePaginate.items.some(m => m.id === message.id)) {
-        messagePaginate.items.push(message);
-      }
-      const items = messagePaginate.items.sort((a, b) => new Date(a.created_at ?? 0).getTime() - new Date(b.created_at ?? 0).getTime());
-      messagePaginate.items = items;
-      return messagePaginate;
-    }),
-    tap(() => this.scrollToBottom())
-  );
+  messagesPaginate$: Observable<MessagePaginateInterface> =
+    combineLatest([this.chatService.getMessages(), this.chatService.getAddedMessage()
+      .pipe(startWith(null))])
+      .pipe(
+        map(([messagePaginate, message]) => {
+          if (message && message.room.id === this.chatRoom?.id &&
+            !messagePaginate.items.some(m => m.id === message.id)) {
+            messagePaginate.items.push(message);
+          }
+          const items = messagePaginate.items
+            .sort((a, b) => new Date(a.created_at ?? 0).getTime() - new Date(b.created_at ?? 0).getTime());
+          messagePaginate.items = items;
+          return messagePaginate;
+        }),
+        tap(() => this.scrollToBottom())
+      );
 
   constructor(private chatService: ChatService,
     private gameService: OnlineGameService,
@@ -80,20 +76,8 @@ export class ChatRoomComponent implements OnInit, OnChanges {
     this.chatService.emitGetBlockedUsers();
     this.chatService.emitGetBlockerUsers();
 
-    this.chatService.getMyMemberOfRoom(this.chatRoom?.id).subscribe((member: MemberInterface) => {
+    this.chatService.getMyMemberOfRoom(this.chatRoom?.id).subscribe(member => {
       this.myMember = member;
-    });
-
-    this.blockedUsers$.subscribe(blockedUsers => {
-      blockedUsers.forEach(user => {
-        this.blockedUsers.push(user);
-      });
-    });
-
-    this.blockerUsers$.subscribe(blockerUsers => {
-      blockerUsers.forEach(user => {
-        this.blockerUsers.push(user);
-      });
     });
 
     this.members$.subscribe(members => {
@@ -140,47 +124,39 @@ export class ChatRoomComponent implements OnInit, OnChanges {
     }
   }
 
-  isConversation(room: RoomInterface) {
-    return room.type == RoomType.Direct;
+  isConversation(room: RoomInterface): boolean {
+    return (room.type == RoomType.Direct);
   }
 
-  isOwner(member: MemberInterface) {
-    if (member && member.role == MemberRole.Owner)
-      return (true);
-    return (false);
+  isOwner(member: MemberInterface): boolean {
+    return (member && member.role == MemberRole.Owner);
   }
 
-  isAdmin(member: MemberInterface) {
-    if (member && member.role == MemberRole.Administrator)
-      return (true);
-    return (false);
+  isAdmin(member: MemberInterface): boolean {
+    return (member && member.role == MemberRole.Administrator);
   }
 
   scrollToBottom(): void {
-    this.messagesScroller.nativeElement.scrollTop = this.messagesScroller.nativeElement.scrollHeight;
+    this.messagesScroller.nativeElement.scrollTop =
+      this.messagesScroller.nativeElement.scrollHeight;
   }
 
-  canOpenRoomSetting(member: MemberInterface) {
-    if ((this.isOwner(member) || this.isAdmin(member)) &&
-      !this.isConversation(this.chatRoom)) {
-      return (true);
-    }
-    return (false);
+  canOpenRoomSetting(member: MemberInterface): boolean {
+    return ((this.isOwner(member) || this.isAdmin(member)) &&
+      !this.isConversation(this.chatRoom));
   }
 
-  isRoomNulled() {
-    return this.chatRoom.id == -1 || this.chatRoom.name == '__NULLED__';
+  isRoomNulled(): boolean {
+    return (this.chatRoom.id == -1 || this.chatRoom.name == '__NULLED__');
   }
 
-  onChangeTitleAndDesc() {
+  onOpenRoomSetting() {
     const dialogRef = this.dialog.open(DialogRoomSettingComponent, {
       data: { room: this.chatRoom }
     });
   }
 
   onMemberChange(event: MatSelectionListChange) {
-    this.isBlocked = this.isBlockedUser(event.source.selectedOptions.selected[0].value.user.id);
-    this.isBlocker = this.isBlockerUser(event.source.selectedOptions.selected[0].value.user.id);
     this.selectedMember = event.source.selectedOptions.selected[0].value;
   }
 
@@ -194,20 +170,10 @@ export class ChatRoomComponent implements OnInit, OnChanges {
 
   blockUser(userId: number) {
     this.chatService.blockUser(userId);
-    this.isBlocked = true;
   }
 
   unblockUser(userId: number) {
     this.chatService.unblockUser(userId);
-    this.isBlocked = false;
-  }
-
-  isBlockedUser(userId: number): boolean {
-    return (this.blockedUsers.includes(userId));
-  }
-
-  isBlockerUser(userId: number): boolean {
-    return (this.blockerUsers.includes(userId));
   }
 
   setAsAdmin(member: MemberInterface) {

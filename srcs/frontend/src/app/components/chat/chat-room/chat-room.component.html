@@ -19,13 +19,12 @@
                             </h2>
                             <h3>
                                 <ul class="navbar-nav flex-direction" style="cursor: pointer;">
-                                    <li *ngIf="canOpenRoomSetting(myMember)" (click)="onChangeTitleAndDesc()">
+                                    <li *ngIf="canOpenRoomSetting(myMember)" (click)="onOpenRoomSetting()">
                                         <fa-icon title="{{chatRoom.name}} settings" [icon]="faGears"></fa-icon>
                                     </li>
                                 </ul>
                                 {{chatRoom.description}}
                             </h3>
-
                         </ng-template>
                     </span>
                 </div>
@@ -45,7 +44,7 @@
                 <div style="display: flex; align-items: center;">
                     <mat-form-field style="width: 100%; margin-right: 10px;">
                         <input matInput [formControl]="chatMessage" type="text" autoComplete='off'
-                            (keydown.enter)="sendMessage()" (disabled)="isBlockerUser(this.myUser.id)">
+                            (keydown.enter)="sendMessage()">
                     </mat-form-field>
                     <button mat-icon-button [disabled]="!chatMessage.valid" (click)="sendMessage()">
                         <span style="display: flex; flex-direction: row; align-items: center;">
