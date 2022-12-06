@@ -126,7 +126,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   async onJoinRoom(selectedPublicRoom: RoomInterface | null) {
 
     if (selectedPublicRoom != null) {
-      if (this.allMyRooms.includes(selectedPublicRoom)) {
+      if (this.allMyRooms.find(room => room.id == selectedPublicRoom.id)) {
         this.selectedRoom = this.selectedPublicRoom;
         this.alertService.info("You are already a member of this chat room.");
         return;
