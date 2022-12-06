@@ -1,6 +1,6 @@
 import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { combineLatest, map, Observable, startWith, tap } from 'rxjs';
+import { combineLatest, map, Observable, startWith, Subscription, tap } from 'rxjs';
 import { MessagePaginateInterface } from 'src/app/model/message.interface';
 import { RoomInterface, RoomType } from 'src/app/model/room.interface';
 import { MemberRole } from 'src/app/model/member.interface';
@@ -21,7 +21,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './chat-room.component.html',
   styleUrls: ['./chat-room.component.scss']
 })
-export class ChatRoomComponent implements OnInit, OnChanges {
+export class ChatRoomComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input()
   chatRoom!: RoomInterface;
@@ -46,6 +46,9 @@ export class ChatRoomComponent implements OnInit, OnChanges {
   myMember!: MemberInterface;
 
   selectedMember!: MemberInterface | null;
+
+  subscription1$!: Subscription;
+  subscription2$!: Subscription;
 
   messagesPaginate$: Observable<MessagePaginateInterface> =
     combineLatest([this.chatService.getMessages(), this.chatService.getAddedMessage()
@@ -76,11 +79,11 @@ export class ChatRoomComponent implements OnInit, OnChanges {
     this.chatService.emitGetBlockedUsers();
     this.chatService.emitGetBlockerUsers();
 
-    this.chatService.getMyMemberOfRoom(this.chatRoom?.id).subscribe(member => {
+    this.subscription1$ = this.chatService.getMyMemberOfRoom(this.chatRoom?.id).subscribe(member => {
       this.myMember = member;
     });
 
-    this.members$.subscribe(members => {
+    this.subscription2$ = this.members$.subscribe(members => {
       this.members.splice(0);
       let unselect = true;
       members.forEach(member => {
@@ -101,6 +104,11 @@ export class ChatRoomComponent implements OnInit, OnChanges {
       if (unselect)
         this.selectedMember = null;
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscription1$.unsubscribe();
+    this.subscription2$.unsubscribe();
   }
 
   ngOnChanges(): void {
