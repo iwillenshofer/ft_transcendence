@@ -22,6 +22,7 @@ export class DialogPasswordComponent implements OnInit, OnDestroy {
   });
 
   subscription1$!: Subscription;
+  subscription2$!: Subscription;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -33,33 +34,36 @@ export class DialogPasswordComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscription1$ = this.authService.getLogoutStatus.subscribe((data) => {
-      if (data === true)
+      if (data == true)
         this.dialogRef.close();
     });
   }
 
   ngOnDestroy(): void {
     this.subscription1$.unsubscribe();
+    this.subscription2$.unsubscribe();
   }
 
   get password(): FormControl {
-    return this.form.get('password') as FormControl;
+    return (this.form.get('password') as FormControl);
   }
 
   async verifyPassword() {
-    this.roomService.verifyPassword(this.data.room, this.form.getRawValue().password).subscribe((event: any) => {
-      if (event == false) {
-        this.snackBar.open('You have entered an incorrect password. Please try again.', 'Close', {
-          duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
-        });
-      }
-      else {
-        this.chatService.joinRoom(this.data.room);
-        this.snackBar.open('You have successfully joined the chat room.', 'Close', {
-          duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
-        });
-        this.dialogRef.close();
-      }
-    })
+    this.subscription2$ = this.roomService
+      .verifyPassword(this.data.room, this.form.getRawValue().password)
+      .subscribe((event: any) => {
+        if (event == false) {
+          this.snackBar.open('You have entered an incorrect password. Please try again.', 'Close', {
+            duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
+          });
+        }
+        else {
+          this.chatService.joinRoom(this.data.room);
+          this.snackBar.open('You have successfully joined the chat room.', 'Close', {
+            duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
+          });
+          this.dialogRef.close();
+        }
+      });
   }
 }
