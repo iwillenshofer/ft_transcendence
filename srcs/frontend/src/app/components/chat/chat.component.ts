@@ -132,7 +132,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         return;
       }
       if (this.isBanned(selectedPublicRoom)) {
-        this.alertService.info("You are banned from this chat room.");
+        this.alertService.warning("You are banned from this chat room.");
         this.roomsAvailable.deselectAll();
         this.nulledSelectedRoom();
         return;

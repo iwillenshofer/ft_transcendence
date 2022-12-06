@@ -163,7 +163,7 @@ export class ChatService {
             }
             else {
                 let members = room.members.filter((obj) => obj.isMember == true && obj.id != member.id && obj.role != MemberRole.Owner);
-                if (members) {
+                if (members.length > 0) {
                     members[0].role = MemberRole.Owner;
                     await this.memberRepository.save(members[0]);
                 }
@@ -176,6 +176,7 @@ export class ChatService {
             }
         }
 
+        member.role = MemberRole.Member;
         member.isMember = false;
         await this.memberRepository.save(member);
         return ("");
