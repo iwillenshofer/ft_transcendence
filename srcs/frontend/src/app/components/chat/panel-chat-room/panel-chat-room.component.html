@@ -14,8 +14,8 @@
             class="iconsMember" [icon]="faLock" (click)="blockUser(selectedMember.user.id)">
         </fa-icon>
         <ng-template #blocked_user>
-            <fa-icon title="Unblock {{selectedMember.user.username}}" class="iconsMember" [icon]="faUnlock"
-                (click)="unblockUser(selectedMember.user.id)">
+            <fa-icon title="Unblock {{selectedMember.user.username}}" class="iconsMember" style="color: grey;"
+                [icon]="faUnlock" (click)="unblockUser(selectedMember.user.id)">
             </fa-icon>
         </ng-template>
     </a>

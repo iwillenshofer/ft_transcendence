@@ -53,9 +53,10 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.subscription1$ = this.chatService.getMyMemberOfRoom(this.data.room.id).subscribe((member: MemberInterface) => {
-      this.myMember = member;
-    });
+    this.subscription1$ = this.chatService.getMyMemberOfRoom(this.data.room.id)
+      .subscribe((member: MemberInterface) => {
+        this.myMember = member;
+      });
 
     this.chatService.requestMemberOfRoom(this.data.room.id);
 
@@ -141,25 +142,24 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
     }
   }
 
-  getUsername(value: any) {
-    if (value)
-      return value.username;
+  getUsername(value: any): string {
+    return (value.username);
   }
 
-  isPrivateRoom() {
+  isPrivateRoom(): boolean {
     return (this.data.room.type == RoomType.Private);
   }
 
-  isProtected() {
-    return this.data.room.type == RoomType.Protected;
+  isProtected(): boolean {
+    return (this.data.room.type == RoomType.Protected);
   }
 
   onInputChange() {
     this.disabledAddButton = true;
   }
 
-  isOwner() {
-    return (this.myMember?.role != MemberRole.Owner)
+  isOwner(): boolean {
+    return (this.myMember?.role != MemberRole.Owner);
   }
 
   radioButtonChange(data: MatRadioChange) {
@@ -179,7 +179,7 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
     this.dialogRef.close({ data: this.form.getRawValue() });
   }
 
-  updateMySelection(event: MatAutocompleteSelectedEvent) {
+  updateMySelection() {
     this.disabledAddButton = false;
   }
 }

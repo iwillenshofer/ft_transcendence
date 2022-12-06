@@ -34,7 +34,7 @@
                 <input matInput placeholder="Search" aria-label="State" [matAutocomplete]="auto"
                     [formControl]="searchUsersCtrl" (input)="onInputChange()">
                 <mat-autocomplete #auto="matAutocomplete" [displayWith]="getUsername"
-                    (optionSelected)='updateMySelection($event.option.value)'>
+                    (optionSelected)='updateMySelection()'>
                     <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
                     <ng-container *ngIf="!isLoading">
                         <mat-option *ngFor="let user of filteredUsers" [value]="user">
