@@ -59,7 +59,7 @@
             <div class="col">
 
                 <mat-selection-list #list [multiple]="false" (selectionChange)="onMemberChange($event)">
-                    <mat-list-option *ngFor="let member of members" [value]="member">
+                    <mat-list-option *ngFor="let member of members$ | async" [value]="member">
                         <img src=" backend/{{ member.user.avatar_url }}" class="avatar rounded-circle">
                         <fa-icon class="faOwner" *ngIf="isOwner(member)" [icon]="fasStar"></fa-icon>
                         <fa-icon class="faAdmin" *ngIf="isAdmin(member)" [icon]="farStar"></fa-icon>

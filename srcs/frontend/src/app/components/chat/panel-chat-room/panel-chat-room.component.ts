@@ -100,6 +100,10 @@ export class PanelChatRoomComponent implements OnInit, OnChanges, OnDestroy {
     return (false);
   }
 
+  isMyMember() {
+    return (this.myMember == this.selectedMember);
+  }
+
   profile(username: string) {
     this.friendService.loadUser(username);
   }
