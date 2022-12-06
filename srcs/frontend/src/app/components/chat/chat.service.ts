@@ -8,22 +8,17 @@ import { MessagePaginateInterface } from '../../model/message.interface';
 import { MessageInterface } from './models/message.interface';
 import { ChatSocket } from './chat-socket';
 import { Router } from '@angular/router';
-import { AlertsService } from 'src/app/alerts/alerts.service';
-import { BehaviorSubject, firstValueFrom, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { MemberInterface } from '../../model/member.interface';
-import { UsersOnlineService } from 'src/app/services/users-online.service';
 
 @Injectable()
 export class ChatService {
-
-  public connectedUsers: BehaviorSubject<any[]>;
 
   constructor(
     private socket: ChatSocket,
     private snackBar: MatSnackBar,
     private router: Router,
     private http: HttpClient) {
-    this.connectedUsers = new BehaviorSubject<any[]>([]);
   }
 
   isSocketActive = false;

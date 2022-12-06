@@ -79,11 +79,6 @@ export class ChatRoomComponent implements OnInit, OnChanges, OnDestroy {
     this.chatService.emitGetBlockedUsers();
     this.chatService.emitGetBlockerUsers();
 
-    this.subscription1$ = this.chatService.getMyMemberOfRoom(this.chatRoom?.id)
-      .subscribe(member => {
-        this.myMember = member;
-      });
-
     this.subscription2$ = this.members$.subscribe(members => {
       this.members.splice(0);
       let unselect = true;
@@ -118,6 +113,13 @@ export class ChatRoomComponent implements OnInit, OnChanges, OnDestroy {
       this.chatService.requestMessages(this.chatRoom?.id);
     this.chatService.requestMemberOfRoom(this.chatRoom?.id);
     this.members.splice(0);
+
+    this.chatMessage.setValue("");
+
+    this.subscription1$ = this.chatService.getMyMemberOfRoom(this.chatRoom?.id)
+      .subscribe(member => {
+        this.myMember = member;
+      });
   }
 
   sendMessage() {
