@@ -370,6 +370,7 @@ export class ChatService {
             .where('user.id = :userId', { userId })
             .andWhere('member.isMember = :isMember', { isMember: true })
             .getMany();
+        console.log(rooms);
         return (rooms);
     }
 

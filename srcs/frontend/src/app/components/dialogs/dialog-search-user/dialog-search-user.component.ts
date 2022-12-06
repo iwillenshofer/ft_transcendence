@@ -50,6 +50,8 @@ export class DialogSearchUserComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
+
+    this.chatService.emitGetAllMyRooms();
     this.subscription1$ = this.authService.getLogoutStatus.subscribe((res) => {
       if (res == true)
         this.dialogRef.close();
@@ -132,7 +134,7 @@ export class DialogSearchUserComponent implements OnInit, OnDestroy {
   }
 
   getUsername(value: any): string {
-    return (value.username);
+    return (value?.username);
   }
 
   onInputChange() {

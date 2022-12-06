@@ -83,6 +83,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscription1$.unsubscribe();
     this.subscription2$.unsubscribe();
+    this.subscription3$.unsubscribe();
+
   }
 
   onSelectRoom(event: MatSelectionListChange) {
@@ -179,7 +181,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.selectedRoom = selectedRoom;
     });
     this.roomsAvailable.deselectAll();
-    subscription$.unsubscribe();
   }
 
   nulledSelectedRoom() {
