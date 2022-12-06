@@ -107,7 +107,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   openDialogNewRoom() {
     const dialogRef = this.dialog.open(DialogNewRoomComponent);
 
-    const subscription$ = dialogRef.afterClosed().subscribe(ret => {
+    dialogRef.afterClosed().subscribe(ret => {
+      this.chatService.emitGetAllMyRooms();
       this.allMyRooms$.subscribe(rooms => {
         let selectedRoom: RoomInterface | undefined;
         if (selectedRoom = rooms.find(room => room.name == ret.data.name)) {
@@ -116,7 +117,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         }
       });
     });
-    subscription$.unsubscribe();
   }
 
   openDialogPassword() {
@@ -129,6 +129,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   async onJoinRoom(selectedPublicRoom: RoomInterface | null) {
 
     if (selectedPublicRoom != null) {
+      console.log(this.allMyRooms);
       if (this.allMyRooms.find(room => room.id == selectedPublicRoom.id)) {
         this.selectedRoom = this.selectedPublicRoom;
         this.alertService.info("You are already a member of this chat room.");
@@ -147,6 +148,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.chatService.joinRoom(selectedPublicRoom);
         this.alertService.success("You have successfully joined the chat room.");
         this.allMyRooms.push(selectedPublicRoom);
+        console.log(this.allMyRooms);
       }
       this.nulledSelectedRoom();
     }
