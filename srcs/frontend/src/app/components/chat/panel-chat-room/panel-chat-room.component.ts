@@ -101,7 +101,7 @@ export class PanelChatRoomComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isMyMember() {
-    return (this.myMember == this.selectedMember);
+    return (this.myMember.id == this.selectedMember.id);
   }
 
   profile(username: string) {
