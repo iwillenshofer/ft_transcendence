@@ -44,13 +44,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  async emitRooms(user_id: number, socket_id: string) {
+  async emitRooms(user_id: number, socket_id: string, page: PageInterface = { page: 1, limit: 3 } ) {
+	page = this.onPrePaginate(page);
     this.server.to(socket_id).emit('rooms_direct', 
-		await this.chatService.getRoomsOfMember(user_id, { page: 1, limit: 3 }, RoomType.Direct));
+		await this.chatService.getRoomsOfMember(user_id, page, RoomType.Direct));
     this.server.to(socket_id).emit('rooms_nondirect', 
-		await this.chatService.getRoomsOfMember(user_id, { page: 1, limit: 3 },  RoomType.Public));
+		await this.chatService.getRoomsOfMember(user_id, page,  RoomType.Public));
     this.server.to(socket_id).emit('rooms',
-		await this.chatService.getRoomsOfMember(user_id, { page: 1, limit: 3 }));
+		await this.chatService.getRoomsOfMember(user_id, page));
   }
 
   @UseGuards(TfaGuard)
@@ -143,7 +144,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('paginate_rooms')
   async paginateRoom(socket: Socket, page: PageInterface) {
-	await this.emitRooms(+socket.handshake.headers.userid, socket.id);
+	await this.emitRooms(+socket.handshake.headers.userid, socket.id, page);
   }
 
   @SubscribeMessage('paginate_public_and_protected_rooms')

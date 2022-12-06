@@ -161,13 +161,13 @@ export class ChatService {
 			page: options.page,
 			paginationType: PaginationTypeEnum.TAKE_AND_SKIP,
 			metaTransformer: ({ currentPage, itemCount, itemsPerPage }) => {
-				const totalPages = Math.round(totalItems / itemsPerPage);
+				const totalPages = Math.ceil(totalItems / itemsPerPage);
 				return {
-				currentPage,
-				itemCount,
-				itemsPerPage,
-				totalItems,
-				totalPages: totalPages === 0 ? 1 : totalPages,
+					currentPage,
+					itemCount,
+					itemsPerPage,
+					totalItems,
+					totalPages: totalPages === 0 ? 1 : totalPages,
 				};
 			}
 		}
