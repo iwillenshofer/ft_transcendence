@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
+import { IPaginationOptions, paginate, Pagination, PaginationTypeEnum } from 'nestjs-typeorm-paginate';
 import { EncryptService } from 'src/services/encrypt.service';
 import { UserEntity } from 'src/users/users.entity';
 import { UsersService } from 'src/users/users.service';
@@ -134,18 +134,48 @@ export class ChatService {
         });
         return (room);
     }
+    
+    async getRoomsOfMember(userId: number, options: IPaginationOptions, roomType: RoomType | null = null): Promise<Pagination<RoomEntity>> {
+		const subquery = this.roomRepository
+			.createQueryBuilder('room')
+			.select("room.id", "room_id")
+			.leftJoin('room.members', 'member')
+			.leftJoin('member.user', 'user')
+			.where('user.id = :userId', { userId })
+			.andWhere('member.isMember = :isMember', { isMember: true })
+		if (roomType !== null && roomType === RoomType.Direct)
+			subquery.andWhere('room.type = :type1', { type1: RoomType.Direct })
+		else if (roomType !== null && roomType !== RoomType.Direct)
+			subquery.andWhere('room.type != :type2', { type2: RoomType.Direct })		
+		
+		const query = this.roomRepository
+			.createQueryBuilder('room')
+			.leftJoinAndSelect('room.members', 'member')
+			.leftJoinAndSelect('member.user', 'user')
+			.where('room.id IN (' + subquery.getQuery() + ')')
+			.setParameters(subquery.getParameters())
+		
+		const totalItems = await query.getCount();
+		let opt: IPaginationOptions = {
+			limit: options.limit,
+			page: options.page,
+			paginationType: PaginationTypeEnum.TAKE_AND_SKIP,
+			metaTransformer: ({ currentPage, itemCount, itemsPerPage }) => {
+				const totalPages = Math.ceil(totalItems / itemsPerPage);
+				return {
+					currentPage,
+					itemCount,
+					itemsPerPage,
+					totalItems,
+					totalPages: totalPages === 0 ? 1 : totalPages,
+				};
+			}
+		}
 
-    async getRoomsOfMember(userId: number, options: IPaginationOptions): Promise<Pagination<RoomEntity>> {
-        const query = this.roomRepository
-            .createQueryBuilder('room')
-            .leftJoin('room.members', 'member')
-            .leftJoin('member.user', 'user')
-            .where('user.id = :userId', { userId })
-            .andWhere('member.isMember = :isMember', { isMember: true })
-        let pages = await paginate(query, options);
-        pages.meta.currentPage -= 1;
-        return (pages);
-    }
+		let pages = await paginate(query, opt);
+			pages.meta.currentPage -= 1;
+				return (pages);
+		}
 
     async isRoomNameTaken(roomName: string) {
         let count = await this.roomRepository.countBy({ name: roomName });
