@@ -14,11 +14,12 @@
                             </ng-template>
                         </span>
                         <ng-template #group_conversation>
-                            <h2>{{chatRoom.name}}</h2>
-
+                            <h2>{{chatRoom.name}} <br>
+                                <h3>{{ownerName}}</h3>
+                            </h2>
                             <h3>
                                 <ul class="navbar-nav flex-direction" style="cursor: pointer;">
-                                    <li *ngIf="canModifiedNameAndDesc(myMember)" (click)="onChangeTitleAndDesc()">
+                                    <li *ngIf="canOpenRoomSetting(myMember)" (click)="onChangeTitleAndDesc()">
                                         <fa-icon title="{{chatRoom.name}} settings" [icon]="faGears"></fa-icon>
                                     </li>
                                 </ul>
@@ -56,7 +57,6 @@
         </div>
         <div class="row">
             <div class="col">
-
 
                 <mat-selection-list #list [multiple]="false" (selectionChange)="onMemberChange($event)">
                     <mat-list-option *ngFor="let member of members" [value]="member">

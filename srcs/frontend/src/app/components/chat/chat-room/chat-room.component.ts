@@ -1,24 +1,20 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { combineLatest, forkJoin, map, Observable, startWith, tap } from 'rxjs';
+import { combineLatest, map, Observable, startWith, tap } from 'rxjs';
 import { MessagePaginateInterface } from 'src/app/model/message.interface';
 import { RoomInterface, RoomType } from 'src/app/model/room.interface';
-import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-import { MessageInterface } from '../models/message.interface';
 import { MemberRole } from 'src/app/model/member.interface';
 import { UserInterface } from 'src/app/model/user.interface';
 import { MemberInterface } from '../models/member.interface';
-import { faGears } from '@fortawesome/free-solid-svg-icons';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogRoomSettingComponent } from '../../dialogs/dialog-room-setting/dialog-room-setting.component';
 import { MatSelectionListChange } from '@angular/material/list';
-import { faStar as fasStar, faTableTennisPaddleBall, faAddressCard, faLock, faUnlock } from '@fortawesome/free-solid-svg-icons';
+import { faStar as fasStar, faGears } from '@fortawesome/free-solid-svg-icons';
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
 import { OnlineGameService } from '../../game/game.service';
 import { FriendsService } from '../../friends/friends.service';
 import { ChatService } from '../chat.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-
 
 @Component({
   selector: 'app-chat-room',
@@ -36,9 +32,21 @@ export class ChatRoomComponent implements OnInit, OnChanges {
   @ViewChild('messagesScroller')
   private messagesScroller!: ElementRef;
 
-  selectedRoomNulled: RoomInterface = { id: 0, name: '', type: RoomType.Public }
+  blockedUsers$ = this.chatService.getBlockedUsers();
+  blockedUsers: Number[] = [];
+
+  blockerUsers$ = this.chatService.getBlockerUsers();
+  blockerUsers: Number[] = [];
+
+  chatMessage: FormControl = new FormControl(null, [Validators.required]);
+
   faGears = faGears;
-  ownerUsername!: string;
+  fasStar = fasStar;
+  farStar = farStar;
+
+  selectedRoomNulled: RoomInterface = { id: 0, name: '', type: RoomType.Public }
+
+  ownerName!: string;
   members$ = this.chatService.getMembersOfRoom();
   members: MemberInterface[] = [];
   myMember!: MemberInterface;
@@ -47,15 +55,6 @@ export class ChatRoomComponent implements OnInit, OnChanges {
 
   isBlocked = false;
   isBlocker = false;
-
-  blockedUsers$ = this.chatService.getBlockedUsers();
-  blockedUsers: Number[] = [];
-
-  blockerUsers$ = this.chatService.getBlockerUsers();
-  blockerUsers: Number[] = [];
-
-  fasStar = fasStar;
-  farStar = farStar;
 
   messagesPaginate$: Observable<MessagePaginateInterface> = combineLatest([this.chatService.getMessages(), this.chatService.getAddedMessage().pipe(startWith(null))]).pipe(
     map(([messagePaginate, message]) => {
@@ -69,8 +68,6 @@ export class ChatRoomComponent implements OnInit, OnChanges {
     tap(() => this.scrollToBottom())
   );
 
-  chatMessage: FormControl = new FormControl(null, [Validators.required]);
-
   constructor(private chatService: ChatService,
     private gameService: OnlineGameService,
     private friendService: FriendsService,
@@ -82,6 +79,10 @@ export class ChatRoomComponent implements OnInit, OnChanges {
     this.chatService.requestMemberOfRoom(this.chatRoom?.id);
     this.chatService.emitGetBlockedUsers();
     this.chatService.emitGetBlockerUsers();
+
+    this.chatService.getMyMemberOfRoom(this.chatRoom?.id).subscribe((member: MemberInterface) => {
+      this.myMember = member;
+    });
 
     this.blockedUsers$.subscribe(blockedUsers => {
       blockedUsers.forEach(user => {
@@ -99,6 +100,8 @@ export class ChatRoomComponent implements OnInit, OnChanges {
       this.members.splice(0);
       let unselect = true;
       members.forEach(member => {
+        if (member.role == MemberRole.Owner)
+          this.ownerName = member.user.username;
         if (this.selectedMember?.id == member.id) {
           unselect = false;
           this.selectedMember = member;
@@ -114,17 +117,12 @@ export class ChatRoomComponent implements OnInit, OnChanges {
       if (unselect)
         this.selectedMember = null;
     });
-
-    this.chatService.getMyMemberOfRoom(this.chatRoom?.id).subscribe((member: MemberInterface) => {
-      this.myMember = member;
-    });
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(): void {
     this.selectedMember = null;
     if (this.chatRoom?.id)
       this.chatService.requestMessages(this.chatRoom?.id);
-    this.ownerUsername = this.getOwner();
     this.chatService.requestMemberOfRoom(this.chatRoom?.id);
     this.members.splice(0);
   }
@@ -158,19 +156,13 @@ export class ChatRoomComponent implements OnInit, OnChanges {
     return (false);
   }
 
-  getOwner() {
-    let owner = this.chatRoom?.members?.find(user => user.role == MemberRole.Owner);
-    if (owner)
-      return (owner.user.username);
-    return ("");
-  }
-
   scrollToBottom(): void {
     this.messagesScroller.nativeElement.scrollTop = this.messagesScroller.nativeElement.scrollHeight;
   }
 
-  canModifiedNameAndDesc(member: MemberInterface) {
-    if ((this.isOwner(member) || this.isAdmin(member)) && !this.isConversation(this.chatRoom)) {
+  canOpenRoomSetting(member: MemberInterface) {
+    if ((this.isOwner(member) || this.isAdmin(member)) &&
+      !this.isConversation(this.chatRoom)) {
       return (true);
     }
     return (false);
@@ -226,7 +218,7 @@ export class ChatRoomComponent implements OnInit, OnChanges {
     this.chatService.unsetAdmin(member.user.id, this.chatRoom.id);
   }
 
-  displaySetAsAdmin(member: MemberInterface) {
+  displaySetAsAdmin(member: MemberInterface): boolean {
     if (this.myMember.role == MemberRole.Owner || this.myMember.role == MemberRole.Administrator) {
       if (member.role == MemberRole.Administrator || member.role == MemberRole.Owner)
         return (false);
