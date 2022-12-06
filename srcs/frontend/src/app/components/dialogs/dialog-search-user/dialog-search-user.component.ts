@@ -11,6 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserInterface } from 'src/app/model/user.interface';
 import { ChatService } from '../../chat/chat.service';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { AlertsService } from 'src/app/alerts/alerts.service';
 
 @Component({
   selector: 'app-dialog-search-user',
@@ -42,7 +43,7 @@ export class DialogSearchUserComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private userService: UserService,
     private roomService: RoomService,
-    private snackBar: MatSnackBar,
+    private alterService: AlertsService,
     protected chatService: ChatService,
     private authService: AuthService,
     private dialogRef: MatDialogRef<DialogSearchUserComponent>,) {
@@ -120,16 +121,12 @@ export class DialogSearchUserComponent implements OnInit, OnDestroy {
         type: RoomType.Direct
       };
       await this.roomService.createDirectRoom(room, user_id);
-      this.snackBar.open(`The chat room has been successfully created.`, 'Close', {
-        duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
-      });
+      this.alterService.success("The chat room has been successfully created");
       this.dialogRef.close({ data: room });
       return;
     }
     else {
-      this.snackBar.open(`An error occurs. Please try again later.`, 'Close', {
-        duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
-      });
+      this.alterService.warning("The chat room couldn't be created.");
     }
     this.dialogRef.close();
   }

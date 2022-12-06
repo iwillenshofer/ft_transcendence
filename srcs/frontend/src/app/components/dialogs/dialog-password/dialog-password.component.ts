@@ -7,6 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ChatService } from '../../chat/chat.service';
 import { AuthService } from 'src/app/auth/auth.service';
 import { Subscription } from 'rxjs';
+import { AlertsService } from 'src/app/alerts/alerts.service';
 
 @Component({
   selector: 'app-dialog-password',
@@ -28,7 +29,7 @@ export class DialogPasswordComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private dialogRef: MatDialogRef<DialogPasswordComponent>,
     private roomService: RoomService,
-    private snackBar: MatSnackBar,
+    private alertService: AlertsService,
     private chatService: ChatService,
     private authService: AuthService) { }
 
@@ -53,15 +54,11 @@ export class DialogPasswordComponent implements OnInit, OnDestroy {
       .verifyPassword(this.data.room, this.form.getRawValue().password)
       .subscribe((event: any) => {
         if (event == false) {
-          this.snackBar.open('You have entered an incorrect password. Please try again.', 'Close', {
-            duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
-          });
+          this.alertService.warning("The password is incorrect.")
         }
         else {
           this.chatService.joinRoom(this.data.room);
-          this.snackBar.open('You have successfully joined the chat room.', 'Close', {
-            duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
-          });
+          this.alertService.success("You have successfully joined the chat room.")
           this.dialogRef.close();
         }
       });

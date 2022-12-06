@@ -1,9 +1,8 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatSelectionList, MatSelectionListChange } from '@angular/material/list';
 import { PageEvent } from '@angular/material/paginator';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { RoomInterface, RoomPaginateInterface, RoomType } from 'src/app/model/room.interface';
+import { Subscription } from 'rxjs';
+import { RoomInterface, RoomType } from 'src/app/model/room.interface';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogNewRoomComponent } from '../dialogs/dialog-new-room/dialog-new-room.component';
 import { DialogPasswordComponent } from '../dialogs/dialog-password/dialog-password.component';
@@ -13,7 +12,7 @@ import { DialogSearchUserComponent } from '../dialogs/dialog-search-user/dialog-
 import { UserService } from 'src/app/services/user.service';
 import { UserInterface } from 'src/app/model/user.interface';
 import { ChatService } from './chat.service';
-import { MatSelect } from '@angular/material/select';
+import { AlertsService } from 'src/app/alerts/alerts.service';
 
 @Component({
   selector: 'app-chat',
@@ -21,7 +20,6 @@ import { MatSelect } from '@angular/material/select';
   styleUrls: ['./chat.component.scss']
 })
 export class ChatComponent implements OnInit, OnDestroy {
-
 
   @ViewChild('roomsAvailable')
   roomsAvailable!: MatSelectionList;
@@ -56,8 +54,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   constructor(
     private chatService: ChatService,
     public dialog: MatDialog,
-    private snackBar: MatSnackBar,
-    private userService: UserService) {
+    private userService: UserService,
+    private alertService: AlertsService) {
   }
 
   async ngOnInit() {
@@ -130,15 +128,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     if (selectedPublicRoom != null) {
       if (this.allMyRooms.includes(selectedPublicRoom)) {
         this.selectedRoom = this.selectedPublicRoom;
-        this.snackBar.open(`You are already a member of this chat room.`, 'Close', {
-          duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
-        });
+        this.alertService.info("You are already a member of this chat room.");
         return;
       }
       if (this.isBanned(selectedPublicRoom)) {
-        this.snackBar.open(`You are banned from this chat room.`, 'Close', {
-          duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
-        });
+        this.alertService.info("You are banned from this chat room.");
         this.roomsAvailable.deselectAll();
         this.nulledSelectedRoom();
         return;
@@ -148,9 +142,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       }
       else {
         this.chatService.joinRoom(selectedPublicRoom);
-        this.snackBar.open('You have successfully joined the chat room.', 'Close', {
-          duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
-        });
+        this.alertService.success("You have successfully joined the chat room.");
         this.allMyRooms.push(selectedPublicRoom);
       }
       this.nulledSelectedRoom();

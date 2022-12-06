@@ -15,6 +15,7 @@ import { OnlineGameService } from '../../game/game.service';
 import { FriendsService } from '../../friends/friends.service';
 import { ChatService } from '../chat.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AlertsService } from 'src/app/alerts/alerts.service';
 
 @Component({
   selector: 'app-chat-room',
@@ -71,7 +72,7 @@ export class ChatRoomComponent implements OnInit, OnChanges, OnDestroy {
     private gameService: OnlineGameService,
     private friendService: FriendsService,
     public dialog: MatDialog,
-    private snackBar: MatSnackBar,) {
+    private alertService: AlertsService,) {
   }
 
   ngOnInit(): void {
@@ -125,9 +126,7 @@ export class ChatRoomComponent implements OnInit, OnChanges, OnDestroy {
   sendMessage() {
     const now = new Date().toISOString();
     if (this.myMember.muteUntil && this.myMember.muteUntil?.toString() > now) {
-      this.snackBar.open('You are muted', 'Close', {
-        duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
-      });
+      this.alertService.info("You are muted");
     }
     else if (this.chatRoom) {
       this.chatService.sendMessage(this.chatMessage.value, this.chatRoom);

@@ -11,6 +11,7 @@ import { RoomService } from 'src/app/services/room/room.service';
 import { isRoomNameTaken } from 'src/app/validators/async-room-name.validator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { AlertsService } from 'src/app/alerts/alerts.service';
 
 @Component({
   selector: 'app-dialog-room-setting',
@@ -48,7 +49,7 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
     private roomService: RoomService,
     private authService: AuthService,
     private chatService: ChatService,
-    private snackBar: MatSnackBar,
+    private alertService: AlertsService,
     private dialogRef: MatDialogRef<DialogRoomSettingComponent>) {
   }
 
@@ -131,14 +132,10 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
       let member = this.members.find(member => member.user.username == user.username)
       if (!member) {
         this.chatService.addUserToRoom(this.data.room, user);
-        this.snackBar.open(user.username + ` has been successfully added to the chatroom.`, 'Close', {
-          duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
-        });
+        this.alertService.success(user.username + "has been successfully added to the chatroom.");
       }
       else
-        this.snackBar.open(user.username + ` is already a member of this chat room.`, 'Close', {
-          duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
-        });
+        this.alertService.info(user.username + "is already a member of this chat room.");
     }
   }
 
