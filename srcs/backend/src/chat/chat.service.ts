@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
+import { IPaginationOptions, paginate, Pagination, PaginationTypeEnum } from 'nestjs-typeorm-paginate';
 import { EncryptService } from 'src/services/encrypt.service';
 import { UserEntity } from 'src/users/users.entity';
 import { UsersService } from 'src/users/users.service';
@@ -154,10 +154,28 @@ export class ChatService {
 			.leftJoinAndSelect('member.user', 'user')
 			.where('room.id IN (' + subquery.getQuery() + ')')
 			.setParameters(subquery.getParameters())
-		let pages = await paginate(query, options);
-        pages.meta.currentPage -= 1;
-        return (pages);
-	}
+		
+		const totalItems = await query.getCount();
+		let opt: IPaginationOptions = {
+			limit: options.limit,
+			page: options.page,
+			paginationType: PaginationTypeEnum.TAKE_AND_SKIP,
+			metaTransformer: ({ currentPage, itemCount, itemsPerPage }) => {
+				const totalPages = Math.round(totalItems / itemsPerPage);
+				return {
+				currentPage,
+				itemCount,
+				itemsPerPage,
+				totalItems,
+				totalPages: totalPages === 0 ? 1 : totalPages,
+				};
+			}
+		}
+
+		let pages = await paginate(query, opt);
+			pages.meta.currentPage -= 1;
+				return (pages);
+		}
 
     async isRoomNameTaken(roomName: string) {
         let count = await this.roomRepository.countBy({ name: roomName });
