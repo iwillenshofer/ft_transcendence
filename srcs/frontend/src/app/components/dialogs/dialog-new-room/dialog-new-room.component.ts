@@ -17,7 +17,10 @@ export class DialogNewRoomComponent implements OnInit, OnDestroy {
   IsProtected: boolean = true;
 
   form: FormGroup = new FormGroup({
-    name: new FormControl(null, [Validators.required, Validators.minLength(3), Validators.maxLength(20), Validators.pattern('^[a-z-A-Z-0-9]+$'),], [isRoomNameTaken(this.roomService)]),
+    name: new FormControl(null,
+      [Validators.required, Validators.minLength(3),
+      Validators.maxLength(20), Validators.pattern('^[a-z-A-Z-0-9]+$')],
+      [isRoomNameTaken(this.roomService)]),
     description: new FormControl(null, [Validators.maxLength(50)]),
     type: new FormControl(null, [Validators.required]),
     password: new FormControl(null, [Validators.required, Validators.minLength(8)])
@@ -45,19 +48,19 @@ export class DialogNewRoomComponent implements OnInit, OnDestroy {
   }
 
   get description(): FormControl {
-    return this.form.get('description') as FormControl;
+    return (this.form.get('description') as FormControl);
   }
 
   get name(): FormControl {
-    return this.form.get('name') as FormControl;
+    return (this.form.get('name') as FormControl);
   }
 
   get password(): FormControl {
-    return this.form.get('password') as FormControl;
+    return (this.form.get('password') as FormControl);
   }
 
   get type(): FormControl {
-    return this.form.get('type') as FormControl;
+    return (this.form.get('type') as FormControl);
   }
 
   createChatroom() {
