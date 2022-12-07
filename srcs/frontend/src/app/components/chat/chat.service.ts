@@ -4,11 +4,10 @@ import { RoomInterface } from '../../model/room.interface';
 import { RoomPaginateInterface } from '../../model/room.interface';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
-import { MessagePaginateInterface } from '../../model/message.interface';
-import { MessageInterface } from './models/message.interface';
+import { MessageInterface, MessagePaginateInterface } from '../../model/message.interface';
 import { ChatSocket } from './chat-socket';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { MemberInterface } from '../../model/member.interface';
 
 @Injectable()

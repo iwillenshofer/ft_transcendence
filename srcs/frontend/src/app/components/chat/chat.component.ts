@@ -7,7 +7,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogNewRoomComponent } from '../dialogs/dialog-new-room/dialog-new-room.component';
 import { DialogPasswordComponent } from '../dialogs/dialog-password/dialog-password.component';
 import { faKey, faUserGroup, faUsers } from '@fortawesome/free-solid-svg-icons';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { DialogSearchUserComponent } from '../dialogs/dialog-search-user/dialog-search-user.component';
 import { UserService } from 'src/app/services/user.service';
 import { UserInterface } from 'src/app/model/user.interface';

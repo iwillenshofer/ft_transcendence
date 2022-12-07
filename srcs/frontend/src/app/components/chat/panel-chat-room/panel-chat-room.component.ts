@@ -1,9 +1,8 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { RoomInterface } from 'src/app/model/room.interface';
-import { MemberRole } from 'src/app/model/member.interface';
+import { MemberInterface, MemberRole } from 'src/app/model/member.interface';
 import { UserInterface } from 'src/app/model/user.interface';
-import { MemberInterface } from '../models/member.interface';
 import { MatDialog } from '@angular/material/dialog';
 import { faStar as fasStar, faTableTennisPaddleBall, faAddressCard, faLock, faUnlock } from '@fortawesome/free-solid-svg-icons';
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
