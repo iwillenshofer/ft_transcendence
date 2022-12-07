@@ -6,7 +6,7 @@ import { RoomInterface, RoomType } from 'src/app/model/room.interface';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogNewRoomComponent } from '../dialogs/dialog-new-room/dialog-new-room.component';
 import { DialogPasswordComponent } from '../dialogs/dialog-password/dialog-password.component';
-import { faKey, faUserGroup, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faKey, faUserGroup, faUsers, faComments } from '@fortawesome/free-solid-svg-icons';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DialogSearchUserComponent } from '../dialogs/dialog-search-user/dialog-search-user.component';
 import { UserService } from 'src/app/services/user.service';
@@ -24,10 +24,16 @@ export class ChatComponent implements OnInit, OnDestroy {
   @ViewChild('roomsAvailable')
   roomsAvailable!: MatSelectionList;
 
-  @ViewChild('list')
-  list!: MatSelectionList;
+  @ViewChild('listDirectRoom')
+  listDR!: MatSelectionList;
+
+  @ViewChild('listChatRoom')
+  listCR!: MatSelectionList;
 
   myRooms$ = this.chatService.getMyRoomsPaginate();
+  myDirectRooms$ = this.chatService.getMyDirectRoomsPaginate();
+  myChatRooms$ = this.chatService.getMyChatRoomsPaginate();
+
   publicRooms$ = this.chatService.getPublicRooms();
 
   allMyRooms$ = this.chatService.getAllMyRooms();
@@ -48,6 +54,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   selectedPublicRoom: RoomInterface = this.selectedRoomNulled;
 
   faKey = faKey;
+  faComments = faComments;
   faUserGroup = faUserGroup;
   faUsers = faUsers;
 
@@ -59,8 +66,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    this.chatService.emitPaginateRooms(3, 0);
-    this.chatService.emitPaginatePublicRooms(3, 0);
+    this.chatService.emitPaginateRooms(10, 0);
+    this.chatService.emitPaginatePublicRooms(10, 0);
     this.chatService.emitGetAllMyRooms();
     this.chatService.emitGetPublicRooms();
 
@@ -83,6 +90,14 @@ export class ChatComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscription1$.unsubscribe();
     this.subscription2$.unsubscribe();
+  }
+
+  selectRoom(room: RoomInterface) {
+    this.selectedRoom = room;
+  }
+
+  selectPublicRoom(room: RoomInterface) {
+    this.selectedPublicRoom = room;
   }
 
   onSelectRoom(event: MatSelectionListChange) {

@@ -48,6 +48,14 @@ export class ChatService {
     return this.socket.fromEvent<RoomPaginateInterface>('rooms');
   }
 
+  getMyChatRoomsPaginate(): Observable<RoomPaginateInterface> {
+    return this.socket.fromEvent<RoomPaginateInterface>('rooms_nondirect');
+  }
+
+  getMyDirectRoomsPaginate(): Observable<RoomPaginateInterface> {
+    return this.socket.fromEvent<RoomPaginateInterface>('rooms_direct');
+  }
+
   createRoom(room: RoomInterface) {
     this.socket.emit('create_room', room);
     this.snackBar.open(`Room ${room.name} created successfully`, 'Close', {

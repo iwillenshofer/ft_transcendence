@@ -44,7 +44,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  async emitRooms(user_id: number, socket_id: string, page: PageInterface = { page: 1, limit: 3 } ) {
+  async emitRooms(user_id: number, socket_id: string, page: PageInterface = { page: 0, limit: 10 } ) {
 	page = this.onPrePaginate(page);
     this.server.to(socket_id).emit('rooms_direct', 
 		await this.chatService.getRoomsOfMember(user_id, page, RoomType.Direct));
@@ -117,7 +117,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       await this.chatService.createRoom(room.toEntity(), [member]);
 	  await this.emitRooms(+socket.handshake.headers.userid, socket.id);
 
-      const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 3 });
+      const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 0, limit: 10 });
       const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
       connectedUsers.forEach(user => {
         this.server.to(user.socketId).emit('publicRooms', publicRooms);
@@ -196,7 +196,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     if (await this.chatService.removeMemberFromRoom(room, member) == "delete_room") {
 	  await this.emitRooms(+socket.handshake.headers.userid, socket.id);
-      const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 3 });
+      const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 10 });
       const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
       connectedUsers.forEach(user => {
         this.server.to(user.socketId).emit('publicRooms', publicRooms);
@@ -263,13 +263,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       else if (data.radioPassword == "off")
         await this.chatService.removeRoomPassword(room);
 
-      const rooms = await this.chatService.getRoomsOfMember(+socket.handshake.headers.userid, { page: 1, limit: 3 });
       const members = await this.chatService.getMembersByRoom(room);
       for (const member of members) {
-        this.server.to(member.socketId).emit('rooms', rooms);
+		this.emitRooms(+socket.handshake.headers.userid, member.socketId )
       }
     }
-    const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 3 });
+    const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 10 });
     const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
     connectedUsers.forEach(user => {
       this.server.to(user.socketId).emit('publicRooms', publicRooms);
