@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
+import { AlertsService } from 'src/app/alerts/alerts.service';
 import { AuthService } from 'src/app/auth/auth.service';
 import { RoomService } from 'src/app/services/room/room.service';
 import { isRoomNameTaken } from 'src/app/validators/async-room-name.validator';
@@ -18,7 +19,7 @@ export class DialogNewRoomComponent implements OnInit, OnDestroy {
 
   form: FormGroup = new FormGroup({
     name: new FormControl(null,
-      [Validators.required, Validators.minLength(3),
+      [Validators.required, Validators.minLength(2),
       Validators.maxLength(20), Validators.pattern('^[a-z-A-Z-0-9]+$')],
       [isRoomNameTaken(this.roomService)]),
     description: new FormControl(null, [Validators.required, Validators.maxLength(30), Validators.pattern('^[a-z-A-Z-0-9]+$')]),
@@ -30,7 +31,8 @@ export class DialogNewRoomComponent implements OnInit, OnDestroy {
 
   constructor(private roomService: RoomService,
     private authService: AuthService,
-    private dialogRef: MatDialogRef<DialogNewRoomComponent>) {
+    private dialogRef: MatDialogRef<DialogNewRoomComponent>,
+    private alertService: AlertsService) {
   }
 
   ngOnInit(): void {
@@ -65,8 +67,15 @@ export class DialogNewRoomComponent implements OnInit, OnDestroy {
 
   createChatroom() {
     if (this.form.valid)
-      this.roomService.createRoom(this.form.getRawValue());
-    this.dialogRef.close({ data: this.form.getRawValue() });
+      this.roomService.createRoom(this.form.getRawValue()).subscribe(
+        (response) => {
+          this.alertService.success("The chat room has been successfully created");
+          this.dialogRef.close({ data: this.form.getRawValue() });
+        },
+        (error) => {
+          this.alertService.danger("The chat room could not be created");
+        }
+      )
   }
 
   OnSelectChange(input: string) {

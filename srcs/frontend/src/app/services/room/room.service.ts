@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
+import { AlertsService } from 'src/app/alerts/alerts.service';
 import { ChatSocket } from 'src/app/components/chat/chat-socket';
 import { RoomInterface } from 'src/app/model/room.interface';
 
@@ -11,15 +12,27 @@ export class RoomService {
 
   constructor(
     private http: HttpClient,
-    private socket: ChatSocket) {
+    private socket: ChatSocket,
+    private alertService: AlertsService) {
   }
 
   checkRoomNameNotTaken(roomName: string) {
     return this.http.get('/backend/chat/is-room-name-taken/' + roomName);
   }
 
-  async createRoom(room: RoomInterface) {
-    this.socket.emit('create_room', room);
+  createRoom(room: RoomInterface): Observable<any> {
+    return this.http.post('/backend/chat/create_room/', room, { withCredentials: true });
+    //.subscribe(
+    //   error => {
+    //     if (error) {
+    //       this.alertService.danger("The chat room could not be created");
+    //       return (false);
+    //     }
+    //     else {
+    //       this.alertService.success("The chat room has been successfully created");
+    //       return (true);
+    //     }
+    //   });
   }
 
   async createDirectRoom(room: RoomInterface, user_id: number) {

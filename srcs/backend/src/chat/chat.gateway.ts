@@ -26,7 +26,7 @@ import { RoomType } from './models/typeRoom.model';
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @WebSocketServer()
-  private server: Server;
+  public server: Server;
 
   constructor(private UsersService: UsersService,
     private chatService: ChatService,
@@ -100,27 +100,27 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(socket.id).emit('messages', messages);
   }
 
-  @SubscribeMessage('create_room')
-  async createRoom(socket: Socket, createRoomDto: CreateRoomDto) {
-    const room = CreateRoomDto.from(createRoomDto);
+  // @SubscribeMessage('create_room')
+  // async createRoom(socket: Socket, createRoomDto: CreateRoomDto) {
+  //   const room = CreateRoomDto.from(createRoomDto);
 
-    if (room.password)
-      room.password = this.encrypt.encode(room.password);
+  //   if (room.password)
+  //     room.password = this.encrypt.encode(room.password);
 
-    const owner = await this.UsersService.getUser(+socket.handshake.headers.userid);
-    if (owner) {
-      const member = await this.chatService.createMember(owner.toEntity(), socket.id, MemberRole.Owner);
+  //   const owner = await this.UsersService.getUser(+socket.handshake.headers.userid);
+  //   if (owner) {
+  //     const member = await this.chatService.createMember(owner.toEntity(), socket.id, MemberRole.Owner);
 
-      await this.chatService.createRoom(room.toEntity(), [member]);
-      await this.emitRooms(+socket.handshake.headers.userid, socket.id);
+  //     await this.chatService.createRoom(room.toEntity(), [member]);
+  //     await this.emitRooms(+socket.handshake.headers.userid, socket.id);
 
-      const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 3 });
-      const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
-      connectedUsers.forEach(user => {
-        this.server.to(user.socketId).emit('publicRooms', publicRooms);
-      })
-    }
-  }
+  //     const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 3 });
+  //     const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
+  //     connectedUsers.forEach(user => {
+  //       this.server.to(user.socketId).emit('publicRooms', publicRooms);
+  //     })
+  //   }
+  // }
 
   @SubscribeMessage('create_direct_room')
   async createDirectRoom(socket: Socket, data: { room: CreateRoomDto, user_id: number }) {

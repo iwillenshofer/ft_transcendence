@@ -3,13 +3,22 @@ import { of } from 'rxjs';
 import { ChatService } from './chat.service';
 import { JwtGuard } from 'src/auth/jwt/jwt.guard';
 import { ConnectedUsersService } from 'src/services/connected-user/connected-user.service';
+import { CreateRoomDto } from './dto/createRoom.dto';
+import { EncryptService } from 'src/services/encrypt.service';
+import { UsersService } from 'src/users/users.service';
+import { MemberRole } from './models/memberRole.model';
+import { ChatGateway } from './chat.gateway';
 
 @Controller('chat')
 export class ChatController {
 
     constructor(
         private chatService: ChatService,
-        private connectedUsersService: ConnectedUsersService
+        private connectedUsersService: ConnectedUsersService,
+        private encrypt: EncryptService,
+        private userService: UsersService,
+        private connectedUser: ConnectedUsersService,
+        private readonly chatGateway: ChatGateway
     ) { }
 
     @UseGuards(JwtGuard)
@@ -64,5 +73,32 @@ export class ChatController {
     @Get("is_blocked/:userId")
     async isBlockedUser(@Param('userId') userId, @Request() req) {
         return of(await this.chatService.isBlockedUser(+req.user.id, +userId));
+    }
+
+    @UseGuards(JwtGuard)
+    @Post('create_room')
+    async createRoom(@Body() new_room: CreateRoomDto, @Request() req) {
+
+        const room = CreateRoomDto.from(new_room);
+        console.log("createroom : " + room.name)
+        const connected_user = await this.connectedUser.getByUserId(+req.user.id);
+
+        if (room.password)
+            room.password = this.encrypt.encode(room.password);
+
+        const owner = await this.userService.getUser(+req.user.id);
+        if (owner) {
+            const member = await this.chatService.createMember(owner.toEntity(), connected_user.socketId, MemberRole.Owner);
+
+            await this.chatService.createRoom(room.toEntity(), [member]);
+            await this.chatGateway.emitRooms(+req.user.id, connected_user.socketId);
+
+            const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 3 });
+            const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
+            connectedUsers.forEach(user => {
+                this.chatGateway.server.to(user.socketId).emit('publicRooms', publicRooms);
+
+            })
+        }
     }
 }

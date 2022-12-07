@@ -25,8 +25,8 @@ const routes: Routes = [
 	{ path: 'friends/:id', component: FriendsComponent, canActivate: [AuthguardService], pathMatch: 'full' },
 	{ path: 'friends', component: FriendsComponent, canActivate: [AuthguardService], pathMatch: 'full' },
 	{ path: 'profile', component: ProfileComponent, canActivate: [AuthguardService], pathMatch: 'full' },
-	{ path: '', redirectTo: 'home', pathMatch: 'full'},
-	{ path: '**', component: FourohfourComponent, pathMatch: 'full'}
+	{ path: '', redirectTo: 'home', pathMatch: 'full' },
+	{ path: '**', component: FourohfourComponent, pathMatch: 'full' }
 
 ];
 

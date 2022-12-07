@@ -3,10 +3,25 @@ import { RoomType } from "../models/typeRoom.model";
 import { Matches, MinLength, IsNotEmpty, Length, MaxLength, IsIn, IsString, IsOptional } from "class-validator"
 
 export class CreateRoomDto {
+
+    @IsNotEmpty()
+    @Length(3, 20)
     name: string;
+
+    @IsOptional()
+    @IsString()
     name2: string;
+
+    @IsNotEmpty()
+    @MaxLength(30)
     description: string;
+
+    // @IsNotEmpty()
+    // @IsIn([RoomType.Direct, RoomType.Private, RoomType.Protected, RoomType.Public])
     type: RoomType;
+
+    // @IsOptional()
+    // @MinLength(8)
     password: string;
 
     constructor(name: string = "", name2: string = "", description: string = "", type: RoomType = RoomType.Public, password: string = "") {

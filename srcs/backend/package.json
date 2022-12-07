@@ -33,6 +33,7 @@
     "@nestjs/terminus": "latest",
     "@nestjs/typeorm": "latest",
     "@nestjs/websockets": "latest",
+    "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "cookie-parser": "latest",
     "crypto": "latest",
