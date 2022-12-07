@@ -6,7 +6,7 @@ import { RoomInterface, RoomType } from 'src/app/model/room.interface';
 import { MemberInterface, MemberRole } from 'src/app/model/member.interface';
 import { UserInterface } from 'src/app/model/user.interface';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogRoomSettingComponent } from '../../dialogs/dialog-room-setting/dialog-room-setting.component';
+import { DialogRoomSettingComponent } from '../dialogs/dialog-room-setting/dialog-room-setting.component';
 import { MatSelectionListChange } from '@angular/material/list';
 import { faStar as fasStar, faGears } from '@fortawesome/free-solid-svg-icons';
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';

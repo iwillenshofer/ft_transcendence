@@ -9,7 +9,7 @@ import { UserService } from 'src/app/services/user.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserInterface } from 'src/app/model/user.interface';
-import { ChatService } from '../../chat/chat.service';
+import { ChatService } from '../../chat.service';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { AlertsService } from 'src/app/alerts/alerts.service';
 

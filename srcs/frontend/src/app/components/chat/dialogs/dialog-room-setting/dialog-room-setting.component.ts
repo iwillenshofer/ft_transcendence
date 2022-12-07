@@ -4,7 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatRadioChange } from '@angular/material/radio';
 import { debounceTime, finalize, Subscription, switchMap, tap } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
-import { ChatService } from '../../chat/chat.service';
+import { ChatService } from '../../chat.service';
 import { MemberInterface, MemberRole } from 'src/app/model/member.interface';
 import { RoomType } from 'src/app/model/room.interface';
 import { RoomService } from 'src/app/services/room/room.service';

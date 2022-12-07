@@ -4,7 +4,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { RoomService } from 'src/app/services/room/room.service';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ChatService } from '../../chat/chat.service';
+import { ChatService } from '../../chat.service';
 import { AuthService } from 'src/app/auth/auth.service';
 import { Subscription } from 'rxjs';
 import { AlertsService } from 'src/app/alerts/alerts.service';
