@@ -6,6 +6,7 @@ export class CreateRoomDto {
 
     @IsNotEmpty()
     @Length(3, 20)
+    @Matches('^[a-zA-Z0-9]*$')
     name: string;
 
     @IsOptional()
@@ -14,14 +15,14 @@ export class CreateRoomDto {
 
     @IsNotEmpty()
     @MaxLength(30)
+    @Matches('^[a-zA-Z0-9 ]*$')
     description: string;
 
-    // @IsNotEmpty()
-    // @IsIn([RoomType.Direct, RoomType.Private, RoomType.Protected, RoomType.Public])
+    @IsNotEmpty()
     type: RoomType;
 
-    // @IsOptional()
-    // @MinLength(8)
+    @IsOptional()
+    @MinLength(8)
     password: string;
 
     constructor(name: string = "", name2: string = "", description: string = "", type: RoomType = RoomType.Public, password: string = "") {

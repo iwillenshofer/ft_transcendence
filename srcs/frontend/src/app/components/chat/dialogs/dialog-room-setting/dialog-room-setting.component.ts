@@ -9,8 +9,6 @@ import { MemberInterface, MemberRole } from 'src/app/model/member.interface';
 import { RoomType } from 'src/app/model/room.interface';
 import { RoomService } from 'src/app/services/room/room.service';
 import { isRoomNameTaken } from 'src/app/validators/async-room-name.validator';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { AlertsService } from 'src/app/alerts/alerts.service';
 
 @Component({
@@ -25,8 +23,11 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
   filteredUsers!: any;
 
   form: FormGroup = new FormGroup({
-    name: new FormControl(null, [Validators.minLength(3), Validators.maxLength(20), Validators.pattern('^[a-z-A-Z-0-9]+$'),], [isRoomNameTaken(this.roomService)]),
-    description: new FormControl(null, [Validators.maxLength(50)]),
+    name: new FormControl(null,
+      [Validators.minLength(3), Validators.maxLength(20),
+      Validators.pattern('^[a-zA-Z0-9]*$'),],
+      [isRoomNameTaken(this.roomService)]),
+    description: new FormControl(null, [Validators.maxLength(30), Validators.pattern('^[a-zA-Z0-9 ]*$')]),
     password: new FormControl(null, [Validators.required, Validators.minLength(8)]),
     searchUsersCtrl: new FormControl(null),
     radioPassword: new FormControl(null)
@@ -140,7 +141,9 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
   }
 
   getUsername(value: any): string {
-    return (value.username);
+    if (value)
+      return (value.username);
+    return ("");
   }
 
   isPrivateRoom(): boolean {

@@ -19,10 +19,10 @@ export class DialogNewRoomComponent implements OnInit, OnDestroy {
 
   form: FormGroup = new FormGroup({
     name: new FormControl(null,
-      [Validators.required, Validators.minLength(2),
-      Validators.maxLength(20), Validators.pattern('^[a-z-A-Z-0-9]+$')],
+      [Validators.minLength(3), Validators.maxLength(20),
+      Validators.pattern('^[a-zA-Z0-9]*$'),],
       [isRoomNameTaken(this.roomService)]),
-    description: new FormControl(null, [Validators.required, Validators.maxLength(30), Validators.pattern('^[a-z-A-Z-0-9]+$')]),
+    description: new FormControl(null, [Validators.required, Validators.maxLength(30), Validators.pattern('^[a-zA-Z0-9 ]*$')]),
     type: new FormControl(null, [Validators.required]),
     password: new FormControl(null, [Validators.required, Validators.minLength(8)])
   });

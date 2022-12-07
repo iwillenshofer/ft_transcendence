@@ -107,14 +107,16 @@ export class ChatComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(DialogNewRoomComponent);
 
     dialogRef.afterClosed().subscribe(ret => {
-      this.chatService.emitGetAllMyRooms();
-      this.allMyRooms$.subscribe(rooms => {
-        let selectedRoom: RoomInterface | undefined;
-        if (selectedRoom = rooms.find(room => room.name == ret.data.name)) {
-          this.selectedRoom = selectedRoom;
-          this.allMyRooms.push(this.selectedRoom);
-        }
-      });
+      if (ret) {
+        this.chatService.emitGetAllMyRooms();
+        this.allMyRooms$.subscribe(rooms => {
+          let selectedRoom: RoomInterface | undefined;
+          if (selectedRoom = rooms.find(room => room.name == ret.data.name)) {
+            this.selectedRoom = selectedRoom;
+            this.allMyRooms.push(this.selectedRoom);
+          }
+        });
+      }
     });
   }
 
@@ -179,10 +181,12 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(ret => {
       let selectedRoom: RoomInterface | undefined;
-      if (ret.data)
-        selectedRoom = this.allMyRooms.find(room => room.id == ret.data.id || room.name == ret.data.name)
-      if (selectedRoom)
-        this.selectedRoom = selectedRoom;
+      if (ret) {
+        if (ret.data)
+          selectedRoom = this.allMyRooms.find(room => room.id == ret.data.id || room.name == ret.data.name)
+        if (selectedRoom)
+          this.selectedRoom = selectedRoom;
+      }
     });
     this.roomsAvailable.deselectAll();
   }

@@ -80,7 +80,6 @@ export class ChatController {
     async createRoom(@Body() new_room: CreateRoomDto, @Request() req) {
 
         const room = CreateRoomDto.from(new_room);
-        console.log("createroom : " + room.name)
         const connected_user = await this.connectedUser.getByUserId(+req.user.id);
 
         if (room.password)
@@ -100,5 +99,24 @@ export class ChatController {
 
             })
         }
+    }
+
+    @UseGuards(JwtGuard)
+    @Post('create_direct_room')
+    async createDirectRoom(@Body() data: { room: CreateRoomDto, user_id: number }, @Request() req) {
+
+        const room = CreateRoomDto.from(data.room);
+        const connected_user = await this.connectedUser.getByUserId(+req.user.id);
+
+        const owner = await this.userService.getUser(+req.user.id);
+        const ownerMember = await this.chatService.createMember(owner.toEntity(), connected_user.socketId, MemberRole.Member);
+
+        const invited = await this.userService.getUser(data.user_id);
+        const socketId_invited = (await this.connectedUsersService.getByUserId(invited.id)).socketId;
+        const invitedMember = await this.chatService.createMember(invited.toEntity(), socketId_invited, MemberRole.Member);
+
+        await this.chatService.createRoom(room.toEntity(), [ownerMember, invitedMember]);
+        await this.chatGateway.emitRooms(owner.id, ownerMember.socketId);
+        await this.chatGateway.emitRooms(invited.id, invitedMember.socketId);
     }
 }
