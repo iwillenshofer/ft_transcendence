@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ConnectedUserEntity } from 'src/chat/entities/connected-user.entity';
 import { UserEntity } from 'src/users/users.entity';
-import { UserInterface } from 'src/users/users.interface';
-import { Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ConnectedUsersService {
@@ -36,7 +35,7 @@ export class ConnectedUsersService {
 
     }
 
-	async getUsersById(userId: number): Promise<ConnectedUserEntity[]> {
+    async getUsersById(userId: number): Promise<ConnectedUserEntity[]> {
         return await this.connectedUserRepository.find({
             where: { user: { id: userId } },
             relations: { user: true },
@@ -57,7 +56,6 @@ export class ConnectedUsersService {
             connectedUser.socketId = "";
             await this.connectedUserRepository.save(connectedUser);
         }
-
     }
 
     async deleteByUserId(userId: number) {
@@ -67,7 +65,6 @@ export class ConnectedUsersService {
             connectedUser.socketId = "";
             await this.connectedUserRepository.save(connectedUser);
         }
-
     }
 
     async getAllUserOnline() {
@@ -75,24 +72,10 @@ export class ConnectedUsersService {
             connected_user: { connected: true },
         });
         return users;
-
-        // const users = await this.userRepository
-        //     .createQueryBuilder("user")
-        //     .leftJoinAndSelect("user.connected_user", "connected_user")
-        //     .where("connected_user.connected = :connected", { connected: true })
-        //     .andWhere('user.username != :me', { me: me })
-        //     .getMany();
-        // return users;
     }
 
     async getAllConnectedUsers() {
         const users = await this.connectedUserRepository.find();
         return users;
-
-        // const users = await this.connectedUserRepository
-        //     .createQueryBuilder("connected_user")
-        //     .where('user.username != :me', { me: me })
-        //     .getMany();
-        // return users;
     }
 }

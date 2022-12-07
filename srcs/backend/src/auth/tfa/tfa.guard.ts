@@ -2,4 +2,4 @@ import { Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
-export class TfaGuard extends AuthGuard('tfa') {}
+export class TfaGuard extends AuthGuard('tfa') { }

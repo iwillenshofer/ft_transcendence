@@ -11,12 +11,10 @@ import { JoinRoomDto } from './dto/joinRoom.dto';
 import { RoomEntity } from './entities/room.entity';
 import { CreateMessageDto } from './dto/createMessage.dto';
 import { MemberEntity } from './entities/member.entity';
-import { CreateMemberDto } from './dto/createMember.dto';
 import { UserEntity, UsersService } from 'src/users/users.service';
 import { ConnectedUserEntity } from './entities/connected-user.entity';
 import { MemberRole } from './models/memberRole.model';
 import { ChangeSettingRoomDto } from './dto/changeSettingRoom.dto';
-import e from 'express';
 import { BlockUserDto } from './dto/blockUser.dto';
 import { SetAdminDto } from './dto/setAdmin.dto';
 import { MuteMemberDto } from './dto/muteMember.dto';
@@ -44,14 +42,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  async emitRooms(user_id: number, socket_id: string, page: PageInterface = { page: 1, limit: 3 } ) {
-	page = this.onPrePaginate(page);
-    this.server.to(socket_id).emit('rooms_direct', 
-		await this.chatService.getRoomsOfMember(user_id, page, RoomType.Direct));
-    this.server.to(socket_id).emit('rooms_nondirect', 
-		await this.chatService.getRoomsOfMember(user_id, page,  RoomType.Public));
+  async emitRooms(user_id: number, socket_id: string, page: PageInterface = { page: 1, limit: 3 }) {
+    page = this.onPrePaginate(page);
+    this.server.to(socket_id).emit('rooms_direct',
+      await this.chatService.getRoomsOfMember(user_id, page, RoomType.Direct));
+    this.server.to(socket_id).emit('rooms_nondirect',
+      await this.chatService.getRoomsOfMember(user_id, page, RoomType.Public));
     this.server.to(socket_id).emit('rooms',
-		await this.chatService.getRoomsOfMember(user_id, page));
+      await this.chatService.getRoomsOfMember(user_id, page));
   }
 
   @UseGuards(TfaGuard)
@@ -70,7 +68,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       await this.connectedUsersService.createConnectedUser(socket.id, user);
     else
       await this.connectedUsersService.updateSocketIdConnectedUSer(socket.id, connectedUser);
-    // this.server.emit('setStatus', { username: user.username, status: "online" })
     this.setStatus(user.username, "online")
     console.log('online')
     let usersOnline = await this.connectedUsersService.getAllUserOnline();
@@ -79,7 +76,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       Logger.warn("emmiting users_online");
       this.server.to(user.socketId).emit('users_online', usersOnline);
     });
-	await this.emitRooms(user.id, socket.id);
+    await this.emitRooms(user.id, socket.id);
     const allUsers = await this.UsersService.getAllUsers();
     this.server.to(socket.id).emit('all_users', allUsers);
   }
@@ -115,7 +112,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const member = await this.chatService.createMember(owner.toEntity(), socket.id, MemberRole.Owner);
 
       await this.chatService.createRoom(room.toEntity(), [member]);
-	  await this.emitRooms(+socket.handshake.headers.userid, socket.id);
+      await this.emitRooms(+socket.handshake.headers.userid, socket.id);
 
       const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 3 });
       const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
@@ -138,13 +135,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const invitedMember = await this.chatService.createMember(invited.toEntity(), socketId_invited, MemberRole.Member);
 
     await this.chatService.createRoom(room.toEntity(), [ownerMember, invitedMember]);
-	await this.emitRooms(owner.id, ownerMember.socketId);
-	await this.emitRooms(invited.id, invitedMember.socketId);
+    await this.emitRooms(owner.id, ownerMember.socketId);
+    await this.emitRooms(invited.id, invitedMember.socketId);
   }
 
   @SubscribeMessage('paginate_rooms')
   async paginateRoom(socket: Socket, page: PageInterface) {
-	await this.emitRooms(+socket.handshake.headers.userid, socket.id, page);
+    await this.emitRooms(+socket.handshake.headers.userid, socket.id, page);
   }
 
   @SubscribeMessage('paginate_public_and_protected_rooms')
@@ -162,12 +159,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       member = await this.chatService.createMember(user.toEntity(), socket.id, MemberRole.Member);
       await this.chatService.addMemberToRoom(room, member);
     }
-    else
-	{
+    else {
       await this.chatService.rejoinMemberToRoom(member);
-	  await this.emitRooms(user.id, socket.id);
-	}
-	const members = await this.chatService.getMembersByRoom(room);
+      await this.emitRooms(user.id, socket.id);
+    }
+    const members = await this.chatService.getMembersByRoom(room);
     for (const member of members) {
       this.server.to(member.socketId).emit('members_room', members);
     }
@@ -180,7 +176,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const member = await this.chatService.createMember(user.toEntity(), connected_user.socketId, MemberRole.Member);
     const room = await this.chatService.getRoomById(joinRoomDto.roomId);
     await this.chatService.addMemberToRoom(room, member);
-	await this.emitRooms(user.id, socket.id);
+    await this.emitRooms(user.id, socket.id);
   }
 
   @SubscribeMessage('leave_room')
@@ -195,7 +191,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
 
     if (await this.chatService.removeMemberFromRoom(room, member) == "delete_room") {
-	  await this.emitRooms(+socket.handshake.headers.userid, socket.id);
+      await this.emitRooms(+socket.handshake.headers.userid, socket.id);
       const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 3 });
       const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
       const allPublicRooms = await this.chatService.getAllPublicRooms();
@@ -254,7 +250,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("change_settings_room")
   async changeSettingsRoom(socket: Socket, data: ChangeSettingRoomDto) {
     if (data.roomId) {
-      // console.log(data.radioPassword)
       const room = await this.chatService.getRoomById(data.roomId);
       if (data.name)
         await this.chatService.updateRoomName(room, data.name);
@@ -309,13 +304,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
     this.server.to(socket.id).emit('blocked_users', blockedUserId);
     this.server.to(member.socketId).emit('blocked_users', blockedUserId);
-
-    // const user_1 = await this.UsersService.getUser(+socket.handshake.headers.userid);
-    // const user_2 = await this.UsersService.getUser(member.user.id);
-
-    // let directRoom = await this.chatService.getDirectRoom(user_1.username, user_2.username);
-    // console.log(directRoom);
-
   }
 
   @SubscribeMessage("unblock_user")
@@ -412,7 +400,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     for (const member of members) {
       this.server.to(member.socketId).emit('members_room', members);
     }
-	await this.emitRooms(member.user.id, member.socketId);
+    await this.emitRooms(member.user.id, member.socketId);
 
     const all_rooms = await this.chatService.getAllMyRooms(+member.user.id);
     this.server.to(member.socketId).emit('all_my_rooms', all_rooms);
@@ -439,7 +427,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('setStatus')
   async setStatusSocket(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    // console.log('setStatus')
     let username = data[0];
     let status = data[1];
     this.setStatus(username, status)
@@ -457,8 +444,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (find == 0) {
       this.usersStatus.push(user)
     }
-    // console.log(this.usersStatus)
     this.server.emit('chatStatus', this.usersStatus)
   }
-
 }

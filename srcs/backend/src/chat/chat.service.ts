@@ -27,8 +27,6 @@ export class ChatService {
         private memberRepository: Repository<MemberEntity>,
         @InjectRepository(UserEntity)
         private userRepository: Repository<UserEntity>,
-        @InjectRepository(ConnectedUserEntity)
-        private connectedUserRepository: Repository<ConnectedUserEntity>,
         @InjectRepository(BlockedUserEntity)
         private blockedUserRepository: Repository<BlockedUserEntity>,
         private readonly encrypt: EncryptService,
@@ -128,54 +126,53 @@ export class ChatService {
     }
 
     async getRoomById(roomId: number): Promise<RoomEntity> {
-        const room = this.roomRepository.findOne({
+        return this.roomRepository.findOne({
             where: { id: roomId },
             relations: { members: true }
         });
-        return (room);
     }
-    
-    async getRoomsOfMember(userId: number, options: IPaginationOptions, roomType: RoomType | null = null): Promise<Pagination<RoomEntity>> {
-		const subquery = this.roomRepository
-			.createQueryBuilder('room')
-			.select("room.id", "room_id")
-			.leftJoin('room.members', 'member')
-			.leftJoin('member.user', 'user')
-			.where('user.id = :userId', { userId })
-			.andWhere('member.isMember = :isMember', { isMember: true })
-		if (roomType !== null && roomType === RoomType.Direct)
-			subquery.andWhere('room.type = :type1', { type1: RoomType.Direct })
-		else if (roomType !== null && roomType !== RoomType.Direct)
-			subquery.andWhere('room.type != :type2', { type2: RoomType.Direct })		
-		
-		const query = this.roomRepository
-			.createQueryBuilder('room')
-			.leftJoinAndSelect('room.members', 'member')
-			.leftJoinAndSelect('member.user', 'user')
-			.where('room.id IN (' + subquery.getQuery() + ')')
-			.setParameters(subquery.getParameters())
-		
-		const totalItems = await query.getCount();
-		let opt: IPaginationOptions = {
-			limit: options.limit,
-			page: options.page,
-			paginationType: PaginationTypeEnum.TAKE_AND_SKIP,
-			metaTransformer: ({ currentPage, itemCount, itemsPerPage }) => {
-				const totalPages = Math.ceil(totalItems / itemsPerPage);
-				return {
-					currentPage,
-					itemCount,
-					itemsPerPage,
-					totalItems,
-					totalPages: totalPages === 0 ? 1 : totalPages,
-				};
-			}
-		}
 
-		let pages = await paginate(query, opt);
-			pages.meta.currentPage -= 1;
-				return (pages);
-		}
+    async getRoomsOfMember(userId: number, options: IPaginationOptions, roomType: RoomType | null = null): Promise<Pagination<RoomEntity>> {
+        const subquery = this.roomRepository
+            .createQueryBuilder('room')
+            .select("room.id", "room_id")
+            .leftJoin('room.members', 'member')
+            .leftJoin('member.user', 'user')
+            .where('user.id = :userId', { userId })
+            .andWhere('member.isMember = :isMember', { isMember: true })
+        if (roomType !== null && roomType === RoomType.Direct)
+            subquery.andWhere('room.type = :type1', { type1: RoomType.Direct })
+        else if (roomType !== null && roomType !== RoomType.Direct)
+            subquery.andWhere('room.type != :type2', { type2: RoomType.Direct })
+
+        const query = this.roomRepository
+            .createQueryBuilder('room')
+            .leftJoinAndSelect('room.members', 'member')
+            .leftJoinAndSelect('member.user', 'user')
+            .where('room.id IN (' + subquery.getQuery() + ')')
+            .setParameters(subquery.getParameters())
+
+        const totalItems = await query.getCount();
+        let opt: IPaginationOptions = {
+            limit: options.limit,
+            page: options.page,
+            paginationType: PaginationTypeEnum.TAKE_AND_SKIP,
+            metaTransformer: ({ currentPage, itemCount, itemsPerPage }) => {
+                const totalPages = Math.ceil(totalItems / itemsPerPage);
+                return {
+                    currentPage,
+                    itemCount,
+                    itemsPerPage,
+                    totalItems,
+                    totalPages: totalPages === 0 ? 1 : totalPages,
+                };
+            }
+        }
+
+        let pages = await paginate(query, opt);
+        pages.meta.currentPage -= 1;
+        return (pages);
+    }
 
     async isRoomNameTaken(roomName: string) {
         let count = await this.roomRepository.countBy({ name: roomName });
@@ -216,9 +213,8 @@ export class ChatService {
         const room = await this.getRoomById(roomId);
         if (room && room.type == RoomType.Protected) {
             let encryptedPass = this.encrypt.encode(password);
-            if (encryptedPass == room.password) {
+            if (encryptedPass == room.password)
                 return true;
-            }
         }
         return false;
     }
@@ -226,8 +222,7 @@ export class ChatService {
     async createMessage(createMessage: MessageEntity, member: MemberEntity): Promise<MessageEntity> {
         createMessage.member = member;
         let message = this.messageRepository.create(createMessage);
-        const ret = await message.save();
-        return (ret);
+        return await message.save();
     }
 
     async findMessagesForRoom(room: RoomEntity, options: IPaginationOptions, userId: number): Promise<Pagination<MessageEntity>> {
@@ -250,20 +245,17 @@ export class ChatService {
             .leftJoinAndSelect('message.member', 'member')
             .leftJoinAndSelect('member.user', 'user')
             .andWhere('user.id IN (:...usersToSend)', { usersToSend: usersToSend })
-        let res = await paginate(query, options);
-        return (res);
+        return await paginate(query, options);
     }
 
     async getMembersByRoom(room: RoomEntity): Promise<MemberEntity[]> {
-        const members = await this.memberRepository
+        return await this.memberRepository
             .createQueryBuilder('member')
             .leftJoinAndSelect("member.user", "user")
             .leftJoinAndSelect("member.rooms", "rooms")
             .where("rooms.id = :roomId", { roomId: room.id })
             .andWhere("member.isMember = :isMember", { isMember: true })
             .getMany()
-
-        return (members);
     }
 
     async getAllAddedUsers(user: UserEntity) {

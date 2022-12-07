@@ -1,5 +1,4 @@
-import { HttpService } from '@nestjs/axios';
-import { Body, Controller, Get, Param, Post, Request, Response, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { of } from 'rxjs';
 import { ChatService } from './chat.service';
 import { JwtGuard } from 'src/auth/jwt/jwt.guard';
@@ -13,16 +12,11 @@ export class ChatController {
         private connectedUsersService: ConnectedUsersService
     ) { }
 
+    @UseGuards(JwtGuard)
     @Get('is-room-name-taken/:name')
     async isUsernameTaken(@Param('name') roomName) {
         return of(await this.chatService.isRoomNameTaken(roomName))
     }
-
-    // @UseGuards(JwtGuard)
-    // @Get('get_all_my_conv_rooms_as_text')
-    // async getAllMyConvRoomsAsText(@Response() res, @Request() req) {
-    //     res.status(200).send(await this.chatService.getAllMyConvRoomsAsText(req.user.id));
-    // }
 
     @UseGuards(JwtGuard)
     @Get('searchusers/:username')
@@ -71,6 +65,4 @@ export class ChatController {
     async isBlockedUser(@Param('userId') userId, @Request() req) {
         return of(await this.chatService.isBlockedUser(+req.user.id, +userId));
     }
-
-
 }
