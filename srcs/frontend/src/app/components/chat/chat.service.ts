@@ -72,6 +72,14 @@ export class ChatService {
     return this.socket.fromEvent<RoomPaginateInterface>('rooms');
   }
 
+  getMyChatRoomsPaginate(): Observable<RoomPaginateInterface> {
+    return this.socket.fromEvent<RoomPaginateInterface>('rooms_nondirect');
+  }
+
+  getMyDirectRoomsPaginate(): Observable<RoomPaginateInterface> {
+    return this.socket.fromEvent<RoomPaginateInterface>('rooms_direct');
+  }
+
   joinRoom(room: RoomInterface): Observable<any> {
     return this.http.post('/backend/chat/join_room/', { roomId: room.id }, { withCredentials: true });
   }

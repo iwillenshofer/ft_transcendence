@@ -164,11 +164,11 @@ export class ChatService {
                     itemCount,
                     itemsPerPage,
                     totalItems,
-                    totalPages: totalPages === 0 ? 1 : totalPages,
+                    totalPages,
                 };
             }
         }
-
+        // console.log(JSON.stringify(opt));
         let pages = await paginate(query, opt);
         pages.meta.currentPage -= 1;
         return (pages);

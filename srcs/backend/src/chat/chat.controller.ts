@@ -80,7 +80,6 @@ export class ChatController {
     @UseGuards(JwtGuard)
     @Post('create_room')
     async createRoom(@Body() new_room: CreateRoomDto, @Request() req) {
-
         const room = CreateRoomDto.from(new_room);
         const connected_user = await this.connectedUser.getByUserId(+req.user.id);
 
@@ -94,11 +93,10 @@ export class ChatController {
             await this.chatService.createRoom(room.toEntity(), [member]);
             await this.chatGateway.emitRooms(+req.user.id, connected_user.socketId);
 
-            const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 3 });
+            const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 10 });
             const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
             connectedUsers.forEach(user => {
                 this.chatGateway.server.to(user.socketId).emit('publicRooms', publicRooms);
-
             })
         }
     }
@@ -253,12 +251,12 @@ export class ChatController {
             member = await this.chatService.createMember(user.toEntity(), connected_user.socketId, MemberRole.Member);
             await this.chatService.addMemberToRoom(room, member);
         }
-        else {
+        else
             await this.chatService.rejoinMemberToRoom(member);
-            await this.chatGateway.emitRooms(user.id, connected_user.socketId);
-        }
+        await this.chatGateway.emitRooms(user.id, connected_user.socketId);
         const members = await this.chatService.getMembersByRoom(room);
         for (const member of members) {
+            console.log(member.user.username)
             this.chatGateway.server.to(member.socketId).emit('members_room', members);
         }
     }
