@@ -162,7 +162,6 @@ export class ChatService {
 			paginationType: PaginationTypeEnum.TAKE_AND_SKIP,
 			metaTransformer: ({ currentPage, itemCount, itemsPerPage }) => {
 				const totalPages = Math.ceil(totalItems / itemsPerPage);
-				if (currentPage && currentPage == totalPages) {currentPage--};
 				return {
 					currentPage,
 					itemCount,
@@ -172,7 +171,7 @@ export class ChatService {
 				};
 			}
 		}
-
+		console.log(JSON.stringify(opt));
 		let pages = await paginate(query, opt);
 			pages.meta.currentPage -= 1;
 				return (pages);

@@ -135,7 +135,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(DialogPasswordComponent, {
       data: { room: this.selectedPublicRoom }
     });
-    this.roomsAvailable.deselectAll();
+    //this.roomsAvailable.deselectAll();
   }
 
   async onJoinRoom(selectedPublicRoom: RoomInterface | null) {
@@ -148,7 +148,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       }
       if (this.isBanned(selectedPublicRoom)) {
         this.alertService.warning("You are banned from this chat room.");
-        this.roomsAvailable.deselectAll();
+        //this.roomsAvailable.deselectAll();
         this.nulledSelectedRoom();
         return;
       }
@@ -162,19 +162,20 @@ export class ChatComponent implements OnInit, OnDestroy {
       }
       this.nulledSelectedRoom();
     }
-    this.roomsAvailable.deselectAll();
+    //this.roomsAvailable.deselectAll();
   }
 
   onLeaveRoom(selectedRoom: RoomInterface) {
+	console.log(JSON.stringify(selectedRoom));
     if (selectedRoom != this.selectedRoomNulled) {
       this.chatService.leaveRoom(selectedRoom);
       const index = this.allMyRooms.findIndex(room => room.id == selectedRoom.id);
       if (index > -1) {
         this.allMyRooms.splice(index, 1);
       }
-      this.nulledSelectedRoom();
+	  this.nulledSelectedRoom();
     }
-    this.roomsAvailable.deselectAll();
+    //this.roomsAvailable.deselectAll();
   }
 
   isProtected(type: RoomType) {
@@ -193,7 +194,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       if (selectedRoom = this.allMyRooms.find(room => room.id == ret.data.id || room.name == ret.data.name))
         this.selectedRoom = selectedRoom;
     });
-    this.roomsAvailable.deselectAll();
+    //this.roomsAvailable.deselectAll();
     subscription$.unsubscribe();
   }
 

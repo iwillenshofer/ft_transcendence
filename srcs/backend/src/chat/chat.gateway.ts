@@ -44,8 +44,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  async emitRooms(user_id: number, socket_id: string, page: PageInterface = { page: 0, limit: 10 } ) {
-	page = this.onPrePaginate(page);
+  async emitRooms(user_id: number, socket_id: string, page: PageInterface = { page: 1, limit: 10 } ) {
     this.server.to(socket_id).emit('rooms_direct', 
 		await this.chatService.getRoomsOfMember(user_id, page, RoomType.Direct));
     this.server.to(socket_id).emit('rooms_nondirect', 
@@ -117,7 +116,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       await this.chatService.createRoom(room.toEntity(), [member]);
 	  await this.emitRooms(+socket.handshake.headers.userid, socket.id);
 
-      const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 0, limit: 10 });
+      const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 10 });
       const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
       connectedUsers.forEach(user => {
         this.server.to(user.socketId).emit('publicRooms', publicRooms);
@@ -144,7 +143,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('paginate_rooms')
   async paginateRoom(socket: Socket, page: PageInterface) {
-	await this.emitRooms(+socket.handshake.headers.userid, socket.id, page);
+	await this.emitRooms(+socket.handshake.headers.userid, socket.id, this.onPrePaginate(page));
   }
 
   @SubscribeMessage('paginate_public_and_protected_rooms')
@@ -338,6 +337,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("get_all_my_rooms")
   async getAllMyRooms(socket: Socket) {
     const rooms = await this.chatService.getAllMyRooms(+socket.handshake.headers.userid);
+	await this.emitRooms(+socket.handshake.headers.userid, socket.id);
     this.server.to(socket.id).emit('all_my_rooms', rooms);
   }
 
@@ -419,8 +419,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   private onPrePaginate(page: PageInterface) {
-    page.limit = page.limit > 100 ? 100 : page.limit;
-    page.page += 1;
+    //page.limit = page.limit > 100 ? 100 : page.limit;
+    page.page++;
     return (page);
   }
 
