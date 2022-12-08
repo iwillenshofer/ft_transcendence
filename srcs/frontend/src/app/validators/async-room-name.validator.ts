@@ -2,7 +2,6 @@ import { AbstractControl, AsyncValidatorFn, ValidationErrors } from "@angular/fo
 import { map, Observable } from "rxjs";
 import { ChatService } from "../components/chat/chat.service";
 
-
 export function isRoomNameTaken(roomService: ChatService): AsyncValidatorFn {
 
     return (control: AbstractControl): Observable<ValidationErrors | null> => {
@@ -18,4 +17,3 @@ export function isRoomNameTaken(roomService: ChatService): AsyncValidatorFn {
         )
     }
 }
-

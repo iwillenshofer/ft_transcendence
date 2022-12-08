@@ -82,5 +82,4 @@ export class UserService {
   getAvatarOfUser(avatar: string) {
     return this.http.get('/backend/user/image/' + avatar, { withCredentials: true });
   }
-
 }

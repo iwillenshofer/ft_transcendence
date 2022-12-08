@@ -17,4 +17,3 @@ export function isUsernameTaken(userService: UserService): AsyncValidatorFn {
         )
     }
 }
-
