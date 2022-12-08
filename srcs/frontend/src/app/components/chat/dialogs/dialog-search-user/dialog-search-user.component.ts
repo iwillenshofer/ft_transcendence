@@ -3,7 +3,6 @@ import { FormControl } from '@angular/forms';
 import { debounceTime, finalize, Subscription, switchMap, tap } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { RoomInterface, RoomType } from 'src/app/model/room.interface';
-import { RoomService } from 'src/app/services/room/room.service';
 import { UserService } from 'src/app/services/user.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UserInterface } from 'src/app/model/user.interface';
@@ -39,8 +38,6 @@ export class DialogSearchUserComponent implements OnInit, OnDestroy {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private userService: UserService,
-    private roomService: RoomService,
-    private alterService: AlertsService,
     protected chatService: ChatService,
     private authService: AuthService,
     private dialogRef: MatDialogRef<DialogSearchUserComponent>,
@@ -120,7 +117,7 @@ export class DialogSearchUserComponent implements OnInit, OnDestroy {
         description: "Conversation between " + myUser_username + " and " + user_username,
         type: RoomType.Direct
       };
-      this.roomService.createDirectRoom(room, user_id).subscribe(
+      this.chatService.createDirectRoom(room, user_id).subscribe(
         (response) => {
           this.alertService.success("The chat room has been successfully created");
           this.dialogRef.close({ data: room });

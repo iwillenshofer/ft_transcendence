@@ -1,9 +1,9 @@
-import { AbstractControl, AsyncValidatorFn, FormControl, ValidationErrors } from "@angular/forms";
-import { debounceTime, interval, map, Observable, timeInterval, timeout, timer } from "rxjs";
-import { RoomService } from "../services/room/room.service";
+import { AbstractControl, AsyncValidatorFn, ValidationErrors } from "@angular/forms";
+import { map, Observable } from "rxjs";
+import { ChatService } from "../components/chat/chat.service";
 
 
-export function isRoomNameTaken(roomService: RoomService): AsyncValidatorFn {
+export function isRoomNameTaken(roomService: ChatService): AsyncValidatorFn {
 
     return (control: AbstractControl): Observable<ValidationErrors | null> => {
         return roomService.checkRoomNameNotTaken(control.value).pipe(

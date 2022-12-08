@@ -1,9 +1,7 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { RoomService } from 'src/app/services/room/room.service';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ChatService } from '../../chat.service';
 import { AuthService } from 'src/app/auth/auth.service';
 import { Subscription } from 'rxjs';
@@ -28,7 +26,6 @@ export class DialogPasswordComponent implements OnInit, OnDestroy {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private dialogRef: MatDialogRef<DialogPasswordComponent>,
-    private roomService: RoomService,
     private alertService: AlertsService,
     private chatService: ChatService,
     private authService: AuthService) { }
@@ -50,7 +47,7 @@ export class DialogPasswordComponent implements OnInit, OnDestroy {
   }
 
   async verifyPassword() {
-    this.subscription2$ = this.roomService
+    this.subscription2$ = this.chatService
       .verifyPassword(this.data.room, this.form.getRawValue().password)
       .subscribe((event: any) => {
         if (event == false) {
