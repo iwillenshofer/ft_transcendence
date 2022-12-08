@@ -27,7 +27,7 @@ export class DoubleLoginComponent {
 		this.router.navigate(['/home']);
 	}
 	ngOnInit() {
-		this.authService.simulateLogout();
+		this.authService.logout();
 	}
 
 }

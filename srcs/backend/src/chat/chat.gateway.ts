@@ -37,8 +37,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       await this.chatService.getRoomsOfMember(user_id, page, RoomType.Direct));
     this.server.to(socket_id).emit('rooms_nondirect',
       await this.chatService.getRoomsOfMember(user_id, page, RoomType.Public));
-    this.server.to(socket_id).emit('rooms',
-      await this.chatService.getRoomsOfMember(user_id, page));
+    console.log("create_rooms")
+    const rooms = await this.chatService.getRoomsOfMember(user_id, page);
+    console.log(rooms);
+    this.server.to(socket_id).emit('rooms', rooms);
   }
 
   @UseGuards(TfaGuard)
@@ -101,14 +103,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('leave_room')
   async onLeaveRoom(socket: Socket, roomId: number) {
-    const members = await this.chatService.getMembersByUserId(+socket.handshake.headers.userid);
+    const user = await this.UsersService.getUserById(+socket.handshake.headers.userid);
     const room = await this.chatService.getRoomById(roomId);
-
-    let member: MemberEntity;
-    members.forEach(element => {
-      if (element.user.id == +socket.handshake.headers.userid)
-        member = element;
-    });
+    const member = await this.chatService.getMemberByRoomAndUser(room, user);
 
     if (await this.chatService.removeMemberFromRoom(room, member) == "delete_room") {
       await this.emitRooms(+socket.handshake.headers.userid, socket.id);

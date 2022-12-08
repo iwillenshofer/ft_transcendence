@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { MatSelectionList, MatSelectionListChange } from '@angular/material/list';
 import { PageEvent } from '@angular/material/paginator';
 import { Subscription } from 'rxjs';
@@ -144,14 +144,14 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     if (selectedPublicRoom != null) {
       if (this.allMyRooms.find(room => room.id == selectedPublicRoom.id)) {
-        this.selectedRoom = this.selectedPublicRoom;
+        this.selectRoom(this.selectedPublicRoom);
         this.alertService.info("You are already a member of this chat room");
+        this.selectPublicRoom(this.selectedRoomNulled);
         return;
       }
       if (this.isBanned(selectedPublicRoom)) {
         this.alertService.warning("You are banned from this chat room.");
-        //this.roomsAvailable.deselectAll();
-        this.nulledSelectedRoom();
+        this.selectPublicRoom(this.selectedRoomNulled);
         return;
       }
       if (selectedPublicRoom.type == RoomType.Protected) {
@@ -162,7 +162,8 @@ export class ChatComponent implements OnInit, OnDestroy {
           (response) => {
             this.alertService.success("You have successfully joined the chat room");
             this.allMyRooms.push(selectedPublicRoom);
-            this.nulledSelectedRoom();
+            this.selectRoom(selectedPublicRoom);
+            this.selectPublicRoom(this.selectedRoomNulled);
           },
           (error) => {
             this.alertService.danger("We could not add you to the chat room");
