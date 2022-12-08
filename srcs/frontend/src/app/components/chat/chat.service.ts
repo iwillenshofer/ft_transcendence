@@ -163,16 +163,16 @@ export class ChatService {
     this.socket.emit('blocker_users');
   }
 
-  setAsAdmin(userId: number, roomId: number) {
-    this.socket.emit('set_as_admin', { userId: userId, roomId: roomId });
+  setAsAdmin(userId: number, roomId: number): Observable<any> {
+    return this.http.post('/backend/chat/set_as_admin/', { userId: userId, roomId: roomId }, { withCredentials: true });
   }
 
-  unsetAdmin(userId: number, roomId: number) {
-    this.socket.emit('unset_as_admin', { userId: userId, roomId: roomId });
+  unsetAdmin(userId: number, roomId: number): Observable<any> {
+    return this.http.post('/backend/chat/unset_as_admin/', { userId: userId, roomId: roomId }, { withCredentials: true });
   }
 
-  setMute(memberId: number, roomId: number, muteTime: Date) {
-    this.socket.emit('set_mute', { memberId: memberId, roomId: roomId, muteTime: muteTime });
+  setMute(memberId: number, roomId: number, muteTime: Date): Observable<any> {
+    return this.http.post('/backend/chat/set_mute/', { memberId: memberId, roomId: roomId, muteTime: muteTime }, { withCredentials: true });
   }
 
   setBan(memberId: number, roomId: number, banTime: Date): Observable<any> {

@@ -82,16 +82,18 @@ export class PanelChatRoomComponent implements OnInit, OnChanges, OnDestroy {
     this.amIAdmin = this.myMember.role == MemberRole.Administrator ? true : false;
   }
 
-  blockUser(userId: number) {
-    this.chatService.blockUser(userId).subscribe(
-      (response) => {
-        this.alertService.success("User has been successfully blocked");
-      },
-      (error) => {
-        this.alertService.danger("User could not be blocked");
-      }
-    )
-    this.isBlocked = true;
+  blockUser(member: MemberInterface) {
+    if (member) {
+      this.chatService.blockUser(member.user.id).subscribe(
+        (response) => {
+          this.alertService.success(member.user.username + " has been successfully blocked");
+          this.isBlocked = true;
+        },
+        (error) => {
+          this.alertService.danger("Block could not be configured");
+        }
+      )
+    }
   }
 
   challenge(username: string) {
@@ -117,14 +119,21 @@ export class PanelChatRoomComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   setAsAdmin(member: MemberInterface) {
-    this.chatService.setAsAdmin(member.user.id, this.chatRoom.id);
-    this.isAdmin = true;
+    this.chatService.setAsAdmin(member.user.id, this.chatRoom.id).subscribe(
+      (response) => {
+        this.alertService.success(member.user.username + " is now an administrator");
+        this.isAdmin = true;
+      },
+      (error) => {
+        this.alertService.danger("Admin role could not be configured");
+      }
+    )
   }
 
   setBan(duration: string) {
     let banTime = new Date();
     if (this.selectedMember.id) {
-      if (duration == "5mn")
+      if (duration == "5min")
         banTime.setMinutes(banTime.getMinutes() + 5);
       else if (duration == "1h")
         banTime.setHours(banTime.getHours() + 1);
@@ -132,7 +141,7 @@ export class PanelChatRoomComponent implements OnInit, OnChanges, OnDestroy {
         banTime.setHours(banTime.getHours() + 24);
       this.chatService.setBan(this.selectedMember.id, this.chatRoom.id, banTime).subscribe(
         (response) => {
-          this.alertService.success("Ban has been configured successfully");
+          this.alertService.success(this.selectedMember.user.username + " has been banned for " + duration);
         },
         (error) => {
           this.alertService.danger("Ban could not be configured");
@@ -143,35 +152,47 @@ export class PanelChatRoomComponent implements OnInit, OnChanges, OnDestroy {
 
   setMute(duration: string) {
     let muteTime = new Date();
-    if (this.selectedMember.id) {
-      if (duration == "5mn") {
+    if (this.selectedMember.id && duration) {
+      if (duration == "5min")
         muteTime.setMinutes(muteTime.getMinutes() + 5);
-        this.chatService.setMute(this.selectedMember.id, this.chatRoom.id, muteTime);
-      }
-      else if (duration == "1h") {
-        muteTime.setHours(muteTime.getHours() + 1)
-        this.chatService.setMute(this.selectedMember.id, this.chatRoom.id, muteTime);
-      }
-      else if (duration == "24h") {
+      else if (duration == "1h")
+        muteTime.setHours(muteTime.getHours() + 1);
+      else if (duration == "24h")
         muteTime.setHours(muteTime.getHours() + 24);
-        this.chatService.setMute(this.selectedMember.id, this.chatRoom.id, muteTime);
-      }
+      this.chatService.setMute(this.selectedMember.id, this.chatRoom.id, muteTime).subscribe(
+        (response) => {
+          this.alertService.success(this.selectedMember.user.username + " has been muted for " + duration);
+        },
+        (error) => {
+          this.alertService.danger("Mute could not be configured");
+        }
+      )
     }
   }
 
-  unblockUser(userId: number) {
-    this.chatService.unblockUser(userId).subscribe(
-      (response) => {
-        this.alertService.success("User has been successfully unblocked");
-      },
-      (error) => {
-        this.alertService.danger("User could not be unblocked");
-      }
-    )
-    this.isBlocked = false;
+  unblockUser(member: MemberInterface) {
+    if (member) {
+      this.chatService.unblockUser(member.user.id).subscribe(
+        (response) => {
+          this.alertService.success(member.user.username + " has been successfully unblocked");
+          this.isBlocked = false;
+        },
+        (error) => {
+          this.alertService.danger("Unblock could not be configured");
+        }
+      )
+    }
   }
 
   unsetAdmin(member: MemberInterface) {
-    this.chatService.unsetAdmin(member.user.id, this.chatRoom.id);
+    this.chatService.unsetAdmin(member.user.id, this.chatRoom.id).subscribe(
+      (response) => {
+        this.alertService.success(member.user.username + " has been remove as administrator");
+        this.isAdmin = false;
+      },
+      (error) => {
+        this.alertService.danger("Admin role could not be configured");
+      }
+    )
   }
 }

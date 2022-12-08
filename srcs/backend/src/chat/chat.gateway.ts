@@ -6,12 +6,10 @@ import { PageInterface } from './models/page.interface';
 import { ConnectedUsersService } from 'src/services/connected-user/connected-user.service';
 import { EncryptService } from 'src/services/encrypt.service';
 import { ChatService } from './chat.service';
-import { JoinRoomDto } from './dto/joinRoom.dto';
 import { RoomEntity } from './entities/room.entity';
 import { MemberEntity } from './entities/member.entity';
 import { UserEntity, UsersService } from 'src/users/users.service';
 import { ConnectedUserEntity } from './entities/connected-user.entity';
-import { MemberRole } from './models/memberRole.model';
 import { SetAdminDto } from './dto/setAdmin.dto';
 import { MuteMemberDto } from './dto/muteMember.dto';
 import { Logger } from '@nestjs/common';
@@ -185,39 +183,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       blockerUserId.push(blockerUser.userId);
     });
     this.server.to(socket.id).emit('blocker_users', blockerUserId);
-  }
-
-  @SubscribeMessage("set_as_admin")
-  async setAsAdmin(socket: Socket, data: SetAdminDto) {
-    const room = await this.chatService.getRoomById(data.roomId);
-    const user = await this.UsersService.getUserById(data.userId);
-    const member = await this.chatService.getMemberByRoomAndUser(room, user);
-    await this.chatService.setAdmin(member);
-    const members = await this.chatService.getMembersByRoom(room);
-    for (const member of members) {
-      this.server.to(member.socketId).emit('members_room', members);
-    }
-  }
-
-  @SubscribeMessage("unset_as_admin")
-  async unsetAdmin(socket: Socket, data: SetAdminDto) {
-    const room = await this.chatService.getRoomById(data.roomId);
-    const user = await this.UsersService.getUserById(data.userId);
-    const member = await this.chatService.getMemberByRoomAndUser(room, user);
-    await this.chatService.unsetAdmin(member);
-    const members = await this.chatService.getMembersByRoom(room);
-    for (const member of members) {
-      this.server.to(member.socketId).emit('members_room', members);
-    }
-  }
-
-  @SubscribeMessage("set_mute")
-  async setMute(socket: Socket, data: MuteMemberDto) {
-    const member = await this.chatService.getMemberById(data.memberId);
-    await this.chatService.setMute(member, data.muteTime);
-    const room = await this.chatService.getRoomById(data.roomId);
-    const members = await this.chatService.getMembersByRoom(room);
-    this.server.to(member?.socketId).emit('members_room', members);
   }
 
   private onPrePaginate(page: PageInterface) {

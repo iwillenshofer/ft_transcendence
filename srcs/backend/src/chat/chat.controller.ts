@@ -14,6 +14,8 @@ import { ChangeSettingRoomDto } from './dto/changeSettingRoom.dto';
 import { CreateMessageDto } from './dto/createMessage.dto';
 import { MemberEntity } from './entities/member.entity';
 import { JoinRoomDto } from './dto/joinRoom.dto';
+import { MuteMemberDto } from './dto/muteMember.dto';
+import { SetAdminDto } from './dto/setAdmin.dto';
 
 @Controller('chat')
 export class ChatController {
@@ -276,5 +278,41 @@ export class ChatController {
         const room = await this.chatService.getRoomById(joinRoomDto.roomId);
         await this.chatService.addMemberToRoom(room, member);
         await this.chatGateway.emitRooms(user.id, connected_user.socketId);
+    }
+
+    @UseGuards(JwtGuard)
+    @Post('set_mute')
+    async setMute(@Body() data: MuteMemberDto, @Request() req) {
+        const member = await this.chatService.getMemberById(data.memberId);
+        await this.chatService.setMute(member, data.muteTime);
+        const room = await this.chatService.getRoomById(data.roomId);
+        const members = await this.chatService.getMembersByRoom(room);
+        this.chatGateway.server.to(member?.socketId).emit('members_room', members);
+    }
+
+    @UseGuards(JwtGuard)
+    @Post('set_as_admin')
+    async setAsAdmin(@Body() data: SetAdminDto, @Request() req) {
+        const room = await this.chatService.getRoomById(data.roomId);
+        const user = await this.userService.getUserById(data.userId);
+        const member = await this.chatService.getMemberByRoomAndUser(room, user);
+        await this.chatService.setAdmin(member);
+        const members = await this.chatService.getMembersByRoom(room);
+        for (const member of members) {
+            this.chatGateway.server.to(member.socketId).emit('members_room', members);
+        }
+    }
+
+    @UseGuards(JwtGuard)
+    @Post('unset_as_admin')
+    async unsetAdmin(@Body() data: SetAdminDto, @Request() req) {
+        const room = await this.chatService.getRoomById(data.roomId);
+        const user = await this.userService.getUserById(data.userId);
+        const member = await this.chatService.getMemberByRoomAndUser(room, user);
+        await this.chatService.unsetAdmin(member);
+        const members = await this.chatService.getMembersByRoom(room);
+        for (const member of members) {
+            this.chatGateway.server.to(member.socketId).emit('members_room', members);
+        }
     }
 }
