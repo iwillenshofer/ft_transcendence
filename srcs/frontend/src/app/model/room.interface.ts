@@ -1,5 +1,5 @@
-import { MessageInterface } from "../components/chat/models/message.interface";
 import { MemberInterface } from "./member.interface";
+import { MessageInterface } from "./message.interface";
 import { Meta } from "./meta.interface";
 
 export interface RoomInterface {

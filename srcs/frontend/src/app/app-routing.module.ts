@@ -1,8 +1,5 @@
-import { OnlineGameComponent } from './components/game/online-game/online-game.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AppComponent } from './app.component';
-import { HomeComponent } from './components/home/home.component';
 import { LoginpageComponent } from './components/login/loginpage/loginpage.component';
 import { LoginCallbackComponent } from './components/login/callback/callback.component';
 import { AuthguardService } from './auth/guards/authguard.service';
@@ -25,8 +22,8 @@ const routes: Routes = [
 	{ path: 'friends/:id', component: FriendsComponent, canActivate: [AuthguardService], pathMatch: 'full' },
 	{ path: 'friends', component: FriendsComponent, canActivate: [AuthguardService], pathMatch: 'full' },
 	{ path: 'profile', component: ProfileComponent, canActivate: [AuthguardService], pathMatch: 'full' },
-	{ path: '', redirectTo: 'home', pathMatch: 'full'},
-	{ path: '**', component: FourohfourComponent, pathMatch: 'full'}
+	{ path: '', redirectTo: 'home', pathMatch: 'full' },
+	{ path: '**', component: FourohfourComponent, pathMatch: 'full' }
 
 ];
 
@@ -34,6 +31,5 @@ const routes: Routes = [
 	imports: [RouterModule.forRoot(routes)],
 	exports: [RouterModule]
 })
-
 
 export class AppRoutingModule { }

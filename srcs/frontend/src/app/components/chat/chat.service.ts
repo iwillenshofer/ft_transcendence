@@ -2,13 +2,11 @@ import { Injectable } from '@angular/core';
 import { UserInterface } from '../../model/user.interface';
 import { RoomInterface } from '../../model/room.interface';
 import { RoomPaginateInterface } from '../../model/room.interface';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
-import { MessagePaginateInterface } from '../../model/message.interface';
-import { MessageInterface } from './models/message.interface';
+import { MessageInterface, MessagePaginateInterface } from '../../model/message.interface';
 import { ChatSocket } from './chat-socket';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { MemberInterface } from '../../model/member.interface';
 
 @Injectable()
@@ -16,12 +14,26 @@ export class ChatService {
 
   constructor(
     private socket: ChatSocket,
-    private snackBar: MatSnackBar,
     private router: Router,
     private http: HttpClient) {
   }
 
   isSocketActive = false;
+
+  addUserToRoom(room: RoomInterface, user: UserInterface): Observable<any> {
+    return this.http.post('/backend/chat/add_user_to_room/', { roomId: room.id, userId: user.id }, { withCredentials: true });
+  }
+
+  blockUser(userId: number): Observable<any> {
+    return this.http.post('/backend/chat/block_user/', { blockedUserId: userId }, { withCredentials: true });
+  }
+
+  checkRoomNameNotTaken(roomName: string) {
+    if (roomName && roomName.length > 2) {
+      return this.http.get('/backend/chat/is-room-name-taken/' + roomName);
+    }
+    return of(false);
+  }
 
   connect() {
     this.socket.on("double_login", () => {
@@ -31,13 +43,25 @@ export class ChatService {
     this.isSocketActive = true;
   }
 
+  createRoom(room: RoomInterface): Observable<any> {
+    return this.http.post('/backend/chat/create_room/', room, { withCredentials: true });
+  }
+
+  createDirectRoom(room: RoomInterface, user_id: number): Observable<any> {
+    return this.http.post('/backend/chat/create_direct_room/', { room: room, user_id: user_id }, { withCredentials: true });
+  }
+
+  changeSettingsRoom(roomId: number, data: any): Observable<any> {
+    return this.http.post('/backend/chat/change_settings_room/', { roomId: roomId, name: data.name, description: data.description, password: data.password, radioPassword: data.radioPassword }, { withCredentials: true });
+  }
+
   disconnect() {
     this.socket.disconnect();
     this.isSocketActive = false;
   }
 
-  sendMessage(message: string, room: RoomInterface) {
-    this.socket.emit('add_message', { message: message, room: room });
+  sendMessage(message: string, room: RoomInterface): Observable<any> {
+    return this.http.post('/backend/chat/add_message/', { message: message, room: room }, { withCredentials: true });
   }
 
   getMessages(): Observable<MessagePaginateInterface> {
@@ -48,19 +72,16 @@ export class ChatService {
     return this.socket.fromEvent<RoomPaginateInterface>('rooms');
   }
 
-  createRoom(room: RoomInterface) {
-    this.socket.emit('create_room', room);
-    this.snackBar.open(`Room ${room.name} created successfully`, 'Close', {
-      duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
-    });
+  getMyChatRoomsPaginate(): Observable<RoomPaginateInterface> {
+    return this.socket.fromEvent<RoomPaginateInterface>('rooms_nondirect');
   }
 
-  joinRoom(room: RoomInterface) {
-    this.socket.emit('join_room', { roomId: room.id });
+  getMyDirectRoomsPaginate(): Observable<RoomPaginateInterface> {
+    return this.socket.fromEvent<RoomPaginateInterface>('rooms_direct');
   }
 
-  addUserToRoom(room: RoomInterface, user: UserInterface) {
-    this.socket.emit('add_user_to_room', { roomId: room.id, userId: user.id });
+  joinRoom(room: RoomInterface): Observable<any> {
+    return this.http.post('/backend/chat/join_room/', { roomId: room.id }, { withCredentials: true });
   }
 
   emitPaginateRooms(limit: number, page: number) {
@@ -99,10 +120,6 @@ export class ChatService {
     this.socket.emit('messages', roomId);
   }
 
-  IsUserOnline(userId: number) {
-    return this.http.get<boolean>('/backend/chat/is_user_online/' + userId, { withCredentials: true });
-  }
-
   getAddedMessage(): Observable<MessageInterface> {
     return this.socket.fromEvent<MessageInterface>('message_added')
   }
@@ -133,20 +150,8 @@ export class ChatService {
     return this.http.get<MemberInterface>('/backend/chat/get_my_member_of_room/' + roomId, { withCredentials: true });
   }
 
-  getUsersOnline(): Observable<UserInterface[]> {
-    return this.socket.fromEvent<UserInterface[]>('users_online');
-  }
-
-  requestUsersOnline() {
-    this.socket.emit('users_online');
-  }
-
-  blockUser(userId: number) {
-    this.socket.emit('block_user', { blockedUserId: userId });
-  }
-
-  unblockUser(userId: number) {
-    this.socket.emit('unblock_user', { blockedUserId: userId });
+  unblockUser(userId: number): Observable<any> {
+    return this.http.post('/backend/chat/unblock_user/', { blockedUserId: userId }, { withCredentials: true });
   }
 
   isBlockedUser(userId: number) {
@@ -169,19 +174,27 @@ export class ChatService {
     this.socket.emit('blocker_users');
   }
 
-  setAsAdmin(userId: number, roomId: number) {
-    this.socket.emit('set_as_admin', { userId: userId, roomId: roomId });
+  setAsAdmin(userId: number, roomId: number): Observable<any> {
+    return this.http.post('/backend/chat/set_as_admin/', { userId: userId, roomId: roomId }, { withCredentials: true });
   }
 
-  unsetAdmin(userId: number, roomId: number) {
-    this.socket.emit('unset_as_admin', { userId: userId, roomId: roomId });
+  unsetAdmin(userId: number, roomId: number): Observable<any> {
+    return this.http.post('/backend/chat/unset_as_admin/', { userId: userId, roomId: roomId }, { withCredentials: true });
   }
 
-  setMute(memberId: number, roomId: number, muteTime: Date) {
-    this.socket.emit('set_mute', { memberId: memberId, roomId: roomId, muteTime: muteTime });
+  setMute(memberId: number, roomId: number, muteTime: Date): Observable<any> {
+    return this.http.post('/backend/chat/set_mute/', { memberId: memberId, roomId: roomId, muteTime: muteTime }, { withCredentials: true });
   }
 
-  setBan(memberId: number, roomId: number, banTime: Date) {
-    this.socket.emit('set_ban', { memberId: memberId, roomId: roomId, banTime: banTime });
+  setBan(memberId: number, roomId: number, banTime: Date): Observable<any> {
+    return this.http.post('/backend/chat/set_ban/', { memberId: memberId, roomId: roomId, banTime: banTime }, { withCredentials: true });
+  }
+
+  verifyPassword(room: RoomInterface, password: string): Observable<any> {
+    let body = {
+      roomId: room.id,
+      password: password
+    }
+    return this.http.post("/backend/chat/verify_password/", body, { withCredentials: true });
   }
 }

@@ -5,7 +5,6 @@
             <mat-form-field appearance="fill">
                 <mat-label>Name</mat-label>
                 <input type="text" matInput placeholder="Name" formControlName="name">
-                <mat-error *ngIf="name.touched && name.hasError('required')">Name is required</mat-error>
                 <mat-error *ngIf="name.touched && name.hasError('minlength')">Name must contain at least 3 characters
                 </mat-error>
                 <mat-error *ngIf="name.touched && name.hasError('maxlength')">Name must be no more than 20 characters
@@ -23,7 +22,10 @@
                 <mat-label>Description</mat-label>
                 <input type="text" matInput placeholder="Description" formControlName="description">
                 <mat-error *ngIf="description.touched && description.hasError('maxlength')">Description must be no more
-                    than 50 characters
+                    than 30 characters
+                </mat-error>
+                <mat-error *ngIf="description.touched && description.hasError('pattern')">Description may only contain
+                    letters, numbers and spaces
                 </mat-error>
             </mat-form-field>
 

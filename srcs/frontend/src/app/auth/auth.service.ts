@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { CookieService } from 'ngx-cookie-service'
 import { Router } from '@angular/router'
-import { Observable, BehaviorSubject, firstValueFrom, catchError } from 'rxjs';
-import { switchMap } from 'rxjs';
+import { Observable, BehaviorSubject, firstValueFrom } from 'rxjs';
 import { User } from './user.model';
 
 @Injectable({
@@ -60,15 +59,15 @@ export class AuthService {
 		return this.router.navigate(['/login']);
 	}
 
+	simulateLogout() {
+		this.logoutStatus.next(true);
+		this.logoutStatus.next(false);
+	}
+
 	logout(): void {
-		// console.log('loggin out');
 		this.serverLogout();
 		this.performLogout();
 	}
-
-	/*
-	**
-	*/
 
 	async getUser() {
 		return firstValueFrom(this.http.get<User>('/backend/auth/profile', { withCredentials: true }));
@@ -97,6 +96,4 @@ export class AuthService {
 			return (true);
 		return (false);
 	}
-
-
 }

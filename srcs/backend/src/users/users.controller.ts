@@ -17,22 +17,10 @@ export class UsersController {
     ) { }
 
     @UseGuards(JwtGuard)
-    @Post('username')
-    async updateUsername(@Request() req, @Body() body): Promise<Object> {
-        return of({ username: await this.UsersService.updateUsername(req.user.id, body.username) })
-    }
-
-    @UseGuards(JwtGuard)
     @Get('username')
     async getUsername(@Request() req) {
         return of({ username: await this.UsersService.getUsername(req.user.id) })
     }
-
-    // @UseGuards(JwtGuard)
-    // @Get('getAllConnectedUser')
-    // async getAllConnectedUSer(@Request() req) {
-    //     return of({ user: await this.connectedUsersService.getAllUserOnline() })
-    // }
 
     @UseGuards(JwtGuard)
     @Get('get_user_by_id/:id')
@@ -89,13 +77,6 @@ export class UsersController {
             return await res.sendFile(image, { root: './uploads/profileimages/' });
         else
             res.status(404).redirect('/fourohfour');
-    }
-
-    @UseGuards(JwtGuard)
-    @Get('image-url')
-    async getImgUrl(@Request() req, @Response() res) {
-        const path: string = await this.UsersService.getUrlAvatar(req.user.id);
-        res.status(200).send({ url: path });
     }
 
     @UseGuards(JwtGuard)

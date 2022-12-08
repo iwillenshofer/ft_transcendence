@@ -4,13 +4,10 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatRadioChange } from '@angular/material/radio';
 import { debounceTime, finalize, Subscription, switchMap, tap } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
-import { ChatService } from '../../chat/chat.service';
+import { ChatService } from '../../chat.service';
 import { MemberInterface, MemberRole } from 'src/app/model/member.interface';
 import { RoomType } from 'src/app/model/room.interface';
-import { RoomService } from 'src/app/services/room/room.service';
 import { isRoomNameTaken } from 'src/app/validators/async-room-name.validator';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { AlertsService } from 'src/app/alerts/alerts.service';
 
 @Component({
@@ -25,8 +22,11 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
   filteredUsers!: any;
 
   form: FormGroup = new FormGroup({
-    name: new FormControl(null, [Validators.minLength(3), Validators.maxLength(20), Validators.pattern('^[a-z-A-Z-0-9]+$'),], [isRoomNameTaken(this.roomService)]),
-    description: new FormControl(null, [Validators.maxLength(50)]),
+    name: new FormControl(null,
+      [Validators.minLength(3), Validators.maxLength(20),
+      Validators.pattern('^[a-zA-Z0-9]*$'),],
+      [isRoomNameTaken(this.chatService)]),
+    description: new FormControl(null, [Validators.maxLength(30), Validators.pattern('^[a-zA-Z0-9 ]*$')]),
     password: new FormControl(null, [Validators.required, Validators.minLength(8)]),
     searchUsersCtrl: new FormControl(null),
     radioPassword: new FormControl(null)
@@ -46,7 +46,6 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private roomService: RoomService,
     private authService: AuthService,
     private chatService: ChatService,
     private alertService: AlertsService,
@@ -140,7 +139,9 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
   }
 
   getUsername(value: any): string {
-    return (value.username);
+    if (value)
+      return (value.username);
+    return ("");
   }
 
   isPrivateRoom(): boolean {
@@ -171,9 +172,16 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
 
   submitChanges() {
     if (this.form.valid) {
-      this.roomService.changeSettingsRoom(this.data.room.id, this.form.getRawValue());
+      this.chatService.changeSettingsRoom(this.data.room.id, this.form.getRawValue()).subscribe(
+        (response) => {
+          this.alertService.success("The chat room's settings has been successfully saved");
+          this.dialogRef.close({ data: this.form.getRawValue() });
+        },
+        (error) => {
+          this.alertService.danger("The chat room's settings could not be saved");
+        }
+      )
     }
-    this.dialogRef.close({ data: this.form.getRawValue() });
   }
 
   updateMySelection() {

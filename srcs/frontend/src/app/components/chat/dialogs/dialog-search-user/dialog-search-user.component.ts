@@ -1,16 +1,12 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { debounceTime, finalize, map, Observable, startWith, Subscription, switchMap, tap, throwError } from 'rxjs';
+import { FormControl } from '@angular/forms';
+import { debounceTime, finalize, Subscription, switchMap, tap } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
-import { User } from 'src/app/auth/user.model';
 import { RoomInterface, RoomType } from 'src/app/model/room.interface';
-import { RoomService } from 'src/app/services/room/room.service';
 import { UserService } from 'src/app/services/user.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserInterface } from 'src/app/model/user.interface';
-import { ChatService } from '../../chat/chat.service';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { ChatService } from '../../chat.service';
 import { AlertsService } from 'src/app/alerts/alerts.service';
 
 @Component({
@@ -42,11 +38,10 @@ export class DialogSearchUserComponent implements OnInit, OnDestroy {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private userService: UserService,
-    private roomService: RoomService,
-    private alterService: AlertsService,
     protected chatService: ChatService,
     private authService: AuthService,
-    private dialogRef: MatDialogRef<DialogSearchUserComponent>,) {
+    private dialogRef: MatDialogRef<DialogSearchUserComponent>,
+    private alertService: AlertsService) {
   }
 
   async ngOnInit() {
@@ -109,7 +104,7 @@ export class DialogSearchUserComponent implements OnInit, OnDestroy {
     }
   }
 
-  async createPrivateChat() {
+  createPrivateChat() {
     let username = this.searchUsersCtrl.value;
     if (username && this.myUser) {
       let user_username = username.username;
@@ -122,15 +117,16 @@ export class DialogSearchUserComponent implements OnInit, OnDestroy {
         description: "Conversation between " + myUser_username + " and " + user_username,
         type: RoomType.Direct
       };
-      await this.roomService.createDirectRoom(room, user_id);
-      this.alterService.success("The chat room has been successfully created");
-      this.dialogRef.close({ data: room });
-      return;
+      this.chatService.createDirectRoom(room, user_id).subscribe(
+        (response) => {
+          this.alertService.success("The chat room has been successfully created");
+          this.dialogRef.close({ data: room });
+        },
+        (error) => {
+          this.alertService.danger("The chat room could not be created");
+        }
+      )
     }
-    else {
-      this.alterService.warning("The chat room couldn't be created.");
-    }
-    this.dialogRef.close();
   }
 
   getUsername(value: any): string {

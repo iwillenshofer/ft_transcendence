@@ -1,7 +1,5 @@
-import { Injectable, OnInit } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable } from '@angular/core';
 import { ChatSocket } from '../components/chat/chat-socket';
-import { UserInterface } from '../model/user.interface';
 
 export const OFFLINE = 0;
 export const ONLINE = 1;
@@ -22,8 +20,8 @@ export class UsersOnlineService {
 	constructor(private socket: ChatSocket) {
 		this.socket.on('chatStatus', (users: any) => {
 			this.users = users;
-		  })
-		  this.getUsers()
+		})
+		this.getUsers()
 	}
 
 	public users: UserI[] = []
@@ -37,21 +35,21 @@ export class UsersOnlineService {
 	getOnlineCount(): number {
 		let count: number = 0;
 		this.users.forEach(user => {
-		  if (user.status != "offline") {
-			count++;
-		  }
+			if (user.status != "offline") {
+				count++;
+			}
 		});
 		return count;
-	  }
+	}
 
 	getOnline(username: string): string {
 		let status = "offline";
 		this.users.forEach(user => {
-		  if (user.username == username) {
-			status = user.status;
-			return;
-		  }
+			if (user.username == username) {
+				status = user.status;
+				return;
+			}
 		});
 		return status;
-	  }
+	}
 }

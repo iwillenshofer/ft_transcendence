@@ -1,4 +1,4 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpClient, HttpResponse } from "@angular/common/http"
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpClient, HttpResponse, HttpErrorResponse } from "@angular/common/http"
 import { Router } from "@angular/router";
 import { AuthService } from "./auth.service";
 import { catchError, Observable, throwError, switchMap, map, of } from "rxjs";
@@ -24,9 +24,12 @@ export class AuthInterceptor implements HttpInterceptor {
 			return next.handle(new_req);
 		return next.handle(new_req).pipe<any>(
 			catchError((error) => {
-				if (error.status == 401) {
+				if (error.status == 401)
 					return this.handleError(req, next, error);
-				} else {
+				else if (error.status == 400) {
+					return throwError(() => error);
+				}
+				else {
 					this.alertservice.danger("Something bad happened and you'll have to login again!")
 					this.authService.logout();
 					return of(new HttpResponse({ body: {}, status: 200 }));

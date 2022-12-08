@@ -1,9 +1,12 @@
-import { UserEntity } from "src/users/users.entity";
 import { MemberEntity } from "../entities/member.entity";
 import { MessageEntity } from "../entities/message.entity";
 import { RoomEntity } from "../entities/room.entity";
+import { IsAscii, IsNotEmpty } from "class-validator"
+
 
 export class CreateMessageDto {
+    @IsNotEmpty()
+    @IsAscii()
     message: string;
     room: RoomEntity;
     member: MemberEntity;

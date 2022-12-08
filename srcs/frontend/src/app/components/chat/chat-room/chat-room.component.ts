@@ -3,18 +3,16 @@ import { FormControl, Validators } from '@angular/forms';
 import { combineLatest, map, Observable, startWith, Subscription, tap } from 'rxjs';
 import { MessagePaginateInterface } from 'src/app/model/message.interface';
 import { RoomInterface, RoomType } from 'src/app/model/room.interface';
-import { MemberRole } from 'src/app/model/member.interface';
+import { MemberInterface, MemberRole } from 'src/app/model/member.interface';
 import { UserInterface } from 'src/app/model/user.interface';
-import { MemberInterface } from '../models/member.interface';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogRoomSettingComponent } from '../../dialogs/dialog-room-setting/dialog-room-setting.component';
+import { DialogRoomSettingComponent } from '../dialogs/dialog-room-setting/dialog-room-setting.component';
 import { MatSelectionListChange } from '@angular/material/list';
 import { faStar as fasStar, faGears } from '@fortawesome/free-solid-svg-icons';
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
 import { OnlineGameService } from '../../game/game.service';
 import { FriendsService } from '../../friends/friends.service';
 import { ChatService } from '../chat.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { AlertsService } from 'src/app/alerts/alerts.service';
 
 @Component({
@@ -129,8 +127,14 @@ export class ChatRoomComponent implements OnInit, OnChanges, OnDestroy {
       this.alertService.info("You are muted");
     }
     else if (this.chatRoom) {
-      this.chatService.sendMessage(this.chatMessage.value, this.chatRoom);
-      this.chatMessage.reset();
+      this.chatService.sendMessage(this.chatMessage.value, this.chatRoom).subscribe(
+        (response) => {
+          this.chatMessage.reset();
+        },
+        (error) => {
+          this.alertService.danger("Message could not be send");
+        }
+      )
     }
   }
 

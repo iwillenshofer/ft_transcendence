@@ -23,8 +23,8 @@
                 <input type="text" matInput placeholder="Description" formControlName="description">
                 <mat-error *ngIf="description.touched && description.hasError('required')">Description is required
                 </mat-error>
-                <mat-error *ngIf="name.touched && name.hasError('pattern')">Description may only contain letters and
-                    numbers
+                <mat-error *ngIf="description.touched && description.hasError('pattern')">Description may only contain
+                    letters, numbers and spaces
                 </mat-error>
                 <mat-error *ngIf="description.touched && description.hasError('maxlength')">Description must be no more
                     than 30 characters
