@@ -11,6 +11,8 @@ import { ChatGateway } from './chat.gateway';
 import { BanMemberDto } from './dto/banMember.dto';
 import { BlockUserDto } from './dto/blockUser.dto';
 import { ChangeSettingRoomDto } from './dto/changeSettingRoom.dto';
+import { CreateMessageDto } from './dto/createMessage.dto';
+import { MemberEntity } from './entities/member.entity';
 
 @Controller('chat')
 export class ChatController {
@@ -212,5 +214,34 @@ export class ChatController {
         connectedUsers.forEach(user => {
             this.chatGateway.server.to(user.socketId).emit('publicRooms', publicRooms);
         });
+    }
+
+    @UseGuards(JwtGuard)
+    @Post('add_message')
+    async onAddMessage(@Body() createMessage: CreateMessageDto, @Request() req) {
+        const message = CreateMessageDto.from(createMessage);
+        const user = await this.userService.getUserById(+req.user.id);
+        const membersSender = await this.chatService.getMembersByUserId(user.id);
+        const this_room = await this.chatService.getRoomById(createMessage.room.id);
+        let this_member: MemberEntity;
+        for (var member of membersSender) {
+            member.rooms.forEach(room => {
+                if (room.id == this_room.id) {
+                    this_member = member;
+                }
+            })
+        }
+        const createdMessage = await this.chatService.createMessage(message.toEntity(), member);
+
+        let blockerUsers: number[] = [];
+        (await this.chatService.getBlockerUser(+req.user.id)).forEach(user => {
+            blockerUsers.push(user.userId);
+        });
+
+        const members = await this.chatService.getMembersByRoom(this_room);
+        for (const member of members) {
+            if (!blockerUsers.includes(member.user.id))
+                this.chatGateway.server.to(member.socketId).emit('message_added', createdMessage);
+        }
     }
 }

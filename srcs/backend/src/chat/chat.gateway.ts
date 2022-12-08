@@ -168,34 +168,34 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  @SubscribeMessage("add_message")
-  async onAddMessage(socket: Socket, createMessage: CreateMessageDto) {
-    const message = CreateMessageDto.from(createMessage);
-    const user = await this.UsersService.getUserById(+socket.handshake.headers.userid);
-    const membersSender = await this.chatService.getMembersByUserId(user.id);
-    const this_room = await this.chatService.getRoomById(createMessage.room.id);
-    let this_member: MemberEntity;
-    for (var member of membersSender) {
-      member.rooms.forEach(room => {
-        if (room.id == this_room.id) {
-          this_member = member;
-        }
-      })
-    }
+  // @SubscribeMessage("add_message")
+  // async onAddMessage(socket: Socket, createMessage: CreateMessageDto) {
+  //   const message = CreateMessageDto.from(createMessage);
+  //   const user = await this.UsersService.getUserById(+socket.handshake.headers.userid);
+  //   const membersSender = await this.chatService.getMembersByUserId(user.id);
+  //   const this_room = await this.chatService.getRoomById(createMessage.room.id);
+  //   let this_member: MemberEntity;
+  //   for (var member of membersSender) {
+  //     member.rooms.forEach(room => {
+  //       if (room.id == this_room.id) {
+  //         this_member = member;
+  //       }
+  //     })
+  //   }
 
-    const createdMessage = await this.chatService.createMessage(message.toEntity(), member);
+  //   const createdMessage = await this.chatService.createMessage(message.toEntity(), member);
 
-    let blockerUsers: number[] = [];
-    (await this.chatService.getBlockerUser(+socket.handshake.headers.userid)).forEach(user => {
-      blockerUsers.push(user.userId);
-    });
+  //   let blockerUsers: number[] = [];
+  //   (await this.chatService.getBlockerUser(+socket.handshake.headers.userid)).forEach(user => {
+  //     blockerUsers.push(user.userId);
+  //   });
 
-    const members = await this.chatService.getMembersByRoom(this_room);
-    for (const member of members) {
-      if (!blockerUsers.includes(member.user.id))
-        this.server.to(member.socketId).emit('message_added', createdMessage);
-    }
-  }
+  //   const members = await this.chatService.getMembersByRoom(this_room);
+  //   for (const member of members) {
+  //     if (!blockerUsers.includes(member.user.id))
+  //       this.server.to(member.socketId).emit('message_added', createdMessage);
+  //   }
+  // }
 
   @SubscribeMessage("members_room")
   async getMembersOfRoom(socket: Socket, roomId: number) {
@@ -205,32 +205,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.server.to(socket.id).emit('members_room', members);
     }
   }
-
-  // @SubscribeMessage("change_settings_room")
-  // async changeSettingsRoom(socket: Socket, data: ChangeSettingRoomDto) {
-  //   if (data.roomId) {
-  //     const room = await this.chatService.getRoomById(data.roomId);
-  //     if (data.name)
-  //       await this.chatService.updateRoomName(room, data.name);
-  //     if (data.description)
-  //       await this.chatService.updateRoomDescription(room, data.description);
-  //     if (data.radioPassword == "on")
-  //       await this.chatService.updateOrCreateRoomPassword(room, data.password);
-  //     else if (data.radioPassword == "off")
-  //       await this.chatService.removeRoomPassword(room);
-
-  //     const rooms = await this.chatService.getRoomsOfMember(+socket.handshake.headers.userid, { page: 1, limit: 3 });
-  //     const members = await this.chatService.getMembersByRoom(room);
-  //     for (const member of members) {
-  //       this.server.to(member.socketId).emit('rooms', rooms);
-  //     }
-  //   }
-  //   const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 3 });
-  //   const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
-  //   connectedUsers.forEach(user => {
-  //     this.server.to(user.socketId).emit('publicRooms', publicRooms);
-  //   });
-  // }
 
   @SubscribeMessage("users_online")
   async requestUsersOnline(socket: Socket) {

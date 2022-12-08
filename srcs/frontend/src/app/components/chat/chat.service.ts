@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { UserInterface } from '../../model/user.interface';
 import { RoomInterface } from '../../model/room.interface';
 import { RoomPaginateInterface } from '../../model/room.interface';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
 import { MessageInterface, MessagePaginateInterface } from '../../model/message.interface';
 import { ChatSocket } from './chat-socket';
@@ -15,7 +14,6 @@ export class ChatService {
 
   constructor(
     private socket: ChatSocket,
-    private snackBar: MatSnackBar,
     private router: Router,
     private http: HttpClient) {
   }
@@ -35,8 +33,8 @@ export class ChatService {
     this.isSocketActive = false;
   }
 
-  sendMessage(message: string, room: RoomInterface) {
-    this.socket.emit('add_message', { message: message, room: room });
+  sendMessage(message: string, room: RoomInterface): Observable<any> {
+    return this.http.post('/backend/chat/add_message/', { message: message, room: room }, { withCredentials: true });
   }
 
   getMessages(): Observable<MessagePaginateInterface> {
@@ -49,9 +47,6 @@ export class ChatService {
 
   createRoom(room: RoomInterface) {
     this.socket.emit('create_room', room);
-    this.snackBar.open(`Room ${room.name} created successfully`, 'Close', {
-      duration: 5000, horizontalPosition: 'right', verticalPosition: 'top'
-    });
   }
 
   joinRoom(room: RoomInterface) {
