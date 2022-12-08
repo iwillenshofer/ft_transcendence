@@ -20,12 +20,39 @@ export class ChatService {
 
   isSocketActive = false;
 
+  addUserToRoom(room: RoomInterface, user: UserInterface): Observable<any> {
+    return this.http.post('/backend/chat/add_user_to_room/', { roomId: room.id, userId: user.id }, { withCredentials: true });
+  }
+
+  blockUser(userId: number): Observable<any> {
+    return this.http.post('/backend/chat/block_user/', { blockedUserId: userId }, { withCredentials: true });
+  }
+
+  checkRoomNameNotTaken(roomName: string) {
+    if (roomName && roomName.length > 2) {
+      return this.http.get('/backend/chat/is-room-name-taken/' + roomName);
+    }
+    return of(false);
+  }
+
   connect() {
     this.socket.on("double_login", () => {
       this.router.navigate(['doublelogin']);
     });
     this.socket.connect();
     this.isSocketActive = true;
+  }
+
+  createRoom(room: RoomInterface): Observable<any> {
+    return this.http.post('/backend/chat/create_room/', room, { withCredentials: true });
+  }
+
+  createDirectRoom(room: RoomInterface, user_id: number): Observable<any> {
+    return this.http.post('/backend/chat/create_direct_room/', { room: room, user_id: user_id }, { withCredentials: true });
+  }
+
+  changeSettingsRoom(roomId: number, data: any): Observable<any> {
+    return this.http.post('/backend/chat/change_settings_room/', { roomId: roomId, name: data.name, description: data.description, password: data.password, radioPassword: data.radioPassword }, { withCredentials: true });
   }
 
   disconnect() {
@@ -47,10 +74,6 @@ export class ChatService {
 
   joinRoom(room: RoomInterface): Observable<any> {
     return this.http.post('/backend/chat/join_room/', { roomId: room.id }, { withCredentials: true });
-  }
-
-  addUserToRoom(room: RoomInterface, user: UserInterface): Observable<any> {
-    return this.http.post('/backend/chat/add_user_to_room/', { roomId: room.id, userId: user.id }, { withCredentials: true });
   }
 
   emitPaginateRooms(limit: number, page: number) {
@@ -119,10 +142,6 @@ export class ChatService {
     return this.http.get<MemberInterface>('/backend/chat/get_my_member_of_room/' + roomId, { withCredentials: true });
   }
 
-  blockUser(userId: number): Observable<any> {
-    return this.http.post('/backend/chat/block_user/', { blockedUserId: userId }, { withCredentials: true });
-  }
-
   unblockUser(userId: number): Observable<any> {
     return this.http.post('/backend/chat/unblock_user/', { blockedUserId: userId }, { withCredentials: true });
   }
@@ -161,25 +180,6 @@ export class ChatService {
 
   setBan(memberId: number, roomId: number, banTime: Date): Observable<any> {
     return this.http.post('/backend/chat/set_ban/', { memberId: memberId, roomId: roomId, banTime: banTime }, { withCredentials: true });
-  }
-
-  checkRoomNameNotTaken(roomName: string) {
-    if (roomName && roomName.length > 2) {
-      return this.http.get('/backend/chat/is-room-name-taken/' + roomName);
-    }
-    return of(false);
-  }
-
-  createRoom(room: RoomInterface): Observable<any> {
-    return this.http.post('/backend/chat/create_room/', room, { withCredentials: true });
-  }
-
-  createDirectRoom(room: RoomInterface, user_id: number): Observable<any> {
-    return this.http.post('/backend/chat/create_direct_room/', { room: room, user_id: user_id }, { withCredentials: true });
-  }
-
-  changeSettingsRoom(roomId: number, data: any): Observable<any> {
-    return this.http.post('/backend/chat/change_settings_room/', { roomId: roomId, name: data.name, description: data.description, password: data.password, radioPassword: data.radioPassword }, { withCredentials: true });
   }
 
   verifyPassword(room: RoomInterface, password: string): Observable<any> {
