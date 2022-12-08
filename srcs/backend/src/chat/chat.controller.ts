@@ -60,12 +60,6 @@ export class ChatController {
     }
 
     @UseGuards(JwtGuard)
-    @Get('is_user_online/:userId')
-    async isUserOnline(@Param('userId') userId) {
-        return of(await this.connectedUsersService.isUserOnline(userId));
-    }
-
-    @UseGuards(JwtGuard)
     @Get('get_non_added_users')
     async getNonAddedUsers(@Request() req) {
         return of(await this.chatService.getNonAddedUsers(req.user.id));

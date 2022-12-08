@@ -89,10 +89,6 @@ export class ChatService {
     this.socket.emit('messages', roomId);
   }
 
-  IsUserOnline(userId: number) {
-    return this.http.get<boolean>('/backend/chat/is_user_online/' + userId, { withCredentials: true });
-  }
-
   getAddedMessage(): Observable<MessageInterface> {
     return this.socket.fromEvent<MessageInterface>('message_added')
   }
@@ -121,14 +117,6 @@ export class ChatService {
 
   getMyMemberOfRoom(roomId: number): Observable<MemberInterface> {
     return this.http.get<MemberInterface>('/backend/chat/get_my_member_of_room/' + roomId, { withCredentials: true });
-  }
-
-  getUsersOnline(): Observable<UserInterface[]> {
-    return this.socket.fromEvent<UserInterface[]>('users_online');
-  }
-
-  requestUsersOnline() {
-    this.socket.emit('users_online');
   }
 
   blockUser(userId: number): Observable<any> {

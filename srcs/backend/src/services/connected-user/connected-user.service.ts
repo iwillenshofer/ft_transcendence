@@ -42,13 +42,6 @@ export class ConnectedUsersService {
         });
     }
 
-    async isUserOnline(userId: number): Promise<Boolean> {
-        let connectedUser = await this.getByUserId(userId);
-        if (connectedUser != null)
-            return (true);
-        return (false);
-    }
-
     async deleteBySocketId(socketId: string) {
         let connectedUser = await this.connectedUserRepository.findOneBy({ socketId: socketId });
         if (connectedUser) {
