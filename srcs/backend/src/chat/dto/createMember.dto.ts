@@ -1,7 +1,5 @@
 import { UserEntity } from "src/users/users.entity";
 import { MemberEntity } from "../entities/member.entity";
-import { MessageEntity } from "../entities/message.entity";
-import { RoomEntity } from "../entities/room.entity";
 import { MemberRole } from "../models/memberRole.model";
 
 export class CreateMemberDto {

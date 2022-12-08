@@ -356,7 +356,7 @@ export class ChatService {
 
     async removeRoomPassword(room: RoomEntity) {
         room.password = null;
-        room.type = RoomType.Private;
+        room.type = RoomType.Public;
         await this.roomRepository.save(room);
     }
 

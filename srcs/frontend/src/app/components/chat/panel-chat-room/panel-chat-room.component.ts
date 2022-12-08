@@ -9,6 +9,7 @@ import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
 import { FriendsService } from '../../friends/friends.service';
 import { ChatService } from '../chat.service';
 import { OnlineGameService } from '../../game/game.service';
+import { AlertsService } from 'src/app/alerts/alerts.service';
 
 @Component({
   selector: 'app-panel-chat-room',
@@ -50,7 +51,8 @@ export class PanelChatRoomComponent implements OnInit, OnChanges, OnDestroy {
   constructor(private chatService: ChatService,
     private gameService: OnlineGameService,
     private friendService: FriendsService,
-    public dialog: MatDialog) {
+    public dialog: MatDialog,
+    private alertService: AlertsService) {
   }
 
   ngOnInit(): void {
@@ -81,7 +83,14 @@ export class PanelChatRoomComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   blockUser(userId: number) {
-    this.chatService.blockUser(userId);
+    this.chatService.blockUser(userId).subscribe(
+      (response) => {
+        this.alertService.success("User has been successfully blocked");
+      },
+      (error) => {
+        this.alertService.danger("User could not be blocked");
+      }
+    )
     this.isBlocked = true;
   }
 
@@ -115,18 +124,20 @@ export class PanelChatRoomComponent implements OnInit, OnChanges, OnDestroy {
   setBan(duration: string) {
     let banTime = new Date();
     if (this.selectedMember.id) {
-      if (duration == "5mn") {
+      if (duration == "5mn")
         banTime.setMinutes(banTime.getMinutes() + 5);
-        this.chatService.setBan(this.selectedMember.id, this.chatRoom.id, banTime);
-      }
-      else if (duration == "1h") {
-        banTime.setHours(banTime.getHours() + 1)
-        this.chatService.setBan(this.selectedMember.id, this.chatRoom.id, banTime);
-      }
-      else if (duration == "24h") {
+      else if (duration == "1h")
+        banTime.setHours(banTime.getHours() + 1);
+      else if (duration == "24h")
         banTime.setHours(banTime.getHours() + 24);
-        this.chatService.setBan(this.selectedMember.id, this.chatRoom.id, banTime);
-      }
+      this.chatService.setBan(this.selectedMember.id, this.chatRoom.id, banTime).subscribe(
+        (response) => {
+          this.alertService.success("Ban has been configured successfully");
+        },
+        (error) => {
+          this.alertService.danger("Ban could not be configured");
+        }
+      )
     }
   }
 
@@ -149,7 +160,14 @@ export class PanelChatRoomComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   unblockUser(userId: number) {
-    this.chatService.unblockUser(userId);
+    this.chatService.unblockUser(userId).subscribe(
+      (response) => {
+        this.alertService.success("User has been successfully unblocked");
+      },
+      (error) => {
+        this.alertService.danger("User could not be unblocked");
+      }
+    )
     this.isBlocked = false;
   }
 

@@ -174,9 +174,16 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
 
   submitChanges() {
     if (this.form.valid) {
-      this.roomService.changeSettingsRoom(this.data.room.id, this.form.getRawValue());
+      this.roomService.changeSettingsRoom(this.data.room.id, this.form.getRawValue()).subscribe(
+        (response) => {
+          this.alertService.success("The chat room's settings has been successfully saved");
+          this.dialogRef.close({ data: this.form.getRawValue() });
+        },
+        (error) => {
+          this.alertService.danger("The chat room's settings could not be saved");
+        }
+      )
     }
-    this.dialogRef.close({ data: this.form.getRawValue() });
   }
 
   updateMySelection() {

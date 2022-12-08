@@ -1,6 +1,6 @@
 import { RoomEntity } from "../entities/room.entity";
 import { RoomType } from "../models/typeRoom.model";
-import { Matches, MinLength, IsNotEmpty, Length, MaxLength, IsIn, IsString, IsOptional } from "class-validator"
+import { Matches, MinLength, IsNotEmpty, Length, MaxLength, IsString, IsOptional } from "class-validator"
 
 export class CreateRoomDto {
 

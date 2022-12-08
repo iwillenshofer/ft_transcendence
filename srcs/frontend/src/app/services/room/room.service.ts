@@ -31,8 +31,8 @@ export class RoomService {
     return this.http.post('/backend/chat/create_direct_room/', { room: room, user_id: user_id }, { withCredentials: true });
   }
 
-  async changeSettingsRoom(roomId: number, data: any) {
-    this.socket.emit('change_settings_room', { roomId: roomId, name: data.name, description: data.description, password: data.password, radioPassword: data.radioPassword });
+  changeSettingsRoom(roomId: number, data: any): Observable<any> {
+    return this.http.post('/backend/chat/change_settings_room/', { roomId: roomId, name: data.name, description: data.description, password: data.password, radioPassword: data.radioPassword }, { withCredentials: true });
   }
 
   verifyPassword(room: RoomInterface, password: string): Observable<any> {

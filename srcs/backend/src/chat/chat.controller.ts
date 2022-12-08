@@ -8,6 +8,9 @@ import { EncryptService } from 'src/services/encrypt.service';
 import { UsersService } from 'src/users/users.service';
 import { MemberRole } from './models/memberRole.model';
 import { ChatGateway } from './chat.gateway';
+import { BanMemberDto } from './dto/banMember.dto';
+import { BlockUserDto } from './dto/blockUser.dto';
+import { ChangeSettingRoomDto } from './dto/changeSettingRoom.dto';
 
 @Controller('chat')
 export class ChatController {
@@ -118,5 +121,96 @@ export class ChatController {
         await this.chatService.createRoom(room.toEntity(), [ownerMember, invitedMember]);
         await this.chatGateway.emitRooms(owner.id, ownerMember.socketId);
         await this.chatGateway.emitRooms(invited.id, invitedMember.socketId);
+    }
+
+    @UseGuards(JwtGuard)
+    @Post('set_ban')
+    async setBan(@Body() data: BanMemberDto, @Request() req) {
+        const member = await this.chatService.getMemberById(data.memberId);
+        await this.chatService.setBan(member, data.banTime);
+        const room = await this.chatService.getRoomById(data.roomId);
+        const members = await this.chatService.getMembersByRoom(room);
+        await this.chatService.removeMemberFromRoom(room, member);
+        for (const member of members) {
+            this.chatGateway.server.to(member.socketId).emit('members_room', members);
+        }
+        await this.chatGateway.emitRooms(member.user.id, member.socketId);
+
+        const all_rooms = await this.chatService.getAllMyRooms(+member.user.id);
+        this.chatGateway.server.to(member.socketId).emit('all_my_rooms', all_rooms);
+
+        const all_public_rooms = await this.chatService.getAllPublicRooms();
+        this.chatGateway.server.to(member.socketId).emit('all_public_rooms', all_public_rooms);
+    }
+
+    @UseGuards(JwtGuard)
+    @Post('block_user')
+    async blockUser(@Body() blockUserDto: BlockUserDto, @Request() req) {
+        await this.chatService.addBlockedUser(+req.user.id, blockUserDto.blockedUserId);
+        const member = await this.chatService.getMemberByUserId(blockUserDto.blockedUserId);
+        const connected_user = await this.connectedUser.getByUserId(+req.user.id);
+
+        let blockerUserId: number[] = [];
+        (await this.chatService.getBlockerUser(+req.user.id)).forEach(blockerUser => {
+            blockerUserId.push(blockerUser.userId);
+        });
+        this.chatGateway.server.to(connected_user.socketId).emit('blocker_users', blockerUserId);
+        this.chatGateway.server.to(member.socketId).emit('blocker_users', blockerUserId);
+
+        let blockedUserId: number[] = [];
+        (await this.chatService.getBlockedUser(+req.user.id)).forEach(blockedUser => {
+            blockedUserId.push(blockedUser.blockedUserId);
+        });
+        this.chatGateway.server.to(connected_user.socketId).emit('blocked_users', blockedUserId);
+        this.chatGateway.server.to(member.socketId).emit('blocked_users', blockedUserId);
+    }
+
+    @UseGuards(JwtGuard)
+    @Post('unblock_user')
+    async unblockUser(@Body() blockUserDto: BlockUserDto, @Request() req) {
+        await this.chatService.removeBlockedUser(+req.user.id, blockUserDto.blockedUserId);
+        const member = await this.chatService.getMemberByUserId(blockUserDto.blockedUserId);
+        const connected_user = await this.connectedUser.getByUserId(+req.user.id);
+
+        let blockerUserId: number[] = [];
+        (await this.chatService.getBlockerUser(+req.user.id)).forEach(blockerUser => {
+            blockerUserId.push(blockerUser.userId);
+        });
+        this.chatGateway.server.to(connected_user.socketId).emit('blocker_users', blockerUserId);
+        this.chatGateway.server.to(member.socketId).emit('blocker_users', blockerUserId);
+
+        let blockedUserId: number[] = [];
+        (await this.chatService.getBlockedUser(+req.user.id)).forEach(blockedUser => {
+            blockedUserId.push(blockedUser.blockedUserId);
+        });
+        this.chatGateway.server.to(connected_user.socketId).emit('blocked_users', blockedUserId);
+        this.chatGateway.server.to(member.socketId).emit('blocked_users', blockedUserId);
+    }
+
+    @UseGuards(JwtGuard)
+    @Post('change_settings_room')
+    async changeSettingsRoom(@Body() data: ChangeSettingRoomDto, @Request() req) {
+        if (data.roomId) {
+            const room = await this.chatService.getRoomById(data.roomId);
+            if (data.name)
+                await this.chatService.updateRoomName(room, data.name);
+            if (data.description)
+                await this.chatService.updateRoomDescription(room, data.description);
+            if (data.radioPassword == "on")
+                await this.chatService.updateOrCreateRoomPassword(room, data.password);
+            else if (data.radioPassword == "off")
+                await this.chatService.removeRoomPassword(room);
+
+            const rooms = await this.chatService.getRoomsOfMember(+req.user.id, { page: 1, limit: 3 });
+            const members = await this.chatService.getMembersByRoom(room);
+            for (const member of members) {
+                this.chatGateway.server.to(member.socketId).emit('rooms', rooms);
+            }
+        }
+        const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 3 });
+        const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
+        connectedUsers.forEach(user => {
+            this.chatGateway.server.to(user.socketId).emit('publicRooms', publicRooms);
+        });
     }
 }
