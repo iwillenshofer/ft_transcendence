@@ -264,6 +264,7 @@ export class ChatController {
     @UseGuards(JwtGuard)
     @Post('add_user_to_room')
     async addUserToRoom(@Body() joinRoomDto: JoinRoomDto, @Request() req) {
+        console.log("addUser")
         const user = await this.userService.getUser(joinRoomDto.userId);
         const connected_user = await this.connectedUsersService.getByUserId(user.id);
         const member = await this.chatService.createMember(user.toEntity(), connected_user.socketId, MemberRole.Member);
