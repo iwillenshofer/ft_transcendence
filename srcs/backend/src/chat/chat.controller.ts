@@ -256,7 +256,6 @@ export class ChatController {
         await this.chatGateway.emitRooms(user.id, connected_user.socketId);
         const members = await this.chatService.getMembersByRoom(room);
         for (const member of members) {
-            console.log(member.user.username)
             this.chatGateway.server.to(member.socketId).emit('members_room', members);
         }
     }
@@ -271,6 +270,10 @@ export class ChatController {
         const room = await this.chatService.getRoomById(joinRoomDto.roomId);
         await this.chatService.addMemberToRoom(room, member);
         await this.chatGateway.emitRooms(user.id, connected_user.socketId);
+        const members = await this.chatService.getMembersByRoom(room);
+        for (const member of members) {
+            this.chatGateway.server.to(member.socketId).emit('members_room', members);
+        }
     }
 
     @UseGuards(JwtGuard)

@@ -28,8 +28,11 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
       [isRoomNameTaken(this.chatService)]),
     description: new FormControl(null, [Validators.maxLength(30), Validators.pattern('^[a-zA-Z0-9 ]*$')]),
     password: new FormControl(null, [Validators.required, Validators.minLength(8)]),
-    searchUsersCtrl: new FormControl(null),
     radioPassword: new FormControl(null)
+  });
+
+  formUser: FormGroup = new FormGroup({
+    searchUsersCtrl: new FormControl(null)
   });
 
   hide = true;
@@ -61,7 +64,7 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
     this.chatService.requestMemberOfRoom(this.data.room.id);
 
     if (this.data.room.type == RoomType.Direct)
-      this.form.controls['searchUsersCtrl'].disable();
+      this.formUser.controls['searchUsersCtrl'].disable();
     if (this.data.room.type != RoomType.Protected)
       this.form.controls['password'].disable();
     if (this.myMember?.role != MemberRole.Owner)
@@ -122,7 +125,7 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
   }
 
   get searchUsersCtrl(): FormControl {
-    return this.form.get('searchUsersCtrl') as FormControl;
+    return this.formUser.get('searchUsersCtrl') as FormControl;
   }
 
   checkIfAlreadyAdded() {
@@ -139,10 +142,9 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
             this.alertService.danger(user.username + " could not be added to the room");
           }
         )
-
       }
       else
-        this.alertService.info(user.username + "is already a member of this chat room");
+        this.alertService.info(user.username + " is already a member of this chat room");
     }
   }
 
