@@ -54,12 +54,18 @@ export class DialogPasswordComponent implements OnInit, OnDestroy {
       .verifyPassword(this.data.room, this.form.getRawValue().password)
       .subscribe((event: any) => {
         if (event == false) {
-          this.alertService.warning("The password is incorrect.")
+          this.alertService.warning("The password is incorrect")
         }
         else {
-          this.chatService.joinRoom(this.data.room);
-          this.alertService.success("You have successfully joined the chat room.")
-          this.dialogRef.close();
+          this.chatService.joinRoom(this.data.room).subscribe(
+            (response) => {
+              this.alertService.success("You have successfully joined the chat room")
+              this.dialogRef.close();
+            },
+            (error) => {
+              this.alertService.danger("We could not add you to the chat room");
+            }
+          )
         }
       });
   }

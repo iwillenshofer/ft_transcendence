@@ -133,11 +133,11 @@ export class ChatComponent implements OnInit, OnDestroy {
       console.log(this.allMyRooms);
       if (this.allMyRooms.find(room => room.id == selectedPublicRoom.id)) {
         this.selectedRoom = this.selectedPublicRoom;
-        this.alertService.info("You are already a member of this chat room.");
+        this.alertService.info("You are already a member of this chat room");
         return;
       }
       if (this.isBanned(selectedPublicRoom)) {
-        this.alertService.warning("You are banned from this chat room.");
+        this.alertService.warning("You are banned from this chat room");
         this.roomsAvailable.deselectAll();
         this.nulledSelectedRoom();
         return;
@@ -146,12 +146,17 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.openDialogPassword();
       }
       else {
-        this.chatService.joinRoom(selectedPublicRoom);
-        this.alertService.success("You have successfully joined the chat room.");
-        this.allMyRooms.push(selectedPublicRoom);
-        console.log(this.allMyRooms);
+        this.chatService.joinRoom(selectedPublicRoom).subscribe(
+          (response) => {
+            this.alertService.success("You have successfully joined the chat room");
+            this.allMyRooms.push(selectedPublicRoom);
+            this.nulledSelectedRoom();
+          },
+          (error) => {
+            this.alertService.danger("We could not add you to the chat room");
+          }
+        )
       }
-      this.nulledSelectedRoom();
     }
     this.roomsAvailable.deselectAll();
   }

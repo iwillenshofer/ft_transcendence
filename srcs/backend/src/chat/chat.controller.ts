@@ -13,6 +13,7 @@ import { BlockUserDto } from './dto/blockUser.dto';
 import { ChangeSettingRoomDto } from './dto/changeSettingRoom.dto';
 import { CreateMessageDto } from './dto/createMessage.dto';
 import { MemberEntity } from './entities/member.entity';
+import { JoinRoomDto } from './dto/joinRoom.dto';
 
 @Controller('chat')
 export class ChatController {
@@ -243,5 +244,37 @@ export class ChatController {
             if (!blockerUsers.includes(member.user.id))
                 this.chatGateway.server.to(member.socketId).emit('message_added', createdMessage);
         }
+    }
+
+    @UseGuards(JwtGuard)
+    @Post('join_room')
+    async onJoinRoom(@Body() joinRoomDto: JoinRoomDto, @Request() req) {
+        const user = await this.userService.getUser(+req.user.id);
+        const room = await this.chatService.getRoomById(joinRoomDto.roomId);
+        const connected_user = await this.connectedUser.getByUserId(+req.user.id);
+        let member = await this.chatService.getMemberByRoomAndUser(room, user.toEntity());
+        if (member == null) {
+            member = await this.chatService.createMember(user.toEntity(), connected_user.socketId, MemberRole.Member);
+            await this.chatService.addMemberToRoom(room, member);
+        }
+        else {
+            await this.chatService.rejoinMemberToRoom(member);
+            await this.chatGateway.emitRooms(user.id, connected_user.socketId);
+        }
+        const members = await this.chatService.getMembersByRoom(room);
+        for (const member of members) {
+            this.chatGateway.server.to(member.socketId).emit('members_room', members);
+        }
+    }
+
+    @UseGuards(JwtGuard)
+    @Post('add_user_to_room')
+    async addUserToRoom(@Body() joinRoomDto: JoinRoomDto, @Request() req) {
+        const user = await this.userService.getUser(joinRoomDto.userId);
+        const connected_user = await this.connectedUsersService.getByUserId(user.id);
+        const member = await this.chatService.createMember(user.toEntity(), connected_user.socketId, MemberRole.Member);
+        const room = await this.chatService.getRoomById(joinRoomDto.roomId);
+        await this.chatService.addMemberToRoom(room, member);
+        await this.chatGateway.emitRooms(user.id, connected_user.socketId);
     }
 }

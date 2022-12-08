@@ -49,12 +49,12 @@ export class ChatService {
     this.socket.emit('create_room', room);
   }
 
-  joinRoom(room: RoomInterface) {
-    this.socket.emit('join_room', { roomId: room.id });
+  joinRoom(room: RoomInterface): Observable<any> {
+    return this.http.post('/backend/chat/join_room/', { roomId: room.id }, { withCredentials: true });
   }
 
-  addUserToRoom(room: RoomInterface, user: UserInterface) {
-    this.socket.emit('add_user_to_room', { roomId: room.id, userId: user.id });
+  addUserToRoom(room: RoomInterface, user: UserInterface): Observable<any> {
+    return this.http.post('/backend/chat/add_user_to_room/', { roomId: room.id, userId: user.id }, { withCredentials: true });
   }
 
   emitPaginateRooms(limit: number, page: number) {

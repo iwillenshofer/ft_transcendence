@@ -5,16 +5,13 @@ import { Server, Socket } from 'socket.io';
 import { PageInterface } from './models/page.interface';
 import { ConnectedUsersService } from 'src/services/connected-user/connected-user.service';
 import { EncryptService } from 'src/services/encrypt.service';
-import { CreateRoomDto } from './dto/createRoom.dto';
 import { ChatService } from './chat.service';
 import { JoinRoomDto } from './dto/joinRoom.dto';
 import { RoomEntity } from './entities/room.entity';
-import { CreateMessageDto } from './dto/createMessage.dto';
 import { MemberEntity } from './entities/member.entity';
 import { UserEntity, UsersService } from 'src/users/users.service';
 import { ConnectedUserEntity } from './entities/connected-user.entity';
 import { MemberRole } from './models/memberRole.model';
-import { ChangeSettingRoomDto } from './dto/changeSettingRoom.dto';
 import { SetAdminDto } from './dto/setAdmin.dto';
 import { MuteMemberDto } from './dto/muteMember.dto';
 import { Logger } from '@nestjs/common';
@@ -109,35 +106,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return this.server.to(socket.id).emit('publicRooms', publicRooms);
   }
 
-  @SubscribeMessage('join_room')
-  async onJoinRoom(socket: Socket, joinRoomDto: JoinRoomDto) {
-    const user = await this.UsersService.getUser(+socket.handshake.headers.userid);
-    const room = await this.chatService.getRoomById(joinRoomDto.roomId);
-    let member = await this.chatService.getMemberByRoomAndUser(room, user.toEntity());
-    if (member == null) {
-      member = await this.chatService.createMember(user.toEntity(), socket.id, MemberRole.Member);
-      await this.chatService.addMemberToRoom(room, member);
-    }
-    else {
-      await this.chatService.rejoinMemberToRoom(member);
-      await this.emitRooms(user.id, socket.id);
-    }
-    const members = await this.chatService.getMembersByRoom(room);
-    for (const member of members) {
-      this.server.to(member.socketId).emit('members_room', members);
-    }
-  }
-
-  @SubscribeMessage('add_user_to_room')
-  async addUserToRoom(socket: Socket, joinRoomDto: JoinRoomDto) {
-    const user = await this.UsersService.getUser(joinRoomDto.userId);
-    const connected_user = await this.connectedUsersService.getByUserId(user.id);
-    const member = await this.chatService.createMember(user.toEntity(), connected_user.socketId, MemberRole.Member);
-    const room = await this.chatService.getRoomById(joinRoomDto.roomId);
-    await this.chatService.addMemberToRoom(room, member);
-    await this.emitRooms(user.id, socket.id);
-  }
-
   @SubscribeMessage('leave_room')
   async onLeaveRoom(socket: Socket, roomId: number) {
     const members = await this.chatService.getMembersByUserId(+socket.handshake.headers.userid);
@@ -167,35 +135,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
     }
   }
-
-  // @SubscribeMessage("add_message")
-  // async onAddMessage(socket: Socket, createMessage: CreateMessageDto) {
-  //   const message = CreateMessageDto.from(createMessage);
-  //   const user = await this.UsersService.getUserById(+socket.handshake.headers.userid);
-  //   const membersSender = await this.chatService.getMembersByUserId(user.id);
-  //   const this_room = await this.chatService.getRoomById(createMessage.room.id);
-  //   let this_member: MemberEntity;
-  //   for (var member of membersSender) {
-  //     member.rooms.forEach(room => {
-  //       if (room.id == this_room.id) {
-  //         this_member = member;
-  //       }
-  //     })
-  //   }
-
-  //   const createdMessage = await this.chatService.createMessage(message.toEntity(), member);
-
-  //   let blockerUsers: number[] = [];
-  //   (await this.chatService.getBlockerUser(+socket.handshake.headers.userid)).forEach(user => {
-  //     blockerUsers.push(user.userId);
-  //   });
-
-  //   const members = await this.chatService.getMembersByRoom(this_room);
-  //   for (const member of members) {
-  //     if (!blockerUsers.includes(member.user.id))
-  //       this.server.to(member.socketId).emit('message_added', createdMessage);
-  //   }
-  // }
 
   @SubscribeMessage("members_room")
   async getMembersOfRoom(socket: Socket, roomId: number) {
