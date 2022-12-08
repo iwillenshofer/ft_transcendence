@@ -75,7 +75,6 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.subscription3$ = this.allPublicRooms$.subscribe(rooms => {
       this.allPublicRooms = rooms;
-      console.log("there")
       if (!rooms.find(room => room.id == this.selectedPublicRoom.id))
         this.selectedPublicRoom = this.selectedRoomNulled;
     });
@@ -130,7 +129,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   async onJoinRoom(selectedPublicRoom: RoomInterface | null) {
 
     if (selectedPublicRoom != null) {
-      console.log(this.allMyRooms);
       if (this.allMyRooms.find(room => room.id == selectedPublicRoom.id)) {
         this.selectedRoom = this.selectedPublicRoom;
         this.alertService.info("You are already a member of this chat room");

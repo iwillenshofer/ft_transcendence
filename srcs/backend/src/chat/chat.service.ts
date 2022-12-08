@@ -319,7 +319,6 @@ export class ChatService {
             query.andWhere("user.id IN (:...users)", { users: nonBlockedUsers })
         }
         const users = await query.getMany();
-        console.log(users);
         return users;
     }
 
@@ -392,7 +391,6 @@ export class ChatService {
             .where('user.id = :userId', { userId })
             .andWhere('member.isMember = :isMember', { isMember: true })
             .getMany();
-        console.log(rooms);
         return (rooms);
     }
 

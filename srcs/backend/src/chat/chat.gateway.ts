@@ -10,8 +10,6 @@ import { RoomEntity } from './entities/room.entity';
 import { MemberEntity } from './entities/member.entity';
 import { UserEntity, UsersService } from 'src/users/users.service';
 import { ConnectedUserEntity } from './entities/connected-user.entity';
-import { SetAdminDto } from './dto/setAdmin.dto';
-import { MuteMemberDto } from './dto/muteMember.dto';
 import { Logger } from '@nestjs/common';
 import { RoomType } from './models/typeRoom.model';
 
@@ -29,7 +27,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async checkSingleConnection(user: UserEntity) {
     let connected_users: ConnectedUserEntity[] = await this.connectedUsersService.getUsersById(user.id);
     for (var item of connected_users) {
-      console.log('disconnecting sockets' + JSON.stringify(connected_users));
       this.server.to(item.socketId).emit('double_login');
       this.server.in(item.socketId).disconnectSockets();
     }
@@ -62,7 +59,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     else
       await this.connectedUsersService.updateSocketIdConnectedUSer(socket.id, connectedUser);
     this.setStatus(user.username, "online")
-    console.log('online')
     let usersOnline = await this.connectedUsersService.getAllUserOnline();
     const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
     connectedUsers.forEach(user => {
