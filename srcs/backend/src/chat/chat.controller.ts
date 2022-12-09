@@ -193,18 +193,18 @@ export class ChatController {
                 await this.chatService.updateRoomName(room, data.name);
             if (data.description)
                 await this.chatService.updateRoomDescription(room, data.description);
-            if (data.radioPassword == "on")
+            if (data.radioPassword && data.radioPassword == "on" && data.password)
                 await this.chatService.updateOrCreateRoomPassword(room, data.password);
-            else if (data.radioPassword == "off")
+            else if (data.radioPassword && data.radioPassword == "off")
                 await this.chatService.removeRoomPassword(room);
 
-            const rooms = await this.chatService.getRoomsOfMember(+req.user.id, { page: 1, limit: 3 });
+            const rooms = await this.chatService.getRoomsOfMember(+req.user.id, { page: 1, limit: 10 });
             const members = await this.chatService.getMembersByRoom(room);
             for (const member of members) {
                 this.chatGateway.server.to(member.socketId).emit('rooms', rooms);
             }
         }
-        const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 3 });
+        const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 10 });
         const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
         connectedUsers.forEach(user => {
             this.chatGateway.server.to(user.socketId).emit('publicRooms', publicRooms);

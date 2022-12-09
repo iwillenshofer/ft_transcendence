@@ -27,7 +27,7 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
       Validators.pattern('^[a-zA-Z0-9]*$'),],
       [isRoomNameTaken(this.chatService)]),
     description: new FormControl(null, [Validators.maxLength(30), Validators.pattern('^[a-zA-Z0-9 ]*$')]),
-    password: new FormControl(null, [Validators.required, Validators.minLength(8)]),
+    password: new FormControl(null, [Validators.minLength(8)]),
     radioPassword: new FormControl(null)
   });
 
@@ -59,16 +59,20 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
     this.subscription1$ = this.chatService.getMyMemberOfRoom(this.data.room.id)
       .subscribe((member: MemberInterface) => {
         this.myMember = member;
+        if (this.myMember?.role != MemberRole.Owner)
+          this.form.controls['password'].disable();
       });
 
     this.chatService.requestMemberOfRoom(this.data.room.id);
 
+
     if (this.data.room.type == RoomType.Direct)
       this.formUser.controls['searchUsersCtrl'].disable();
+    if (this.data.room.type == RoomType.Direct)
+      this.form.controls['password'].disable();
     if (this.data.room.type != RoomType.Protected)
       this.form.controls['password'].disable();
-    if (this.myMember?.role != MemberRole.Owner)
-      this.form.controls['password'].disable();
+
 
     this.subscription2$ = this.authService.getLogoutStatus.subscribe((data) => {
       if (data === true)
@@ -156,6 +160,10 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
 
   isPrivateRoom(): boolean {
     return (this.data.room.type == RoomType.Private);
+  }
+
+  isDirectRoom(): boolean {
+    return (this.data.room.type == RoomType.Direct);
   }
 
   isProtected(): boolean {
