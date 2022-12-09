@@ -255,6 +255,7 @@ export class ChatService {
             .leftJoinAndSelect("member.rooms", "rooms")
             .where("rooms.id = :roomId", { roomId: room.id })
             .andWhere("member.isMember = :isMember", { isMember: true })
+            .orderBy('member.role', 'ASC')
             .getMany()
     }
 
