@@ -175,7 +175,7 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
   }
 
   isOwner(): boolean {
-    return (this.myMember?.role != MemberRole.Owner);
+    return (this.myMember?.role == MemberRole.Owner);
   }
 
   radioButtonChange(data: MatRadioChange) {
