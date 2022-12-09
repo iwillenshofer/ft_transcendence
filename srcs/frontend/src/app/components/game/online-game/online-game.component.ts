@@ -46,10 +46,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   keyEvent(event: KeyboardEvent) {
     if (event.code == 'Escape') {
       if (this.isWaiting || this.finished || this.mode == 'spec') {
-        if (this.challenged)
-          this.cancelChallenge()
-        else
-          window.location.reload();
+        this.esc();
         // this.socket.disconnect();
         // this.quit.emit(true);
       }
@@ -315,5 +312,12 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.socket.once("removeChallenge", () => {
       window.location.reload();
     })
+  }
+
+  esc() {
+    if (this.challenged)
+      this.cancelChallenge()
+    else
+      window.location.reload();
   }
 }
