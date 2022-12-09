@@ -125,8 +125,8 @@ export class ChatController {
         const member = await this.chatService.getMemberById(data.memberId);
         await this.chatService.setBan(member, data.banTime);
         const room = await this.chatService.getRoomById(data.roomId);
-        const members = await this.chatService.getMembersByRoom(room);
         await this.chatService.removeMemberFromRoom(room, member);
+        const members = await this.chatService.getMembersByRoom(room);
         for (const member of members) {
             this.chatGateway.server.to(member.socketId).emit('members_room', members);
         }
