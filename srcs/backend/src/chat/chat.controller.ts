@@ -12,7 +12,6 @@ import { BanMemberDto } from './dto/banMember.dto';
 import { BlockUserDto } from './dto/blockUser.dto';
 import { ChangeSettingRoomDto } from './dto/changeSettingRoom.dto';
 import { CreateMessageDto } from './dto/createMessage.dto';
-import { MemberEntity } from './entities/member.entity';
 import { JoinRoomDto } from './dto/joinRoom.dto';
 import { MuteMemberDto } from './dto/muteMember.dto';
 import { SetAdminDto } from './dto/setAdmin.dto';
@@ -218,16 +217,10 @@ export class ChatController {
     async onAddMessage(@Body() createMessage: CreateMessageDto, @Request() req) {
         const message = CreateMessageDto.from(createMessage);
         const user = await this.userService.getUserById(+req.user.id);
-        const membersSender = await this.chatService.getMembersByUserId(user.id);
+        const room = await this.chatService.getRoomById(createMessage.room.id);
+        const member = await this.chatService.getMemberByRoomAndUser(room, user);
         const this_room = await this.chatService.getRoomById(createMessage.room.id);
-        let this_member: MemberEntity;
-        for (var member of membersSender) {
-            member.rooms.forEach(room => {
-                if (room.id == this_room.id) {
-                    this_member = member;
-                }
-            })
-        }
+
         const createdMessage = await this.chatService.createMessage(message.toEntity(), member);
 
         let blockerUsers: number[] = [];
