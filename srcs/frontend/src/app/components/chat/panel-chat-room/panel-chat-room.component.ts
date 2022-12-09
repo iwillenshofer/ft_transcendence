@@ -195,8 +195,4 @@ export class PanelChatRoomComponent implements OnInit, OnChanges, OnDestroy {
       }
     )
   }
-
-  async isUserBlocked() {
-    return this.isBlocked;
-  }
 }
