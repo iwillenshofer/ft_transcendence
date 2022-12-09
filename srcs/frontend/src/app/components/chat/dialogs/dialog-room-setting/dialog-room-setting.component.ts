@@ -63,7 +63,7 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
           this.form.controls['password'].disable();
       });
 
-    this.chatService.requestMemberOfRoom(this.data.room.id);
+    this.chatService.emitGetMembersOfRooms(this.data.room.id);
 
 
     if (this.data.room.type == RoomType.Direct)

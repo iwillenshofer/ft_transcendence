@@ -449,7 +449,7 @@ export class ChatService {
     }
 
     async setBan(member: MemberEntity, banTime: Date) {
-        if (banTime) {
+        if (member && banTime) {
             member.banUntil = banTime;
             await this.memberRepository.save(member);
         }

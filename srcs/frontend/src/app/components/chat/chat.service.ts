@@ -134,7 +134,7 @@ export class ChatService {
     return of([]);
   }
 
-  requestMemberOfRoom(roomId: number) {
+  emitGetMembersOfRooms(roomId: number) {
     this.socket.emit('members_room', roomId);
   }
 

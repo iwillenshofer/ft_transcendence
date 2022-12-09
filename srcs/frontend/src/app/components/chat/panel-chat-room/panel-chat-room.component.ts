@@ -142,6 +142,7 @@ export class PanelChatRoomComponent implements OnInit, OnChanges, OnDestroy {
       this.chatService.setBan(this.selectedMember.id, this.chatRoom.id, banTime).subscribe(
         (response) => {
           this.alertService.success(this.selectedMember.user.username + " has been banned for " + duration);
+          this.chatService.emitGetMembersOfRooms(this.chatRoom.id);
         },
         (error) => {
           this.alertService.danger("Ban could not be configured");
