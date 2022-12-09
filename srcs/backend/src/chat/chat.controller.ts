@@ -198,10 +198,12 @@ export class ChatController {
             else if (data.radioPassword && data.radioPassword == "off")
                 await this.chatService.removeRoomPassword(room);
 
-            const rooms = await this.chatService.getRoomsOfMember(+req.user.id, { page: 1, limit: 10 });
             const members = await this.chatService.getMembersByRoom(room);
             for (const member of members) {
-                this.chatGateway.server.to(member.socketId).emit('rooms', rooms);
+                const rooms = await this.chatService.getRoomsOfMember(member.user.id, { page: 1, limit: 10 });
+                const allMyRooms = await this.chatService.getAllMyRooms(member.user.id);
+                this.chatGateway.server.to(member.socketId).emit('rooms_nondirect', rooms);
+                this.chatGateway.server.to(member.socketId).emit('all_my_rooms', allMyRooms);
             }
         }
         const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 10 });

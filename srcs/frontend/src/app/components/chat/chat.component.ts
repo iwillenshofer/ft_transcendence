@@ -1,7 +1,7 @@
 import { Component, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { MatSelectionList, MatSelectionListChange } from '@angular/material/list';
 import { PageEvent } from '@angular/material/paginator';
-import { Subscription } from 'rxjs';
+import { Subscription, tap } from 'rxjs';
 import { RoomInterface, RoomType } from 'src/app/model/room.interface';
 import { MatDialog } from '@angular/material/dialog';
 import { faKey, faUserGroup, faUsers, faComments } from '@fortawesome/free-solid-svg-icons';
@@ -29,17 +29,16 @@ export class ChatComponent implements OnInit, OnDestroy {
   @ViewChild('listChatRoom')
   listCR!: MatSelectionList;
 
-  myRooms$ = this.chatService.getMyRoomsPaginate();
   myDirectRooms$ = this.chatService.getMyDirectRoomsPaginate();
   myChatRooms$ = this.chatService.getMyChatRoomsPaginate();
 
   publicRooms$ = this.chatService.getPublicRooms();
 
   allMyRooms$ = this.chatService.getAllMyRooms();
-  allMyRooms!: RoomInterface[];
+  allMyRooms: RoomInterface[] = [];
 
   allPublicRooms$ = this.chatService.getAllPublicRooms();
-  allPublicRooms!: RoomInterface[];
+  allPublicRooms: RoomInterface[] = [];
 
   myUser$ = this.userService.getMyUser();
   myUser!: UserInterface;
@@ -76,8 +75,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.subscription2$ = this.allMyRooms$.subscribe(rooms => {
       this.allMyRooms = rooms;
-      if (!rooms.find(room => room.id == this.selectedRoom.id))
-        this.selectedRoom = this.selectedRoomNulled;
+      this.updateRoom();
     });
 
     this.subscription3$ = this.allPublicRooms$.subscribe(rooms => {
@@ -85,6 +83,15 @@ export class ChatComponent implements OnInit, OnDestroy {
       if (!rooms.find(room => room.id == this.selectedPublicRoom.id))
         this.selectedPublicRoom = this.selectedRoomNulled;
     });
+  }
+
+  updateRoom() {
+    let room;
+    let tmp = this.allMyRooms || [];
+    if (room = tmp.find(room => room.id == this.selectedRoom.id))
+      this.selectedRoom = room;
+    else
+      this.selectedRoom = this.selectedRoomNulled;
   }
 
   ngOnDestroy(): void {

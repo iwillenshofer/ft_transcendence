@@ -68,10 +68,6 @@ export class ChatService {
     return this.socket.fromEvent<MessagePaginateInterface>('messages');
   }
 
-  getMyRoomsPaginate(): Observable<RoomPaginateInterface> {
-    return this.socket.fromEvent<RoomPaginateInterface>('rooms');
-  }
-
   getMyChatRoomsPaginate(): Observable<RoomPaginateInterface> {
     return this.socket.fromEvent<RoomPaginateInterface>('rooms_nondirect');
   }
@@ -196,5 +192,9 @@ export class ChatService {
       password: password
     }
     return this.http.post("/backend/chat/verify_password/", body, { withCredentials: true });
+  }
+
+  updateRoom() {
+    return this.socket.fromEvent<RoomInterface>('update_room');
   }
 }
