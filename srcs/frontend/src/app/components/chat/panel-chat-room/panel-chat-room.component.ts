@@ -53,6 +53,7 @@ export class PanelChatRoomComponent implements OnInit, OnChanges, OnDestroy {
     private friendService: FriendsService,
     public dialog: MatDialog,
     private alertService: AlertsService) {
+    this.chatService.emitGetBlockedUsers();
   }
 
   ngOnInit(): void {
@@ -60,8 +61,6 @@ export class PanelChatRoomComponent implements OnInit, OnChanges, OnDestroy {
       this.amIOwner = true;
     else if (this.myMember.role == MemberRole.Administrator)
       this.amIAdmin = true;
-
-    this.chatService.emitGetBlockedUsers();
 
     this.subscription1$ = this.blockedUsers$.subscribe(blockedUsers => {
       blockedUsers.forEach(user => {
@@ -76,6 +75,7 @@ export class PanelChatRoomComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges() {
+    this.chatService.emitGetBlockedUsers();
     this.isOwner = this.selectedMember.role == MemberRole.Owner ? true : false;
     this.isAdmin = this.selectedMember.role == MemberRole.Administrator ? true : false;
     this.amIOwner = this.myMember.role == MemberRole.Owner ? true : false;
@@ -194,5 +194,9 @@ export class PanelChatRoomComponent implements OnInit, OnChanges, OnDestroy {
         this.alertService.danger("Admin role could not be configured");
       }
     )
+  }
+
+  async isUserBlocked() {
+    return this.isBlocked;
   }
 }
