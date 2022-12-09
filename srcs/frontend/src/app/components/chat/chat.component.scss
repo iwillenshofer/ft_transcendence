@@ -86,8 +86,11 @@
 
 
 .container-fluid {
-	    height: 100%;
+		position: fixed;
 	    overflow-y: scroll;
+		width: 100%;
+		height: calc(100% - 87px);;
+		top: 87px;
 	  }
 	  .padding {
 	       padding-top:30px;
@@ -101,7 +104,7 @@
 	
 	.fullsize {
 	       min-height: 587px;
-	       max-height: 587px;
+	       //max-height: 587px;
 	}
 	
 	.user-list-card {

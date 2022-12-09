@@ -1,12 +1,20 @@
+
 .message {
     background-color: rgb(236, 236, 236);
-    height: 60vh;
-    min-height: 300px;
-    margin-bottom: 20px;
+    height: 430px;
     overflow-y: scroll;
+	overflow-x:hidden;
     scroll-behavior: smooth;
     scrollbar-color: lightgrey darkgrey;
-    scrollbar-width: thin;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.sendmessage {
+	margin-left: 5px;
+	margin-right: 5px;
+	margin-top: 2px;
+
 }
 
 ::-webkit-scrollbar-track {
@@ -29,8 +37,14 @@
 }
 
 mat-selection-list {
-    max-height: 100px;
+    height: 100%;
     overflow: auto;
+	align-items: left	;
+	text-align: left;
+}
+
+.my-form-field .mat-form-field-wrapper {
+	margin-bottom: -1.25em;
 }
 
 .avatar {
@@ -47,6 +61,72 @@ mat-selection-list {
     right: 10px;
 }
 
+.faUser {
+    position: relative;
+    top: 11px;
+    right: 10px;
+	display: inline-block;;
+	width: 18px;
+
+}
+
 .faOwner {
     color: orange
+}
+
+.sendbutton,
+.flexstart {
+	display: flex; flex-direction: row; align-items: flex-start;
+}
+
+.sendbutton {
+	align-items: flex-end;
+}
+.chatmembercard {
+	height: 350px;
+	overflow-y: auto;
+	padding-right: 0;
+}
+
+.chatmemberrow {
+	height: 200%;
+	padding-top: 8px;
+	padding-bottom: 8px;
+}
+
+.nomargin {
+	margin: 0;
+}
+
+mat-list-option {
+	padding-left: 0px!important;
+	padding-right: 0px!important;
+}
+
+.text-left {
+	text-align: left;
+}
+
+.roompanel {
+	height: 100px;
+}
+
+.roominfo {
+	height: 60px;
+}
+
+.roomname {
+	color: gold;
+	font-weight: bold;
+	font-size: 14px;
+	margin-bottom:5px;
+}
+.roomdescription {
+	color: white;
+	font-style: italic;
+}
+
+.gearicon {
+	color: lightgray;
+	cursor: pointer;
 }
