@@ -2,11 +2,11 @@
 <div #table class="table" *ngIf="menu">
     <div class="menu">
         <p class="menu__title">Play</p>
-        <button *ngIf="!cmenu" (click)="startGame('random')">vs Random</button>
+        <button class="btn btn-secondary" *ngIf="!cmenu" (click)="startGame('random')">vs Random</button>
         <!-- <button>vs Friend</button> -->
-        <button *ngIf="!cmenu" (click)="toggleLiveGames()">Live Games</button>
-        <button *ngIf="!cmenu" (click)="toggleInstructions()">Instructions</button>
-        <button *ngIf="cmenu" (click)="startGame('friend')">Challenge</button>
+        <button class="btn btn-secondary" *ngIf="!cmenu" (click)="toggleLiveGames()">Live Games</button>
+        <button class="btn btn-secondary" *ngIf="!cmenu" (click)="toggleInstructions()">Instructions</button>
+        <button class="btn btn-secondary" *ngIf="cmenu" (click)="startGame('friend')">Challenge</button>
         <label class="container">
             Power-ups
             <input type="checkbox" (change)="togglePowerUps()">
@@ -14,15 +14,15 @@
         </label>
     </div>
     <div *ngIf="!showLiveGames" class="instructions">
-        <p>INSTRUCTIONS:</p>
+        <p class="subtitle">INSTRUCTIONS:</p>
         <p>[W] or [Up] - Move up</p>
         <p>[S] or [Down] - Move down</p>
         <!-- <p>[P] - Pause</p> -->
     </div>
     <div *ngIf="showLiveGames" class="livegames">
-        <p>LIVE GAMES:</p>
+        <p class="subtitle">LIVE GAMES:</p>
         <p *ngIf="!liveGames">No one is playing right now!</p>
-        <button *ngFor="let game of liveGames"
+        <button class="btn btn-secondary" *ngFor="let game of liveGames"
             (click)="watchGame(game.player1.socket)">{{game.player1.username}}<br>vs<br>
             {{game.player2.username}}</button>
     </div>

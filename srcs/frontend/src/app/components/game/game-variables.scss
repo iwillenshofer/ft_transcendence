@@ -1,14 +1,14 @@
-$game-font-family: "Lucida Console", "Courier New", monospace;
+$game-font-family: "Roboto", "Futura", sans-serif;
 
 @mixin table {
     width: calc(100%);
     height: calc(100% - 100px);
-    background-color: black;
+    background-color: #555555;
     border: 5px solid white;
 }
 
 @mixin lines {
-    background-image: linear-gradient(to bottom, white 50%, black 50%);
+    background-image: linear-gradient(to bottom, white 50%, #555555 50%);
     background-size: 30px 30px;
     background-repeat: repeat-y;
     position: absolute;
@@ -36,23 +36,13 @@ $game-font-family: "Lucida Console", "Courier New", monospace;
 
 @mixin button($width, $font-size) {
     button {
-        text-align: left;
-        font-family: $game-font-family;
-        height: 11vh;
+        height: 7vh;
         line-height: 2vh;
         width: $width;
         cursor: pointer;
         font-size: $font-size;
-        background-color: black;
-        color: white;
         opacity: .75;
-        border: none;
         display: block;
-    }
-
-    button:hover {
-        opacity: 1;
-        border-right: 2px solid white;
-        border-left: 2px solid white;
+		margin-top: 10px;
     }
 }
