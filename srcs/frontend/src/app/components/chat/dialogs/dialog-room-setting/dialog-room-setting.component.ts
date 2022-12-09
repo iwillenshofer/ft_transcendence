@@ -27,9 +27,12 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
       Validators.pattern('^[a-zA-Z0-9]*$'),],
       [isRoomNameTaken(this.chatService)]),
     description: new FormControl(null, [Validators.maxLength(30), Validators.pattern('^[a-zA-Z0-9 ]*$')]),
-    password: new FormControl(null, [Validators.required, Validators.minLength(8)]),
-    searchUsersCtrl: new FormControl(null),
+    password: new FormControl(null, [Validators.minLength(8)]),
     radioPassword: new FormControl(null)
+  });
+
+  formUser: FormGroup = new FormGroup({
+    searchUsersCtrl: new FormControl(null)
   });
 
   hide = true;
@@ -56,16 +59,20 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
     this.subscription1$ = this.chatService.getMyMemberOfRoom(this.data.room.id)
       .subscribe((member: MemberInterface) => {
         this.myMember = member;
+        if (this.myMember?.role != MemberRole.Owner)
+          this.form.controls['password'].disable();
       });
 
-    this.chatService.requestMemberOfRoom(this.data.room.id);
+    this.chatService.emitGetMembersOfRooms(this.data.room.id);
+
 
     if (this.data.room.type == RoomType.Direct)
-      this.form.controls['searchUsersCtrl'].disable();
+      this.formUser.controls['searchUsersCtrl'].disable();
+    if (this.data.room.type == RoomType.Direct)
+      this.form.controls['password'].disable();
     if (this.data.room.type != RoomType.Protected)
       this.form.controls['password'].disable();
-    if (this.myMember?.role != MemberRole.Owner)
-      this.form.controls['password'].disable();
+
 
     this.subscription2$ = this.authService.getLogoutStatus.subscribe((data) => {
       if (data === true)
@@ -122,7 +129,7 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
   }
 
   get searchUsersCtrl(): FormControl {
-    return this.form.get('searchUsersCtrl') as FormControl;
+    return this.formUser.get('searchUsersCtrl') as FormControl;
   }
 
   checkIfAlreadyAdded() {
@@ -130,11 +137,18 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
     if (user) {
       let member = this.members.find(member => member.user.username == user.username)
       if (!member) {
-        this.chatService.addUserToRoom(this.data.room, user);
-        this.alertService.success(user.username + "has been successfully added to the chatroom.");
+        console.log("add member")
+        this.chatService.addUserToRoom(this.data.room, user).subscribe(
+          (response) => {
+            this.alertService.success(user.username + " has been successfully added to the chatroom");
+          },
+          (error) => {
+            this.alertService.danger(user.username + " could not be added to the room");
+          }
+        )
       }
       else
-        this.alertService.info(user.username + "is already a member of this chat room.");
+        this.alertService.info(user.username + " is already a member of this chat room");
     }
   }
 
@@ -148,6 +162,10 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
     return (this.data.room.type == RoomType.Private);
   }
 
+  isDirectRoom(): boolean {
+    return (this.data.room.type == RoomType.Direct);
+  }
+
   isProtected(): boolean {
     return (this.data.room.type == RoomType.Protected);
   }
@@ -157,7 +175,7 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
   }
 
   isOwner(): boolean {
-    return (this.myMember?.role != MemberRole.Owner);
+    return (this.myMember?.role == MemberRole.Owner);
   }
 
   radioButtonChange(data: MatRadioChange) {

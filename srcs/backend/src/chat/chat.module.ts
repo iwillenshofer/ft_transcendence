@@ -7,7 +7,6 @@ import { RoomEntity } from './entities/room.entity';
 import { ChatService } from './chat.service';
 import { ChatController } from './chat.controller';
 import { MessageEntity } from './entities/message.entity';
-import { AuthModule } from 'src/auth/auth.module';
 import { ChatGateway } from './chat.gateway';
 import { ConnectedUsersService } from 'src/services/connected-user/connected-user.service';
 import { ConnectedUserEntity } from './entities/connected-user.entity';

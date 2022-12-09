@@ -37,10 +37,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       await this.chatService.getRoomsOfMember(user_id, page, RoomType.Direct));
     this.server.to(socket_id).emit('rooms_nondirect',
       await this.chatService.getRoomsOfMember(user_id, page, RoomType.Public));
-    console.log("create_rooms")
-    const rooms = await this.chatService.getRoomsOfMember(user_id, page);
-    console.log(rooms);
-    this.server.to(socket_id).emit('rooms', rooms);
+    this.server.to(socket_id).emit('rooms',
+      await this.chatService.getRoomsOfMember(user_id, page));
   }
 
   @UseGuards(TfaGuard)
@@ -128,7 +126,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage("members_room")
   async getMembersOfRoom(socket: Socket, roomId: number) {
-    if (roomId) {
+    if (roomId != null) {
       const room = await this.chatService.getRoomById(roomId);
       const members = await this.chatService.getMembersByRoom(room);
       this.server.to(socket.id).emit('members_room', members);

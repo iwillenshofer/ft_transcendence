@@ -74,7 +74,7 @@ export class ChatRoomComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.chatService.requestMemberOfRoom(this.chatRoom?.id);
+    this.chatService.emitGetMembersOfRooms(this.chatRoom?.id);
     this.chatService.emitGetBlockedUsers();
     this.chatService.emitGetBlockerUsers();
 
@@ -110,7 +110,7 @@ export class ChatRoomComponent implements OnInit, OnChanges, OnDestroy {
     this.selectedMember = null;
     if (this.chatRoom?.id)
       this.chatService.requestMessages(this.chatRoom?.id);
-    this.chatService.requestMemberOfRoom(this.chatRoom?.id);
+    this.chatService.emitGetMembersOfRooms(this.chatRoom?.id);
     this.members.splice(0);
 
     this.chatMessage.setValue("");
