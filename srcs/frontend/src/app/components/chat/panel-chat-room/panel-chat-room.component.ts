@@ -43,7 +43,7 @@ export class PanelChatRoomComponent implements OnInit, OnChanges, OnDestroy {
   faUnlock = faUnlock;
 
   isAdmin = false;
-  isBlocked = false;
+  isBlocked!: boolean;
   isOwner = false;
 
   subscription1$!: Subscription;
@@ -56,17 +56,18 @@ export class PanelChatRoomComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.chatService.emitGetBlockedUsers();
+
     if (this.myMember.role == MemberRole.Owner)
       this.amIOwner = true;
     else if (this.myMember.role == MemberRole.Administrator)
       this.amIAdmin = true;
 
-    this.chatService.emitGetBlockedUsers();
-
     this.subscription1$ = this.blockedUsers$.subscribe(blockedUsers => {
       blockedUsers.forEach(user => {
-        if (user == this.selectedMember.user.id)
+        if (user == this.selectedMember.user.id) {
           this.isBlocked = true;
+        }
       });
     });
   }

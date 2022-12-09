@@ -201,7 +201,7 @@ export class ChatController {
             const rooms = await this.chatService.getRoomsOfMember(+req.user.id, { page: 1, limit: 10 });
             const members = await this.chatService.getMembersByRoom(room);
             for (const member of members) {
-                this.chatGateway.server.to(member.socketId).emit('rooms', rooms);
+                this.chatGateway.server.to(member.socketId).emit('rooms_nondirect', rooms);
             }
         }
         const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 10 });
