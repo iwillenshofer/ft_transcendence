@@ -39,6 +39,10 @@ export class UsersOnlineService {
 		});
 		return count;
 	}
+	
+	setStatus(username: string, status: string) {
+		this.socket.emit('setStatus', username, "online")
+	}
 
 	getOnline(username: string): string {
 		let status = "offline";

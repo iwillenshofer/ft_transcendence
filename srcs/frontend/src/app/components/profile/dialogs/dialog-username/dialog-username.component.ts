@@ -5,6 +5,8 @@ import { forbiddenNameValidator } from './forbidden-name.directive';
 import { UserService } from 'src/app/services/user.service';
 import { isUsernameTaken } from 'src/app/validators/async-username.validator';
 import { AuthService } from 'src/app/auth/auth.service';
+import { Router } from '@angular/router';
+import { UsersOnlineService } from 'src/app/services/users-online.service';
 
 @Component({
   selector: 'app-dialog-username',
@@ -25,7 +27,8 @@ export class DialogUsernameComponent implements OnInit {
 
   constructor(private userService: UserService,
     private authService: AuthService,
-    private formBuilder: FormBuilder) { }
+	private onlineService: UsersOnlineService
+	) { }
 
   ngOnInit(): void {
   }
@@ -41,7 +44,8 @@ export class DialogUsernameComponent implements OnInit {
         if (event.username != '') {
           this.userService.username = event.username;
           this.authService.updateUser();
-        }
+		  this.onlineService.setStatus(event.username, 'online');
+		}
       }
     )
   }
