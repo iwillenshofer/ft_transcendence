@@ -168,7 +168,6 @@ export class ChatService {
                 };
             }
         }
-        // console.log(JSON.stringify(opt));
         let pages = await paginate(query, opt);
         pages.meta.currentPage -= 1;
         return (pages);
@@ -225,7 +224,7 @@ export class ChatService {
         return await message.save();
     }
 
-    async findMessagesForRoom(room: RoomEntity, options: IPaginationOptions, userId: number): Promise<Pagination<MessageEntity>> {
+    async findMessagesForRoom(room: RoomEntity, userId: number): Promise<MessageEntity[]> {
 
         let blockedUsers: number[] = [];
         (await this.getBlockedUser(userId)).forEach(user => {
@@ -238,7 +237,7 @@ export class ChatService {
                 usersToSend.push(member.user.id);
         });
 
-        const query = this.messageRepository
+        return this.messageRepository
             .createQueryBuilder('message')
             .leftJoin('message.room', 'room')
             .where('room.id = :roomId', { roomId: room.id })
@@ -246,7 +245,7 @@ export class ChatService {
             .leftJoinAndSelect('member.user', 'user')
             .andWhere('user.id IN (:...usersToSend)', { usersToSend: usersToSend })
 			.orderBy('message.created_at', 'ASC')
-        return await paginate(query, options);
+			.getMany()
     }
 
     async getMembersByRoom(room: RoomEntity): Promise<MemberEntity[]> {
@@ -457,15 +456,24 @@ export class ChatService {
         }
     }
 
+	async setReadRoom(room_id: number, member_id: number) {
+		try {
+			await this.messageRepository.createQueryBuilder()
+				.update()
+				.set({read: true})
+				.where('room = :room', { room: room_id })
+				.andWhere('member = :member', { member: member_id })
+				.execute();
+		} catch {};
+	}
+
 	async setReadMessage(message_id: number) {
 		let message = await this.messageRepository.createQueryBuilder('message')
 			.leftJoinAndSelect('message.member', 'member')
 			.leftJoinAndSelect('message.room', 'room')
 			.where('message.id = :id', { id: message_id })
 			.getOne()
-		console.log("Full message: " + JSON.stringify(message));
 
-		console.log("message: " + message.id + " -- message member" + message.member.id);
 		if (message && message.room && message.member)
 		{
 			let allmessages = await this.messageRepository.createQueryBuilder()
@@ -491,7 +499,6 @@ export class ChatService {
 			if (!(list.includes(message.room.id)))
 				list.push(message.room.id);
 		})
-		console.log("List for user " + userId + ": " + list)
 		return list;
     }
 }

@@ -26,8 +26,6 @@ export class ChatMessageComponent implements OnInit {
     this.username = this.message.member.user.username;
     this.avatar = this.message.member.user.avatar_url;
     this.created_at = this.message.created_at ?? new Date();
-	if (this.message.id && !(this.isMyUser()) && !(this.message.read))
-		this.chatService.emitReadMessage(this.message.id);
   }
 
   isMyUser() {

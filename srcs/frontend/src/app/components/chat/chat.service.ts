@@ -64,8 +64,8 @@ export class ChatService {
 	return this.http.post('/backend/chat/add_message/', { message: message, room: room }, { withCredentials: true });
   }
 
-  getMessages(): Observable<MessagePaginateInterface> {
-    return this.socket.fromEvent<MessagePaginateInterface>('messages');
+  getMessages(): Observable<MessageInterface[]> {
+    return this.socket.fromEvent<MessageInterface[]>('messages');
   }
 
   getMyChatRoomsPaginate(): Observable<RoomPaginateInterface> {
@@ -200,6 +200,10 @@ export class ChatService {
 
   emitReadMessage(message_id: number) {
     this.socket.emit('read_message', message_id);
+  }
+
+  emitReadRoomMessages(room_id: number, member_id: number) {
+	this.socket.emit('read_room_message', room_id, member_id)
   }
 
   getUnreadRooms(): Observable<any> {

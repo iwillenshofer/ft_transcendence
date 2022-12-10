@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { combineLatest, map, Observable, startWith, Subscription, tap } from 'rxjs';
-import { MessagePaginateInterface } from 'src/app/model/message.interface';
+import { MessageInterface, MessagePaginateInterface } from 'src/app/model/message.interface';
 import { RoomInterface, RoomType } from 'src/app/model/room.interface';
 import { MemberInterface, MemberRole } from 'src/app/model/member.interface';
 import { UserInterface } from 'src/app/model/user.interface';
@@ -49,22 +49,21 @@ export class ChatRoomComponent implements OnInit, OnChanges, OnDestroy {
   subscription1$!: Subscription;
   subscription2$!: Subscription;
 
-  messagesPaginate$: Observable<MessagePaginateInterface> =
-    combineLatest([this.chatService.getMessages(), this.chatService.getAddedMessage()
-      .pipe(startWith(null))])
-      .pipe(
-        map(([messagePaginate, message]) => {
-          if (message && message.room.id === this.chatRoom?.id &&
-            !messagePaginate.items.some(m => m.id === message.id)) {
-            messagePaginate.items.push(message);
-          }
-          const items = messagePaginate.items
-            .sort((a, b) => new Date(a.created_at ?? 0).getTime() - new Date(b.created_at ?? 0).getTime());
-          messagePaginate.items = items;
-          return messagePaginate;
-        }),
-        tap(() => this.scrollToBottom())
-      );
+  messagesPaginate$: Observable<MessageInterface[]> =
+	combineLatest([this.chatService.getMessages(), this.chatService.getAddedMessage().pipe(startWith(null))])
+		.pipe(
+		map(([allMessages, addedMessage]) => {
+			if (addedMessage && addedMessage.room?.id === this.chatRoom?.id &&
+			!allMessages.some(m => m.id === addedMessage.id)) {
+				allMessages.push(addedMessage);
+			}
+			const items = allMessages
+				.sort((a, b) => new Date(a.created_at ?? 0).getTime() - new Date(b.created_at ?? 0).getTime());
+			allMessages = items;
+			return allMessages;
+		}),
+		tap(() => this.scrollToBottom())
+		);
 
   constructor(private chatService: ChatService,
     private gameService: OnlineGameService,
@@ -94,6 +93,8 @@ export class ChatRoomComponent implements OnInit, OnChanges, OnDestroy {
           if (!this.members.some(thismember => thismember.user.id == member.user.id))
             this.members.push(member);
         }
+		if (member && this.myMember?.id != member?.id && this.chatRoom?.id && this.chatRoom.type == RoomType.Direct)
+			this.chatService.emitReadRoomMessages(this.chatRoom?.id, member?.id ?? 0);
       });
       if (unselect)
         this.selectedMember = null;
@@ -128,7 +129,8 @@ export class ChatRoomComponent implements OnInit, OnChanges, OnDestroy {
     else if (this.chatRoom) {
       this.chatService.sendMessage(this.chatMessage.value, this.chatRoom).subscribe(
         (response) => {
-		  this.chatService.emitMessage(this.chatRoom.id);
+			if (this.isConversation(this.chatRoom))
+				this.chatService.emitMessage(this.chatRoom.id);
           this.chatMessage.reset();
         },
         (error) => {

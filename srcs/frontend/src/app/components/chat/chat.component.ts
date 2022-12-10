@@ -111,7 +111,6 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   selectRoom(room: RoomInterface) {
     this.selectedRoom = room;
-	console.log("selecting room");
 	if (!this.isSelectRoomNull())
 	{
 		this.unreadRooms = this.unreadRooms.filter((val) => val != room.id );
@@ -197,7 +196,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   onLeaveRoom(selectedRoom: RoomInterface) {
-    console.log(JSON.stringify(selectedRoom));
     if (selectedRoom != this.selectedRoomNulled) {
       this.chatService.leaveRoom(selectedRoom);
       const index = this.allMyRooms.findIndex(room => room.id == selectedRoom.id);
