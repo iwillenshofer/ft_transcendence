@@ -17,3 +17,9 @@
     text-align: center;
     min-height: 50px;
 }
+
+.quitfinish {
+	margin-top: 30vh;
+}
+
+@include button(100%, 3vh);

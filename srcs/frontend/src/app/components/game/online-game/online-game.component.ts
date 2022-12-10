@@ -59,13 +59,12 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.socket.disconnect();
       window.cancelAnimationFrame(this.currentAnimationFrameId as number);
       this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
-      this.canvas.font = '10vh Lucida Console Courier New monospace';
+      this.canvas.font = '10vh Roboto, Futura, sans-serif';
       this.canvas.textBaseline = 'middle';
       this.canvas.textAlign = 'center';
       this.canvas.fillText("DISCONNECTED", 640, 360);
-      this.canvas.font = '3vh Lucida Console Courier New monospace';
+      this.canvas.font = '3vh Roboto, Futura, sans-serif';
       this.canvas.fillText('You must stay in the game', 640, 420);
-      this.canvas.fillText('[Esc] - Quit', 640, 450);
       this.finished = true;
     }
   }
@@ -255,12 +254,11 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.drawScore();
     if (this.player1 && this.player2)
       this.drawNames();
-    this.canvas.font = '10vh Lucida Console Courier New monospace';
+    this.canvas.font = '10vh Roboto, Futura, sans-serif';
     this.canvas.textBaseline = 'middle';
     this.canvas.textAlign = 'center';
     this.canvas.fillText(this.finishedMessage, 640, 360);
-    this.canvas.font = '3vh Lucida Console Courier New monospace';
-    this.canvas.fillText('[Esc] - Quit', 640, 420);
+    this.canvas.font = '3vh Roboto, Futura, sans-serif';
   }
 
   updatePaddles(P1: any, P2: any) {
@@ -276,10 +274,12 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   drawLines() {
+	this.gameCanvas.nativeElement.getContext("2d").fillStyle = "#999999";
     for (let x = 3; x < 720;) {
       this.gameCanvas.nativeElement.getContext("2d").fillRect(640, x, 12, 10);
       x += 20;
     }
+	this.gameCanvas.nativeElement.getContext("2d").fillStyle = "white";
   }
 
   drawPowerUp(powerUp: any) {
@@ -291,7 +291,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   drawScore() {
-    this.canvas.font = '80px Lucida Console Courier New monospace';
+    this.canvas.font = '80px Roboto, Futura, sans-serif';
     this.canvas.textBaseline = 'middle';
     this.canvas.textAlign = 'center';
     this.canvas.fillText(this.scoreP1, 320, 50);
@@ -299,7 +299,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   drawNames() {
-    this.canvas.font = '30px Lucida Console Courier New monospace';
+    this.canvas.font = '30px Roboto, Futura, sans-serif';
     this.canvas.textBaseline = 'middle';
     this.canvas.textAlign = 'center';
     this.canvas.fillText(this.player1.username, 320, 680);
