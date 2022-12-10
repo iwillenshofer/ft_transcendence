@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { of } from 'rxjs';
 import { ChatService } from './chat.service';
 import { JwtGuard } from 'src/auth/jwt/jwt.guard';
@@ -80,55 +80,73 @@ export class ChatController {
     @Post('create_room')
     async createRoom(@Body() new_room: CreateRoomDto, @Request() req) {
         const room = CreateRoomDto.from(new_room);
-        const connected_user = await this.connectedUser.getByUserId(+req.user.id);
 
-        if (room.password)
-            room.password = this.encrypt.encode(room.password);
+        if (room.password) { room.password = this.encrypt.encode(room.password); }
+
+        const connected_user = await this.connectedUser.getByUserId(+req.user.id);
+        if (!connected_user) { throw new NotFoundException('item_not_found'); }
 
         const owner = await this.userService.getUser(+req.user.id);
-        if (owner) {
-            const member = await this.chatService.createMember(owner.toEntity(), connected_user.socketId, MemberRole.Owner);
+        if (!owner) { throw new NotFoundException('item_not_found'); }
 
-            await this.chatService.createRoom(room.toEntity(), [member]);
-            await this.chatGateway.emitRooms(+req.user.id, connected_user.socketId);
+        const member = await this.chatService.createMember(owner.toEntity(), connected_user.socketId, MemberRole.Owner);
+        if (!member) { throw new NotFoundException('item_not_found'); }
 
-            const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 10 });
-            const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
-            connectedUsers.forEach(user => {
-                this.chatGateway.server.to(user.socketId).emit('publicRooms', publicRooms);
-            })
-        }
+        await this.chatService.createRoom(room.toEntity(), [member]);
+        await this.chatGateway.emitRooms(+req.user.id, connected_user.socketId);
+
+        const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 10 });
+
+        const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
+        if (!connectedUsers) { throw new NotFoundException('item_not_found'); }
+
+        connectedUsers.forEach(user => {
+            this.chatGateway.server.to(user.socketId).emit('publicRooms', publicRooms);
+        })
     }
 
     @UseGuards(JwtGuard)
     @Post('create_direct_room')
     async createDirectRoom(@Body() data: { room: CreateRoomDto, user_id: number }, @Request() req) {
-
         const room = CreateRoomDto.from(data.room);
+
         const connected_user = await this.connectedUser.getByUserId(+req.user.id);
+        if (!connected_user) { throw new NotFoundException('item_not_found'); }
 
         const owner = await this.userService.getUser(+req.user.id);
+        if (!owner) { throw new NotFoundException('item_not_found'); }
+
         const ownerMember = await this.chatService.createMember(owner.toEntity(), connected_user.socketId, MemberRole.Member);
+        if (!ownerMember) { throw new NotFoundException('item_not_found'); }
 
         const invited = await this.userService.getUser(data.user_id);
-        const socketId_invited = (await this.connectedUsersService.getByUserId(invited.id)).socketId;
-        const invitedMember = await this.chatService.createMember(invited.toEntity(), socketId_invited, MemberRole.Member);
+        if (!invited) { throw new NotFoundException('item_not_found'); }
 
-        if (await this.chatService.getDirectRoom(owner.username, invited.username) == null) {
-            await this.chatService.createRoom(room.toEntity(), [ownerMember, invitedMember]);
-            await this.chatGateway.emitRooms(owner.id, ownerMember.socketId);
-            await this.chatGateway.emitRooms(invited.id, invitedMember.socketId);
-        }
+        const socketId_invited = (await this.connectedUsersService.getByUserId(invited.id)).socketId;
+        if (!socketId_invited) { throw new NotFoundException('item_not_found'); }
+
+        const invitedMember = await this.chatService.createMember(invited.toEntity(), socketId_invited, MemberRole.Member);
+        if (!invitedMember) { throw new NotFoundException('item_not_found'); }
+
+        await this.chatService.createRoom(room.toEntity(), [ownerMember, invitedMember]);
+        await this.chatGateway.emitRooms(owner.id, ownerMember.socketId);
+        await this.chatGateway.emitRooms(invited.id, invitedMember.socketId);
     }
 
     @UseGuards(JwtGuard)
     @Post('set_ban')
     async setBan(@Body() data: BanMemberDto, @Request() req) {
         const member = await this.chatService.getMemberById(data.memberId);
+        if (!member) { throw new NotFoundException('item_not_found'); }
         await this.chatService.setBan(member, data.banTime);
+
         const room = await this.chatService.getRoomById(data.roomId);
+        if (!room) { throw new NotFoundException('item_not_found'); }
         await this.chatService.removeMemberFromRoom(room, member);
+
         const members = await this.chatService.getMembersByRoom(room);
+        if (!members) { throw new NotFoundException('item_not_found'); }
+
         for (const member of members) {
             this.chatGateway.server.to(member.socketId).emit('members_room', members);
         }
@@ -145,8 +163,12 @@ export class ChatController {
     @Post('block_user')
     async blockUser(@Body() blockUserDto: BlockUserDto, @Request() req) {
         await this.chatService.addBlockedUser(+req.user.id, blockUserDto.blockedUserId);
+
         const member = await this.chatService.getMemberByUserId(blockUserDto.blockedUserId);
+        if (!member) { throw new NotFoundException('item_not_found'); }
+
         const connected_user = await this.connectedUser.getByUserId(+req.user.id);
+        if (!connected_user) { throw new NotFoundException('item_not_found'); }
 
         let blockerUserId: number[] = [];
         (await this.chatService.getBlockerUser(+req.user.id)).forEach(blockerUser => {
@@ -167,8 +189,12 @@ export class ChatController {
     @Post('unblock_user')
     async unblockUser(@Body() blockUserDto: BlockUserDto, @Request() req) {
         await this.chatService.removeBlockedUser(+req.user.id, blockUserDto.blockedUserId);
+
         const member = await this.chatService.getMemberByUserId(blockUserDto.blockedUserId);
+        if (!member) { throw new NotFoundException('item_not_found'); }
+
         const connected_user = await this.connectedUser.getByUserId(+req.user.id);
+        if (!connected_user) { throw new NotFoundException('item_not_found'); }
 
         let blockerUserId: number[] = [];
         (await this.chatService.getBlockerUser(+req.user.id)).forEach(blockerUser => {
@@ -190,6 +216,8 @@ export class ChatController {
     async changeSettingsRoom(@Body() data: ChangeSettingRoomDto, @Request() req) {
         if (data.roomId) {
             const room = await this.chatService.getRoomById(data.roomId);
+            if (!room) { throw new NotFoundException('item_not_found'); }
+
             if (data.name)
                 await this.chatService.updateRoomName(room, data.name);
             if (data.description)
@@ -200,28 +228,40 @@ export class ChatController {
                 await this.chatService.removeRoomPassword(room);
 
             const members = await this.chatService.getMembersByRoom(room);
-            for (const member of members) {
-                const rooms = await this.chatService.getRoomsOfMember(member.user.id, { page: 1, limit: 10 });
-                const allMyRooms = await this.chatService.getAllMyRooms(member.user.id);
-                this.chatGateway.server.to(member.socketId).emit('rooms_nondirect', rooms);
-                this.chatGateway.server.to(member.socketId).emit('all_my_rooms', allMyRooms);
+            if (members) {
+                for (const member of members) {
+                    const rooms = await this.chatService.getRoomsOfMember(member.user.id, { page: 1, limit: 10 });
+                    const allMyRooms = await this.chatService.getAllMyRooms(member.user.id);
+                    this.chatGateway.server.to(member.socketId).emit('rooms_nondirect', rooms);
+                    this.chatGateway.server.to(member.socketId).emit('all_my_rooms', allMyRooms);
+                }
             }
         }
         const publicRooms = await this.chatService.getPublicAndProtectedRooms({ page: 1, limit: 10 });
         const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
-        connectedUsers.forEach(user => {
-            this.chatGateway.server.to(user.socketId).emit('publicRooms', publicRooms);
-        });
+        if (connectedUsers) {
+            connectedUsers.forEach(user => {
+                this.chatGateway.server.to(user.socketId).emit('publicRooms', publicRooms);
+            });
+        }
     }
 
     @UseGuards(JwtGuard)
     @Post('add_message')
     async onAddMessage(@Body() createMessage: CreateMessageDto, @Request() req) {
         const message = CreateMessageDto.from(createMessage);
+
         const user = await this.userService.getUserById(+req.user.id);
+        if (!user) { throw new NotFoundException('item_not_found'); }
+
         const room = await this.chatService.getRoomById(createMessage.room.id);
+        if (!room) { throw new NotFoundException('item_not_found'); }
+
         const member = await this.chatService.getMemberByRoomAndUser(room, user);
+        if (!member) { throw new NotFoundException('item_not_found'); }
+
         const this_room = await this.chatService.getRoomById(createMessage.room.id);
+        if (!this_room) { throw new NotFoundException('item_not_found'); }
 
         const createdMessage = await this.chatService.createMessage(message.toEntity(), member);
 
@@ -231,9 +271,11 @@ export class ChatController {
         });
 
         const members = await this.chatService.getMembersByRoom(this_room);
-        for (const member of members) {
-            if (!blockerUsers.includes(member.user.id))
-                this.chatGateway.server.to(member.socketId).emit('message_added', createdMessage);
+        if (members) {
+            for (const member of members) {
+                if (!blockerUsers.includes(member.user.id))
+                    this.chatGateway.server.to(member.socketId).emit('message_added', createdMessage);
+            }
         }
     }
 
@@ -241,8 +283,14 @@ export class ChatController {
     @Post('join_room')
     async onJoinRoom(@Body() joinRoomDto: JoinRoomDto, @Request() req) {
         const user = await this.userService.getUser(+req.user.id);
+        if (!user) { throw new NotFoundException('item_not_found'); }
+
         const room = await this.chatService.getRoomById(joinRoomDto.roomId);
+        if (!room) { throw new NotFoundException('item_not_found'); }
+
         const connected_user = await this.connectedUser.getByUserId(+req.user.id);
+        if (!connected_user) { throw new NotFoundException('item_not_found'); }
+
         let member = await this.chatService.getMemberByRoomAndUser(room, user.toEntity());
         if (member == null) {
             member = await this.chatService.createMember(user.toEntity(), connected_user.socketId, MemberRole.Member);
@@ -250,10 +298,13 @@ export class ChatController {
         }
         else
             await this.chatService.rejoinMemberToRoom(member);
+
         await this.chatGateway.emitRooms(user.id, connected_user.socketId);
         const members = await this.chatService.getMembersByRoom(room);
-        for (const member of members) {
-            this.chatGateway.server.to(member.socketId).emit('members_room', members);
+        if (members) {
+            for (const member of members) {
+                this.chatGateway.server.to(member.socketId).emit('members_room', members);
+            }
         }
     }
 
@@ -261,14 +312,25 @@ export class ChatController {
     @Post('add_user_to_room')
     async addUserToRoom(@Body() joinRoomDto: JoinRoomDto, @Request() req) {
         const user = await this.userService.getUser(joinRoomDto.userId);
+        if (!user) { throw new NotFoundException('item_not_found'); }
+
         const connected_user = await this.connectedUsersService.getByUserId(user.id);
+        if (!connected_user) { throw new NotFoundException('item_not_found'); }
+
         const member = await this.chatService.createMember(user.toEntity(), connected_user.socketId, MemberRole.Member);
+        if (!member) { throw new NotFoundException('item_not_found'); }
+
         const room = await this.chatService.getRoomById(joinRoomDto.roomId);
+        if (!room) { throw new NotFoundException('item_not_found'); }
+
         await this.chatService.addMemberToRoom(room, member);
         await this.chatGateway.emitRooms(user.id, connected_user.socketId);
+
         const members = await this.chatService.getMembersByRoom(room);
-        for (const member of members) {
-            this.chatGateway.server.to(member.socketId).emit('members_room', members);
+        if (members) {
+            for (const member of members) {
+                this.chatGateway.server.to(member.socketId).emit('members_room', members);
+            }
         }
     }
 
@@ -276,8 +338,13 @@ export class ChatController {
     @Post('set_mute')
     async setMute(@Body() data: MuteMemberDto, @Request() req) {
         const member = await this.chatService.getMemberById(data.memberId);
+        if (!member) { throw new NotFoundException('item_not_found'); }
+
         await this.chatService.setMute(member, data.muteTime);
+
         const room = await this.chatService.getRoomById(data.roomId);
+        if (!room) { throw new NotFoundException('item_not_found'); }
+
         const members = await this.chatService.getMembersByRoom(room);
         this.chatGateway.server.to(member?.socketId).emit('members_room', members);
     }
@@ -286,12 +353,20 @@ export class ChatController {
     @Post('set_as_admin')
     async setAsAdmin(@Body() data: SetAdminDto, @Request() req) {
         const room = await this.chatService.getRoomById(data.roomId);
+        if (!room) { throw new NotFoundException('item_not_found'); }
+
         const user = await this.userService.getUserById(data.userId);
+        if (!user) { throw new NotFoundException('item_not_found'); }
+
         const member = await this.chatService.getMemberByRoomAndUser(room, user);
+        if (!member) { throw new NotFoundException('item_not_found'); }
         await this.chatService.setAdmin(member);
+
         const members = await this.chatService.getMembersByRoom(room);
-        for (const member of members) {
-            this.chatGateway.server.to(member.socketId).emit('members_room', members);
+        if (members) {
+            for (const member of members) {
+                this.chatGateway.server.to(member.socketId).emit('members_room', members);
+            }
         }
     }
 
@@ -299,12 +374,20 @@ export class ChatController {
     @Post('unset_as_admin')
     async unsetAdmin(@Body() data: SetAdminDto, @Request() req) {
         const room = await this.chatService.getRoomById(data.roomId);
+        if (!room) { throw new NotFoundException('item_not_found'); }
+
         const user = await this.userService.getUserById(data.userId);
+        if (!user) { throw new NotFoundException('item_not_found'); }
+
         const member = await this.chatService.getMemberByRoomAndUser(room, user);
+        if (!member) { throw new NotFoundException('item_not_found'); }
         await this.chatService.unsetAdmin(member);
+
         const members = await this.chatService.getMembersByRoom(room);
-        for (const member of members) {
-            this.chatGateway.server.to(member.socketId).emit('members_room', members);
+        if (members) {
+            for (const member of members) {
+                this.chatGateway.server.to(member.socketId).emit('members_room', members);
+            }
         }
     }
 }
