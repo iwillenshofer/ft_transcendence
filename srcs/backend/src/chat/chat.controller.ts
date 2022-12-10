@@ -114,9 +114,11 @@ export class ChatController {
         const socketId_invited = (await this.connectedUsersService.getByUserId(invited.id)).socketId;
         const invitedMember = await this.chatService.createMember(invited.toEntity(), socketId_invited, MemberRole.Member);
 
-        await this.chatService.createRoom(room.toEntity(), [ownerMember, invitedMember]);
-        await this.chatGateway.emitRooms(owner.id, ownerMember.socketId);
-        await this.chatGateway.emitRooms(invited.id, invitedMember.socketId);
+        if (await this.chatService.getDirectRoom(owner.username, invited.username) == null) {
+            await this.chatService.createRoom(room.toEntity(), [ownerMember, invitedMember]);
+            await this.chatGateway.emitRooms(owner.id, ownerMember.socketId);
+            await this.chatGateway.emitRooms(invited.id, invitedMember.socketId);
+        }
     }
 
     @UseGuards(JwtGuard)
