@@ -206,11 +206,6 @@ export class UsersService {
 		return username;
 	}
 
-	async deleteAvatar(oldAvatar: string) {
-		await fs.unlink('./uploads/profileimages/' + oldAvatar, () => {
-		})
-	}
-
 	async getAllUsers(): Promise<UserEntity[]> {
 		return await this.userRepository.find();
 	}
