@@ -19,13 +19,15 @@ export class UserDTO {
 
 	public static from(dto: Partial<UserDTO>) {
 		const user = new UserDTO();
-		user.id = dto.id;
-		user.username = dto.username;
-		user.fullname = dto.fullname;
-		user.avatar_url = dto.avatar_url;
-		user.tfa_fulfilled = dto.tfa_fulfilled;
-		user.tfa_enabled = dto.tfa_enabled;
-		user.login_count = dto.login_count;
+		if (dto) {
+			user.id = dto.id;
+			user.username = dto.username;
+			user.fullname = dto.fullname;
+			user.avatar_url = dto.avatar_url;
+			user.tfa_fulfilled = dto.tfa_fulfilled;
+			user.tfa_enabled = dto.tfa_enabled;
+			user.login_count = dto.login_count;
+		}
 		return (user);
 	}
 

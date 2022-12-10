@@ -176,9 +176,10 @@ export class UsersService {
 
 	async set2FASecret(id: number, secret: string): Promise<void> {
 		let user = await this.userRepository.findOneBy({ id: id });
-		user.tfa_code = this.encrypt.encode(secret);
-		// console.log("secret saved:" + secret);
-		const results = await this.userRepository.save(user);
+		if (user) {
+			user.tfa_code = this.encrypt.encode(secret);
+			const results = await this.userRepository.save(user);
+		}
 		return;
 	}
 
