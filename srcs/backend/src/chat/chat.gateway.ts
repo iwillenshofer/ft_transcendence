@@ -211,7 +211,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (find == 0) {
       this.usersStatus.push(user)
     }
-	console.log(JSON.stringify(this.usersStatus));
     this.server.emit('chatStatus', this.usersStatus)
   }
 
