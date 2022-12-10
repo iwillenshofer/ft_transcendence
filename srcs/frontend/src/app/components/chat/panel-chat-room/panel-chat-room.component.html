@@ -37,7 +37,7 @@
         </fa-icon>
 		</button>
 
-		<div class="btn-group"  *ngIf="((amIOwner || amIAdmin) && !isOwner)">
+		<div class="btn-group"  *ngIf="((amIOwner || amIAdmin) && !isOwner && !isAdmin)">
 			<button class="btn btn-secondary btn-sm dropdown-toggle btnpadding" type="button" data-bs-toggle="dropdown" aria-expanded="false">
 				Mute
 			</button>
@@ -47,7 +47,7 @@
 				<li><a class="dropdown-item"(click)="setMute('24h')">24h</a></li>
 			</ul>
     	</div>
-		<div class="btn-group"  *ngIf="((amIOwner || amIAdmin) && !isOwner)">
+		<div class="btn-group"  *ngIf="((amIOwner || amIAdmin) && !isOwner && !isAdmin)">
 			<button class="btn btn-secondary btn-sm dropdown-toggle btnpadding" type="button" data-bs-toggle="dropdown" aria-expanded="false">
 				Ban
 			</button>
