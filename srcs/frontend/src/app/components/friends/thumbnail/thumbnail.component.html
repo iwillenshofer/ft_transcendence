@@ -13,7 +13,7 @@
 		</div>
 		<li><a (click)="this.friendService.loadUser(this.username)" class="dropdown-item" ><fa-icon [icon]="icon[3]"></fa-icon><span class="name">Profile</span></a></li>
 		<li><a routerLink="/pong" (click)="this.challenge(this.username)" *ngIf="this.onlineService.getOnline(this.username) == 'online'" class="dropdown-item"><fa-icon [icon]="icon[1]"></fa-icon><span class="name">Play</span></a></li>
-		<li  *ngIf="this.onlineService.getOnline(this.username) == 'ingame'"><a class="dropdown-item" ><fa-icon [icon]="icon[2]"></fa-icon><span class="name">Watch</span></a></li>
+		<li><a routerLink="/pong" (click)="this.specFriend(this.username)" *ngIf="this.onlineService.getOnline(this.username) == 'ingame'" class="dropdown-item"><fa-icon [icon]="icon[2]"></fa-icon><span class="name">Watch</span></a></li>
 	</ul>
   </div>
   <div class=" nobutton btn" *ngIf="!(this.dropdown) || this.username == this.authService.userSubject.value?.username ?? ''">

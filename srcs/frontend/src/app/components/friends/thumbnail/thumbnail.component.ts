@@ -33,4 +33,9 @@ export class ThumbnailComponent {
 	challenge(player: any) {
 		this.gameService.challenge(player);
 	}
+	
+	specFriend(username: string) {
+		this.gameService.spec(username);
+		this.router.navigate(['/pong']);
+	}
 }

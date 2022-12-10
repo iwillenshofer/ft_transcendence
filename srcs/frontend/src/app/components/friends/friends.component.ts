@@ -42,9 +42,4 @@ export class FriendsComponent implements OnInit {
 			}
 		})
 	}
-
-	specFriend(username: string) {
-		this.gameService.spec(username);
-		this.router.navigate(['/pong']);
-	}
 }
