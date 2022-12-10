@@ -91,16 +91,9 @@ export class FriendsService {
     return this.http.post<boolean>('/backend/friends/unblock/' + this.selectedUser.value, { withCredentials: true });
   }
 
-  getStatus(username: string) {
-    // let x = this.http.get('/backend/stats/status/' + username, { withCredentials: true });
-    // return x;
-  }
+  getStatus(username: string) { }
 
-  setStatus(username: string, status: string) {
-
-    //let body = { status: status }
-    //this.http.put('/backend/stats/status/' + username, body, { withCredentials: true }).subscribe(res => { })
-  }
+  setStatus(username: string, status: string) { }
 
   getUserList(filter: string): Observable<any> {
     return this.http.get('/backend/friends/searchusers/' + filter, { withCredentials: true });
@@ -158,7 +151,6 @@ export class FriendsService {
 
   async addFriendship() {
     this.requestFriendship(this.selectedUser.value || '').subscribe((res) => {
-      // console.log(res);
       if ((res.status == 4)) { this.alertService.success(res.message); }
       else { this.alertService.warning(res.message); }
       this.update();
@@ -168,7 +160,6 @@ export class FriendsService {
   async delFriendship(username: string = '') {
     if (username == '') { username = this.selectedUser.value || '' };
     this.cancelFriendship(username).subscribe((res) => {
-      // console.log(res);
       if ((res.status == 0)) { this.alertService.success(res.message); }
       else { this.alertService.warning('friendship could not be cancelled'); }
       this.update();

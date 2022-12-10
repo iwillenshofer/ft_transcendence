@@ -111,14 +111,12 @@ function ballUpdate() {
     if (isCollision(rectP1(), rect)) {
         ball.lastTouch = 1;
         ball.direction.x *= -1;
-        // ballRandomY();
         ball.velocity += VELOCITY_INCREASE;
     }
 
     if (isCollision(rectP2(), rect)) {
         ball.lastTouch = 2;
         ball.direction.x *= -1;
-        // ballRandomY();
         ball.velocity += VELOCITY_INCREASE;
     }
     syncBall();
@@ -273,7 +271,7 @@ function randomNumberBetween(min: number, max: number) {
 function resetPlayersPosition() {
     player1.x = 20;
     player1.y = (table.height / 2) - (player1.height / 2);
-    player2.x = table.width - player2.width - 20; // - 10 da margin
+    player2.x = table.width - player2.width - 20; 
     player2.y = (table.height / 2) - (player2.height / 2);
     if (isPlayer())
         _socket.emit('resetPaddles');

@@ -137,7 +137,6 @@ export class DialogRoomSettingComponent implements OnInit, OnDestroy {
     if (user) {
       let member = this.members.find(member => member.user.username == user.username)
       if (!member) {
-        console.log("add member")
         this.chatService.addUserToRoom(this.data.room, user).subscribe(
           (response) => {
             this.alertService.success(user.username + " has been successfully added to the chatroom");

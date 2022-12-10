@@ -82,9 +82,7 @@ export class GameComponent implements OnInit {
     this.socket.on("games", (games: any[]) => {
       if (games) {
         for (let index = 0; index < games.length; index++) {
-          console.log(games[index].player1.username, games[index].player2.username, username)
           if (games[index].player1.username == username || games[index].player2.username == username) {
-            console.log("ntr")
             this.watchGame(games[index].player1.socket)
           }
         }

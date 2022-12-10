@@ -28,9 +28,7 @@ export class Intra42Strategy extends PassportStrategy(Strategy, "intra42")
 		const  data  = await firstValueFrom (this.httpService.get(process.env.BASE_URL + "/v2/me", {headers: header}));
 		try {
 			user = await this.authService.getOrCreateUser(data.data);		
-		} catch (error) {
-			console.log(error);
-		}
+		} catch (error) {}
 		return (user);
 	}
 }

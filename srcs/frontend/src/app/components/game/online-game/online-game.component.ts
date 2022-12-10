@@ -47,8 +47,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     if (event.code == 'Escape') {
       if (this.isWaiting || this.finished || this.mode == 'spec') {
         this.esc();
-        // this.socket.disconnect();
-        // this.quit.emit(true);
       }
     }
   }
@@ -73,9 +71,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.socket = io("/game");
 
     this.username = this.auth.userSubject.value?.username ?? '';
-    // this.auth.getUser().then(data => {
-    //   this.username = data.username;
-    // })
     if (this.mode == 'spec') {
       this.chatSocket.emit('setStatus', this.username, "watching")
       this.socket.emit("watchGame", this.specGame);
@@ -89,7 +84,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.gameUnavailable()
     }
     else {
-      // this.usersOnlineServices.setStatus(this.username, 'ingame')
       this.socket.emit("joinGame", this.powerUps, this.username, this.challenged);
     }
     this.gameService.setMode(this.mode)

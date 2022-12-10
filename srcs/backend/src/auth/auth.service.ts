@@ -21,10 +21,6 @@ export class AuthService {
 
 	async getOrCreateUser(data: any): Promise<UserDTO> {
 		let user: UserDTO | null;
-		// console.log(data.id);
-		// console.log(data.login);
-		// console.log(data.displayname);
-		// console.log(data.link);
 		if (!data || !(data?.id) || !(data?.login) || !(data?.displayname))
 			return (null);
 		user = await this.UsersService.getUser(data.id);
@@ -97,7 +93,6 @@ export class AuthService {
 
 	async verifyTwoFactor(user_id: number, code: string) {
 		const user_info: UserDTO = await this.UsersService.getUser(user_id);
-		// console.log("secret sent:" + code);
 		if (authenticator.verify({ token: code, secret: await this.UsersService.getTfaCode(user_id) })) {
 			if (!(await this.UsersService.getTfaEnabled(user_id))) {
 				await this.UsersService.enable2FASecret(user_id, true);

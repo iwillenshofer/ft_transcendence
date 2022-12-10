@@ -32,12 +32,6 @@ export class UserEntity extends BaseEntity {
   @Column({ nullable: true, type: 'varchar', length: 200 })
   tfa_code: string;
 
-  // @ManyToMany(() => RoomEntity, room => room.users)
-  // rooms: RoomEntity[];
-
-  // @OneToMany(() => MessageEntity, message => message.user)
-  // messages: MessageEntity[];
-
   @OneToMany(() => MemberEntity, member => member.user)
   members: MemberEntity[];
 
@@ -54,7 +48,7 @@ export class UserEntity extends BaseEntity {
   updated_at: Date;
 
   @Column({ nullable: false, type: 'boolean', default: false })
-  tfa_fulfilled: boolean; // MUST BE REMOVED AFTER CREATING DTO
+  tfa_fulfilled: boolean;
 
   @Column({ nullable: true, type: 'varchar', length: 50 })
   status: string = "offline";

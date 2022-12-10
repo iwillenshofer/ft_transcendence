@@ -82,7 +82,6 @@ export class UsersService {
 			response.data.pipe(writer);
 		} catch {
 			filename = 'default.jpg'
-			console.log('error downloading picture');
 		}
 		image_url = 'user/image/' + filename;
 
@@ -119,7 +118,6 @@ export class UsersService {
 		let oldUsername = user.username;
 		user.username = username;
 		const results = await this.userRepository.save(user);
-		//this.chatService.updateNameDirectRooms(oldUsername, username);
 		return username;
 	}
 
@@ -210,7 +208,6 @@ export class UsersService {
 
 	async deleteAvatar(oldAvatar: string) {
 		await fs.unlink('./uploads/profileimages/' + oldAvatar, () => {
-			console.log("Could not remove old avatar file.")
 		})
 	}
 

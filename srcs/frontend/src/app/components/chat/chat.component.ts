@@ -158,7 +158,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(DialogPasswordComponent, {
       data: { room: this.selectedPublicRoom }
     });
-    //this.roomsAvailable.deselectAll();
   }
 
   async onJoinRoom(selectedPublicRoom: RoomInterface | null) {
@@ -192,7 +191,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         )
       }
     }
-    //this.roomsAvailable.deselectAll();
   }
 
   onLeaveRoom(selectedRoom: RoomInterface) {
@@ -204,7 +202,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       }
       this.nulledSelectedRoom();
     }
-    //this.roomsAvailable.deselectAll();
   }
 
   isProtected(type: RoomType) {
@@ -227,7 +224,6 @@ export class ChatComponent implements OnInit, OnDestroy {
           this.selectedRoom = selectedRoom;
       }
     });
-    //this.roomsAvailable.deselectAll();
   }
 
   nulledSelectedRoom() {
