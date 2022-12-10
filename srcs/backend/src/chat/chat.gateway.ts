@@ -200,7 +200,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   setStatus(username: string, status: string) {
-	console.log("setting status: " + username + " s: " + status);
     let user = { username: username, status: status };
     let find = 0;
     this.usersStatus.forEach(u => {
