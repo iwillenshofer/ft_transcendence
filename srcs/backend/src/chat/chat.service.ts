@@ -168,7 +168,6 @@ export class ChatService {
                 };
             }
         }
-        // console.log(JSON.stringify(opt));
         let pages = await paginate(query, opt);
         pages.meta.currentPage -= 1;
         return (pages);
@@ -225,7 +224,7 @@ export class ChatService {
         return await message.save();
     }
 
-    async findMessagesForRoom(room: RoomEntity, options: IPaginationOptions, userId: number): Promise<Pagination<MessageEntity>> {
+    async findMessagesForRoom(room: RoomEntity, userId: number): Promise<MessageEntity[]> {
 
         let blockedUsers: number[] = [];
         (await this.getBlockedUser(userId)).forEach(user => {
@@ -238,14 +237,15 @@ export class ChatService {
                 usersToSend.push(member.user.id);
         });
 
-        const query = this.messageRepository
+        return this.messageRepository
             .createQueryBuilder('message')
             .leftJoin('message.room', 'room')
             .where('room.id = :roomId', { roomId: room.id })
             .leftJoinAndSelect('message.member', 'member')
             .leftJoinAndSelect('member.user', 'user')
             .andWhere('user.id IN (:...usersToSend)', { usersToSend: usersToSend })
-        return await paginate(query, options);
+			.orderBy('message.created_at', 'ASC')
+			.getMany()
     }
 
     async getMembersByRoom(room: RoomEntity): Promise<MemberEntity[]> {
@@ -454,5 +454,51 @@ export class ChatService {
             member.banUntil = banTime;
             await this.memberRepository.save(member);
         }
+    }
+
+	async setReadRoom(room_id: number, member_id: number) {
+		try {
+			await this.messageRepository.createQueryBuilder()
+				.update()
+				.set({read: true})
+				.where('room = :room', { room: room_id })
+				.andWhere('member = :member', { member: member_id })
+				.execute();
+		} catch {};
+	}
+
+	async setReadMessage(message_id: number) {
+		let message = await this.messageRepository.createQueryBuilder('message')
+			.leftJoinAndSelect('message.member', 'member')
+			.leftJoinAndSelect('message.room', 'room')
+			.where('message.id = :id', { id: message_id })
+			.getOne()
+
+		if (message && message.room && message.member)
+		{
+			let allmessages = await this.messageRepository.createQueryBuilder()
+				.update()
+				.set({read: true})
+				.where('room = :room', { room: message.room.id })
+				.andWhere('member = :member', { member: message.member.id })
+				.execute();
+		}
+	}
+
+	async getUnreadRoomsOfMember(userId: number): Promise<number[]> {
+		const msgs = await this.messageRepository
+			.createQueryBuilder('message')
+			.innerJoinAndSelect('message.room', 'room')
+			.innerJoin('message.member', 'creator')
+			.innerJoin('creator.user', 'creator_user')
+			.where("creator_user.id != :myself", {myself: userId})
+			.andWhere('message.read = :read', { read: false })
+			.getMany();
+		let list: number[] = [];
+		msgs.forEach(message => {
+			if (!(list.includes(message.room.id)))
+				list.push(message.room.id);
+		})
+		return list;
     }
 }

@@ -35,7 +35,7 @@
 				<div class="col-12">
 					<!--message screen-->
 					<div #messagesScroller class="message">
-						<span *ngFor="let message of (messagesPaginate$ | async)?.items; let last = last">
+						<span *ngFor="let message of (messagesPaginate$ | async); let last = last">
 							<app-chat-message [message]="message" [myUser]="this.myUser"></app-chat-message>
 							{{last ? scrollToBottom() : ''}}
 						</span>

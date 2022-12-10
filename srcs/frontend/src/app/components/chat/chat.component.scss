@@ -189,11 +189,7 @@
 .loginicon { 
        padding-top: 0px;
 }
-.loginname {
-       color: white;
-       font-weight: bold;
-       padding-top: 12px;
-}
+
 .loginname:hover {
 	color: rgb(183, 183, 183);
 }
@@ -252,4 +248,9 @@ mat-list-option {
 	display: block;
 	text-align: center;
 	color: #a4a5a6;
+}
+
+.badge {
+    font-size: 5px;
+    vertical-align: middle;
 }

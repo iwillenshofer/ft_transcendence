@@ -61,11 +61,11 @@ export class ChatService {
   }
 
   sendMessage(message: string, room: RoomInterface): Observable<any> {
-    return this.http.post('/backend/chat/add_message/', { message: message, room: room }, { withCredentials: true });
+	return this.http.post('/backend/chat/add_message/', { message: message, room: room }, { withCredentials: true });
   }
 
-  getMessages(): Observable<MessagePaginateInterface> {
-    return this.socket.fromEvent<MessagePaginateInterface>('messages');
+  getMessages(): Observable<MessageInterface[]> {
+    return this.socket.fromEvent<MessageInterface[]>('messages');
   }
 
   getMyChatRoomsPaginate(): Observable<RoomPaginateInterface> {
@@ -196,5 +196,25 @@ export class ChatService {
 
   updateRoom() {
     return this.socket.fromEvent<RoomInterface>('update_room');
+  }
+
+  emitReadMessage(message_id: number) {
+    this.socket.emit('read_message', message_id);
+  }
+
+  emitReadRoomMessages(room_id: number, member_id: number) {
+	this.socket.emit('read_room_message', room_id, member_id)
+  }
+
+  getUnreadRooms(): Observable<any> {
+	return this.socket.fromEvent<any>('unread_rooms');
+  }
+
+  emitGetUnreadRooms(): Observable<any> {
+	return this.socket.emit('my_unread_rooms');
+  }
+
+  emitMessage(chat_room: number) {
+	this.socket.emit('get_unreadmessages', chat_room);
   }
 }

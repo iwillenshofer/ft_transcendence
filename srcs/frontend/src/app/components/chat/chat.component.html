@@ -30,13 +30,13 @@
 							<div class="list-container">
 								<div *ngFor="let room of (myDirectRooms$  | async)?.items">
 									<div *ngFor="let member of room.members">
-										<div *ngIf="member.user.username != this.myUser.username" class="row listitem">
+										<div *ngIf="member.user && this.myUser && member.user.username != this.myUser.username" class="row listitem">
 											<div class="col-3 loginicon">
 												<app-thumbnail [username]="member.user.username" size="small"
 													[light]="true" [avatar]="member.user.avatar_url"></app-thumbnail>
 											</div>
 											<div class="col-9 loginname" (click)="selectRoom(room)">
-												<span>{{member.user.username}}</span>
+												<span>{{member.user.username}} <span [ngClass]="{'badge rounded-pill bg-warning text-dark': unreadRooms.includes(room.id)}">&nbsp;</span></span>
 											</div>
 										</div>
 									</div>
