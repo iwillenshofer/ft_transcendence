@@ -87,7 +87,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async getMessages(socket: any, roomId: number) {
     const room: RoomEntity = await this.chatService.getRoomById(roomId);
     const messages = await this.chatService.findMessagesForRoom(room, { page: 1, limit: 25 }, +socket.handshake.headers.userid);
-    this.server.to(socket.id).emit('messages', messages);
+    
+	console.log("MESSAGES " + JSON.stringify(messages));
+	this.server.to(socket.id).emit('messages', messages);
   }
 
   @SubscribeMessage('paginate_rooms')
