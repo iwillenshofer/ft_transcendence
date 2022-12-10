@@ -73,7 +73,8 @@ export class UsersController {
     @Get('image/:imgpath')
     async seeUploadedFile(@Param('imgpath') image, @Response() res) {
         const fs = require('fs');
-        if (fs.existsSync('./uploads/profileimages/' + image))
+        let path = './uploads/profileimages/' + image;
+        if (fs.existsSync(path))
             return await res.sendFile(image, { root: './uploads/profileimages/' });
         else
             res.status(404).redirect('/fourohfour');
