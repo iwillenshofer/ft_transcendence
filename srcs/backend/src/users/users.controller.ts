@@ -23,6 +23,12 @@ export class UsersController {
     }
 
     @UseGuards(JwtGuard)
+    @Post('username')
+    async updateUsername(@Request() req, @Body() body): Promise<Object> {
+        return of({ username: await this.UsersService.updateUsername(req.user.id, body.username) })
+    }
+
+    @UseGuards(JwtGuard)
     @Get('get_user_by_id/:id')
     async getUserById(@Param('id') id) {
         let user: UserDTO = UserDTO.from(await this.UsersService.getUser(id));
