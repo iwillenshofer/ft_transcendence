@@ -23,4 +23,8 @@ export class MessageEntity extends BaseEntity {
 
     @CreateDateColumn()
     created_at: Date;
+
+	@Column('boolean', {default: false})
+    read: boolean;
+
 }

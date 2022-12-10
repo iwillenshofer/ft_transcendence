@@ -29,6 +29,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   @ViewChild('listChatRoom')
   listCR!: MatSelectionList;
 
+
+  unreadRooms$ = this.chatService.getUnreadRooms();
+  unreadRooms: number[] = [];
+
   myDirectRooms$ = this.chatService.getMyDirectRoomsPaginate();
   myChatRooms$ = this.chatService.getMyChatRoomsPaginate();
 
@@ -57,38 +61,44 @@ export class ChatComponent implements OnInit, OnDestroy {
   faUsers = faUsers;
 
   constructor(
-    private chatService: ChatService,
-    public dialog: MatDialog,
-    private userService: UserService,
-    private alertService: AlertsService) {
-  }
-
-  async ngOnInit() {
-    this.chatService.emitPaginateRooms(10, 0);
-    this.chatService.emitPaginatePublicRooms(10, 0);
-    this.chatService.emitGetAllMyRooms();
-    this.chatService.emitGetPublicRooms();
-
-    this.subscription1$ = this.myUser$.subscribe(user => {
-      this.myUser = user;
-    });
-
-    this.subscription2$ = this.allMyRooms$.subscribe(rooms => {
-      this.allMyRooms = rooms;
-      this.updateRoom();
-    });
-
-    this.subscription3$ = this.allPublicRooms$.subscribe(rooms => {
-      this.allPublicRooms = rooms;
-      if (!rooms.find(room => room.id == this.selectedPublicRoom.id))
-        this.selectedPublicRoom = this.selectedRoomNulled;
-    });
-  }
-
-  updateRoom() {
-    let room;
-    let tmp = this.allMyRooms || [];
-    if (room = tmp.find(room => room.id == this.selectedRoom.id))
+	  private chatService: ChatService,
+	  public dialog: MatDialog,
+	  private userService: UserService,
+	  private alertService: AlertsService) {
+	}
+	
+	async ngOnInit() {
+		this.chatService.emitPaginateRooms(10, 0);
+		this.chatService.emitPaginatePublicRooms(10, 0);
+		this.chatService.emitGetAllMyRooms();
+		this.chatService.emitGetPublicRooms();
+		
+		this.subscription1$ = this.myUser$.subscribe(user => {
+			this.myUser = user;
+		});
+		
+		this.subscription2$ = this.allMyRooms$.subscribe(rooms => {
+			this.allMyRooms = rooms;
+			this.updateRoom();
+		});
+		
+		this.subscription3$ = this.allPublicRooms$.subscribe(rooms => {
+			this.allPublicRooms = rooms;
+			if (!rooms.find(room => room.id == this.selectedPublicRoom.id))
+			this.selectedPublicRoom = this.selectedRoomNulled;
+		});
+		
+		this.unreadRooms$.subscribe(rooms => {
+			this.unreadRooms = rooms;
+		})
+		this.chatService.emitGetUnreadRooms();
+		
+	}
+	
+	updateRoom() {
+		let room;
+		let tmp = this.allMyRooms || [];
+		if (room = tmp.find(room => room.id == this.selectedRoom.id))
       this.selectedRoom = room;
     else
       this.selectedRoom = this.selectedRoomNulled;
@@ -101,6 +111,11 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   selectRoom(room: RoomInterface) {
     this.selectedRoom = room;
+	console.log("selecting room");
+	if (!this.isSelectRoomNull())
+	{
+		this.unreadRooms = this.unreadRooms.filter((val) => val != room.id );
+	}
   }
 
   selectPublicRoom(room: RoomInterface) {
@@ -243,6 +258,13 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     return (false);
   }
+
+  isUnreadMessage(room: RoomInterface): boolean {
+	if (!(this.isSelectRoomNull()))
+		return (this.unreadRooms.includes(room.id));
+	return (false);
+	}
+
 
 }
 

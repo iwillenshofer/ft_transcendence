@@ -39,6 +39,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       await this.chatService.getRoomsOfMember(user_id, page, RoomType.Public));
     this.server.to(socket_id).emit('rooms',
       await this.chatService.getRoomsOfMember(user_id, page));
+	console.log()
+	this.server.to(socket_id).emit('unread_rooms', await this.chatService.getUnreadRoomsOfMember(user_id));
   }
 
   @UseGuards(TfaGuard)
@@ -212,5 +214,37 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.usersStatus.push(user)
     }
     this.server.emit('chatStatus', this.usersStatus)
+  }
+
+  @SubscribeMessage('get_unreadmessages')
+  async getUnreadMessage(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+	let room_id = +data;
+	console.log("get_unreadmessages message");
+	if (room_id)
+	{
+		let room = await this.chatService.getRoomById(room_id);
+		if (room)
+		{
+			console.log(JSON.stringify(room));
+			let members = await this.chatService.getMembersByRoom(room);
+			members.forEach(async (member) => {
+				console.log("MEMBER:" + JSON.stringify(member))
+				this.server.to(member.socketId).emit('unread_rooms', await this.chatService.getUnreadRoomsOfMember(member.user.id));
+			});
+		}
+  	}
+  }
+
+  @SubscribeMessage('my_unread_rooms')
+  async getUnreadRooms(socket: Socket) {
+	let user_id = +socket.handshake.headers.userid;
+	this.server.to(socket.id).emit('unread_rooms', await this.chatService.getUnreadRoomsOfMember(user_id));
+  }
+
+  @SubscribeMessage('read_message')
+  async setReadMessage(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+	let message = data;
+	console.log(message);
+	this.chatService.setReadMessage(+message);
   }
 }

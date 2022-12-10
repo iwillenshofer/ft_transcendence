@@ -8,7 +8,8 @@ export interface MessageInterface {
     message: string;
     member: MemberInterface;
     room: RoomInterface;
-    created_at?: Date;
+    read: boolean;
+	created_at?: Date;
 }
 
 export interface MessagePaginateInterface {

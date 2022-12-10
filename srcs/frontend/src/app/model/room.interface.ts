@@ -13,6 +13,7 @@ export interface RoomInterface {
     members?: MemberInterface[];
     created_at?: Date;
     updated_at?: Date;
+	unread?: boolean;
 }
 
 export interface RoomPaginateInterface {

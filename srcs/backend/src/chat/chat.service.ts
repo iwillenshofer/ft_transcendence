@@ -455,4 +455,42 @@ export class ChatService {
             await this.memberRepository.save(member);
         }
     }
+
+	async setReadMessage(message_id: number) {
+		let message = await this.messageRepository.createQueryBuilder('message')
+			.leftJoinAndSelect('message.member', 'member')
+			.leftJoinAndSelect('message.room', 'room')
+			.where('message.id = :id', { id: message_id })
+			.getOne()
+		console.log("Full message: " + JSON.stringify(message));
+
+		console.log("message: " + message.id + " -- message member" + message.member.id);
+		if (message && message.room && message.member)
+		{
+			let allmessages = await this.messageRepository.createQueryBuilder()
+				.update()
+				.set({read: true})
+				.where('room = :room', { room: message.room.id })
+				.andWhere('member = :member', { member: message.member.id })
+				.execute();
+		}
+	}
+
+	async getUnreadRoomsOfMember(userId: number): Promise<number[]> {
+		const msgs = await this.messageRepository
+			.createQueryBuilder('message')
+			.innerJoinAndSelect('message.room', 'room')
+			.innerJoin('message.member', 'creator')
+			.innerJoin('creator.user', 'creator_user')
+			.where("creator_user.id != :myself", {myself: userId})
+			.andWhere('message.read = :read', { read: false })
+			.getMany();
+		let list: number[] = [];
+		msgs.forEach(message => {
+			if (!(list.includes(message.room.id)))
+				list.push(message.room.id);
+		})
+		console.log("List for user " + userId + ": " + list)
+		return list;
+    }
 }

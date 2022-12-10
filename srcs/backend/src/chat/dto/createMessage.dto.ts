@@ -10,6 +10,7 @@ export class CreateMessageDto {
     message: string;
     room: RoomEntity;
     member: MemberEntity;
+	read: boolean;
 
     constructor(message: string = "", room: RoomEntity = new RoomEntity(), member: MemberEntity = new MemberEntity) {
         this.message = message;
@@ -22,6 +23,7 @@ export class CreateMessageDto {
         message.message = dto.message;
         message.room = dto.room;
         message.member = dto.member;
+		message.read = dto.read;
         return (message);
     }
 
@@ -30,6 +32,7 @@ export class CreateMessageDto {
         message.message = entity.message;
         message.room = entity.room;
         message.member = entity.member;
+		message.read = entity.read;
         return (message);
     }
 
@@ -38,6 +41,7 @@ export class CreateMessageDto {
         message.message = this.message;
         message.room = this.room;
         message.member = this.member;
+		message.read = this.read;
         return (message);
     }
 }
