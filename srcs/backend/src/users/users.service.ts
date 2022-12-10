@@ -71,7 +71,7 @@ export class UsersService {
 	async createUser(intra_id: number, login: string, displayname: string, image_url: string): Promise<UserDTO> {
 
 		const ext = '.' + image_url.split('.').pop();
-		const filename = uuidv4() + ext;
+		let filename = uuidv4() + ext;
 		try {
 			const writer = createWriteStream('uploads/profileimages/' + filename)
 			const response = await this.httpService.axiosRef({
@@ -81,6 +81,7 @@ export class UsersService {
 			});
 			response.data.pipe(writer);
 		} catch {
+			filename = 'default.jpg'
 			console.log('error downloading picture');
 		}
 		image_url = 'user/image/' + filename;
