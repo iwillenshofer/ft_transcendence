@@ -28,19 +28,6 @@ export class HomeComponent implements OnInit {
     private chatService: ChatService
   ) { }
 
-  ngOnInit(): void {
-    //  this.getPlayer();
-  //  this.userOnlineService.UsersOnline$.subscribe(val => {
-  //    this.UsersOnline = val;
-  //  })
-    //console.log("here " + this.userOnlineService.UsersOnline)
-  }
-
-  // status = 'false';
-  // player = 'login2'
-  // async getPlayer() {
-  //   // this.friendsService.setStatus(this.player, 'online')
-  //   this.friendsService.getStatus(this.player).subscribe(x => { this.status = x.status })
-  // }
+  ngOnInit(): void {}
 
 }

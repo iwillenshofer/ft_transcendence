@@ -199,7 +199,6 @@ export class StatsService {
       .select('SUM(u.login_count)', 'logins')
 	  .addSelect('COUNT(*)', 'count')
       .getRawOne();
-	console.log(users);
 	let stats: GameStatsDTO = new GameStatsDTO;
 	stats.logins = +users.logins;
 	stats.users = +users.count;
@@ -210,19 +209,4 @@ export class StatsService {
     return stats;
   }
 
-
-  // async getStatusByUsername(username: string) {
-  //   let user = await this.userRepository.findOneBy({ username: username });
-  //   return user.status;
-  // }
-
-  // async setStatusByUsername(username: string, status: string) {
-  //   let user = await this.userRepository.findOneBy({ username: username });
-  //   if (!user) return;
-  //   user.status = status;
-  //   await this.userRepository.save(user);
-  //   return user.status;
-  // }
 }
-
-

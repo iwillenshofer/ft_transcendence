@@ -14,8 +14,6 @@ export interface UserI {
 	providedIn: 'root'
 })
 export class UsersOnlineService {
-	//public UsersOnline: Observable<UserInterface[]> = new Observable<UserInterface[]>()
-	//public statusSubject = new BehaviorSubject<Map<string, number>>(new Map());
 
 	constructor(private socket: ChatSocket) {
 		this.socket.on('chatStatus', (users: any) => {

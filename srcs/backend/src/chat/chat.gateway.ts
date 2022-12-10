@@ -178,7 +178,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   private onPrePaginate(page: PageInterface) {
-    //page.limit = page.limit > 100 ? 100 : page.limit;
     page.page++;
     return (page);
   }

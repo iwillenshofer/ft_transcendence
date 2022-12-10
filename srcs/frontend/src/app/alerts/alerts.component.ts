@@ -28,8 +28,6 @@ export class AlertsComponent implements OnInit {
   ngOnInit(): void {
     this.socket = io("/game");
     this.socket.connect()
-    // const io = require('socket.io-client');
-    // this.socket = io.connect('http://website.com');
     this.alertsService.getAlerts().subscribe(messages => {
       this.alerts = messages;
     });
@@ -37,9 +35,7 @@ export class AlertsComponent implements OnInit {
     let username: any;
     this.auth.getUser().then(data => {
       username = data.username;
-      console.log('user', this.socket, username)
       this.socket.on("notifyChallenge", (challenger: any, challenged: any, powerUps: any) => {
-        console.log('notify', username, challenged)
         if (challenged == username) {
           this.alertsService.challenge(challenger,
             {

@@ -104,7 +104,4 @@ export class OnlineGameService {
     game.setStarted(false);
   }
 
-  // getScore() {
-  //   return [game.player1.score, game.player2.score]
-  // }
 }

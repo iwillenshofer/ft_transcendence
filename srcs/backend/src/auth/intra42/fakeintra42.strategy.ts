@@ -43,7 +43,6 @@ export class FakeIntra42Strategy extends PassportStrategy(Strategy, 'fake42strat
             if (!user)
                 throw new UnauthorizedException();
         } catch (error) {
-            // console.log(error);
             throw new UnauthorizedException();
         }
         return (user);

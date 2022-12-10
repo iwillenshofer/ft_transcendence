@@ -44,9 +44,7 @@ export class FriendsController {
   @UseGuards(JwtGuard)
   @Post('requestfriendship/:username')
   async requestFriendship(@Param('username') username, @Request() req) {
-    // console.log('friendship:' + username);
     let ret = await this.friendsService.requestFriendship(username, req.user?.username);
-    // console.log('FRIENDSHIPSTATUS:'+ JSON.stringify(ret));
     return ((ret));
   }
 
@@ -76,7 +74,6 @@ export class FriendsController {
   @Get('friendshipstatus/:username')
   async getFriendshipStatus(@Param('username') username, @Request() req) {
     let ret = await this.friendsService.getFriendshipStatus(username, req.user?.username);
-    // console.log('FRIENDSHIPSTAUTS:'+ JSON.stringify(ret));
     return (JSON.stringify(ret));
   }
 

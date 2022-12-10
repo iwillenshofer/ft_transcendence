@@ -15,7 +15,6 @@ export class StatsController {
   @UseGuards(JwtGuard)
   @Get('/ranking')
   async ranking(@Request() req) {
-    // console.log("getting ranking");
     let ret = await this.statsService.getLadderRanking();
     return (JSON.stringify(ret));
   }
@@ -35,43 +34,26 @@ export class StatsController {
 		return (JSON.stringify(ret));
 	}
 	
-	//@UseGuards(JwtGuard)
+	@UseGuards(JwtGuard)
 	@Get('/gamestats')
 	async gameStats(): Promise<GameStatsDTO> {
 		let ret = await this.statsService.getGameStats();
 		return (ret);
 	}
 	
+	@UseGuards(JwtGuard)
+	@Get('achievements/:username')
+	async getAchievements(@Param('username') username, @Request() req) {
+		let ret = await this.statsService.getAchievements(username);
+		return (JSON.stringify(ret));
+	}
 	
-	// @UseGuards(JwtGuard)
-	// @Get('status/:username')
-	// async getStatus(@Param('username') username, @Response() res) {
-		//   let status = await this.statsService.getStatusByUsername(username);
-		//   res.status(200).send({ status: status });
-		// }
-		
-		// @UseGuards(JwtGuard)
-		// @Put('status/:username')
-		// async setStatus(@Param('username') username: string, @Body() body: any, @Response() res) {
-			//   let status = await this.statsService.setStatusByUsername(username, body.status);
-			//   res.status(200).send({ status: status });
-			// }
-			
-			@UseGuards(JwtGuard)
-			@Get('achievements/:username')
-			async getAchievements(@Param('username') username, @Request() req) {
-				let ret = await this.statsService.getAchievements(username);
-				// console.log('achievement' + JSON.stringify(ret));
-				return (JSON.stringify(ret));
-			}
-			
-			@UseGuards(JwtGuard)
-			@Get('/:username')
-			async stats(@Param('username') username): Promise<StatsDTO> {
-			  let userStats = await this.statsService.getUserStats(username);
-			  // console.log(JSON.stringify(userStats));
-			  return (userStats);
-			}
-			
-		}
+	@UseGuards(JwtGuard)
+	@Get('/:username')
+	async stats(@Param('username') username): Promise<StatsDTO> {
+		let userStats = await this.statsService.getUserStats(username);
+		return (userStats);
+	}
+	
+}
 		
