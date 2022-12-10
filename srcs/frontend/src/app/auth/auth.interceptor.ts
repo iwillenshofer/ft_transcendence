@@ -29,7 +29,11 @@ export class AuthInterceptor implements HttpInterceptor {
 				else if (error.status == 400) {
 					return throwError(() => error);
 				}
+				else if (error.status == 404 && error.error.message == "item_not_found") {
+					return throwError(() => error);
+				}
 				else {
+					console.log(error)
 					this.alertservice.danger("Something bad happened and you'll have to login again!")
 					this.authService.logout();
 					return of(new HttpResponse({ body: {}, status: 200 }));
