@@ -245,6 +245,7 @@ export class ChatService {
             .leftJoinAndSelect('message.member', 'member')
             .leftJoinAndSelect('member.user', 'user')
             .andWhere('user.id IN (:...usersToSend)', { usersToSend: usersToSend })
+			.orderBy('message.created_at', 'ASC')
         return await paginate(query, options);
     }
 
