@@ -39,11 +39,14 @@ export class DialogUsernameComponent implements OnInit {
 
   // OnClick of button Upload
   updateName(username: string) {
+	let oldUsername = this.authService.userSubject.value?.username ?? '';
     this.userService.updateUsername(username).subscribe(
       (event: any) => {
         if (event.username != '') {
           this.userService.username = event.username;
           this.authService.updateUser();
+		  if (oldUsername)
+		  	this.onlineService.setStatus(oldUsername, 'offline'); 
 		  this.onlineService.setStatus(event.username, 'online');
 		}
       }

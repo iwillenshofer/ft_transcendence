@@ -41,7 +41,7 @@ export class UsersOnlineService {
 	}
 	
 	setStatus(username: string, status: string) {
-		this.socket.emit('setStatus', username, "online")
+		this.socket.emit('setStatus', username, status)
 	}
 
 	getOnline(username: string): string {
