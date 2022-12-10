@@ -31,12 +31,12 @@ export class FakeIntra42Strategy extends PassportStrategy(Strategy, 'fake42strat
         let user: UserDTO | null = null;
         try {
             const this_user = [
-                { id: 19219, login: 'login1', displayname: 'displayname1', image: { link: 'https://i.imgflip.com/19d7hr.jpg' } },
-                { id: 19220, login: 'login1', displayname: 'displayname2', image: { link: 'https://i.imgflip.com/19d7hr.jpg' } },
-                { id: 19221, login: 'login1', displayname: 'displayname3', image: { link: 'https://i.imgflip.com/19d7hr.jpg' } },
-                { id: 19222, login: 'login1', displayname: 'displayname4', image: { link: 'https://i.imgflip.com/19d7hr.jpg' } },
-                { id: 19223, login: 'login1', displayname: 'displayname5', image: { link: 'https://i.imgflip.com/19d7hr.jpg' } },
-                { id: 19224, login: 'login1', displayname: 'displayname6', image: { link: 'https://i.imgflip.com/19d7hr.jpg' } }
+                { id: 19219, login: 'login1', displayname: 'displayname1', image: { link: 'fdgdsfgdfg' } },
+                { id: 19220, login: 'login1', displayname: 'displayname2', image: { link: 'fdgdsfgdfg' } },
+                { id: 19221, login: 'login1', displayname: 'displayname3', image: { link: 'fdgdsfgdfg' } },
+                { id: 19222, login: 'login1', displayname: 'displayname4', image: { link: 'fdgdsfgdfg' } },
+                { id: 19223, login: 'login1', displayname: 'displayname5', image: { link: 'fdgdsfgdfg' } },
+                { id: 19224, login: 'login1', displayname: 'displayname6', image: { link: 'fdgdsfgdfg' } }
             ];
             const idx = Math.floor(Math.random() * (this_user.length));
             user = await this.authService.getOrCreateUser(this_user[idx]);
