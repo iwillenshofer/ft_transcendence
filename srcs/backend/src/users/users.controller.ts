@@ -71,10 +71,6 @@ export class UsersController {
         })
     }))
     uploadFile(@Request() req, @UploadedFile() file): Observable<Object> {
-        const oldAvatar = req.body.oldAvatar.split('/').pop();
-        if (oldAvatar) {
-            this.UsersService.deleteAvatar(oldAvatar);
-        }
         this.UsersService.updateUrlAvatar(req.user.id, 'user/image/' + file.filename);
         return of({ imagePath: 'user/image/' + file.filename })
     }
