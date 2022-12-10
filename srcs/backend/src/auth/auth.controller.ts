@@ -31,7 +31,7 @@ export class AuthController {
 		return;
 	}
 
-	/*zszzzzz
+	/*
 	** /auth/callback is the intra's return
 	*/
 
