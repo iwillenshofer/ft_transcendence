@@ -68,7 +68,6 @@ export class StatsService {
       dto.games_played = dto.history.length;
       dto.games_won = 0;
       for (let i = 0; i < dto.history.length; i++) {
-		console.log("history:" + JSON.stringify(dto.history[i]));
         if (dto.history[i].winner == user.username) { dto.games_won++; }
       }
     }
@@ -116,14 +115,12 @@ export class StatsService {
   }
 
   async addAchievement(user_id: number, achievement: string) {
-	console.log("Adding Achievement for user: " + user_id + " Achievement: " + achievement)
     const query = this.achievementsRepository
       .createQueryBuilder('f')
 	  .leftJoin('f.user', 'user')
       .where('user.id = :v1', { v1: user_id })
 	  .andWhere('f.achievement = :v2', { v2: achievement })
     let exists = await query.getMany();
-	console.log('Exists:' + JSON.stringify(exists) + " LEN: " + exists.length)
     if (exists.length) {
       return null;
     } else {
@@ -138,13 +135,11 @@ export class StatsService {
   }
 
   async gameAchievements(user_id: number) {
-	console.log("Game achievement");
     const games: number = await this.gameRepository
       .createQueryBuilder('f')
       .where('f.idP1 = :v1', { v1: user_id })
 	  .orWhere('f.idP2 = :v2', { v2: user_id })
       .getCount();
-	  console.log("Games Count  " + games);
     if (games >= 1) { await this.addAchievement(user_id, "g1") };
     if (games >= 3) { await this.addAchievement(user_id, "g2") };
     if (games >= 5) { await this.addAchievement(user_id, "g3") };
@@ -152,7 +147,6 @@ export class StatsService {
       .createQueryBuilder('f')
       .andWhere('f.winner = :v2', { v2: user_id })
       .getCount();
-	  console.log("Games Wins  " + wins);
     if (wins >= 1) { await this.addAchievement(user_id, "g4") };
     if (wins >= 3) { await this.addAchievement(user_id, "g5") };
     if (wins >= 5) { await this.addAchievement(user_id, "g6") };

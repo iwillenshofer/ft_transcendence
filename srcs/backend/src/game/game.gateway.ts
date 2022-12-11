@@ -203,11 +203,9 @@ export class GameGateway {
   async handleDisconnect(client: Socket, ...args: any[]) {
     const game = this.findGameBySocketId(client.id);
     if (game) {
-	  console.log('disconnecting game');
       const gameID = game.gameID;
       game.connected -= 1;
       if (client.id == game.player1.socket || client.id == game.player2.socket) {
-		console.log('client id is one of the players');
         this.server.to(gameID).emit("endGame", client.id);
         game.finished = true;
         if (client.id == game.player1.socket && !game.player2.socket) {
@@ -215,7 +213,6 @@ export class GameGateway {
         }
         else if (client.id == game.player1.socket) {
           game.player1.disconnected = true;
-		  console.log('client id is player one');
         }
         else if (client.id == game.player2.socket) {
 			game.player2.disconnected = true;
@@ -267,7 +264,6 @@ export class GameGateway {
     const game = this.findGameBySocketId(client.id);
     if (game && this.isPlayer1(game.gameID, client.id)) {
       game.powerUp = data;
-    console.log('powerUp')
       this.server.to(game.gameID).emit("updatePowerUp", game.powerUp);
     }
   }
@@ -283,7 +279,6 @@ export class GameGateway {
         game.winner = game.player2;
       else
         game.winner = null;
-    console.log("GAME WINNER" + JSON.stringify(game.winner));  
 	this.server.to(game.gameID).emit("winner", data[0]);
     }
   }

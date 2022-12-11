@@ -17,19 +17,15 @@ export class GameService {
     ) { }
 
     async addGame(game: Game) {
-		console.log("Adding game");
         if (! game || !game.winner || !game.player1 || !game.player2)
             return;
-		console.log("Game exists");
 		const exists = await this.gameRepository
 			.createQueryBuilder('g')
 			.where('g.socketP1 = :s1', { s1: game.player1.socket})
 			.andWhere('g.socketP2 = :s2', { s2: game.player2.socket})
 			.getMany();
-		console.log("Game already exists in db?" + JSON.stringify(exists.length));
 		if (exists.length)
 			return ;
-		console.log("Saving Game");
         const gameEntity = new GameEntity;
         gameEntity.usernameP1 = game.player1.username;
         gameEntity.usernameP2 = game.player2.username;
@@ -41,10 +37,8 @@ export class GameService {
         gameEntity.winner = await this.usersService.getUserByUsername(game.winner.username);
         gameEntity.idP1 = await this.usersService.getUserByUsername(gameEntity.usernameP1);
         gameEntity.idP2 = await this.usersService.getUserByUsername(gameEntity.usernameP2);
-        console.log("pre saving db");
 		if (gameEntity && gameEntity.idP1 && gameEntity.idP2 && gameEntity.winner)
 		{
-			console.log("saving db");
 			if (!(gameEntity.isChallenge))
 				await this.statsService.updateRating(gameEntity);
 				await this.gameRepository.save(gameEntity);
@@ -53,8 +47,4 @@ export class GameService {
 		}
     }
 
-    async getGamesByUsername(username: string) {
-        // let user = await this.userRepository.findOneBy({ id: id });
-        // return auser.games;
-    }
 }

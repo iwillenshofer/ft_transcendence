@@ -128,7 +128,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
 
   listeners() {
     	this.socket.on('updatePowerUp', (newPowerUp: any) => {
-	console.log('player power')
     	 this.powerUp = newPowerUp;
     	})
     this.updateScore();

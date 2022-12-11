@@ -210,7 +210,6 @@ function handleLose() {
     ball.direction.x *= ballSide;
     if (isPlayer())
     {
-	console.log('Score')
         _socket.emit('score', player1.score, player2.score, finished);
     }
 }
@@ -307,7 +306,6 @@ function resetPowerUp(show: boolean) {
 }
 
 function syncPowerUp() {
-console.log('syncPowerUp')
     if (isPlayer())
         _socket.emit('powerUp', powerUp);
 }
