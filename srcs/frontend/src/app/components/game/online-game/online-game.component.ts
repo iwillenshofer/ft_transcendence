@@ -33,6 +33,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   player2: any;
   ball: any;
   username: string = "";
+  powerUp: any;
 
   constructor(
     public gameService: OnlineGameService,
@@ -146,7 +147,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     })
   }
 
-  powerUp: any;
   watchGame() {
 	 this.gameService.listeners();
     this.socket.on("updatePaddle", (player1: any, player2: any) => {
