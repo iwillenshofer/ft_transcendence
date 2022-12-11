@@ -184,10 +184,10 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   update() {
+    this.updateScore();
     this.gameService.run();
     this.draw();
     this.endGame();
-    this.updateScore();
     this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
   }
 
@@ -202,8 +202,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.drawPowerUp(this.gameService.getPowerUp())
   }
 
-  async updateScore() {
-    await this.socket.once("updateScore", (scoreP1: any, scoreP2: any, finished: any) => {
+  updateScore() {
+    this.socket.on("updateScore", (scoreP1: any, scoreP2: any, finished: any) => {
       this.scoreP1 = scoreP1;
       this.scoreP2 = scoreP2;
       this.finished = finished;
@@ -230,14 +230,14 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.drawFinish();
       this.socket.disconnect();
     }
-    if (this.mode != 'spec')
+    else if (this.mode != 'spec')
       this.socket.emit("finishMessage", this.gameService.getFinalMessage(reason, disconnected), this.gameService.getWinner(reason, disconnected));
     this.socket.once("winner", (message: any) => {
       this.finishedMessage = message;
       this.drawFinish();
       this.chatSocket.emit('setStatus', this.username, "online")
       this.socket.removeAllListeners();
-      this.socket.disconnect();
+      //this.socket.disconnect();
     })
   }
 

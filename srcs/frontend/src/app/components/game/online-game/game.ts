@@ -67,6 +67,13 @@ export function gameStart() {
         syncScore();
         started = true;
     }
+    _socket.on("updateScore", (scoreP1: any, scoreP2: any, finish: any) => {
+	console.log('updateScore')
+	console.log(scoreP1, scoreP2);
+        player1.score = scoreP1;
+        player2.score = scoreP2;
+        finished = finish;
+    })
 }
 
 export function update() {
@@ -76,6 +83,8 @@ export function update() {
         powerUpUpdate()
     if (isLose()) {
         handleLose();
+	syncBall();
+	syncScore();
         ball.lastTouch = 0;
     }
 }
@@ -112,14 +121,12 @@ function ballUpdate() {
         ball.lastTouch = 1;
         ball.direction.x *= -1;
         ball.velocity += VELOCITY_INCREASE;
-        syncBall();
 	}
 
     if (isCollision(rectP2(), rect)) {
         ball.lastTouch = 2;
         ball.direction.x *= -1;
         ball.velocity += VELOCITY_INCREASE;
-		syncBall();
     }
 }
 
@@ -176,7 +183,6 @@ function isLose() {
         return false;
     else
         lastPoint = newPoint;
-	syncBall();
     return rect.right >= table.width || rect.left <= 0;
 }
 
@@ -197,8 +203,20 @@ function handleLose() {
     resetBall();
     ball.direction.x *= ballSide;
     if (isPlayer())
+	    {
+	console.log('Score')
         _socket.emit('score', player1.score, player2.score, finished);
+	    }
     _socket.on("updateScore", (scoreP1: any, scoreP2: any, finish: any) => {
+    _socket.on("updateScore", (scoreP1: any, scoreP2: any, finish: any) => {
+	console.log('updateScore')
+	console.log(scoreP1, scoreP2);
+        player1.score = scoreP1;
+        player2.score = scoreP2;
+        finished = finish;
+    })
+	console.log('updateScore')
+	console.log(scoreP1, scoreP2);
         player1.score = scoreP1;
         player2.score = scoreP2;
         finished = finish;
