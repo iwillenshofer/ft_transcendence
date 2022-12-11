@@ -324,4 +324,12 @@ export class GameGateway {
     	this.server.to(client.id).emit("ball", game.ball);
     }
   }
+
+  @SubscribeMessage('getPowerup')
+  async getPowerUp(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+    const game = this.findGameBySocketId(data);
+    if (game) {
+      this.server.to(client.id).emit("updatePowerUp", game.powerUp);
+    }
+  }
 }

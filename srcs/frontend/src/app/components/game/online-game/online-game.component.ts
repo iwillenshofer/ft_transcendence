@@ -172,7 +172,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
         this.drawBall(ball);
       this.updatePaddles(this.player1, this.player2);
     })
-    this.socket.emit('getBall', this.specGame)
+    this.socket.emit('getBall', this.specGame);
+	this.socket.emit('getPowerup', this.specGame)
     this.endGame();
     this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
   }

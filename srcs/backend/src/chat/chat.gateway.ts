@@ -80,9 +80,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('messages')
   async getMessages(socket: any, roomId: number) {
-    const room: RoomEntity = await this.chatService.getRoomById(roomId);
-    const messages = await this.chatService.findMessagesForRoom(room, +socket.handshake.headers.userid);
-    this.server.to(socket.id).emit('messages', messages);
+	try {
+		const room: RoomEntity = await this.chatService.getRoomById(roomId);
+		const messages = await this.chatService.findMessagesForRoom(room, +socket.handshake.headers.userid);
+    	this.server.to(socket.id).emit('messages', messages);
+	} catch {};
   }
 
   @SubscribeMessage('paginate_rooms')
@@ -114,6 +116,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
     else {
       await this.emitRooms(+socket.handshake.headers.userid, socket.id);
+	  const rooms = await this.chatService.getAllMyRooms(+socket.handshake.headers.userid);
+	  this.server.to(socket.id).emit('all_my_rooms', rooms);
       const members = await this.chatService.getMembersByRoom(room);
       for (const member of members) {
         this.server.to(member.socketId).emit('members_room', members);
@@ -125,8 +129,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async getMembersOfRoom(socket: Socket, roomId: number) {
     if (roomId != null) {
       const room = await this.chatService.getRoomById(roomId);
-      const members = await this.chatService.getMembersByRoom(room);
-      this.server.to(socket.id).emit('members_room', members);
+	  if (room)
+	  {
+		const members = await this.chatService.getMembersByRoom(room);
+		this.server.to(socket.id).emit('members_room', members);
+	  }
     }
   }
 

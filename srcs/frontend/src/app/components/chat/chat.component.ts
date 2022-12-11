@@ -197,10 +197,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   onLeaveRoom(selectedRoom: RoomInterface) {
     if (selectedRoom != this.selectedRoomNulled) {
       this.chatService.leaveRoom(selectedRoom);
-      const index = this.allMyRooms.findIndex(room => room.id == selectedRoom.id);
-      if (index > -1) {
-        this.allMyRooms.splice(index, 1);
-      }
       this.nulledSelectedRoom();
     }
   }

@@ -12,21 +12,21 @@ export class FriendsController {
   @UseGuards(JwtGuard)
   @Get('getfriends')
   async getFriends(@Request() req) {
-    let ret = await this.friendsService.getFriends(req.user?.username);
+    let ret = await this.friendsService.getFriends(req.user?.id);
     return (JSON.stringify(ret));
   }
 
   @UseGuards(JwtGuard)
   @Get('getrequests')
   async getRequests(@Request() req) {
-    let ret = await this.friendsService.getRequests(req.user?.username);
+    let ret = await this.friendsService.getRequests(req.user?.id);
     return (JSON.stringify(ret));
   }
 
   @UseGuards(JwtGuard)
   @Get('searchusers/:username')
   async getUsers(@Param('username') username, @Request() req) {
-    let ret = await this.friendsService.searchUsers(username, req.user.username);
+    let ret = await this.friendsService.searchUsers(username, req.user.id);
     return (JSON.stringify(ret));
   }
 
@@ -44,21 +44,21 @@ export class FriendsController {
   @UseGuards(JwtGuard)
   @Post('requestfriendship/:username')
   async requestFriendship(@Param('username') username, @Request() req) {
-    let ret = await this.friendsService.requestFriendship(username, req.user?.username);
+    let ret = await this.friendsService.requestFriendship(username, req.user?.id);
     return ((ret));
   }
 
   @UseGuards(JwtGuard)
   @Post('acceptfriendship/:username')
   async acceptFriendship(@Param('username') username, @Request() req) {
-    let ret = await this.friendsService.acceptFriendship(username, req.user?.username);
+    let ret = await this.friendsService.acceptFriendship(username, req.user?.id);
     return (JSON.stringify(ret));
   }
 
   @UseGuards(JwtGuard)
   @Post('removefriendship/:username')
   async removeFriendship(@Param('username') username, @Request() req) {
-    let ret = await this.friendsService.deleteFriendship(username, req.user?.username);
+    let ret = await this.friendsService.deleteFriendship(username, req.user?.id);
     return (JSON.stringify(ret));
   }
 
@@ -73,7 +73,7 @@ export class FriendsController {
   @UseGuards(JwtGuard)
   @Get('friendshipstatus/:username')
   async getFriendshipStatus(@Param('username') username, @Request() req) {
-    let ret = await this.friendsService.getFriendshipStatus(username, req.user?.username);
+    let ret = await this.friendsService.getFriendshipStatus(username, req.user?.id);
     return (JSON.stringify(ret));
   }
 
@@ -81,21 +81,21 @@ export class FriendsController {
   @UseGuards(JwtGuard)
   @Get('isblocked/:username')
   async getFriendBlocked(@Param('username') username, @Request() req) {
-    let ret = await this.friendsService.getFriendBlocked(username, req.user?.username);
+    let ret = await this.friendsService.getFriendBlocked(username, req.user?.id);
     return (JSON.stringify(ret));
   }
 
   @UseGuards(JwtGuard)
   @Post('block/:username')
   async setFriendBlocked(@Param('username') username, @Request() req) {
-    let ret = await this.friendsService.setFriendBlocked(username, req.user?.username, true);
+    let ret = await this.friendsService.setFriendBlocked(username, req.user?.id, true);
     return (JSON.stringify(ret));
   }
 
   @UseGuards(JwtGuard)
   @Post('unblock/:username')
   async setFriendUnblocked(@Param('username') username, @Request() req) {
-    let ret = await this.friendsService.setFriendBlocked(username, req.user?.username, false);
+    let ret = await this.friendsService.setFriendBlocked(username, req.user?.id, false);
     return (JSON.stringify(ret));
   }
 

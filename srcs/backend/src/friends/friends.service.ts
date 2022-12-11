@@ -22,8 +22,8 @@ export class FriendsService {
         private statsService: StatsService
     ) { }
 
-    async getFriendshipStatus(username: string, me: string): Promise<FriendsStatusDTO> {
-        let u1 = await this.usersService.getUserByUsername(me);
+    async getFriendshipStatus(username: string, me: number): Promise<FriendsStatusDTO> {
+        let u1 = await this.usersService.getUserByID(me);
         let u2 = await this.usersService.getUserByUsername(username);
         if (!(u1) || !(u2))
             return (new FriendsStatusDTO(5));
@@ -50,7 +50,7 @@ export class FriendsService {
         return (new FriendsStatusDTO(0));
     }
 
-    async getFriends(username: string) {
+    async getFriends(me: number) {
         let lst: any[] = [];
 
         let res = await this.friendsRepository
@@ -58,20 +58,20 @@ export class FriendsService {
             .innerJoinAndSelect('f.user1', 'u1')
             .innerJoinAndSelect('f.user2', 'u2')
             .where(new Brackets(qb => {
-                qb.where('u1.username = :v1', { v1: username })
-                qb.orWhere('u2.username = :v2', { v2: username })
+                qb.where('u1.id = :v1', { v1: me })
+                qb.orWhere('u2.id = :v2', { v2: me })
             }))
             .andWhere("f.accepted = true")
             .getMany();
 
         for (var item of res) {
-            let user: any = item.user1?.username == username ? item.user2 : item.user1;
+            let user: any = item.user1?.id == me ? item.user2 : item.user1;
             lst.push({ 'username': user.username, 'avatar_url': user.avatar_url })
         }
         return lst;
     }
 
-    async getRequests(username: string) {
+    async getRequests(id: number) {
         let lst: any[] = [];
 
         let res = await this.friendsRepository
@@ -79,36 +79,38 @@ export class FriendsService {
             .innerJoinAndSelect('f.user1', 'u1')
             .innerJoinAndSelect('f.user2', 'u2')
             .where(new Brackets(qb => {
-                qb.where('u1.username = :v1', { v1: username })
-                qb.orWhere('u2.username = :v2', { v2: username })
+                qb.where('u1.id = :v1', { v1: id })
+                qb.orWhere('u2.id = :v2', { v2: id })
             }))
             .andWhere("f.accepted = false")
             .getMany();
 
         for (var item of res) {
-            let user: any = item.user1?.username == username ? item.user2 : item.user1;
-            lst.push({ 'username': user.username, 'avatar_url': user.avatar_url, 'by_me': (item.user1?.username == username) })
+            let user: any = item.user1?.id == id ? item.user2 : item.user1;
+            lst.push({ 'username': user.username, 'avatar_url': user.avatar_url, 'by_me': (item.user1?.id == id) })
         }
         return lst;
     }
 
-    async searchUsers(search: string, me: string) {
+    async searchUsers(search: string, me: number) {
         let res = await this.usersRepository
             .createQueryBuilder("user")
             .select(['user.username', 'user.avatar_url'])
-            .where('user.username != :me', { me: me })
+            .where('user.id != :me', { me: me })
             .andWhere("user.username like :name", { name: `%${search}%` })
             .getMany();
         return res;
     }
 
-    async requestFriendship(username: string, me: string) {
+    async requestFriendship(username: string, me: number) {
         let status = await this.getFriendshipStatus(username, me);
         if (status.getStatus()) {
             return JSON.stringify(status);
         };
-        let user1 = await this.usersService.getUserByUsername(me);
+        let user1 = await this.usersService.getUserByID(me);
         let user2 = await this.usersService.getUserByUsername(username);
+		if (!(user1) || !(user2))
+			return (new FriendsStatusDTO(5));
         let friendship: FriendsEntity = this.friendsRepository.create({
             user1: user1,
             user2: user2,
@@ -120,9 +122,11 @@ export class FriendsService {
         return (new FriendsStatusDTO(4));
     }
 
-    async acceptFriendship(username: string, me: string) {
-        let u1 = await this.usersService.getUserByUsername(me);
+    async acceptFriendship(username: string, me: number) {
+        let u1 = await this.usersService.getUserByID(me);
         let u2 = await this.usersService.getUserByUsername(username);
+		if (!(u1) || !(u2))
+			return (new FriendsStatusDTO(5));
         let friendship = await this.friendsRepository.createQueryBuilder('f')
             .innerJoinAndSelect('f.user1', 'u1')
             .innerJoinAndSelect('f.user2', 'u2')
@@ -144,9 +148,11 @@ export class FriendsService {
         return (await this.getFriendshipStatus(username, me));
     }
 
-    async deleteFriendship(username: string, me: string) {
-        let u1 = await this.usersService.getUserByUsername(me);
+    async deleteFriendship(username: string, me: number) {
+        let u1 = await this.usersService.getUserByID(me);
         let u2 = await this.usersService.getUserByUsername(username);
+		if (!(u1) || !(u2))
+			return (new FriendsStatusDTO(5));
         let friendship = await this.friendsRepository.createQueryBuilder()
             .delete()
             .from(FriendsEntity)
@@ -161,8 +167,8 @@ export class FriendsService {
         return (this.getFriendshipStatus(username, me));
     }
 
-    async getFriendBlocked(username: string, me: string): Promise<boolean> {
-        let u1: number = await this.usersService.getIdByUsername(me);
+    async getFriendBlocked(username: string, me: number): Promise<boolean> {
+		let u1: number = me;
         let u2: number = await this.usersService.getIdByUsername(username);
         if (!(u1) || !(u2))
             return (false);
@@ -173,8 +179,8 @@ export class FriendsService {
 		return false;
     }
 
-    async setFriendBlocked(username: string, me: string, blocked: boolean) {
-        let u1 = await this.usersService.getIdByUsername(me);
+    async setFriendBlocked(username: string, me: number, blocked: boolean) {
+		let u1: number = me;
         let u2 = await this.usersService.getIdByUsername(username);
         if (!(u1) || !(u2))
             return (false);

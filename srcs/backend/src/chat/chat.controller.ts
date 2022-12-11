@@ -128,9 +128,11 @@ export class ChatController {
         const invitedMember = await this.chatService.createMember(invited.toEntity(), socketId_invited, MemberRole.Member);
         if (!invitedMember) { throw new NotFoundException('item_not_found'); }
 
-        await this.chatService.createRoom(room.toEntity(), [ownerMember, invitedMember]);
-        await this.chatGateway.emitRooms(owner.id, ownerMember.socketId);
-        await this.chatGateway.emitRooms(invited.id, invitedMember.socketId);
+		if (await this.chatService.getDirectRoom(owner.username, invited.username) == null) {
+			await this.chatService.createRoom(room.toEntity(), [ownerMember, invitedMember]);
+			await this.chatGateway.emitRooms(owner.id, ownerMember.socketId);
+			await this.chatGateway.emitRooms(invited.id, invitedMember.socketId);
+		}
     }
 
     @UseGuards(JwtGuard)

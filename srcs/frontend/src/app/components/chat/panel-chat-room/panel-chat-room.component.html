@@ -42,6 +42,7 @@
 				Mute
 			</button>
 			<ul class="dropdown-menu">
+				<li><a class="dropdown-item" (click)="setMute('1min')">1min</a></li>
 				<li><a class="dropdown-item" (click)="setMute('5min')">5min</a></li>
 				<li><a class="dropdown-item" (click)="setMute('1h')">1h</a></li>
 				<li><a class="dropdown-item"(click)="setMute('24h')">24h</a></li>
@@ -52,6 +53,7 @@
 				Ban
 			</button>
 			<ul class="dropdown-menu">
+				<li><a class="dropdown-item" (click)="setBan('1min')">1min</a></li>
 				<li><a class="dropdown-item" (click)="setBan('5min')">5min</a></li>
 				<li><a class="dropdown-item" (click)="setBan('1h')">1h</a></li>
 				<li><a class="dropdown-item"(click)="setBan('24h')">24h</a></li>
