@@ -17,7 +17,7 @@
 
 						<div class="col-12 roomname">
 							{{chatRoom.name}}
-							<fa-icon class="gearicon" title="{{chatRoom.name}} settings" [icon]="faGears"
+							<fa-icon class="gearicon" *ngIf="canOpenRoomSetting(myMember)" title="{{chatRoom.name}} settings" [icon]="faGears"
 								(click)="onOpenRoomSetting()"></fa-icon>
 						</div>
 						<div class="col-12 roomdescription">
