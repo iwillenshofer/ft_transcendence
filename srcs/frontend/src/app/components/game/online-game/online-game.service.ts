@@ -43,6 +43,10 @@ export class OnlineGameService {
     game.update();
   }
 
+  listeners(){
+  	game.listeners();
+  }
+
   start() {
     game.gameStart();
   }

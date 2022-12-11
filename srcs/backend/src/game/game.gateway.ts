@@ -176,7 +176,8 @@ export class GameGateway {
   async move(@MessageBody() data: string, @ConnectedSocket() client: Socket,) {
     const game = this.findGameBySocketId(client.id);
     if (game) {
-      let command = data;
+      let command = data[0];
+      game.ball = data[1];
       let player: any;
       if (client.id == game.player1.socket)
         player = game.player1;
@@ -212,13 +213,13 @@ export class GameGateway {
         }
         else if (client.id == game.player1.socket) {
           game.player1.disconnected = true;
-          await this.gameService.addGame(game)
         }
         else if (client.id == game.player2.socket) {
-          game.player2.disconnected = true;
+			game.player2.disconnected = true;
         }
-      }
-      if (game.player1.disconnected && game.player2.disconnected) {
+	}
+	if (game.player1.disconnected && game.player2.disconnected) {
+		await this.gameService.addGame(game);
         this.server.in(gameID).socketsLeave(gameID);
         this.server.in(gameID).disconnectSockets();
         this.deleteGameById(gameID);
@@ -278,7 +279,7 @@ export class GameGateway {
         game.winner = game.player2;
       else
         game.winner = null;
-      this.server.to(game.gameID).emit("winner", data[0]);
+	this.server.to(game.gameID).emit("winner", data[0]);
     }
   }
 
@@ -313,6 +314,14 @@ export class GameGateway {
       let game = this.games[index];
       if (game && game.challenged == challenged)
         return (game);
+    }
+  }
+
+  @SubscribeMessage('getBall')
+  async getBall(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+    const game = this.findGameBySocketId(data);
+    if (game){
+    	this.server.to(client.id).emit("ball", game.ball);
     }
   }
 }

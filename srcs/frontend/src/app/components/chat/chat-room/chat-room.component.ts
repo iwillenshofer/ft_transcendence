@@ -126,18 +126,18 @@ export class ChatRoomComponent implements OnInit, OnChanges, OnDestroy {
     if (this.myMember.muteUntil && this.myMember.muteUntil?.toString() > now) {
       this.alertService.info("You are muted");
     }
-    else if (this.chatRoom) {
+    else if (this.chatRoom && this.chatMessage.value) {
       this.chatService.sendMessage(this.chatMessage.value, this.chatRoom).subscribe(
         (response) => {
 			if (this.isConversation(this.chatRoom))
 				this.chatService.emitMessage(this.chatRoom.id);
-          this.chatMessage.reset();
-        },
-        (error) => {
-          this.alertService.danger("Message could not be send");
-        }
-      )
-    }
+			},
+			(error) => {
+				this.alertService.danger("Message could not be send");
+			}
+			)
+	  this.chatMessage.reset();
+	}
   }
 
   isConversation(room: RoomInterface): boolean {

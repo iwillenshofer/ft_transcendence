@@ -4,7 +4,7 @@ import { PageEvent } from '@angular/material/paginator';
 import { Subscription, tap } from 'rxjs';
 import { RoomInterface, RoomType } from 'src/app/model/room.interface';
 import { MatDialog } from '@angular/material/dialog';
-import { faKey, faUserGroup, faUsers, faComments } from '@fortawesome/free-solid-svg-icons';
+import { faKey, faUserGroup, faUsers, faComments, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from 'src/app/services/user.service';
 import { UserInterface } from 'src/app/model/user.interface';
 import { ChatService } from './chat.service';
@@ -59,7 +59,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   faComments = faComments;
   faUserGroup = faUserGroup;
   faUsers = faUsers;
-
+  faEyeSlash = faEyeSlash;
+  
   constructor(
 	  private chatService: ChatService,
 	  public dialog: MatDialog,
@@ -210,6 +211,14 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   isConversation(room: RoomInterface) {
     return room.type == RoomType.Direct;
+  }
+
+  isPrivate(room: RoomType) {
+    return room == RoomType.Private;
+  }
+
+  isPublic(room: RoomType) {
+    return room == RoomType.Public;
   }
 
   async onSearchUser() {

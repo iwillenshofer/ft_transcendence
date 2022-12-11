@@ -33,6 +33,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   player2: any;
   ball: any;
   username: string = "";
+  powerUp: any;
 
   constructor(
     public gameService: OnlineGameService,
@@ -119,8 +120,17 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.chatSocket.emit('setStatus', this.username, "ingame")
       this.isWaiting = false;
       this.gameService.start()
+      this.listeners();
       this.update();
     })
+  }
+
+
+  listeners() {
+    	this.socket.on('updatePowerUp', (newPowerUp: any) => {
+    	 this.powerUp = newPowerUp;
+    	})
+    this.updateScore();
   }
 
   specs() {
@@ -143,25 +153,26 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   watchGame() {
-    this.socket.once("updatePaddle", (player1: any, player2: any) => {
+	 this.gameService.listeners();
+    this.socket.on("updatePaddle", (player1: any, player2: any) => {
       this.player1 = player1;
       this.player2 = player2;
     });
-    let powerUp: any;
-    this.socket.once('updatePowerUp', (newPowerUp: any) => {
-      powerUp = newPowerUp;
+    this.socket.on('updatePowerUp', (newPowerUp: any) => {
+     this.powerUp = newPowerUp;
     })
-    this.socket.once("ball", (ball: any) => {
+    this.socket.on("ball", (ball: any) => {
       this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
       this.updateScore();
       this.drawLines();
       this.drawScore();
       this.drawNames();
-      this.drawPowerUp(powerUp);
+      this.drawPowerUp(this.powerUp);
       if (!this.finished)
         this.drawBall(ball);
       this.updatePaddles(this.player1, this.player2);
     })
+    this.socket.emit('getBall', this.specGame)
     this.endGame();
     this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
   }
@@ -187,7 +198,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.gameService.run();
     this.draw();
     this.endGame();
-    this.updateScore();
     this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
   }
 
@@ -196,14 +206,15 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.drawLines();
     this.drawScore();
     this.drawNames();
+    this.drawPowerUp(this.powerUp)
+
     if (!this.finished)
       this.drawBall(this.gameService.getBall());
     this.updatePaddles(this.gameService.getPlayer1(), this.gameService.getPlayer2());
-    this.drawPowerUp(this.gameService.getPowerUp())
   }
 
-  async updateScore() {
-    await this.socket.once("updateScore", (scoreP1: any, scoreP2: any, finished: any) => {
+  updateScore() {
+    this.socket.on("updateScore", (scoreP1: any, scoreP2: any, finished: any) => {
       this.scoreP1 = scoreP1;
       this.scoreP2 = scoreP2;
       this.finished = finished;
@@ -228,16 +239,17 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   finish(reason: any, disconnected: any) {
     if (reason == 'down') {
       this.drawFinish();
-      this.socket.disconnect();
+      //this.socket.disconnect();
     }
-    if (this.mode != 'spec')
+    else if (this.mode != 'spec' && !(this.finishedMessage))
       this.socket.emit("finishMessage", this.gameService.getFinalMessage(reason, disconnected), this.gameService.getWinner(reason, disconnected));
     this.socket.once("winner", (message: any) => {
-      this.finishedMessage = message;
+	if (!this.finishedMessage)
+      		this.finishedMessage = message;
       this.drawFinish();
       this.chatSocket.emit('setStatus', this.username, "online")
-      this.socket.removeAllListeners();
-      this.socket.disconnect();
+      //this.socket.removeAllListeners();
+      //this.socket.disconnect();
     })
   }
 
@@ -268,12 +280,12 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   drawLines() {
-	this.gameCanvas.nativeElement.getContext("2d").fillStyle = "#999999";
+    this.gameCanvas.nativeElement.getContext("2d").fillStyle = "#999999";
     for (let x = 3; x < 720;) {
       this.gameCanvas.nativeElement.getContext("2d").fillRect(640, x, 12, 10);
       x += 20;
     }
-	this.gameCanvas.nativeElement.getContext("2d").fillStyle = "white";
+    this.gameCanvas.nativeElement.getContext("2d").fillStyle = "white";
   }
 
   drawPowerUp(powerUp: any) {

@@ -64,18 +64,33 @@ export function gameStart() {
         resetPlayersPosition();
         resetBall();
         resetScore();
-        syncScore();
         started = true;
+    	listeners();
     }
+}
+
+export function listeners() {
+    _socket.on('ball', (newBall: any) => {
+        ball = newBall;
+    })
+    _socket.on("updateScore", (scoreP1: any, scoreP2: any, finish: any) => {
+        player1.score = scoreP1;
+        player2.score = scoreP2;
+        finished = finish;
+    })
+    _socket.on('updatePowerUp', (newPowerUp: any) => {
+        powerUp = newPowerUp;
+    })
+    paddleUpdate();
 }
 
 export function update() {
     ballUpdate();
-    paddleUpdate();
     if (isCustom)
         powerUpUpdate()
     if (isLose()) {
         handleLose();
+	syncBall();
         ball.lastTouch = 0;
     }
 }
@@ -90,10 +105,10 @@ function paddleUpdate() {
 window.onkeydown = function move(e) {
     if (player1 && player2 && mode != 'spec' && started) {
         if (e.key == 'w' || e.key == 'W' || e.key == 'ArrowUp') {
-            _socket.emit("move", "up");
+            _socket.emit("move", "up", ball);
         }
         if (e.key == 's' || e.key == 'S' || e.key == 'ArrowDown') {
-            _socket.emit("move", "down");
+            _socket.emit("move", "down", ball);
         }
     }
 }
@@ -112,14 +127,13 @@ function ballUpdate() {
         ball.lastTouch = 1;
         ball.direction.x *= -1;
         ball.velocity += VELOCITY_INCREASE;
-    }
+	}
 
     if (isCollision(rectP2(), rect)) {
         ball.lastTouch = 2;
         ball.direction.x *= -1;
         ball.velocity += VELOCITY_INCREASE;
     }
-    syncBall();
 }
 
 function rectP1() {
@@ -195,12 +209,9 @@ function handleLose() {
     resetBall();
     ball.direction.x *= ballSide;
     if (isPlayer())
+    {
         _socket.emit('score', player1.score, player2.score, finished);
-    _socket.on("updateScore", (scoreP1: any, scoreP2: any, finish: any) => {
-        player1.score = scoreP1;
-        player2.score = scoreP2;
-        finished = finish;
-    })
+    }
 }
 
 function isGameFinished() {
@@ -233,22 +244,9 @@ function resetScore() {
         _socket.emit('score', player1.score, player2.score, finished);
 }
 
-function syncScore() {
-    if (isPlayer())
-        _socket.emit('syncScore');
-    _socket.on('updateScore', (scoreP1: any, scoreP2: any, finish: any) => {
-        player1.score = scoreP1;
-        player2.score = scoreP2;
-        finished = finish;
-    })
-}
-
 function syncBall() {
     if (_socket.id == player1.socket)
         _socket.emit('syncBall', ball);
-    _socket.on('ball', (newBall: any) => {
-        ball = newBall;
-    })
 }
 
 function ballRandomX() {
@@ -287,14 +285,15 @@ function resetPlayerPosition(player: number) {
 function powerUpUpdate() {
     if (!powerUp.show && ball.lastTouch != 0 && !powerUp.active) {
         resetPowerUp(true);
+    	syncPowerUp();
     }
     if (powerUp.show && isCollision(ballRect(), powerUpRect())) {
         resetPowerUp(false);
         powerUp.active = true;
         if (_socket.id == player1.socket)
             givePowerUp();
+    	syncPowerUp();
     }
-    syncPowerUp();
 }
 
 function resetPowerUp(show: boolean) {
@@ -304,20 +303,17 @@ function resetPowerUp(show: boolean) {
     }
     powerUp.active = false;
     powerUp.show = show;
-    syncPowerUp();
 }
 
 function syncPowerUp() {
     if (isPlayer())
         _socket.emit('powerUp', powerUp);
-    _socket.on('updatePowerUp', (newPowerUp: any) => {
-        powerUp = newPowerUp;
-    })
 }
 
 function resetPowers() {
     ball.radius = 5;
     resetPowerUp(false);
+    syncPowerUp();
 }
 
 function givePowerUp() {

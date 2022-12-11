@@ -23,6 +23,12 @@ export class GameEntity {
     idP2: UserEntity;
 
     @Column()
+    socketP1: string;
+
+    @Column()
+    socketP2: string;
+
+    @Column()
     scoreP1: number;
 
     @Column()
