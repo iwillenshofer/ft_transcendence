@@ -112,14 +112,15 @@ function ballUpdate() {
         ball.lastTouch = 1;
         ball.direction.x *= -1;
         ball.velocity += VELOCITY_INCREASE;
-    }
+        syncBall();
+	}
 
     if (isCollision(rectP2(), rect)) {
         ball.lastTouch = 2;
         ball.direction.x *= -1;
         ball.velocity += VELOCITY_INCREASE;
+		syncBall();
     }
-    syncBall();
 }
 
 function rectP1() {
@@ -175,6 +176,7 @@ function isLose() {
         return false;
     else
         lastPoint = newPoint;
+	syncBall();
     return rect.right >= table.width || rect.left <= 0;
 }
 
