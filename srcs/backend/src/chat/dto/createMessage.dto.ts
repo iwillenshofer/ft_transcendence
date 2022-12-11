@@ -6,7 +6,6 @@ import { IsAscii, IsNotEmpty } from "class-validator"
 
 export class CreateMessageDto {
     @IsNotEmpty()
-    @IsAscii()
     message: string;
     room: RoomEntity;
     member: MemberEntity;

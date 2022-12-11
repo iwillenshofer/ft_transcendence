@@ -64,10 +64,9 @@ export function gameStart() {
         resetPlayersPosition();
         resetBall();
         resetScore();
-        syncScore();
         started = true;
+    	listeners();
     }
-    listeners();
 }
 
 export function listeners() {
@@ -80,7 +79,6 @@ export function listeners() {
         finished = finish;
     })
     _socket.on('updatePowerUp', (newPowerUp: any) => {
-	console.log('listeners')
         powerUp = newPowerUp;
     })
     paddleUpdate();
@@ -93,7 +91,6 @@ export function update() {
     if (isLose()) {
         handleLose();
 	syncBall();
-	syncScore();
         ball.lastTouch = 0;
     }
 }
@@ -248,11 +245,6 @@ function resetScore() {
         _socket.emit('score', player1.score, player2.score, finished);
 }
 
-function syncScore() {
-    if (isPlayer())
-        _socket.emit('syncScore');
-}
-
 function syncBall() {
     if (_socket.id == player1.socket)
         _socket.emit('syncBall', ball);
@@ -312,7 +304,6 @@ function resetPowerUp(show: boolean) {
     }
     powerUp.active = false;
     powerUp.show = show;
-    syncPowerUp();
 }
 
 function syncPowerUp() {
@@ -324,6 +315,7 @@ console.log('syncPowerUp')
 function resetPowers() {
     ball.radius = 5;
     resetPowerUp(false);
+    syncPowerUp();
 }
 
 function givePowerUp() {

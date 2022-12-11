@@ -120,12 +120,18 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.chatSocket.emit('setStatus', this.username, "ingame")
       this.isWaiting = false;
       this.gameService.start()
+      this.listeners();
+      this.update();
+    })
+  }
+
+
+  listeners() {
     	this.socket.on('updatePowerUp', (newPowerUp: any) => {
 	console.log('player power')
     	 this.powerUp = newPowerUp;
     	})
-      this.update();
-    })
+    this.updateScore();
   }
 
   specs() {
@@ -190,7 +196,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   update() {
-    this.updateScore();
     this.gameService.run();
     this.draw();
     this.endGame();
@@ -235,12 +240,13 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   finish(reason: any, disconnected: any) {
     if (reason == 'down') {
       this.drawFinish();
-      this.socket.disconnect();
+      //this.socket.disconnect();
     }
     else if (this.mode != 'spec')
       this.socket.emit("finishMessage", this.gameService.getFinalMessage(reason, disconnected), this.gameService.getWinner(reason, disconnected));
     this.socket.once("winner", (message: any) => {
-      this.finishedMessage = message;
+	if (!this.finishedMessage)
+      		this.finishedMessage = message;
       this.drawFinish();
       this.chatSocket.emit('setStatus', this.username, "online")
       //this.socket.removeAllListeners();
