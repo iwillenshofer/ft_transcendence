@@ -264,6 +264,7 @@ export class GameGateway {
     const game = this.findGameBySocketId(client.id);
     if (game && this.isPlayer1(game.gameID, client.id)) {
       game.powerUp = data;
+    console.log('powerUp')
       this.server.to(game.gameID).emit("updatePowerUp", game.powerUp);
     }
   }
@@ -319,7 +320,9 @@ export class GameGateway {
 
   @SubscribeMessage('getBall')
   async getBall(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    const game = this.findGameBySocketId(client.id);
-    this.server.to(client.id).emit("ball", game.ball);
+    const game = this.findGameBySocketId(data);
+    if (game){
+    	this.server.to(client.id).emit("ball", game.ball);
+    }
   }
 }

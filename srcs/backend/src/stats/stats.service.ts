@@ -83,16 +83,22 @@ export class StatsService {
   }
 
   async updateRating(game: GameEntity) {
-    let user1 = game.idP1;
-    let user2 = game.idP2;
-    let tmpU1 = this._newRating(user1.rating, user2.rating, (game.winner.id == game.idP1.id ? 1 : 0));
-    let tmpU2 = this._newRating(user2.rating, user1.rating, (game.winner.id == game.idP2.id ? 1 : 0));
-    user1.rating = (tmpU1 > 100) ? tmpU1 : 100;
-    user2.rating = (tmpU2 > 100) ? tmpU2 : 100;
-    await user1.save();
-    await user2.save();
-    await this.ratingAchievements(user1.id);
-    await this.ratingAchievements(user2.id);
+	if (game)
+	{
+		let user1 = game.idP1;
+		let user2 = game.idP2;
+		if (user1 && user2)
+		{
+			let tmpU1 = this._newRating(user1.rating, user2.rating, (game.winner.id == game.idP1.id ? 1 : 0));
+			let tmpU2 = this._newRating(user2.rating, user1.rating, (game.winner.id == game.idP2.id ? 1 : 0));
+			user1.rating = (tmpU1 > 100) ? tmpU1 : 100;
+			user2.rating = (tmpU2 > 100) ? tmpU2 : 100;
+			await user1.save();
+			await user2.save();
+			await this.ratingAchievements(user1.id);
+			await this.ratingAchievements(user2.id);
+		}
+	}
   }
 
   async getAchievements(username: string): Promise<AchievementsDTO[]> {

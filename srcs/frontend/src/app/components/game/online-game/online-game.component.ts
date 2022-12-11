@@ -119,6 +119,10 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.chatSocket.emit('setStatus', this.username, "ingame")
       this.isWaiting = false;
       this.gameService.start()
+    	this.socket.on('updatePowerUp', (newPowerUp: any) => {
+	console.log('player power')
+    	 this.powerUp = newPowerUp;
+    	})
       this.update();
     })
   }
@@ -142,27 +146,28 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     })
   }
 
+  powerUp: any;
   watchGame() {
-    this.socket.once("updatePaddle", (player1: any, player2: any) => {
+	 this.gameService.listeners();
+    this.socket.on("updatePaddle", (player1: any, player2: any) => {
       this.player1 = player1;
       this.player2 = player2;
     });
-    let powerUp: any;
-    this.socket.once('updatePowerUp', (newPowerUp: any) => {
-      powerUp = newPowerUp;
+    this.socket.on('updatePowerUp', (newPowerUp: any) => {
+     this.powerUp = newPowerUp;
     })
-    this.socket.once("ball", (ball: any) => {
+    this.socket.on("ball", (ball: any) => {
       this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
       this.updateScore();
       this.drawLines();
       this.drawScore();
       this.drawNames();
-      this.drawPowerUp(powerUp);
+      this.drawPowerUp(this.powerUp);
       if (!this.finished)
         this.drawBall(ball);
       this.updatePaddles(this.player1, this.player2);
     })
-    this.socket.emit('getBall')
+    this.socket.emit('getBall', this.specGame)
     this.endGame();
     this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
   }
@@ -197,10 +202,11 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     this.drawLines();
     this.drawScore();
     this.drawNames();
+    this.drawPowerUp(this.powerUp)
+
     if (!this.finished)
       this.drawBall(this.gameService.getBall());
     this.updatePaddles(this.gameService.getPlayer1(), this.gameService.getPlayer2());
-    this.drawPowerUp(this.gameService.getPowerUp())
   }
 
   updateScore() {

@@ -28,11 +28,14 @@ export class GameService {
         gameEntity.winner = await this.usersService.getUserByUsername(game.winner.username);
         gameEntity.idP1 = await this.usersService.getUserByUsername(gameEntity.usernameP1);
         gameEntity.idP2 = await this.usersService.getUserByUsername(gameEntity.usernameP2);
-        this.gameRepository.save(gameEntity);
 		if (!(gameEntity.isChallenge))
-        	this.statsService.updateRating(gameEntity);
-        this.statsService.gameAchievements(gameEntity.idP1.id);
-        this.statsService.gameAchievements(gameEntity.idP2.id);
+		this.statsService.updateRating(gameEntity);
+        if (gameEntity && gameEntity.idP1 && gameEntity.idP2 && gameEntity.winner)
+		{
+			this.gameRepository.save(gameEntity);
+			this.statsService.gameAchievements(gameEntity.idP1.id);
+			this.statsService.gameAchievements(gameEntity.idP2.id);
+		}
     }
 
     async getGamesByUsername(username: string) {
