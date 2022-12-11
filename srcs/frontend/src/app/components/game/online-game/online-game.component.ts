@@ -152,7 +152,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       powerUp = newPowerUp;
     })
     this.socket.once("ball", (ball: any) => {
-      this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+	  this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
       this.updateScore();
       this.drawLines();
       this.drawScore();
@@ -236,7 +236,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.finishedMessage = message;
       this.drawFinish();
       this.chatSocket.emit('setStatus', this.username, "online")
-      this.socket.removeAllListeners();
+      //this.socket.removeAllListeners();
       //this.socket.disconnect();
     })
   }

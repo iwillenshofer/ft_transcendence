@@ -67,7 +67,9 @@
 									<div class="col-2">
 										<fa-icon class="keyIcon" *ngIf="isProtected(room.type)" [icon]="faKey">
 										</fa-icon>
-										<fa-icon class="chatIcon" *ngIf="!isProtected(room.type)" [icon]="faComments">
+										<fa-icon class="privateIcon" *ngIf="isPrivate(room.type)" [icon]="faEyeSlash">
+										</fa-icon>
+										<fa-icon class="chatIcon" *ngIf="isPublic(room.type)" [icon]="faComments">
 										</fa-icon>
 									</div>
 									<div class="col-10 loginname singlename" (click)="selectRoom(room)">

@@ -99,10 +99,10 @@ function paddleUpdate() {
 window.onkeydown = function move(e) {
     if (player1 && player2 && mode != 'spec' && started) {
         if (e.key == 'w' || e.key == 'W' || e.key == 'ArrowUp') {
-            _socket.emit("move", "up");
+            _socket.emit("move", "up", ball);
         }
         if (e.key == 's' || e.key == 'S' || e.key == 'ArrowDown') {
-            _socket.emit("move", "down");
+            _socket.emit("move", "down", ball);
         }
     }
 }
