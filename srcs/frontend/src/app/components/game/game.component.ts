@@ -24,8 +24,9 @@ export class GameComponent implements OnInit {
 
   constructor(protected gameService: OnlineGameService, private auth: AuthService, private alert: AlertsService) { }
 
-  ngOnDestroy() {
+  async ngOnDestroy() {
     this.gameService.challenged = null;
+    await this.socket.disconnect();
   }
 
   public async ngOnInit() {

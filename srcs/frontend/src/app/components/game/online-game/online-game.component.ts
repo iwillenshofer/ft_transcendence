@@ -242,7 +242,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       this.drawFinish();
       //this.socket.disconnect();
     }
-    else if (this.mode != 'spec')
+    else if (this.mode != 'spec' && !(this.finishedMessage))
       this.socket.emit("finishMessage", this.gameService.getFinalMessage(reason, disconnected), this.gameService.getWinner(reason, disconnected));
     this.socket.once("winner", (message: any) => {
 	if (!this.finishedMessage)
