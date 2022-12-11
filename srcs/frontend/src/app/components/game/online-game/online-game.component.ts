@@ -152,7 +152,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       powerUp = newPowerUp;
     })
     this.socket.once("ball", (ball: any) => {
-	  this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+      this.canvas.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
       this.updateScore();
       this.drawLines();
       this.drawScore();
@@ -162,6 +162,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
         this.drawBall(ball);
       this.updatePaddles(this.player1, this.player2);
     })
+    this.socket.emit('getBall')
     this.endGame();
     this.currentAnimationFrameId = window.requestAnimationFrame(this.update.bind(this));
   }
@@ -268,12 +269,12 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   drawLines() {
-	this.gameCanvas.nativeElement.getContext("2d").fillStyle = "#999999";
+    this.gameCanvas.nativeElement.getContext("2d").fillStyle = "#999999";
     for (let x = 3; x < 720;) {
       this.gameCanvas.nativeElement.getContext("2d").fillRect(640, x, 12, 10);
       x += 20;
     }
-	this.gameCanvas.nativeElement.getContext("2d").fillStyle = "white";
+    this.gameCanvas.nativeElement.getContext("2d").fillStyle = "white";
   }
 
   drawPowerUp(powerUp: any) {

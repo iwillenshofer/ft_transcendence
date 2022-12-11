@@ -177,7 +177,7 @@ export class GameGateway {
     const game = this.findGameBySocketId(client.id);
     if (game) {
       let command = data[0];
-	  game.ball = data[1];
+      game.ball = data[1];
       let player: any;
       if (client.id == game.player1.socket)
         player = game.player1;
@@ -196,7 +196,6 @@ export class GameGateway {
           this.server.to(game.gameID).emit("updatePaddle", game.player1, game.player2);
           break;
       }
-	  this.server.to(game.gameID).emit("getBall", game.ball);
     }
   }
 
@@ -316,5 +315,11 @@ export class GameGateway {
       if (game && game.challenged == challenged)
         return (game);
     }
+  }
+
+  @SubscribeMessage('getBall')
+  async getBall(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
+    const game = this.findGameBySocketId(client.id);
+    this.server.to(client.id).emit("ball", game.ball);
   }
 }
