@@ -49,8 +49,4 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.chatService.connect();
     }
   }
-
-  isAuthenticated() {
-    return this.authService.isAuthenticated();
-  }
 };
