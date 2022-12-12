@@ -10,3 +10,4 @@ srcs/postgres/data/postgres
 **/node_modules
 **/package-lock.json
 srcs/backend/uploads
+variables.env
