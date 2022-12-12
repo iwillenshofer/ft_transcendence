@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { faGears, faHome, faTableTennis, faComments, faStar, faRightFromBracket, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from 'src/app/auth/auth.service';
 import { UserService } from 'src/app/services/user.service';
@@ -11,7 +11,7 @@ import { ChatService } from '../chat/chat.service';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, OnDestroy {
 
   public userSubject: BehaviorSubject<User | null>;
 
@@ -33,14 +33,24 @@ export class NavbarComponent implements OnInit {
   ];
 
   logout() {
+    console.log('logout')
+    this.chatService.disconnect();
+    this.authService.logout();
+  }
+
+  ngOnDestroy(): void {
     this.chatService.disconnect();
     this.authService.logout();
   }
 
   ngOnInit(): void {
     if (!this.chatService.isSocketActive) {
+      console.log('SOCKET')
       this.chatService.connect();
     }
   }
 
+  isAuthenticated() {
+    return this.authService.isAuthenticated();
+  }
 };

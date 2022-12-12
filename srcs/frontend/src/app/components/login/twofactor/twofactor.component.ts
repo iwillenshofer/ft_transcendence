@@ -28,7 +28,7 @@ export class TwofactorComponent {
     private readonly sanitizer: DomSanitizer,
     private authService: AuthService,
     private router: Router,
-	private alertservice: AlertsService
+    private alertservice: AlertsService
   ) {
     this.keyCode = new BehaviorSubject<SafeUrl | null>("");
     this.qrCode = new BehaviorSubject<SafeUrl | null>(null);
@@ -56,14 +56,14 @@ export class TwofactorComponent {
         this.http.get<User>('/backend/auth/profile', { withCredentials: true }).subscribe(result => {
           this.authService.userSubject.next(result);
           localStorage.setItem('user', JSON.stringify(result));
-		  this.alertservice.success('Code successfuly validated');
-      if (this.router.url != '/profile') {
-        this.router.navigate(['/']);
-      }
+          this.alertservice.success('Code successfuly validated');
+          if (this.router.url != '/profile') {
+            this.router.navigate(['/home']);
+          }
         });
       } else {
-		this.alertservice.warning('Invalid Code');
-	  }
+        this.alertservice.warning('Invalid Code');
+      }
     });
   }
 
@@ -72,5 +72,9 @@ export class TwofactorComponent {
       this.keyCode.next(result.key_code);
       this.qrCode.next(result.qr_code);
     });
+  }
+
+  isAuthenticated() {
+    return this.authService.isAuthenticated();
   }
 }
