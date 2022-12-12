@@ -58,7 +58,7 @@ export class TwofactorComponent {
           localStorage.setItem('user', JSON.stringify(result));
           this.alertservice.success('Code successfuly validated');
           if (this.router.url != '/profile') {
-            this.router.navigate(['/home']);
+            this.router.navigate(['/']);
           }
         });
       } else {
