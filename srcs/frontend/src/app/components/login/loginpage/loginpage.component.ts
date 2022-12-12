@@ -48,14 +48,9 @@ class Ball {
 })
 export class LoginpageComponent {
 
-	constructor(private authService: AuthService) { }
+	constructor() { }
 
 	login() {
 		window.location.href = '/auth/login';
 	}
-
-	isAuthenticated() {
-		return this.authService.isAuthenticated();
-	}
-
 }
