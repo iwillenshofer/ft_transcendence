@@ -26,43 +26,43 @@ export class AlertsComponent implements OnInit {
   alerts: AlertModel[] = [];
 
   ngOnInit(): void {
-    this.socket = io("/game");
-    this.socket.connect()
     this.alertsService.getAlerts().subscribe(messages => {
       this.alerts = messages;
     });
     if (this.router.url === '/login') { return; };
-    let username: any;
-    this.auth.getUser().then(data => {
-      username = data.username;
-      this.socket.on("notifyChallenge", (challenger: any, challenged: any, powerUps: any) => {
-        if (challenged == username) {
-          this.alertsService.challenge(challenger,
-            {
-              accept_click: () => {
-                this.router.navigateByUrl('/friends', { skipLocationChange: true }).then(() => {
-                  this.gameService.challenge(username);
-                  this.gameService.togglePowerUps(powerUps);
-                  this.router.navigate(['/pong']);
-                });
-              },
-              deny_click: () => {
-                this.alertsService.cancelChallenge(challenger);
-                this.socket.emit("cancelChallenge", challenger, username, true)
+    if (this.auth.isAuthenticated()) {
+      this.socket = io("/game");
+      this.socket.connect()
+      let username: any;
+      this.auth.getUser().then(data => {
+        username = data.username;
+        this.socket.on("notifyChallenge", (challenger: any, challenged: any, powerUps: any) => {
+          if (challenged == username) {
+            this.alertsService.challenge(challenger,
+              {
+                accept_click: () => {
+                  this.router.navigateByUrl('/friends', { skipLocationChange: true }).then(() => {
+                    this.gameService.challenge(username);
+                    this.gameService.togglePowerUps(powerUps);
+                    this.router.navigate(['/pong']);
+                  });
+                },
+                deny_click: () => {
+                  this.alertsService.cancelChallenge(challenger);
+                  this.socket.emit("cancelChallenge", challenger, username, true)
+                }
               }
-            }
-          );
-        }
-        this.socket.off('notifyChallenge', this.socket);
-      });
-      this.socket.on("removeChallenge", (challenger: any, challenged: any) => {
-        if (challenged == username) {
-          this.alertsService.cancelChallenge(challenger);
-        }
-      });
-    })
-
-
+            );
+          }
+          this.socket.off('notifyChallenge', this.socket);
+        });
+        this.socket.on("removeChallenge", (challenger: any, challenged: any) => {
+          if (challenged == username) {
+            this.alertsService.cancelChallenge(challenger);
+          }
+        });
+      })
+    }
   }
 
   onClosed(dismissedAlert: any): void {

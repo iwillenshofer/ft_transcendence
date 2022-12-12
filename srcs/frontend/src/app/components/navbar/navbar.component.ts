@@ -42,5 +42,4 @@ export class NavbarComponent implements OnInit {
       this.chatService.connect();
     }
   }
-
 };
