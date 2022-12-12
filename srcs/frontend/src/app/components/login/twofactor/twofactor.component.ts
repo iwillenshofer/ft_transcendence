@@ -73,8 +73,4 @@ export class TwofactorComponent {
       this.qrCode.next(result.qr_code);
     });
   }
-
-  isAuthenticated() {
-    return this.authService.isAuthenticated();
-  }
 }
