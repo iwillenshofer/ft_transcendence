@@ -26,13 +26,13 @@ export class AlertsComponent implements OnInit {
   alerts: AlertModel[] = [];
 
   ngOnInit(): void {
+    this.alertsService.getAlerts().subscribe(messages => {
+      this.alerts = messages;
+    });
+    if (this.router.url === '/login') { return; };
     if (this.auth.isAuthenticated()) {
       this.socket = io("/game");
       this.socket.connect()
-      this.alertsService.getAlerts().subscribe(messages => {
-        this.alerts = messages;
-      });
-      if (this.router.url === '/login') { return; };
       let username: any;
       this.auth.getUser().then(data => {
         username = data.username;
