@@ -43,7 +43,6 @@ export class TwofactorComponent {
   ngOnInit(): void {
     this.tfa_fulfilled.next(this.authService.isAuthenticated());
     if (this.router.url == '/profile' && !(this.authService.userSubject.value?.tfa_enabled)) {
-		console.log('qrcode');
       this.getQRCode();
     }
   }
@@ -60,11 +59,11 @@ export class TwofactorComponent {
           this.alertservice.success('Code successfuly validated');
           if (this.router.url != '/profile') {
             this.router.navigate(['/']);
-		  } else {
-			this.router.navigateByUrl('/home', { skipLocationChange: true }).then(() => {
-				this.router.navigate(['/profile']);
-			  });
-		  }
+          } else {
+            this.router.navigateByUrl('/home', { skipLocationChange: true }).then(() => {
+              this.router.navigate(['/profile']);
+            });
+          }
         });
       } else {
         this.alertservice.warning('Invalid Code');
