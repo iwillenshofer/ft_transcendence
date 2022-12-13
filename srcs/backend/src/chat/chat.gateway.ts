@@ -23,12 +23,26 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private connectedUsersService: ConnectedUsersService,
     private readonly encrypt: EncryptService) { }
 
-  async checkSingleConnection(user: UserEntity) {
+  // async checkSingleConnection(user: UserEntity) {
+  //   let connected_users: ConnectedUserEntity[] = await this.connectedUsersService.getUsersById(user.id);
+  //   for (var item of connected_users) {
+  //     this.server.to(item.socketId).emit('double_login');
+  //     this.server.in(item.socketId).disconnectSockets();
+  //   }
+  // }
+
+  async checkSingleConnection(user: UserEntity): Promise<boolean> {
     let connected_users: ConnectedUserEntity[] = await this.connectedUsersService.getUsersById(user.id);
+    let ret: boolean = false
     for (var item of connected_users) {
-      this.server.to(item.socketId).emit('double_login');
-      this.server.in(item.socketId).disconnectSockets();
+      if (item.connected) {
+        this.server.to(item.socketId).emit('double_login');
+        this.server.in(item.socketId).disconnectSockets();
+        await this.connectedUsersService.deleteBySocketId(item.socketId);
+        ret = true;
+      }
     }
+    return (ret)
   }
 
   async emitRooms(user_id: number, socket_id: string, page: PageInterface = { page: 1, limit: 10 }) {
@@ -41,11 +55,36 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(socket_id).emit('unread_rooms', await this.chatService.getUnreadRoomsOfMember(user_id));
   }
 
+  // @UseGuards(TfaGuard)
+  // async handleConnection(socket: Socket, ...args: any[]) {
+  //   const user = await this.UsersService.getUserById(+socket.handshake.headers.userid);
+  //   if (!user) { return; }
+  //   await this.checkSingleConnection(user);
+  //   let members = await this.chatService.getMembersByUserId(user.id);
+  //   if (members)
+  //     members = await this.chatService.updateSocketIdMember(socket.id, members);
+
+  //   let connectedUser = await this.connectedUsersService.getByUserId(user.id);
+  //   if (connectedUser == null)
+  //     await this.connectedUsersService.createConnectedUser(socket.id, user);
+  //   else
+  //     await this.connectedUsersService.updateSocketIdConnectedUSer(socket.id, connectedUser);
+  //   this.setStatus(user.username, "online")
+  //   let usersOnline = await this.connectedUsersService.getAllUserOnline();
+  //   const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
+  //   connectedUsers.forEach(user => {
+  //     this.server.to(user.socketId).emit('users_online', usersOnline);
+  //   });
+  //   await this.emitRooms(user.id, socket.id);
+  //   const allUsers = await this.UsersService.getAllUsers();
+  //   this.server.to(socket.id).emit('all_users', allUsers);
+  // }
+
   @UseGuards(TfaGuard)
   async handleConnection(socket: Socket, ...args: any[]) {
     const user = await this.UsersService.getUserById(+socket.handshake.headers.userid);
     if (!user) { return; }
-    await this.checkSingleConnection(user);
+    let double_connection = await this.checkSingleConnection(user);       //NEWCODE
     let members = await this.chatService.getMembersByUserId(user.id);
     if (members)
       members = await this.chatService.updateSocketIdMember(socket.id, members);
@@ -55,6 +94,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       await this.connectedUsersService.createConnectedUser(socket.id, user);
     else
       await this.connectedUsersService.updateSocketIdConnectedUSer(socket.id, connectedUser);
+
+
+    if (double_connection)                                  // NEW CODE
+    {                                                       // NEW CODE
+      this.server.to(socket.id).emit('double_login');     // NEW CODE  
+      this.server.in(socket.id).disconnectSockets();      // NEW CODE
+      this.handleDisconnect(socket);
+      return;                                            // NEW CODE
+    }
+
     this.setStatus(user.username, "online")
     let usersOnline = await this.connectedUsersService.getAllUserOnline();
     const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();
