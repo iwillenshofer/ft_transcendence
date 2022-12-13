@@ -71,8 +71,9 @@ export class PanelChatRoomComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscription1$.unsubscribe();
-  }
+	if (this.subscription1$)
+    	this.subscription1$.unsubscribe();
+	}
 
   ngOnChanges() {
     this.chatService.emitGetBlockedUsers();

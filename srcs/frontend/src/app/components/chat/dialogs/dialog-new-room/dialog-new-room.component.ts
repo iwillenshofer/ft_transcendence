@@ -46,7 +46,8 @@ export class DialogNewRoomComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscription1$.unsubscribe();
+	if (this.subscription1$)
+    	this.subscription1$.unsubscribe();
   }
 
   get description(): FormControl {

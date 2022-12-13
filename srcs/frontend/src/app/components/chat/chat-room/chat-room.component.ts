@@ -102,8 +102,10 @@ export class ChatRoomComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscription1$.unsubscribe();
-    this.subscription2$.unsubscribe();
+	if (this.subscription1$)
+    	this.subscription1$.unsubscribe();
+	if (this.subscription2$)
+    	this.subscription2$.unsubscribe();
   }
 
   ngOnChanges(): void {

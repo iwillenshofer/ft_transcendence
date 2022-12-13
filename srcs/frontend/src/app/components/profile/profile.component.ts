@@ -62,6 +62,9 @@ export class ProfileComponent implements OnInit {
       }
       if (!(this.tfa_enabled)) {
         this.alertservice.success('TFA Successfully Disabled');
+		this.router.navigateByUrl('/home', { skipLocationChange: true }).then(() => {
+			this.router.navigate(['/profile']);
+		  });
       } else {
         this.alertservice.warning('Failed disabling TFA');
       }

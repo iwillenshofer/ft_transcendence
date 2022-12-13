@@ -303,11 +303,9 @@ export class ChatController {
 
         await this.chatGateway.emitRooms(user.id, connected_user.socketId);
         const members = await this.chatService.getMembersByRoom(room);
-        if (members) {
-            for (const member of members) {
-                this.chatGateway.server.to(member.socketId).emit('members_room', members);
-            }
-        }
+		try {
+			this.chatGateway.server.to(connected_user.socketId).emit('members_room', members);
+		} catch { throw new NotFoundException('item_not_found');}
     }
 
     @UseGuards(JwtGuard)
@@ -329,11 +327,10 @@ export class ChatController {
         await this.chatGateway.emitRooms(user.id, connected_user.socketId);
 
         const members = await this.chatService.getMembersByRoom(room);
-        if (members) {
-            for (const member of members) {
-                this.chatGateway.server.to(member.socketId).emit('members_room', members);
-            }
-        }
+		try {
+				let myconnecteduser = await this.connectedUsersService.getByUserId(+req.user.id);
+				this.chatGateway.server.to(myconnecteduser.socketId).emit('members_room', members);
+		} catch { throw new NotFoundException('item_not_found');  }
     }
 
     @UseGuards(JwtGuard)
