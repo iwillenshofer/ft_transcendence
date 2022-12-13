@@ -128,11 +128,11 @@ export class ChatController {
         const invitedMember = await this.chatService.createMember(invited.toEntity(), socketId_invited, MemberRole.Member);
         if (!invitedMember) { throw new NotFoundException('item_not_found'); }
 
-		if (await this.chatService.getDirectRoom(owner.username, invited.username) == null) {
-			await this.chatService.createRoom(room.toEntity(), [ownerMember, invitedMember]);
-			await this.chatGateway.emitRooms(owner.id, ownerMember.socketId);
-			await this.chatGateway.emitRooms(invited.id, invitedMember.socketId);
-		}
+        if (await this.chatService.getDirectRoom(owner.username, invited.username) == null) {
+            await this.chatService.createRoom(room.toEntity(), [ownerMember, invitedMember]);
+            await this.chatGateway.emitRooms(owner.id, ownerMember.socketId);
+            await this.chatGateway.emitRooms(invited.id, invitedMember.socketId);
+        }
     }
 
     @UseGuards(JwtGuard)
@@ -303,9 +303,7 @@ export class ChatController {
 
         await this.chatGateway.emitRooms(user.id, connected_user.socketId);
         const members = await this.chatService.getMembersByRoom(room);
-		try {
-			this.chatGateway.server.to(connected_user.socketId).emit('members_room', members);
-		} catch { throw new NotFoundException('item_not_found');}
+        this.chatGateway.server.to(connected_user.socketId).emit('members_room', members);
     }
 
     @UseGuards(JwtGuard)
@@ -326,11 +324,11 @@ export class ChatController {
         await this.chatService.addMemberToRoom(room, member);
         await this.chatGateway.emitRooms(user.id, connected_user.socketId);
 
+        const myconnecteduser = await this.connectedUsersService.getByUserId(+req.user.id);
+        if (!myconnecteduser) { throw new NotFoundException('item_not_found'); }
+
         const members = await this.chatService.getMembersByRoom(room);
-		try {
-				let myconnecteduser = await this.connectedUsersService.getByUserId(+req.user.id);
-				this.chatGateway.server.to(myconnecteduser.socketId).emit('members_room', members);
-		} catch { throw new NotFoundException('item_not_found');  }
+        this.chatGateway.server.to(myconnecteduser.socketId).emit('members_room', members);
     }
 
     @UseGuards(JwtGuard)
