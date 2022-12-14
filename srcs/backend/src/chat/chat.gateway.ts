@@ -23,12 +23,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private connectedUsersService: ConnectedUsersService,
     private readonly encrypt: EncryptService) { }
 
-  async checkSingleConnection(user: UserEntity) {
+  async checkSingleConnection(user: UserEntity): Promise<boolean> {
     let connected_users: ConnectedUserEntity[] = await this.connectedUsersService.getUsersById(user.id);
+    let ret: boolean = false
     for (var item of connected_users) {
-      this.server.to(item.socketId).emit('double_login');
-      this.server.in(item.socketId).disconnectSockets();
+      if (item.connected) {
+        this.server.to(item.socketId).emit('double_login');
+        this.server.in(item.socketId).disconnectSockets();
+        await this.connectedUsersService.deleteBySocketId(item.socketId);
+        ret = true;
+      }
     }
+    return (ret)
   }
 
   async emitRooms(user_id: number, socket_id: string, page: PageInterface = { page: 1, limit: 10 }) {
@@ -45,7 +51,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleConnection(socket: Socket, ...args: any[]) {
     const user = await this.UsersService.getUserById(+socket.handshake.headers.userid);
     if (!user) { return; }
-    await this.checkSingleConnection(user);
+    let double_connection = await this.checkSingleConnection(user);
     let members = await this.chatService.getMembersByUserId(user.id);
     if (members)
       members = await this.chatService.updateSocketIdMember(socket.id, members);
@@ -55,6 +61,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       await this.connectedUsersService.createConnectedUser(socket.id, user);
     else
       await this.connectedUsersService.updateSocketIdConnectedUSer(socket.id, connectedUser);
+
+    if (double_connection) {
+      this.server.to(socket.id).emit('double_login');
+      this.server.in(socket.id).disconnectSockets();
+      this.handleDisconnect(socket);
+      return;
+    }
+
     this.setStatus(user.username, "online")
     let usersOnline = await this.connectedUsersService.getAllUserOnline();
     const connectedUsers = await this.connectedUsersService.getAllConnectedUsers();

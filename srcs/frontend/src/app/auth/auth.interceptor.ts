@@ -33,7 +33,6 @@ export class AuthInterceptor implements HttpInterceptor {
 					return throwError(() => error);
 				}
 				else {
-					console.log(error)
 					this.alertservice.danger("Something bad happened and you'll have to login again!")
 					this.authService.logout();
 					return of(new HttpResponse({ body: {}, status: 200 }));

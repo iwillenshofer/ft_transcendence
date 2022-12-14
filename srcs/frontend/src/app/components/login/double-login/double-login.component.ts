@@ -27,6 +27,8 @@ export class DoubleLoginComponent {
 		this.router.navigate(['/home']);
 	}
 	ngOnInit() {
+		this.alertService.clear();
+		this.alertService.info("You have logged out because you were connected to another browser. Please log in again.")
 		this.authService.logout();
 	}
 
